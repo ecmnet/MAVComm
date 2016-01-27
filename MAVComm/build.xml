@@ -1,0 +1,45 @@
+<project name="PIX4Comm" basedir=".">
+
+	<property name="lib.dir" value="lib" />
+	<property name="dis.dir" value="dis" />
+	<property name="res.dir" value="resources" />
+	<property name="build.dir" value="bin" />
+	<property name="deploy.dir" value="/Volumes/pi-4" />
+	<property name="deploy2.dir" value="/Users/ecmnet/MultiCopter/workspace/MAVGCL/lib"/>
+
+	<target name="Build MAVComm" description="Build jar">
+		<!--	 <mkdir dir="${dis.dir}"/> -->
+		<jar destfile="${dis.dir}/mavcomm.jar" basedir="${build.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="com.comino.msp.main.StartUp" />
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Class-Path" 
+				     value="/home/pi/LQuaC/jna-4.1.0.jar 
+					    	/home/pi/LQuaC/purejavacomm-0.0.21.jar
+					        /home/pi/libAMA0.so
+					        /home/pi/resources/
+					         mavlink/message_definitions/common.xml"
+				/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="LquacGCL" description="Copy build to GCL">
+		<copy todir="${deploy2.dir}">
+			<fileset dir="${dis.dir}/" />
+		</copy>
+	</target>
+
+	<target name="raspberry" description="Copy build to raspberry">
+		<copy todir="${deploy.dir}">
+			<fileset dir="${dis.dir}/" />
+		</copy>
+		<buildnumber />
+		   <echo>Current build number:${build.number}</echo>
+			<propertyfile file="${deploy.dir}/resources/msp.properties">
+			   <entry key="build" value="${build.number}" />
+		    </propertyfile>
+	</target>
+
+
+</project>
