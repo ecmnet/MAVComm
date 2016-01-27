@@ -33,7 +33,7 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 
 
 	public MAVUdpProxy(String bind, String peer) {
-		buffer = ByteBuffer.allocate(200);
+		buffer = ByteBuffer.allocate(8192);
 		this.bind = bind;
 		this.peer = peer;
 		open();
@@ -100,7 +100,8 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 
 
 		} catch (IOException e) {
-			open();
+			buffer.clear();
+			
 		}
 	}
 

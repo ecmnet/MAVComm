@@ -4,11 +4,11 @@ import com.comino.msp.model.segment.generic.Segment;
 
 public class Message extends Segment {
 	
-	private static final long serialVersionUID = 7810155510611726123L;
+	private static final long serialVersionUID = 3345013931542810501L;
+	
 	
 	public String     msg = null;
 	public int   severity = 0;
-	
 	
 	public Message() {
 		
