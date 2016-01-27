@@ -24,6 +24,8 @@ import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_rc_channels;
+import org.mavlink.messages.lquac.msg_rc_channels_raw;
+import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_statustext;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_vfr_hud;
@@ -79,6 +81,38 @@ public class MAVLinkToModelParser {
 				model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, true);
 				
 				
+			}
+		});
+		
+		registerListener(msg_servo_output_raw.class, new IMAVLinkMsgListener() {
+			@Override
+			public void received(Object o) {
+				msg_servo_output_raw servo = (msg_servo_output_raw)o;
+				model.servo.s0 = (short)servo.servo1_raw;
+				model.servo.s1 = (short)servo.servo2_raw;
+				model.servo.s2 = (short)servo.servo3_raw;
+				model.servo.s3 = (short)servo.servo4_raw;
+				model.servo.s4 = (short)servo.servo5_raw;
+				model.servo.s5 = (short)servo.servo6_raw;
+				model.servo.s6 = (short)servo.servo7_raw;
+				model.servo.s7 = (short)servo.servo8_raw;
+				
+				model.servo.tms = servo.time_usec;
+						
+			}
+		});
+		
+		
+		registerListener(msg_rc_channels_raw.class, new IMAVLinkMsgListener() {
+			@Override
+			public void received(Object o) {
+				msg_rc_channels_raw rc = (msg_rc_channels_raw)o;
+				model.rc.s0 = (short)rc.chan1_raw;
+				model.rc.s1 = (short)rc.chan2_raw;
+				model.rc.s2 = (short)rc.chan3_raw;
+				model.rc.s3 = (short)rc.chan4_raw;
+				
+				model.rc.tms = rc.time_boot_ms;						
 			}
 		});
 		

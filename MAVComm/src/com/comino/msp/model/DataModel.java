@@ -7,6 +7,8 @@ import com.comino.msp.model.segment.Battery;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.Imu;
 import com.comino.msp.model.segment.Raw;
+import com.comino.msp.model.segment.Rc;
+import com.comino.msp.model.segment.Servo;
 import com.comino.msp.model.segment.State;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.model.segment.Telemetry;
@@ -33,6 +35,8 @@ public class DataModel extends Segment implements Serializable {
 	public	 GPS	         gps  = null;
 	public	 Raw			 raw  = null;
 	public   Status          sys  = null;
+	public	 Servo			servo = null;
+	public	 Rc				  rc  = null;
 
 
 	public DataModel()  {
@@ -45,6 +49,8 @@ public class DataModel extends Segment implements Serializable {
 		this.gps       		= new GPS();
 		this.raw            = new Raw();
 		this.sys       		= new Status();
+		this.servo			= new Servo();
+		this.rc             = new Rc();
 
 
 	}
@@ -63,6 +69,8 @@ public class DataModel extends Segment implements Serializable {
 		this.gps       		= m.gps.clone();
 		this.raw            = m.raw.clone();
 		this.sys       		= m.sys.clone();
+		this.servo			= m.servo.clone();
+		this.rc             = m.rc.clone();
 	}
 	
 	
@@ -76,6 +84,8 @@ public class DataModel extends Segment implements Serializable {
 		this.gps.set(m.gps);
 		this.raw.set(raw);
 		this.sys.set(m.sys);
+		this.servo.set(m.servo);
+		this.rc.set(m.rc);
 	}
 
 	public DataModel clone() {
@@ -90,5 +100,7 @@ public class DataModel extends Segment implements Serializable {
 		this.target_state.clear();
 		this.telemetry.clear();
 		this.gps.clear();
+		this.servo.clear();
+		this.rc.clear();
 	}
 }

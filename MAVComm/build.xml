@@ -5,7 +5,7 @@
 	<property name="res.dir" value="resources" />
 	<property name="build.dir" value="bin" />
 	<property name="deploy.dir" value="/Volumes/pi-4" />
-	<property name="deploy2.dir" value="/Users/ecmnet/MultiCopter/workspace/MAVGCL/lib"/>
+	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib"/>
 
 	<target name="Build MAVComm" description="Build jar">
 		<!--	 <mkdir dir="${dis.dir}"/> -->
