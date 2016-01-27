@@ -23,8 +23,7 @@ public class MAVController implements IMAVController {
 	protected IMAVComm comm = null;
 
 	protected ModelCollectorService collector = null;
-	protected boolean isConnected = false;
-
+	
 	protected   DataModel model = null;
 
 	public static IMAVController getInstance() {
@@ -160,7 +159,7 @@ public class MAVController implements IMAVController {
 
 	@Override
 	public boolean isConnected() {
-		return isConnected;
+		return true;
 	}
 
 	@Override

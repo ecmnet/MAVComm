@@ -29,7 +29,7 @@ public class MAVSerialController extends MAVController implements IMAVController
 	
 	@Override
 	public boolean isConnected() {
-		return isConnected;
+		return comm.isConnected();
 	}
 
 }

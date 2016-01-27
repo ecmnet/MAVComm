@@ -23,13 +23,19 @@ public class MAVUdpController extends MAVController implements IMAVController {
 
 	@Override
 	public boolean connect() {
-        isConnected = comm.open();
-		return isConnected;
+        return comm.open();
 	}
 	
 	@Override
 	public boolean isSimulation() {
 		return isSimulation;
 	}
+
+	@Override
+	public boolean isConnected() {
+		return comm.isConnected();
+	}
+	
+	
 
 }

@@ -168,7 +168,6 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 
 		} catch (Exception e) {
 			comm.close();
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 		}
@@ -176,6 +175,11 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 
 
 
+	}
+
+	@Override
+	public boolean isConnected() {
+		return true;
 	}
 
 

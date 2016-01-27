@@ -26,6 +26,6 @@ public interface IMAVComm {
 	
 	public void registerProxyListener(IMAVLinkMsgListener listener);
 	
-	
+	public boolean isConnected();
 
 }

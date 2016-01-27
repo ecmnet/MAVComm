@@ -31,6 +31,7 @@ public class MAVUdpComm implements IMAVComm {
 
 	private MAVLinkToModelParser	parser = null;
 
+	private boolean					isConnected = false;
 
 	private static MAVUdpComm com = null;
 
@@ -49,38 +50,42 @@ public class MAVUdpComm implements IMAVComm {
 
 	public boolean open() {
 
-		if(channel!=null && channel.isConnected())
+		if(channel!=null && channel.isConnected()) {
+			isConnected = true;
 			return true;
-
-		try {
-
-
-			if(address!=null && address.startsWith("172")) {
-
-				peerPort = new InetSocketAddress("172.168.178.1", 14556);
-				bindPort = new InetSocketAddress("172.168.178.2", 14550);
-
-			} else {
-				address = "localhost";
-				peerPort = new InetSocketAddress("localhost", 14556);
-				bindPort = new InetSocketAddress("localhost", 14550);
-			}
-
-			channel = DatagramChannel.open();
-			channel.socket().bind(bindPort);
-			channel.configureBlocking(false);
-			channel.connect(peerPort);
-
-			parser = new MAVLinkToModelParser(model,channel, this);
-			parser.start();
-
-			System.out.println("UDP connected to "+address);
-			return true;
-		} catch(Exception e) {
-			System.out.println("Cannot connect to Port: "+e.getMessage()+" "+address);
-			close();
-			return false;
 		}
+		while(!isConnected) {
+			try {
+
+
+				if(address!=null && address.startsWith("172")) {
+
+					peerPort = new InetSocketAddress("172.168.178.1", 14556);
+					bindPort = new InetSocketAddress("172.168.178.2", 14550);
+
+				} else {
+					address = "localhost";
+					peerPort = new InetSocketAddress("localhost", 14556);
+					bindPort = new InetSocketAddress("localhost", 14550);
+				}
+
+				channel = DatagramChannel.open();
+				channel.socket().bind(bindPort);
+				channel.configureBlocking(false);
+				channel.connect(peerPort);
+
+				parser = new MAVLinkToModelParser(model,channel, this);
+				parser.start();
+				isConnected = true;
+				System.out.println("UDP connected to "+address);
+				return true;
+			} catch(Exception e) {
+				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+address);
+				close();
+				isConnected = false;
+			}
+		}
+		return false;
 	}
 
 
@@ -108,6 +113,9 @@ public class MAVUdpComm implements IMAVComm {
 	}
 
 
+	public boolean isConnected() {
+		return isConnected;
+	}
 
 	public DataModel getModel() {
 		return model;
@@ -169,7 +177,7 @@ public class MAVUdpComm implements IMAVComm {
 
 			System.out.println(colService.getModelList().size()+" models collected");
 
-			
+
 			//			for(int i=0;i<colService.getModelList().size();i++) {
 			//				DataModel m = colService.getModelList().get(i);
 			//				System.out.println(m.attitude.aX);

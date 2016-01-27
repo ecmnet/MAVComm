@@ -4,7 +4,7 @@
 	<property name="dis.dir" value="dis" />
 	<property name="res.dir" value="resources" />
 	<property name="build.dir" value="bin" />
-	<property name="deploy.dir" value="/Volumes/pi-6" />
+	<property name="deploy.dir" value="/Volumes/pi" />
 	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib"/>
 
 	<target name="Build MAVComm" description="Build jar">

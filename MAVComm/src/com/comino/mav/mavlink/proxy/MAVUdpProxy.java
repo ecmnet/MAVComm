@@ -36,37 +36,40 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 		buffer = ByteBuffer.allocate(8192);
 		this.bind = bind;
 		this.peer = peer;
-		open();
 	}
 
 	public boolean open() {
 
-		if(channel!=null && channel.isConnected())
-			return true;
-
-		try {
+		if(channel!=null && channel.isConnected()) {
 			isConnected = true;
-			System.out.println("Connect to UDP channel");
-			peerPort = new InetSocketAddress(peer, 14550);
-			bindPort = new InetSocketAddress(bind, 14556);
-			try {
-				channel = DatagramChannel.open();
-				channel.socket().bind(bindPort);
-
-				channel.configureBlocking(false);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			channel.connect(peerPort);
-			in = new MAVLinkStream(channel);
-			System.out.println("MAVProxy connected");
 			return true;
-		} catch(Exception e) {
-			e.printStackTrace();
-			close();
-			isConnected = false;
-			return false;
 		}
+		while(!isConnected) {
+			try {
+				isConnected = true;
+				System.out.println("Connect to UDP channel");
+				peerPort = new InetSocketAddress(peer, 14550);
+				bindPort = new InetSocketAddress(bind, 14556);
+				try {
+					channel = DatagramChannel.open();
+					channel.socket().bind(bindPort);
+
+					channel.configureBlocking(false);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				channel.connect(peerPort);
+				in = new MAVLinkStream(channel);
+				System.out.println("MAVProxy connected to "+peer);
+				return true;
+			} catch(Exception e) {
+				System.out.println(e.getMessage());
+				close();
+				isConnected = false;
+
+			}
+		}
+		return false;
 	}
 
 	public boolean isConnected() {
@@ -93,15 +96,24 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 	public void write(MAVLinkMessage msg) {
 		try {
 
-			buffer.put(msg.encode());
-			buffer.flip();
-			channel.write(buffer);
-			buffer.compact();
+			if(isConnected) {
+				
+				if(!channel.isConnected())
+					throw new IOException("Channel not bound");
+				
+				buffer.put(msg.encode());
+				buffer.flip();
+				channel.write(buffer);
+				buffer.compact();
+			}
 
 
 		} catch (IOException e) {
+			try { Thread.sleep(1000); } catch(Exception k) { }
+			System.out.println(e.getMessage());
 			buffer.clear();
-			
+			close();
+			isConnected = false;
 		}
 	}
 

@@ -229,6 +229,11 @@ public class MAVSerialComm implements IMAVComm {
 
 	}
 
+	@Override
+	public boolean isConnected() {
+		return true;
+	}
+
 	
 
 

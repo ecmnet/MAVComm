@@ -31,12 +31,8 @@ public class StartUp {
 		
 		control.start();
 
-		try {
-			Thread.sleep(5000);
-			if(!control.isConnected())
-				control.connect();
-		} catch (InterruptedException e) {
-		}
+		control.connect();
+		
 
 		while(true) {
 			try {
