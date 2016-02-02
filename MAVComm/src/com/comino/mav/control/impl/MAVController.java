@@ -11,6 +11,7 @@ import org.mavlink.messages.lquac.msg_msp_command;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.udp.MAVUdpComm;
 import com.comino.mav.control.IMAVController;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.Message;
@@ -23,7 +24,7 @@ public class MAVController implements IMAVController {
 	protected IMAVComm comm = null;
 
 	protected ModelCollectorService collector = null;
-	
+
 	protected   DataModel model = null;
 
 	public static IMAVController getInstance() {
@@ -71,19 +72,19 @@ public class MAVController implements IMAVController {
 		} catch (IOException e1) {
 			System.out.println("Command rejected. "+e1.getMessage());
 			return false;
-		}	
+		}
 	}
-	
+
     public boolean sendMSPLinkCmd(int command, float...params) {
-		
+
 		if(!controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
 			System.out.println("Command rejected. No connection.");
 			return false;
 		}
-		
+
 		msg_msp_command cmd = new msg_msp_command(255,1);
 		cmd.command = command;
-		
+
 		for(int i=0; i<params.length;i++) {
 			switch(i) {
 			case 0: cmd.param1 = params[0]; break;
@@ -93,21 +94,21 @@ public class MAVController implements IMAVController {
 			case 4: cmd.param5 = params[4]; break;
 			case 5: cmd.param6 = params[5]; break;
 			case 6: cmd.param7 = params[6]; break;
-			
+
 			}
 		}
-		
+
 		try {
-			if(!(comm instanceof MAVUdpComm)) 
+			if(!(comm instanceof MAVUdpComm))
 				throw new IOException("MSP Commands only via UDP to proxy allowed");
-			
+
 			comm.write(cmd);
 			System.out.println("Execute: "+cmd.toString());
 			return true;
 		} catch (IOException e1) {
 			System.out.println("Command rejected: "+e1.getMessage());
 			return false;
-		}	
+		}
 	}
 
 	@Override
@@ -117,7 +118,7 @@ public class MAVController implements IMAVController {
 	}
 
 	@Override
-	public boolean start() {	
+	public boolean start() {
 		return collector.start();
 
 	}
@@ -168,7 +169,18 @@ public class MAVController implements IMAVController {
 	}
 
 
+	@Override
+	public boolean close() {
+		comm.close();
+		return true;
+	}
 
+
+	@Override
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+		comm.addModeChangeListener(listener);
+
+	}
 
 
 

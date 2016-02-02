@@ -32,6 +32,7 @@ import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.Message;
@@ -51,17 +52,20 @@ public class MAVLinkToModelParser {
 
 	private HashMap<Class<?>,IMAVLinkMsgListener> listeners = null;
 	private IMAVLinkMsgListener proxyListener = null;
+	private List<IMSPModeChangedListener> modeListener = null;
+
 	private boolean isRunning = false;
 
-	public MAVLinkToModelParser(DataModel model, ByteChannel channel, IMAVComm link) {
+	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
 
 		this.model = model;
 		this.link = link;
 		this.msgList   = new ArrayList<Message>();
 		this.mavList   = new HashMap<Class<?>,MAVLinkMessage>();
 
+		this.modeListener = new ArrayList<IMSPModeChangedListener>();
+
 		listeners = new HashMap<Class<?>,IMAVLinkMsgListener>();
-		stream = new MAVLinkStream(channel);
 
 
 		registerListener(msg_vfr_hud.class, new IMAVLinkMsgListener() {
@@ -70,7 +74,7 @@ public class MAVLinkToModelParser {
 				msg_vfr_hud hud = (msg_vfr_hud)o;
 				model.attitude.h = hud.heading;
 				model.attitude.s = hud.groundspeed;
-				model.state.h    = hud.heading;       
+				model.state.h    = hud.heading;
 			}
 		});
 
@@ -119,6 +123,7 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_altitude alt = (msg_altitude)o;
 				model.attitude.al   = alt.altitude_local;
+				model.attitude.ag   = alt.altitude_amsl;
 			}
 		});
 
@@ -157,7 +162,7 @@ public class MAVLinkToModelParser {
 				msg_home_position ref = (msg_home_position)o;
 				model.gps.ref_lat = ref.latitude/10000000f;
 				model.gps.ref_lon = ref.longitude/10000000f;
-				model.gps.ref_altitude = ref.altitude;	
+				model.gps.ref_altitude = ref.altitude;
 				model.gps.setFlag(GPS.GPS_REF_VALID, true);
 			}
 		});
@@ -245,7 +250,7 @@ public class MAVLinkToModelParser {
 
 				if(msgList.size()>0) {
 					if(msgList.get(msgList.size()-1).tms < m.tms)
-						msgList.add(m);	
+						msgList.add(m);
 				} else
 					msgList.add(m);
 			}
@@ -256,21 +261,25 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_rc_channels rc = (msg_rc_channels)o;
 				model.sys.setStatus(Status.MSP_RC_ATTACHED, (rc.rssi>0));
-				
+
 				model.rc.s0 = rc.chan1_raw < 65534 ? (short)rc.chan1_raw : 0;
 				model.rc.s1 = rc.chan2_raw < 65534 ? (short)rc.chan2_raw : 0;
 				model.rc.s2 = rc.chan3_raw < 65534 ? (short)rc.chan3_raw : 0;
 				model.rc.s3 = rc.chan4_raw < 65534 ? (short)rc.chan4_raw : 0;
-				model.rc.tms = rc.time_boot_ms;			
+				model.rc.tms = rc.time_boot_ms;
 
 			}
 		});
 
 
 		registerListener(msg_heartbeat.class, new IMAVLinkMsgListener() {
+			Status old;
 			@Override
 			public void received(Object o) {
 				msg_heartbeat hb = (msg_heartbeat)o;
+
+				old = model.sys.clone();
+
 
 				//System.out.println(hb.toString());
 
@@ -279,11 +288,11 @@ public class MAVLinkToModelParser {
 
 				//				System.out.println("ALT "+PX4CustomModes.is(hb.custom_mode,PX4CustomModes.PX4_CUSTOM_MAIN_MODE_ALTCTL));
 				//				System.out.println("MAN "+PX4CustomModes.is(hb.custom_mode,PX4CustomModes.PX4_CUSTOM_MAIN_MODE_MANUAL));
-				//				
+				//
 				model.sys.setStatus(Status.MSP_ARMED,(hb.base_mode & MAV_MODE_FLAG_DECODE_POSITION.MAV_MODE_FLAG_DECODE_POSITION_SAFETY)>0);
 
 				model.sys.setStatus(Status.MSP_ACTIVE, (hb.system_status & MAV_STATE.MAV_STATE_ACTIVE)>0);
-				model.sys.setStatus(Status.MSP_READY, (hb.system_status & MAV_STATE.MAV_STATE_STANDBY)>0);				
+				model.sys.setStatus(Status.MSP_READY, (hb.system_status & MAV_STATE.MAV_STATE_STANDBY)>0);
 				model.sys.setStatus(Status.MSP_ARMED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED)!=0);
 				model.sys.setStatus(Status.MSP_MODE_STABILIZED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_STABILIZE_ENABLED)!=0);
 
@@ -296,6 +305,9 @@ public class MAVLinkToModelParser {
 				model.sys.basemode = hb.base_mode;
 
 				model.sys.tms = System.nanoTime()/1000;
+
+				for(IMSPModeChangedListener listener : modeListener)
+					listener.update(old, model.sys);
 
 			}
 		});
@@ -317,11 +329,11 @@ public class MAVLinkToModelParser {
 
 				model.sys.tms = System.nanoTime()/1000;
 
-				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, 
+				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY,
 						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW)>0);
 
 				// TODO: GPS not found
-				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, 
+				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
 						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
 
 
@@ -356,8 +368,9 @@ public class MAVLinkToModelParser {
 		return mavList;
 	}
 
-	public void start() {
+	public void start(ByteChannel channel) {
 		isRunning = true;
+		stream = new MAVLinkStream(channel);
 		Thread s = new Thread(new MAVLinkParserWorker());
 		s.start();
 	}
@@ -367,47 +380,55 @@ public class MAVLinkToModelParser {
 		isRunning = false;
 	}
 
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+		modeListener.add(listener);
+	}
+
 
 	private void registerListener(Class<?> clazz, IMAVLinkMsgListener listener) {
 		listeners.put(clazz, listener);
 	}
 
 	private class MAVLinkParserWorker implements Runnable {
+		MAVLinkMessage msg = null;
 
 		public void run() {
 			model.sys.tms = System.nanoTime()/1000;
 			while (isRunning) {
 				try {
-                    
-					MAVLinkMessage msg = stream.read();
-					if (msg == null) {
 
-						if((System.nanoTime()/1000) > (model.sys.tms+5000000) && 
-								model.sys.isStatus(Status.MSP_CONNECTED)) {
-							model.sys.setStatus(Status.MSP_CONNECTED, false);
-							msgList.add(new Message("Connection lost",2));
-							System.out.println("Connection lost");
-							link.close(); link.open();
-							model.sys.tms = System.nanoTime()/1000;
-						}
+					if(stream==null) {
+						Thread.sleep(10);
 						continue;
 					}
 
-					model.sys.setStatus(Status.MSP_CONNECTED,true);
-					model.sys.tms = System.nanoTime()/1000;
+					while((msg = stream.read())!=null) {
 
-					mavList.put(msg.getClass(),msg);
-					IMAVLinkMsgListener listener = listeners.get(msg.getClass());
-					if(listener!=null)
-						listener.received(msg);
+						model.sys.setStatus(Status.MSP_CONNECTED,true);
+						model.sys.tms = System.nanoTime()/1000;
 
-					if(proxyListener!=null)
-						proxyListener.received(msg);
+						mavList.put(msg.getClass(),msg);
+						IMAVLinkMsgListener listener = listeners.get(msg.getClass());
+						if(listener!=null)
+							listener.received(msg);
 
+						if(proxyListener!=null)
+							proxyListener.received(msg);
+					}
+
+					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&
+							model.sys.isStatus(Status.MSP_CONNECTED)) {
+						model.sys.setStatus(Status.MSP_CONNECTED, false);
+						msgList.add(new Message("Connection lost",2));
+						System.out.println("Connection lost");
+						link.close(); link.open();
+						model.sys.tms = System.nanoTime()/1000;
+						Thread.sleep(50);
+					}
 
 				} catch (Exception e) {
 
-					
+
 
 				}
 

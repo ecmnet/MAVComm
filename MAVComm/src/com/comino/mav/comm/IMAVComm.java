@@ -7,6 +7,7 @@ import java.util.Map;
 import org.mavlink.messages.MAVLinkMessage;
 
 import com.comino.mav.mavlink.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Message;
 
@@ -17,15 +18,17 @@ public interface IMAVComm {
 	public DataModel getModel();
 
 	public List<Message> getMessageList();
-	
+
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap();
 
 	void close();
 
 	void write(MAVLinkMessage msg) throws IOException;
-	
+
 	public void registerProxyListener(IMAVLinkMsgListener listener);
-	
+
+	public void addModeChangeListener(IMSPModeChangedListener listener);
+
 	public boolean isConnected();
 
 }

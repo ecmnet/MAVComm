@@ -16,20 +16,21 @@ import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.mav.mavlink.proxy.MAVUdpProxy;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Message;
 import com.comino.msp.model.segment.Status;
 
 /*
  * Direct high speed Proxy controller onboard companions connected with high speed
- * serial driver (currently RPi only) 
+ * serial driver (currently RPi only)
  */
 
 public class MAVProxyController implements IMAVController {
 
 	protected static IMAVController controller = null;
 	protected IMAVComm comm = null;
-	
+
 	protected HashMap<Class<?>,IMAVLinkMsgListener> listeners = null;
 
 	protected   DataModel model = null;
@@ -46,7 +47,7 @@ public class MAVProxyController implements IMAVController {
 		controller = this;
 		model = new DataModel();
 		listeners = new HashMap<Class<?>,IMAVLinkMsgListener>();
-		
+
 		System.out.println("Proxy Controller loaded");
 
 
@@ -89,7 +90,7 @@ public class MAVProxyController implements IMAVController {
 		} catch (IOException e1) {
 			System.out.println("Command rejected. "+e1.getMessage());
 			return false;
-		}	
+		}
 	}
 
 	@Override
@@ -97,7 +98,7 @@ public class MAVProxyController implements IMAVController {
 		System.out.println("Command rejected: Proxy cannot send command to itself...");
 		return false;
 	}
-	
+
 	public void registerListener(Class<?> clazz, IMAVLinkMsgListener listener) {
 		listeners.put(clazz, listener);
 	}
@@ -115,7 +116,7 @@ public class MAVProxyController implements IMAVController {
 	public boolean start() {
 		isRunning = true;
 		new Thread(new MAVLinkProxyWorker()).start();
-		comm.open();	
+		comm.open();
 		return true;
 	}
 
@@ -124,6 +125,12 @@ public class MAVProxyController implements IMAVController {
 		isRunning = false;
 		comm.close();
 		return false;
+	}
+
+	@Override
+	public boolean close() {
+		comm.close();
+		return true;
 	}
 
 
@@ -162,13 +169,13 @@ public class MAVProxyController implements IMAVController {
 
 			while (isRunning) {
 				try {
-					Thread.sleep(20);
-					
+					Thread.sleep(5);
+
 					MAVLinkMessage msg = proxy.getInputStream().read();
-					
+
 					if(msg==null)
 						continue;
-					
+
 					IMAVLinkMsgListener listener = listeners.get(msg.getClass());
 					if(listener!=null)
 						listener.received(msg);
@@ -188,19 +195,19 @@ public class MAVProxyController implements IMAVController {
 
 
 		MAVProxyController control = new MAVProxyController();
-		
-		
+
+
 		// Example to execute MSP MAVLinkMessages via sendMSPLinkCommand(..)
 		control.registerListener(msg_msp_command.class, new IMAVLinkMsgListener() {
 			@Override
 			public void received(Object o) {
 				msg_msp_command hud = (msg_msp_command)o;
-				System.out.println("MSP Command "+hud.command+" executed");   
+				System.out.println("MSP Command "+hud.command+" executed");
 			}
 		});
-		
-		
-		
+
+
+
 		control.start();
 
 		try {
@@ -217,7 +224,7 @@ public class MAVProxyController implements IMAVController {
 				Thread.sleep(100);
 				if(!control.isConnected())
 					control.connect();
-			
+
 				// Example to send MAVLinkMessages from MSP
 //		           msg_msp_status sta = new msg_msp_status();
 //		           sta.load = 50;
@@ -237,5 +244,10 @@ public class MAVProxyController implements IMAVController {
 	}
 
 
+	@Override
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+		comm.addModeChangeListener(listener);
+
+	}
 
 }

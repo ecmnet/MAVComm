@@ -15,7 +15,7 @@
  * --------  ----------   ------
  * ghelle   24 aout 2012  Create
  * ghelle   02/04/13      Add modifications from Kevin Hester for Andropilot project
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -45,17 +45,17 @@ public class MAVLinkReader {
     public final static int RECEIVED_OFFSET = 6;
 
     /**
-       * 
+       *
        */
     public final static int RECEIVED_BUFFER_SIZE = 512;
 
     /**
-       * 
+       *
        */
     public final static int MAX_TM_SIZE = 263;
 
     /**
-       * 
+       *
        */
     private final byte[] receivedBuffer = new byte[RECEIVED_BUFFER_SIZE];
 
@@ -115,7 +115,7 @@ public class MAVLinkReader {
 
     /**
      * Constructor with MAVLink 1.0 by default
-     * 
+     *
      * @param dis
      *            Data input stream
      */
@@ -126,7 +126,7 @@ public class MAVLinkReader {
 
     /**
      * Constructor
-     * 
+     *
      * @param dis
      *            Data input stream
      * @param start
@@ -142,7 +142,7 @@ public class MAVLinkReader {
 
     /**
      * Constructor for byte array read methods.
-     * 
+     *
      * @param start
      *            Start byte for MAVLink version
      */
@@ -163,7 +163,7 @@ public class MAVLinkReader {
 
     /**
      * Return next message. If bytes available, try to read it.
-     * 
+     *
      * @return MAVLink message or null
      */
     public MAVLinkMessage getNextMessage() throws IOException {
@@ -180,7 +180,7 @@ public class MAVLinkReader {
 
     /**
      * Return next message. Use it without stream in input.
-     * 
+     *
      * @param buffer
      *            Contains bytes to build next message
      * @param len
@@ -214,7 +214,7 @@ public class MAVLinkReader {
 
     /**
      * Return next message. If bytes available, try to read it. Don't wait message is completed, it will be retruned nex time
-     * 
+     *
      * @return MAVLink message or null
      */
     public MAVLinkMessage getNextMessageWithoutBlocking() {
@@ -231,7 +231,7 @@ public class MAVLinkReader {
 
     /**
      * Try to read next message Can be blocked on read
-     * 
+     *
      * @return true if data are valid
      */
     protected boolean readNextMessage() throws IOException {
@@ -378,7 +378,7 @@ public class MAVLinkReader {
 
     /**
      * Try to read next message. Can't be blocked on read
-     * 
+     *
      * @return true if data are valid
      */
     protected boolean readNextMessageWithoutBlocking() {
@@ -386,7 +386,7 @@ public class MAVLinkReader {
         try {
             if (messageInProgress == false) {
                 // Waiting for a new message
-                if (dis.available() == 0)
+                if (dis==null || dis.available() == 0)
                     return validData;
                 receivedBuffer[nbReceived] = dis.readByte();
                 totalBytesReceived++;
@@ -435,16 +435,7 @@ public class MAVLinkReader {
                 nbReceived = 0;
             }
         }
-        catch (java.io.EOFException eof) {
-            System.err.println("ERROR EOF : " + eof);
-            eof.printStackTrace();
-            nbReceived = 0;
-            validData = false;
-        }
         catch (Exception e) {
-            System.err.println("ERROR : " + e);
-            e.printStackTrace();
-            // restart buffer
             nbReceived = 0;
             validData = false;
         }
@@ -455,7 +446,7 @@ public class MAVLinkReader {
     /**
      * Read the end of message after the start byte and the payload length. Called only if there are available character to read all the rest of
      * message
-     * 
+     *
      * @return true if no error occurs
      * @throws IOException
      *             on read byte function...
@@ -506,7 +497,7 @@ public class MAVLinkReader {
                 msg.sequence = sequence;
                 if (!checkSequence(sysId, sequence)) {
                     badSequence += 1;
-                    //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastSequence[sysId] + 
+                    //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastSequence[sysId] +
                     //                   " Current sequence : " + sequence + " Id=" + msgId + " nbReceived=" + nbReceived);
                 }
                 packets.addElement(msg);
@@ -522,7 +513,7 @@ public class MAVLinkReader {
         else {
             badCRC += 1;
             //System.err.println("ERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
-            //                   Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow & 0x00FF) + 
+            //                   Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow & 0x00FF) +
             //                   " Id=" + msgId + " nbReceived=" + nbReceived);
             validData = false;
         }
@@ -535,7 +526,7 @@ public class MAVLinkReader {
 
     /**
      * Check if we don't lost messages...
-     * 
+     *
      * @param sequence
      *            current sequence
      * @return true if we don't lost messages
@@ -564,7 +555,7 @@ public class MAVLinkReader {
 
     /**
      * Read Payload bytes
-     * 
+     *
      * @param nb
      *            Nb bytes to read
      * @return Payload bytes

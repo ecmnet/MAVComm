@@ -6,13 +6,14 @@ public class Attitude extends Segment {
 
 	private static final long serialVersionUID = -1123989934184248219L;
 	
-	public float aX     = 0;
-	public float aY     = 0;
+	public float aX     = 0;	// angleX
+	public float aY     = 0;	// angleY
 
-	public float h      = 0;
-	public float al     = 0;
+	public float h      = 0;	// heading (compass)
+	public float al     = 0;	// altitude above ground
+	public float ag     = 0;	// est.altitude above sealevel
 	
-	public float s    	= 0;
+	public float s    	= 0;	// ground speed
 
 
 	public void set(Attitude a) {
@@ -20,6 +21,7 @@ public class Attitude extends Segment {
 		aY    	= a.aY;
 		h   	= a.h;
 		al      = a.al;
+		ag      = a.ag;
 		s   	= a.s;
 		
 	}
@@ -30,6 +32,7 @@ public class Attitude extends Segment {
 		at.aY 		= aY;
 		at.h		= h;
 		at.al       = al;
+		at.ag       = ag;
 		at.s		= s;
 		return at;
 	}
@@ -42,6 +45,7 @@ public class Attitude extends Segment {
 		aY    	= 0;
 		h   	= 0;
 		al 		= 0;
+		ag      = 0;
 		s   	= 0;
 	}
 

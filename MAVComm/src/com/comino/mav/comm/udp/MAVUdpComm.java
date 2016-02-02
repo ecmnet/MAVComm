@@ -13,6 +13,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.Message;
@@ -36,7 +37,7 @@ public class MAVUdpComm implements IMAVComm {
 	private static MAVUdpComm com = null;
 
 	public static MAVUdpComm getInstance(DataModel model, String address) {
-		if(com==null) 
+		if(com==null)
 			com = new MAVUdpComm(model, address);
 		return com;
 	}
@@ -44,6 +45,7 @@ public class MAVUdpComm implements IMAVComm {
 	private MAVUdpComm(DataModel model, String address) {
 		this.model = model;
 		this.address = address;
+		this.parser = new MAVLinkToModelParser(model,this);
 
 
 	}
@@ -54,9 +56,8 @@ public class MAVUdpComm implements IMAVComm {
 			isConnected = true;
 			return true;
 		}
-		while(!isConnected) {
-			try {
 
+			try {
 
 				if(address!=null && address.startsWith("172")) {
 
@@ -74,8 +75,7 @@ public class MAVUdpComm implements IMAVComm {
 				channel.configureBlocking(false);
 				channel.connect(peerPort);
 
-				parser = new MAVLinkToModelParser(model,channel, this);
-				parser.start();
+				parser.start(channel);
 				isConnected = true;
 				System.out.println("UDP connected to "+address);
 				return true;
@@ -84,7 +84,7 @@ public class MAVUdpComm implements IMAVComm {
 				close();
 				isConnected = false;
 			}
-		}
+
 		return false;
 	}
 
@@ -139,7 +139,8 @@ public class MAVUdpComm implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		MAVUdpComm comm = new MAVUdpComm(new DataModel(), args[0]);
+	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172,168,178,1");
+		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "127.0.0.1");
 		comm.open();
 
 
@@ -193,6 +194,12 @@ public class MAVUdpComm implements IMAVComm {
 
 
 
+
+	}
+
+	@Override
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+		parser.addModeChangeListener(listener);
 
 	}
 

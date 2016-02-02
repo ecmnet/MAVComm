@@ -20,9 +20,13 @@ public class MAV_CUST_MODE {
 	public static int PX4_CUSTOM_SUB_MODE_AUTO_RTGS 	= 7;
 	
 	
+//	public static boolean is(long mode, int flag) {
+//		return (mode  & 1 << (flag+15)) >0;
+//	}
+	
 	public static boolean is(long mode, int flag) {
-		return (mode  & 1 << (flag+15)) >0;
-	}
+	return (mode >> 16) == flag;
+    }
 
 
 }

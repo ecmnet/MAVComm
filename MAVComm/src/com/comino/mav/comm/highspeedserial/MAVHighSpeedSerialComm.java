@@ -10,6 +10,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.Message;
@@ -30,7 +31,7 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 	private static IMAVComm com = null;
 
 	public static IMAVComm getInstance(DataModel model) {
-		if(com==null) 
+		if(com==null)
 			com = new MAVHighSpeedSerialComm(model);
 		return com;
 	}
@@ -39,8 +40,8 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 		this.model = model; int i=0;
 
 		serialPort = new SerialAMA0();
-		parser = new MAVLinkToModelParser(model,new HighSpeedSerialPortChannel(serialPort), this);
-		parser.start();
+		parser = new MAVLinkToModelParser(model, this);
+		parser.start(new HighSpeedSerialPortChannel(serialPort));
 
 	}
 
@@ -73,8 +74,8 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 	public List<Message> getMessageList() {
 		return parser.getMessageList();
 	}
-	
-	
+
+
 	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return parser.getMavLinkMessageMap();
@@ -86,7 +87,7 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 	@Override
 	public void close() {
 			serialPort.close();
-		
+
 	}
 
 
@@ -96,13 +97,13 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 	@Override
 	public void write(MAVLinkMessage msg) throws IOException {
 			serialPort.writeBytes(msg.encode());
-		
+
 	}
-	
+
 	@Override
 	public void registerProxyListener(IMAVLinkMsgListener listener) {
 		parser.registerProxyListener(listener);
-		
+
 	}
 
 
@@ -122,29 +123,29 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 
 
 		//	while(System.currentTimeMillis()< (time+30000)) {
-			
+
 			while(true) {
-				
-				
+
+
 //				msg_command_long cmd = new msg_command_long(255,1);
 //				cmd.target_system = 1;
 //				cmd.target_component = 1;
 //				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
 //				cmd.confirmation = 0;
-//				
+//
 //				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
 //				cmd.param2 = 2;
-//						
-//				
+//
+//
 //				try {
 //					comm.write(cmd);
 //					System.out.println("Execute: "+cmd.toString());
 //				} catch (IOException e1) {
 //				    System.err.println(e1.getMessage());
-//				}	
+//				}
 
 				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
-				
+
 //				if(msg!=null)
 //					System.out.println(msg.toString());
 //			      System.out.println(msg.custom_mode);
@@ -183,8 +184,12 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 	}
 
 
+	@Override
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+		parser.addModeChangeListener(listener);
 
-	
+	}
+
 
 
 }

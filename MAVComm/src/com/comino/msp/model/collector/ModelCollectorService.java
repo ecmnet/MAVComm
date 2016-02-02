@@ -42,12 +42,16 @@ public class ModelCollectorService {
 
 
 	public boolean stop() {
-		//service.cancel(true);
 		isRunning = false;
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+
+		}
 		return false;
 	}
-	
-	
+
+
 	public boolean isCollecting() {
 		return isRunning;
 	}
@@ -55,7 +59,7 @@ public class ModelCollectorService {
 
 	private class Collector implements Runnable {
 
-		private long  				last_model_tms_us = 0; 
+		private long  				last_model_tms_us = 0;
 
 		@Override
 		public void run() {
@@ -65,7 +69,7 @@ public class ModelCollectorService {
 			//	if(current.attitude.tms > last_model_tms_us) {
 					last_model_tms_us = current.attitude.tms;
 					modelList.add(current.clone());
-			//	}	
+			//	}
 				LockSupport.parkNanos(MODELCOLLECTOR_INTERVAL_US*1000);
 			}
 

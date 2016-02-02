@@ -13,6 +13,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.Message;
@@ -37,10 +38,10 @@ public class MAVSerialComm implements IMAVComm {
 	private MAVLinkToModelParser parser = null;
 
 	private static IMAVComm com = null;
-	
+
 
 	public static IMAVComm getInstance(DataModel model) {
-		if(com==null) 
+		if(com==null)
 			com = new MAVSerialComm(model);
 		return com;
 	}
@@ -53,7 +54,7 @@ public class MAVSerialComm implements IMAVComm {
 			for(i=0;i<list.length;i++) {
 				if(list[i].contains("tty.SLAB") || list[i].contains("tty.usb") || list[i].contains("AMA0")) {
 					break;
-				}		
+				}
 			}
 
 			port = list[i];
@@ -62,8 +63,8 @@ public class MAVSerialComm implements IMAVComm {
 			port ="/dev/tty.SLAB_USBtoUART";
 
 		serialPort = new SerialPort(port);
-		parser = new MAVLinkToModelParser(model,new SerialPortChannel(serialPort), this);
-		parser.start();
+		parser = new MAVLinkToModelParser(model, this);
+		parser.start(new SerialPortChannel(serialPort));
 
 	}
 
@@ -98,8 +99,8 @@ public class MAVSerialComm implements IMAVComm {
 	public List<Message> getMessageList() {
 		return parser.getMessageList();
 	}
-	
-	
+
+
 	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return parser.getMavLinkMessageMap();
@@ -118,7 +119,7 @@ public class MAVSerialComm implements IMAVComm {
 	}
 
 	private boolean open(String portName, int baudRate, int dataBits, int stopBits, int parity) {
-		
+
 		try {
 			serialPort.openPort();
 			serialPort.setParams(baudRate, dataBits, stopBits, parity);
@@ -149,13 +150,13 @@ public class MAVSerialComm implements IMAVComm {
 			serialPort.writeBytes(msg.encode());
 		} catch (SerialPortException e) {
 			throw new IOException(e.getMessage());
-		} 
+		}
 	}
-	
+
 	@Override
 	public void registerProxyListener(IMAVLinkMsgListener listener) {
 		parser.registerProxyListener(listener);
-		
+
 	}
 
 
@@ -175,26 +176,26 @@ public class MAVSerialComm implements IMAVComm {
 
 
 		//	while(System.currentTimeMillis()< (time+30000)) {
-			
+
 			while(true) {
-				
-				
+
+
 				msg_command_long cmd = new msg_command_long(255,1);
 				cmd.target_system = 1;
 				cmd.target_component = 1;
 				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
 				cmd.confirmation = 0;
-				
+
 				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
 				cmd.param2 = 2;
-						
-				
+
+
 				try {
 					comm.write(cmd);
 					System.out.println("Execute: "+cmd.toString());
 				} catch (IOException e1) {
 				    System.err.println(e1.getMessage());
-				}	
+				}
 
 				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
 				if(msg!=null)
@@ -234,7 +235,13 @@ public class MAVSerialComm implements IMAVComm {
 		return true;
 	}
 
-	
+	@Override
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+		parser.addModeChangeListener(listener);
+
+	}
+
+
 
 
 }

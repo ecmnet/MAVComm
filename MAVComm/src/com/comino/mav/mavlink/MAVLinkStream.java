@@ -1,9 +1,11 @@
 package com.comino.mav.mavlink;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
+import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.IMAVLinkMessage;
 import org.mavlink.MAVLinkReader;
@@ -26,7 +28,6 @@ public class MAVLinkStream {
 		this.channel = channel;
 		this.rxBuffer.flip();
 		this.reader = new MAVLinkReader(IMAVLinkMessage.MAVPROT_PACKET_START_V10);
-
 	}
 
 
@@ -36,28 +37,20 @@ public class MAVLinkStream {
 	 * @return MAVLink message or null if no more messages available at the moment
 	 * @throws java.io.IOException on IO error
 	 */
-	public MAVLinkMessage read() throws IOException {
-		
+	public MAVLinkMessage read() throws IOException, EOFException {
+
 
 		int n = 1;
 		while (true) {
 			try {
-			//	LockSupport.parkNanos(3000000);
-				
 				rxBuffer.get(buf, 0, n);
-//				for(int i=0;i<n;i++)
-//				System.out.print(buf[i]);
-//				System.out.println();
 				return reader.getNextMessage(buf, n);
-				
-
 			} catch (BufferUnderflowException e) {
 				// Try to refill buffer
 				rxBuffer.compact();
-				try {         
-					
+				try {
+					  LockSupport.parkNanos(3000000);
 					  n = channel.read(rxBuffer);
-
 				} catch (IOException ioe) {
 					rxBuffer.flip();
 					throw ioe;
