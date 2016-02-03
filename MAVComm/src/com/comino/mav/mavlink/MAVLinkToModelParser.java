@@ -306,8 +306,10 @@ public class MAVLinkToModelParser {
 
 				model.sys.tms = System.nanoTime()/1000;
 
-				for(IMSPModeChangedListener listener : modeListener)
-					listener.update(old, model.sys);
+				if(!old.isEqual(model.sys)) {
+					for(IMSPModeChangedListener listener : modeListener)
+						listener.update(old, model.sys);
+				}
 
 			}
 		});
@@ -419,6 +421,8 @@ public class MAVLinkToModelParser {
 					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&
 							model.sys.isStatus(Status.MSP_CONNECTED)) {
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
+						for(IMSPModeChangedListener listener : modeListener)
+							listener.update(model.sys, model.sys);
 						msgList.add(new Message("Connection lost",2));
 						System.out.println("Connection lost");
 						link.close(); link.open();

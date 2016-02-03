@@ -3,66 +3,66 @@ package com.comino.msp.model.segment;
 import com.comino.msp.model.segment.generic.Segment;
 
 public class Status extends Segment {
-	
+
 
 	private static final long serialVersionUID = -8811124897034255443L;
-	
-	
+
+
 	// Status
-	
+
 	public static final int MSP_CONNECTED					= 0;
 	public static final int MSP_READY						= 1;
 	public static final int MSP_ACTIVE						= 2;
 	public static final int MSP_RC_ATTACHED					= 3;
-	
+
 	public static final int MSP_ARMED						= 8;
 	public static final int MSP_MODE_MANUAL			        = 9;
 	public static final int MSP_MODE_STABILIZED			    = 10;
 	public static final int MSP_MODE_ALTITUDE			    = 11;
 	public static final int MSP_MODE_POSITION			    = 12;
 	public static final int MSP_MODE_LOITER					= 13;
-	
+
 	public static final int MSP_LANDED						= 31;
-	
-	
+
+
 
 	// Low level sensors
-	
+
 	public static final  int MSP_IMU_AVAILABILITY     		= 0;
 	public static final  int MSP_LIDAR_AVAILABILITY   		= 1;
 	public static final  int MSP_SONAR_AVAILABILITY   		= 2;
 	public static final  int MSP_GPS_AVAILABILITY     		= 3;
 	public static final  int MSP_PIX4FLOW_AVAILABILITY    	= 4;
-	
+
 	// High level services
-	
+
 	public static final  int MSP_OPCV_AVAILABILITY    		= 5;
 	public static final  int MSP_SYSM_AVAILABILITY    		= 6;
 	public static final  int MSP_SLAM_AVAILABILITY    		= 7;
 	public static final  int MSP_BASE_AVAILABILITY    		= 8;
-	
-	
-	
+
+
+
 	private static final String[] sensor_names = {
-			
+
 		"IMU","LIDAR","SONAR","GPS","FLOW","OPCV","SYSM","SLAM","BASE",
-			
+
 	};
 
 
 	private int     sensors   = 0;
 	private int     status    = 0;
-	
+
 	public int      error1    = 0;
 	public float    load_p    = 0;
 	public float   drops_p    = 0;
 	public int    imu_temp	  = 0;
-	
+
 	public int		basemode  = 0;
-	
-	
+
+
 	public float	load_m	  = 0;
-	
+
 
 	public void set(Status s) {
 		sensors  = s.sensors;
@@ -74,7 +74,7 @@ public class Status extends Segment {
 		imu_temp = s.imu_temp;
 		basemode = s.basemode;
 	}
-	
+
 
 	public Status clone() {
 		Status f = new Status();
@@ -95,7 +95,7 @@ public class Status extends Segment {
             return false;
 		return true;
 	}
-	
+
 	public void  setStatus(int box, boolean val) {
 		if(val)
 			status = (int) (status | (1<<box));
@@ -109,8 +109,8 @@ public class Status extends Segment {
             return false;
 		return true;
 	}
-	
-	
+
+
 	public String getSensorString() {
 		String text=" ";
 		for(int i=0; i < sensor_names.length;i++) {
@@ -119,12 +119,17 @@ public class Status extends Segment {
 		}
 		return text;
 	}
-	
-	
-	
-	
 
-	
+
+	public boolean isEqual(Status m) {
+		return (status == m.status) && ( basemode == m.basemode );
+	}
+
+
+
+
+
+
 
 
 }
