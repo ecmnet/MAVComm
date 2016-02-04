@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 by E.Mansfeld
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.comino.msp.model.segment;
 
 import com.comino.msp.model.segment.generic.Segment;
@@ -6,14 +22,14 @@ import com.comino.msp.model.segment.generic.Segment;
 
 
 public class GPS extends Segment {
-	
+
 	private static final long serialVersionUID = 3343922430238721067L;
-	
-	
+
+
 	public static final int GPS_SAT_FIX   = 0;
 	public static final int GPS_SAT_VALID = 1;
 	public static final int GPS_REF_VALID = 2;
-	
+
 	public int		flags		= 0;
 
 	public byte   	numsat 		= 0;
@@ -23,11 +39,11 @@ public class GPS extends Segment {
 	public short  	altitude 	= 0;
 	public float  	error2d 	= 0;
 	public float  	speed 		= 0;
-	
+
 	public double	ref_lat     = 0;
 	public double   ref_lon     = 0;
 	public float    ref_altitude= 0;
-	
+
 	public float	rel_x		= 0;
 	public float    rel_y 		= 0;
 	public float    rel_z		= 0;
@@ -41,25 +57,25 @@ public class GPS extends Segment {
 	}
 
 	public GPS(double _lat, double _lon, int _heading ) {
-		latitude 	= _lat; 
+		latitude 	= _lat;
 		longitude 	= _lon;
 		heading 	= (short)_heading;
 		setFlag(GPS_SAT_VALID, true);
 		numsat 		= 99;
 	}
-	
+
 	public void set(int _fix, int _numsat, double _lat, double _lon, int _altitude, int _heading, float _error2d, float _speed) {
-       
+
 	    setFlag(GPS_SAT_FIX, _fix > 0);
 	    setFlag(GPS_SAT_VALID, numsat > 6);
-	    
-		numsat 		= (byte)_numsat; 
-		latitude 	= _lat; 
+
+		numsat 		= (byte)_numsat;
+		latitude 	= _lat;
 		longitude 	= _lon;
-		heading 	= (short)_heading;	
-		altitude 	= (short)_altitude; 
+		heading 	= (short)_heading;
+		altitude 	= (short)_altitude;
 		error2d 	= _error2d;
-		speed 		= _speed; 
+		speed 		= _speed;
 	}
 
 	public void set(GPS gps) {
@@ -71,11 +87,11 @@ public class GPS extends Segment {
 		heading		= gps.heading;
 		error2d		= gps.error2d;
 		speed		= gps.speed;
-		
+
 		ref_lat     = gps.ref_lat;
 		ref_lon     = gps.ref_lon;
 		ref_altitude= gps.ref_altitude;
-		
+
 		rel_x		= gps.rel_x;
 		rel_y 		= gps.rel_y;
 		rel_z		= gps.rel_z;
@@ -83,7 +99,7 @@ public class GPS extends Segment {
 		rel_vy		= gps.rel_vy;
 		rel_vz		= gps.rel_vz;
 	}
-	
+
 	public void setReference(double _lat, double _lon, float _altitude) {
 		ref_lon 		= _lon;
 		ref_lat			= _lat;
@@ -94,7 +110,7 @@ public class GPS extends Segment {
 
 	public GPS clone() {
 		GPS g = new GPS();
-		
+
 		g.flags       	= flags;
 		g.numsat    	= numsat;
 		g.heading   	= heading;
@@ -103,24 +119,24 @@ public class GPS extends Segment {
 		g.error2d 		= error2d;
 		g.altitude		= altitude;
 		g.speed     	= speed;
-		
+
 		g.ref_lat     	= ref_lat;
 		g.ref_lon     	= ref_lon;
 		g.ref_altitude	= ref_altitude;
-		
+
 		g.rel_x			= rel_x;
 		g.rel_y 		= rel_y;
 		g.rel_z			= rel_z;
 		g.rel_vx		= rel_vx;
 		g.rel_vy		= rel_vy;
 		g.rel_vz		= rel_vz;
-		
+
 		return g;
 	}
 
 
 	public void clear() {
-		
+
 		flags 		= 0;
 		numsat 		= 0;
 		latitude 	= 0;
@@ -129,11 +145,11 @@ public class GPS extends Segment {
 		altitude 	= 0;
 		error2d 	= 0;
 		speed 		= 0;
-		
+
 		ref_lat     = 0;
 		ref_lon     = 0;
 		ref_altitude= 0;
-		
+
 		rel_x		= 0;
 		rel_y 		= 0;
 		rel_z		= 0;
@@ -141,7 +157,7 @@ public class GPS extends Segment {
 		rel_vy		= 0;
 		rel_vz		= 0;
 	}
-	
+
 	public void  setFlag(int box, boolean val) {
 		if(val)
 			flags = (short) (flags | (1<<box));
@@ -159,7 +175,7 @@ public class GPS extends Segment {
 
 }
 
-///* 
+///*
 //Copyright 2013 Brad Quick
 //
 //This program is free software: you can redistribute it and/or modify
@@ -194,10 +210,10 @@ public class GPS extends Segment {
 //   { // returns fixedpointnum distance in meters and bearing in fixedpointnum degrees from point 1 to point 2
 //   fixedpointnum latdiff=lat2-lat1;
 //   fixedpointnum londiff=lib_fp_multiply(lon2-lon1,lib_fp_cosine(lat1>>LATLONGEXTRASHIFT));
-//      
+//
 //   *bearing = FIXEDPOINT90 + lib_fp_atan2(-latdiff, londiff);
 //   if (*bearing >FIXEDPOINT180) *bearing -= FIXEDPOINT360;
-//   
+//
 //   // distance is 111319 meters per degree. This factor needs to be shifted 16 to make it a fixedpointnum.
 //   // Since lat and lon are already shifted by 6,
 //   // we will shift by 10 more total.  Shift lat and long by 8 and the constant by 2 to get the extra 10.
@@ -237,7 +253,7 @@ public class GPS extends Segment {
 ////                   \   | distance
 ////                    \  |
 ////                     \ |
-////                      \| 
+////                      \|
 ////                       * current location
 ////
 ////  angle A is the difference between our start to destination bearing and our current bearing to the destination
@@ -248,7 +264,7 @@ public class GPS extends Segment {
 //   global.gps_home_latitude=global.gps_current_latitude;
 //   global.gps_home_longitude=global.gps_current_longitude;
 //   }
-//   
+//
 //void navigation_set_destination(fixedpointnum latitude,fixedpointnum longitude)
 //   { // sets a new destination to navigate towards.  Assumes we are navigating from our current location.
 //   target_latitude=latitude;
@@ -278,7 +294,7 @@ public class GPS extends Segment {
 //   { // calculate the angle errors between our current attitude and the one we wish to have
 //   // and adjust the angle errors that were passed to us.  They have already been set by pilot input.
 //   // For now, we just override any pilot input.
-//   
+//
 //   // keep track of the time between good gps readings.
 //   navigation_time_sliver+=global.timesliver;
 //
@@ -286,7 +302,7 @@ public class GPS extends Segment {
 //      {
 //      // unshift our timesliver since we are about to use it. Since we are accumulating time, it may get too large to use while shifted.
 //      navigation_time_sliver=navigation_time_sliver>>TIMESLIVEREXTRASHIFT;
-//      
+//
 //      // get the new distance and bearing from our current location to our target position
 //      global.navigation_distance=navigation_getdistanceandbearing(global.gps_current_latitude,global.gps_current_longitude,target_latitude,target_longitude,&global.navigation_bearing);
 //
@@ -318,36 +334,36 @@ public class GPS extends Segment {
 //      navigation_ontrack_velocity=(navigation_last_ontrack_distance-ontrack_distance+lib_fp_multiply((FIXEDPOINTONE)-fraction,navigation_ontrack_velocity));
 //      navigation_last_crosstrack_distance=crosstrack_distance;
 //      navigation_last_ontrack_distance=ontrack_distance;
-//   
+//
 //      // calculate the desired tilt in each direction independently using navigation PID
 //      fixedpointnum crosstracktiltangle=lib_fp_multiply(usersettings.pid_pgain[NAVIGATIONINDEX],crosstrack_distance)
 //                                    +lib_fp_multiply(usersettings.pid_igain[NAVIGATIONINDEX],navigation_crosstrack_integrated_error)
 //                                    -lib_fp_multiply(usersettings.pid_dgain[NAVIGATIONINDEX],navigation_crosstrack_velocity);
-//                     
+//
 //      fixedpointnum ontracktiltangle   =lib_fp_multiply(usersettings.pid_pgain[NAVIGATIONINDEX],ontrack_distance)
 //                                    +lib_fp_multiply(usersettings.pid_igain[NAVIGATIONINDEX],navigation_ontrack_integrated_error)
 //                                    -lib_fp_multiply(usersettings.pid_dgain[NAVIGATIONINDEX],navigation_ontrack_velocity);
-//      
+//
 //      // don't tilt more than MAX_TILT
 //      lib_fp_constrain(&crosstracktiltangle,-MAX_TILT,MAX_TILT);
 //      lib_fp_constrain(&ontracktiltangle,-MAX_TILT,MAX_TILT);
 //
 //      // Translate the ontrack and cross track tilts into pitch and roll tilts.
 //      // Set angledifference equal to the difference between the aircraft's heading (the way it's currently pointing)
-//      // and the angle between waypoints and rotate our tilts by that much.   
+//      // and the angle between waypoints and rotate our tilts by that much.
 //      angledifference=global.currentestimatedeulerattitude[YAWINDEX]-navigation_starttodestbearing;
-//   
+//
 //      fixedpointnum sineofangle=lib_fp_sine(angledifference);
 //      fixedpointnum cosineofangle=lib_fp_cosine(angledifference);
-//   
+//
 //      navigation_desiredeulerattitude[ROLLINDEX]=lib_fp_multiply(crosstracktiltangle,cosineofangle)-lib_fp_multiply(ontracktiltangle,sineofangle);
 //      navigation_desiredeulerattitude[PITCHINDEX]=lib_fp_multiply(crosstracktiltangle,sineofangle)+lib_fp_multiply(ontracktiltangle,cosineofangle);
-//   
+//
 //      // for now, don't rotate the aircraft in the direction of travel. Add this later.
-//      
+//
 //      navigation_time_sliver=0;
 //      }
-//   
+//
 //   // set the angle error as the difference between where we want to be and where we currently are angle wise.
 //   angleerror[ROLLINDEX]=navigation_desiredeulerattitude[ROLLINDEX]-global.currentestimatedeulerattitude[ROLLINDEX];
 //   angleerror[PITCHINDEX]=navigation_desiredeulerattitude[PITCHINDEX]-global.currentestimatedeulerattitude[PITCHINDEX];
@@ -359,6 +375,6 @@ public class GPS extends Segment {
 ////   lib_fp_constrain180(&angleerror[YAWINDEX]);
 ////   lib_fp_constrain(&angleerror[YAWINDEX],-MAXYAWANGLEERROR,MAXYAWANGLEERROR);
 //   }
-//   
+//
 //#endif
 

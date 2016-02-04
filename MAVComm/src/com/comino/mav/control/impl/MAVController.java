@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 by E.Mansfeld
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.comino.mav.control.impl;
 
 import java.io.IOException;
@@ -118,24 +134,6 @@ public class MAVController implements IMAVController {
 	}
 
 	@Override
-	public boolean start() {
-		return collector.start();
-
-	}
-
-	@Override
-	public boolean stop() {
-		return collector.stop();
-	}
-
-
-	@Override
-	public List<DataModel> getModelList() {
-		return collector.getModelList();
-	}
-
-
-	@Override
 	public DataModel getCurrentModel() {
 		return comm.getModel();
 	}
@@ -163,14 +161,11 @@ public class MAVController implements IMAVController {
 		return true;
 	}
 
-	@Override
-	public boolean isCollecting() {
-		return collector.isCollecting();
-	}
 
 
 	@Override
 	public boolean close() {
+		collector.stop();
 		comm.close();
 		return true;
 	}
@@ -180,6 +175,12 @@ public class MAVController implements IMAVController {
 	public void addModeChangeListener(IMSPModeChangedListener listener) {
 		comm.addModeChangeListener(listener);
 
+	}
+
+
+	@Override
+	public ModelCollectorService getCollector() {
+	     return collector;
 	}
 
 

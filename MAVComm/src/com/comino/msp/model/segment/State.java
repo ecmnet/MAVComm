@@ -1,12 +1,28 @@
+/*
+ * Copyright (c) 2016 by E.Mansfeld
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.comino.msp.model.segment;
 
 import com.comino.msp.model.segment.generic.Segment;
 
 public class State extends Segment {
-	
+
 
 	private static final long serialVersionUID = 5910084328085663916L;
-	
+
 	public static final int 	STATE_Z_AVAILABLE  = 0;
 	public static final int 	STATE_H_AVAILABLE  = 1;
 	public static final int		STATE_XY_AVAILABLE = 2;
@@ -26,7 +42,7 @@ public class State extends Segment {
 	public float 	vy=0;			// relative y speed in m/s
 	public float	vz=0;			// relative z speed in m/s
 	public float	vh=0;			// relative heading speed in radiant/s
-	
+
 
 	// helpers
 
@@ -43,7 +59,7 @@ public class State extends Segment {
 				return false;
 		return true;
 	}
-	
+
 
 
 	public State clone() {
@@ -83,9 +99,9 @@ public class State extends Segment {
 		vz		= 0;
 		vh		= 0;
 	}
-	
+
 	public void print(String header) {
-		System.out.printf("%s State: x= %3.2f y=%3.2f z=%3.2f h=%3.2f - vx= %3.2f vy=%3.2f vz=%3.2f vh=%3.2f \n", 
+		System.out.printf("%s State: x= %3.2f y=%3.2f z=%3.2f h=%3.2f - vx= %3.2f vy=%3.2f vz=%3.2f vh=%3.2f \n",
 				header,x,y,z,h,vx,vy,vz,vh);
 	}
 

@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 by E.Mansfeld
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.comino.msp.model;
 
 import java.io.Serializable;
@@ -21,7 +37,7 @@ import com.comino.msp.model.segment.generic.Segment;
 public class DataModel extends Segment implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 3439530621929819600L;
 
@@ -59,9 +75,9 @@ public class DataModel extends Segment implements Serializable {
 		this.copy(m);
 	}
 
-	public void copy(DataModel m) {	
-		this.battery   		= m.battery.clone();	
-		this.attitude 		= m.attitude.clone();	
+	public void copy(DataModel m) {
+		this.battery   		= m.battery.clone();
+		this.attitude 		= m.attitude.clone();
 		this.imu       		= m.imu.clone();
 		this.state     		= m.state.clone();
 		this.target_state   = m.target_state.clone();
@@ -72,8 +88,8 @@ public class DataModel extends Segment implements Serializable {
 		this.servo			= m.servo.clone();
 		this.rc             = m.rc.clone();
 	}
-	
-	
+
+
 	public void set(DataModel m) {
 		this.battery.set(m.battery);
 		this.attitude.set(m.attitude);
@@ -91,7 +107,7 @@ public class DataModel extends Segment implements Serializable {
 	public DataModel clone() {
 		return new DataModel(this);
 	}
-	
+
 	public void clear() {
 		this.battery.clear();
 		this.attitude.clear();

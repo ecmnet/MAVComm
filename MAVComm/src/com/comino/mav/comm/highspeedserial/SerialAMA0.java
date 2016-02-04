@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2016 by E.Mansfeld
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.comino.mav.comm.highspeedserial;
 
 import com.sun.jna.Library;
@@ -38,12 +54,12 @@ public class SerialAMA0 {
 		DLibrary.INSTANCE.writeAMA0(new ByteArrayByReference(buffer), buffer.length);
 	}
 
-	public int getInputBufferBytesCount() {	
+	public int getInputBufferBytesCount() {
 		int count = DLibrary.INSTANCE.readAMA0(buffer, buffer.length());
 		return count;
 	}
 
-	public byte[] readBytes(int n) {	
+	public byte[] readBytes(int n) {
 		return buffer.getValue(n);
 
 	}
@@ -54,7 +70,7 @@ public class SerialAMA0 {
 
 		SerialAMA0 ama0 = new SerialAMA0();
 		ama0.open();
-		
+
 		byte[] s = {  (byte)1, (byte)8  };
 
 		ama0.writeBytes(s);
@@ -65,7 +81,7 @@ public class SerialAMA0 {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			byte[] b =ama0.readBytes(ama0.getInputBufferBytesCount());
 			System.out.print(" bytes received => ");
 			for(int i=0; i<b.length;i++)
