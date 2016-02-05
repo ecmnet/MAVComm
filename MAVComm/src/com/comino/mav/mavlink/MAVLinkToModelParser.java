@@ -273,8 +273,11 @@ public class MAVLinkToModelParser {
 		});
 
 		registerListener(msg_rc_channels.class, new IMAVLinkMsgListener() {
+			Status old;
 			@Override
 			public void received(Object o) {
+
+				old = model.sys.clone();
 				msg_rc_channels rc = (msg_rc_channels)o;
 				model.sys.setStatus(Status.MSP_RC_ATTACHED, (rc.rssi>0));
 
@@ -283,6 +286,11 @@ public class MAVLinkToModelParser {
 				model.rc.s2 = rc.chan3_raw < 65534 ? (short)rc.chan3_raw : 0;
 				model.rc.s3 = rc.chan4_raw < 65534 ? (short)rc.chan4_raw : 0;
 				model.rc.tms = rc.time_boot_ms;
+
+				if(!old.isEqual(model.sys)) {
+					for(IMSPModeChangedListener listener : modeListener)
+						listener.update(old, model.sys);
+				}
 
 			}
 		});
