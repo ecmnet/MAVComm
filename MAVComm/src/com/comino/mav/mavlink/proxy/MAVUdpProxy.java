@@ -40,18 +40,16 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 
 	private boolean 			isConnected = false;
 
-	private String					peer  = null;
-	private String					bind  = null;
 
 	public MAVUdpProxy() {
-		this("172.168.178.1","172.168.178.2");
+		this("172.168.178.2",14550,"172.168.178.1",14556);
 	}
 
 
-	public MAVUdpProxy(String bind, String peer) {
+	public MAVUdpProxy(String peerAddress, int pPort, String bindAddress, int bPort) {
 		buffer = ByteBuffer.allocate(8192);
-		this.bind = bind;
-		this.peer = peer;
+		peerPort = new InetSocketAddress(peerAddress, pPort);
+		bindPort = new InetSocketAddress(bindAddress, bPort);
 	}
 
 	public boolean open() {
@@ -64,8 +62,6 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 			try {
 				isConnected = true;
 				System.out.println("Connect to UDP channel");
-				peerPort = new InetSocketAddress(peer, 14550);
-				bindPort = new InetSocketAddress(bind, 14556);
 				try {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
@@ -76,7 +72,7 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 				}
 				channel.connect(peerPort);
 				in = new MAVLinkStream(channel);
-				System.out.println("MAVProxy connected to "+peer);
+				System.out.println("MAVProxy connected to "+peerPort.toString());
 				return true;
 			} catch(Exception e) {
 				System.out.println(e.getMessage());

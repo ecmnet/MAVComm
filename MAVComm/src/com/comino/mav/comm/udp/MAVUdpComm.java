@@ -39,11 +39,12 @@ import com.comino.msp.utils.ExecutorService;
 public class MAVUdpComm implements IMAVComm {
 
 
-	private String 				    address;
+	private String 				    peerAddress;
+	private String 				    bindAddress;
 	private DataModel 				model = null;
 
 	private SocketAddress 			bindPort = null;
-	private SocketAddress 			peerPort;
+	private SocketAddress 			peerPort = null;
 	private DatagramChannel 		channel = null;
 
 	private MAVLinkToModelParser	parser = null;
@@ -52,16 +53,17 @@ public class MAVUdpComm implements IMAVComm {
 
 	private static MAVUdpComm com = null;
 
-	public static MAVUdpComm getInstance(DataModel model, String address) {
+	public static MAVUdpComm getInstance(DataModel model, String peerAddress, int peerPort, String bindAddress, int bindPort) {
 		if(com==null)
-			com = new MAVUdpComm(model, address);
+			com = new MAVUdpComm(model, peerAddress, peerPort, bindAddress, bindPort);
 		return com;
 	}
 
-	private MAVUdpComm(DataModel model, String address) {
+	private MAVUdpComm(DataModel model, String peerAddress, int pPort, String bindAddress, int bPort) {
 		this.model = model;
-		this.address = address;
 		this.parser = new MAVLinkToModelParser(model,this);
+		peerPort = new InetSocketAddress(peerAddress, pPort);
+		bindPort = new InetSocketAddress(bindAddress, bPort);
 
 
 	}
@@ -75,16 +77,6 @@ public class MAVUdpComm implements IMAVComm {
 
 			try {
 
-				if(address!=null && address.startsWith("172")) {
-
-					peerPort = new InetSocketAddress("172.168.178.1", 14556);
-					bindPort = new InetSocketAddress("172.168.178.2", 14550);
-
-				} else {
-					address = "localhost";
-					peerPort = new InetSocketAddress("localhost", 14556);
-					bindPort = new InetSocketAddress("localhost", 14550);
-				}
 
 				channel = DatagramChannel.open();
 				channel.socket().bind(bindPort);
@@ -93,10 +85,10 @@ public class MAVUdpComm implements IMAVComm {
 
 				parser.start(channel);
 				isConnected = true;
-				System.out.println("UDP connected to "+address);
+				System.out.println("UDP connected to "+peerPort.toString());
 				return true;
 			} catch(Exception e) {
-				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+address);
+				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
 				close();
 				isConnected = false;
 			}
@@ -128,6 +120,12 @@ public class MAVUdpComm implements IMAVComm {
 
 	}
 
+	@Override
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+		parser.addModeChangeListener(listener);
+
+	}
+
 
 	public boolean isConnected() {
 		return isConnected;
@@ -151,12 +149,9 @@ public class MAVUdpComm implements IMAVComm {
 
 
 
-
-
-
 	public static void main(String[] args) {
-	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172,168,178,1");
-		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "127.0.0.1");
+		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14556,"172.168.178.2",14550);
+
 		comm.open();
 
 
@@ -209,14 +204,8 @@ public class MAVUdpComm implements IMAVComm {
 		}
 
 
-
-
 	}
 
-	@Override
-	public void addModeChangeListener(IMSPModeChangedListener listener) {
-		parser.addModeChangeListener(listener);
 
-	}
 
 }

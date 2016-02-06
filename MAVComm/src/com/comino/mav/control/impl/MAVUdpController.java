@@ -31,14 +31,11 @@ public class MAVUdpController extends MAVController implements IMAVController {
 
 	private boolean isSimulation = false;
 
-	public MAVUdpController(String address) {
+	public MAVUdpController(String peerAddress, int peerPort, String bindAddress, int bindPort) {
 		super();
 
 		System.out.println("UDP Controller loaded");
-		comm = MAVUdpComm.getInstance(model, address);
-
-		if(address.startsWith("localhost") || address.startsWith("127"))
-			isSimulation = true;
+		comm = MAVUdpComm.getInstance(model, peerAddress,peerPort,bindAddress,bindPort);
 
 		ExecutorService.get().scheduleAtFixedRate(new ConnectionWatch(), 0, 2, TimeUnit.SECONDS);
 	}
