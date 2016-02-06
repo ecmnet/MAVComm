@@ -25,6 +25,7 @@ public class Raw extends Segment {
 	public float di     = 0;		// LIDAR distance
 	public float fX     = 0;		// Flow integrated X
 	public float fY     = 0;		// Flow integrated Y
+	public int   fq		= 0;
 
 
 
@@ -32,6 +33,7 @@ public class Raw extends Segment {
 		fX    	= a.fX;
 		fY    	= a.fY;
 		di   	= a.di;
+		fq      = a.fq;
 
 	}
 
@@ -40,6 +42,7 @@ public class Raw extends Segment {
 		at.fX 		= fX;
 		at.fY 		= fY;
 		at.di		= di;
+		at.fq		= fq;
 
 		return at;
 	}
@@ -51,6 +54,7 @@ public class Raw extends Segment {
 		fX    	= 0;
 		fY    	= 0;
 		di   	= 0;
+		fq      = 0;
 	}
 
 }
