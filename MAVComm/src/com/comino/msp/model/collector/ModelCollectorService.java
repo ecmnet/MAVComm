@@ -42,6 +42,10 @@ public class ModelCollectorService {
 
 	private int     mode = 0;
 
+	private float ned_offset_x =0;
+	private float ned_offset_y =0;
+
+
 	public ModelCollectorService(DataModel current) {
 		this.modelList     = new ArrayList<DataModel>();
 		this.current = current;
@@ -63,6 +67,10 @@ public class ModelCollectorService {
 		if(mode==STOPPED) {
 			modelList.clear();
 			mode = COLLECTING;
+
+			ned_offset_x = current.state.x;
+			ned_offset_y = current.state.y;
+
 			new Thread(new Collector(0)).start();
 		}
 		return mode != STOPPED;
@@ -98,6 +106,10 @@ public class ModelCollectorService {
 	public void start(int pre_sec) {
 		if(mode==STOPPED) {
 			modelList.clear();
+
+			ned_offset_x = current.state.x;
+			ned_offset_y = current.state.y;
+
 			mode = PRE_COLLECTING;
 			new Thread(new Collector(pre_sec)).start();
 		}
@@ -120,15 +132,20 @@ public class ModelCollectorService {
 
 		public Collector(int pre_delay_sec) {
 			if(pre_delay_sec>0) {
-			 mode = PRE_COLLECTING;
-			 this.pre_delay_count = pre_delay_sec * 1000000 / MODELCOLLECTOR_INTERVAL_US;
+				mode = PRE_COLLECTING;
+				this.pre_delay_count = pre_delay_sec * 1000000 / MODELCOLLECTOR_INTERVAL_US;
 			}
 		}
 
 		@Override
 		public void run() {
 			while(mode!=STOPPED) {
-				modelList.add(current.clone());
+				DataModel model = current.clone();
+
+				model.state.hx = ned_offset_x;
+				model.state.hy = ned_offset_y;
+
+				modelList.add(model);
 				count++;
 				LockSupport.parkNanos(MODELCOLLECTOR_INTERVAL_US*1000);
 				if(mode==PRE_COLLECTING) {

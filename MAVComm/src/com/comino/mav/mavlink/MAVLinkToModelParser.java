@@ -131,6 +131,7 @@ public class MAVLinkToModelParser {
 				model.raw.fX   = flow.integrated_x;
 				model.raw.fY   = flow.integrated_y;
 				model.raw.fq   = flow.quality;
+
 				model.raw.tms  = flow.time_usec;
 			}
 		});
@@ -141,6 +142,7 @@ public class MAVLinkToModelParser {
 				msg_altitude alt = (msg_altitude)o;
 				model.attitude.al   = alt.altitude_local;
 				model.attitude.ag   = alt.altitude_amsl;
+
 			}
 		});
 
@@ -151,7 +153,6 @@ public class MAVLinkToModelParser {
 				model.attitude.aX   = att.roll;
 				model.attitude.aY   = att.pitch;
 				model.attitude.tms  = att.time_boot_ms*1000;
-
 				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 
 				//System.out.println(att.toString());
@@ -166,6 +167,7 @@ public class MAVLinkToModelParser {
 				model.gps.setFlag(GPS.GPS_SAT_FIX, gps.fix_type>0);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
 				model.gps.error2d   = gps.eph/100f;
+
 
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>5);
 
@@ -188,6 +190,7 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_local_position_ned ned = (msg_local_position_ned)o;
+
 				model.state.x = ned.x;
 				model.state.y = ned.y;
 				model.state.z = ned.z;
@@ -206,6 +209,7 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_position_target_local_ned ned = (msg_position_target_local_ned)o;
+
 
 				model.target_state.x = ned.x;
 				model.target_state.y = ned.y;
@@ -278,7 +282,6 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 
-				old = model.sys.clone();
 				msg_rc_channels rc = (msg_rc_channels)o;
 				model.sys.setStatus(Status.MSP_RC_ATTACHED, (rc.rssi>0));
 
@@ -287,11 +290,6 @@ public class MAVLinkToModelParser {
 				model.rc.s2 = rc.chan3_raw < 65534 ? (short)rc.chan3_raw : 0;
 				model.rc.s3 = rc.chan4_raw < 65534 ? (short)rc.chan4_raw : 0;
 				model.rc.tms = rc.time_boot_ms;
-
-				if(!old.isEqual(model.sys)) {
-					for(IMSPModeChangedListener listener : modeListener)
-						listener.update(old, model.sys);
-				}
 
 			}
 		});
@@ -331,10 +329,9 @@ public class MAVLinkToModelParser {
 
 				model.sys.tms = System.nanoTime()/1000;
 
-				if(!old.isEqual(model.sys)) {
-					for(IMSPModeChangedListener listener : modeListener)
-						listener.update(old, model.sys);
-				}
+				for(IMSPModeChangedListener listener : modeListener)
+					listener.update(old, model.sys);
+
 
 			}
 		});

@@ -33,10 +33,14 @@ public class State extends Segment {
 
 	// positioning actual
 
-	public float	x=0;			// relative x-position in m (Roll)
-	public float    y=0;			// relative y-position in m (Pitch)
-	public float    z=0;			// relative z-position in m (Altitude)
+	public float	x=0;			//  x-position in m (Roll)
+	public float    y=0;			//  y-position in m (Pitch)
+	public float    z=0;			//  z-position in m (Altitude)
 	public float    h=0;			// heading in radiant
+
+	public float	hx=0;			// home x-position in m (Roll)
+	public float    hy=0;			// home y-position in m (Pitch)
+	public float    hz=0;			// home z-position in m (Altitude)
 
 	public float    vx=0;			// relative x speed in m/s
 	public float 	vy=0;			// relative y speed in m/s
@@ -68,6 +72,9 @@ public class State extends Segment {
 		t.x		= x;
 		t.y		= y;
 		t.z		= z;
+		t.hx	= hx;
+		t.hy	= hy;
+		t.hz	= hz;
 		t.h		= h;
 		t.vx	= vx;
 		t.vy	= vy;
@@ -81,6 +88,9 @@ public class State extends Segment {
 		x		= t.x;
 		y		= t.y;
 		z		= t.z;
+		hx		= t.hx;
+		hy		= t.hy;
+		hz		= t.hz;
 		h		= t.h;
 		vx		= t.vx;
 		vy		= t.vy;
@@ -93,6 +103,9 @@ public class State extends Segment {
 		x		= 0;
 		y		= 0;
 		z		= 0;
+		hx		= 0;
+		hy		= 0;
+		hz		= 0;
 		h		= 0;
 		vx		= 0;
 		vy		= 0;
