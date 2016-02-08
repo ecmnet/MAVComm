@@ -173,7 +173,8 @@ public class MAVController implements IMAVController {
 
 	@Override
 	public void addModeChangeListener(IMSPModeChangedListener listener) {
-		comm.addModeChangeListener(listener);
+		if(comm!=null)
+		  comm.addModeChangeListener(listener);
 
 	}
 
