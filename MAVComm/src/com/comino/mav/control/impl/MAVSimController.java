@@ -62,6 +62,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 //		return collector.getModelList();
 //	}
 
+	@Override
+	public boolean close() {
+		collector.stop();
+		return true;
+	}
+
 
 	private class Simulation implements Runnable {
 
