@@ -28,12 +28,15 @@ import com.comino.msp.utils.ExecutorService;
 
 public class ModelCollectorService {
 
+
+
 	public static  final int STOPPED		 	= 0;
 	public static  final int PRE_COLLECTING 	= 1;
 	public static  final int COLLECTING     	= 2;
 	public static  final int POST_COLLECTING    = 3;
 
 
+	private static final int MAX_SIZE = 30000;
 	private static final int MODELCOLLECTOR_INTERVAL_US = 50000;
 
 	private DataModel				    current     = null;
@@ -146,6 +149,9 @@ public class ModelCollectorService {
 				model.state.hy = ned_offset_y;
 
 				modelList.add(model);
+				if(modelList.size()>MAX_SIZE)
+					modelList.remove(0);
+
 				count++;
 				LockSupport.parkNanos(MODELCOLLECTOR_INTERVAL_US*1000);
 				if(mode==PRE_COLLECTING) {
