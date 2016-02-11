@@ -41,7 +41,7 @@ public interface IMAVComm {
 
 	void write(MAVLinkMessage msg) throws IOException;
 
-	public void registerProxyListener(IMAVLinkMsgListener listener);
+	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener);
 
 	public void addModeChangeListener(IMSPModeChangedListener listener);
 

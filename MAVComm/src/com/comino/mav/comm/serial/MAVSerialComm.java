@@ -170,8 +170,8 @@ public class MAVSerialComm implements IMAVComm {
 	}
 
 	@Override
-	public void registerProxyListener(IMAVLinkMsgListener listener) {
-		parser.registerProxyListener(listener);
+	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
+		parser.addMAVLinkMsgListener(listener);
 
 	}
 

@@ -67,7 +67,8 @@ public class MAVLinkToModelParser {
 	private IMAVComm link = null;
 
 	private HashMap<Class<?>,IMAVLinkMsgListener> listeners = null;
-	private IMAVLinkMsgListener proxyListener = null;
+	private List<IMAVLinkMsgListener> msgListener 			= null;
+
 	private List<IMSPModeChangedListener> modeListener = null;
 
 	private boolean isRunning = false;
@@ -80,6 +81,7 @@ public class MAVLinkToModelParser {
 		this.mavList   = new HashMap<Class<?>,MAVLinkMessage>();
 
 		this.modeListener = new ArrayList<IMSPModeChangedListener>();
+		this.msgListener = new ArrayList<IMAVLinkMsgListener>();
 
 		listeners = new HashMap<Class<?>,IMAVLinkMsgListener>();
 
@@ -284,7 +286,7 @@ public class MAVLinkToModelParser {
 		});
 
 		registerListener(msg_rc_channels.class, new IMAVLinkMsgListener() {
-			Status old;
+
 			@Override
 			public void received(Object o) {
 
@@ -309,15 +311,6 @@ public class MAVLinkToModelParser {
 
 				old = model.sys.clone();
 
-
-				//System.out.println(hb.toString());
-
-				// Status update
-
-
-				//				System.out.println("ALT "+PX4CustomModes.is(hb.custom_mode,PX4CustomModes.PX4_CUSTOM_MAIN_MODE_ALTCTL));
-				//				System.out.println("MAN "+PX4CustomModes.is(hb.custom_mode,PX4CustomModes.PX4_CUSTOM_MAIN_MODE_MANUAL));
-				//
 				model.sys.setStatus(Status.MSP_ARMED,(hb.base_mode & MAV_MODE_FLAG_DECODE_POSITION.MAV_MODE_FLAG_DECODE_POSITION_SAFETY)>0);
 
 				model.sys.setStatus(Status.MSP_ACTIVE, (hb.system_status & MAV_STATE.MAV_STATE_ACTIVE)>0);
@@ -385,9 +378,8 @@ public class MAVLinkToModelParser {
 
 	}
 
-	public void registerProxyListener(IMAVLinkMsgListener listener) {
-		System.out.println("ProxyListener "+listener.getClass().getName()+" loaded");
-		this.proxyListener = listener;
+	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
+		msgListener.add(listener);
 	}
 
 	public List<Message> getMessageList() {
@@ -442,8 +434,10 @@ public class MAVLinkToModelParser {
 						if(listener!=null)
 							listener.received(msg);
 
-						if(proxyListener!=null)
-							proxyListener.received(msg);
+						if(msgListener!=null) {
+							for(IMAVLinkMsgListener msglistener : msgListener)
+								msglistener.received(msg);
+						}
 					}
 
 					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&

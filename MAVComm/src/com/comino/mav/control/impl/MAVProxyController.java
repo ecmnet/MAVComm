@@ -70,7 +70,7 @@ public class MAVProxyController implements IMAVController {
 
 		comm = MAVHighSpeedSerialComm.getInstance(model);
 		proxy = new MAVUdpProxy();
-		comm.registerProxyListener(proxy);
+		comm.addMAVLinkMsgListener(proxy);
 	}
 
 	@Override
@@ -255,6 +255,11 @@ public class MAVProxyController implements IMAVController {
 	@Override
 	public void addModeChangeListener(IMSPModeChangedListener listener) {
 		comm.addModeChangeListener(listener);
+
+	}
+
+	@Override
+	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
 
 	}
 

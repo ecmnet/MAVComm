@@ -27,6 +27,7 @@ import org.mavlink.messages.lquac.msg_msp_command;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.udp.MAVUdpComm;
 import com.comino.mav.control.IMAVController;
+import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
@@ -182,6 +183,12 @@ public class MAVController implements IMAVController {
 	@Override
 	public ModelCollectorService getCollector() {
 	     return collector;
+	}
+
+	@Override
+	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
+        if(comm!=null)
+        	comm.addMAVLinkMsgListener(listener);
 	}
 
 

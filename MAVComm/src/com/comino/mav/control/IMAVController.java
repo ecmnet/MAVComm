@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 
+import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
@@ -47,6 +48,8 @@ public interface IMAVController {
 	public boolean sendMSPLinkCmd(int command, float...params);
 
 	public void addModeChangeListener(IMSPModeChangedListener listener);
+
+	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener);
 
 
 }

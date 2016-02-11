@@ -55,6 +55,8 @@ public class MAVUdpController extends MAVController implements IMAVController {
 		return comm.isConnected() && model.sys.isStatus(Status.MSP_CONNECTED);
 	}
 
+
+
 	private class ConnectionWatch implements Runnable {
 
 		@Override
