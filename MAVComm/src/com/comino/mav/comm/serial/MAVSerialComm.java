@@ -42,8 +42,8 @@ import jssc.SerialPortList;
 
 public class MAVSerialComm implements IMAVComm {
 
-//	private static final int BAUDRATE  = 57600;
-	private static final int BAUDRATE  = 921600;
+	private static final int BAUDRATE  = 57600;
+//	private static final int BAUDRATE  = 921600;
 
 
 	private SerialPort 			serialPort;
@@ -64,6 +64,7 @@ public class MAVSerialComm implements IMAVComm {
 
 	private MAVSerialComm(DataModel model) {
 		this.model = model; int i=0;
+		System.out.println("Searching ports... ");
 		String[] list = SerialPortList.getPortNames();
 
 		if(list.length>0) {
@@ -94,6 +95,7 @@ public class MAVSerialComm implements IMAVComm {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {	}
 		}
+		System.out.println("Serial port opened: "+port);
 		return true;
 	}
 
@@ -130,7 +132,7 @@ public class MAVSerialComm implements IMAVComm {
 		try {
 			serialPort.closePort();
 		} catch (SerialPortException e) {
-			e.printStackTrace();
+
 		}
 	}
 
