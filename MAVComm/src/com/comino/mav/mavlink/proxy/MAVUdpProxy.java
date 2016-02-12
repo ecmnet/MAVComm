@@ -24,8 +24,8 @@ import java.nio.channels.DatagramChannel;
 
 import org.mavlink.messages.MAVLinkMessage;
 
-import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.mav.mavlink.MAVLinkStream;
+import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
 
 
 public class MAVUdpProxy implements IMAVLinkMsgListener  {

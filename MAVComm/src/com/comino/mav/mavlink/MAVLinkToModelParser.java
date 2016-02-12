@@ -48,6 +48,7 @@ import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;

@@ -27,8 +27,8 @@ import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.mavlink.IMAVLinkMsgListener;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
+import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;

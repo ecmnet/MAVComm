@@ -19,7 +19,7 @@ package com.comino.msp.main;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.impl.MAVProxyController;
-import com.comino.mav.mavlink.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
 
 public class StartUp {
 

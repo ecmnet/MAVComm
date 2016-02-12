@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 
-import com.comino.mav.mavlink.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Message;

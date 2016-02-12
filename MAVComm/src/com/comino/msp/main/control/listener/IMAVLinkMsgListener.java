@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.comino.mav.mavlink;
+package com.comino.msp.main.control.listener;
 
 
 public interface IMAVLinkMsgListener {
