@@ -171,6 +171,9 @@ public class MAVLinkToModelParser {
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
 				model.gps.error2d   = gps.eph/100f;
 
+				model.gps.latitude = gps.lat/1e7d;
+				model.gps.longitude = gps.lon/1e7d;
+
 
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>5);
 
@@ -417,10 +420,12 @@ public class MAVLinkToModelParser {
 
 		public void run() {
 			model.sys.tms = System.nanoTime()/1000;
+
 			while (isRunning) {
 				try {
 
 					if(stream==null) {
+
 						Thread.sleep(10);
 						continue;
 					}

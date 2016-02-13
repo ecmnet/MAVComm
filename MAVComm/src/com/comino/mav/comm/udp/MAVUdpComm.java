@@ -81,7 +81,7 @@ public class MAVUdpComm implements IMAVComm {
 
 				channel = DatagramChannel.open();
 				channel.bind(bindPort);
-				channel.configureBlocking(true);
+				channel.configureBlocking(false);
 				channel.connect(peerPort);
 
 				parser.start(channel);
@@ -151,7 +151,8 @@ public class MAVUdpComm implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14556,"0.0.0.0",14550);
+	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14556,"0.0.0.0",14550);
+		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();
 
