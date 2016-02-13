@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.IMAVLinkCRC;
-import org.mavlink.MAVLinkCRC;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.mavlink.IMAVLinkCRC;
+import org.mavlink.MAVLinkCRC;
+import org.mavlink.messages.MAVLinkMessage;
 /**
  * Class msg_mission_request
  * Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM message. http://qgroundcontrol.org/mavlink/waypoint_protocol

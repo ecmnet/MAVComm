@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.IMAVLinkCRC;
-import org.mavlink.MAVLinkCRC;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.mavlink.IMAVLinkCRC;
+import org.mavlink.MAVLinkCRC;
+import org.mavlink.messages.MAVLinkMessage;
 /**
  * Class msg_safety_set_allowed_area
  * Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.

@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.IMAVLinkCRC;
-import org.mavlink.MAVLinkCRC;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.mavlink.IMAVLinkCRC;
+import org.mavlink.MAVLinkCRC;
+import org.mavlink.messages.MAVLinkMessage;
 /**
  * Class msg_set_mode
  * THIS INTERFACE IS DEPRECATED. USE COMMAND_LONG with MAV_CMD_DO_SET_MODE INSTEAD. Set the system mode, as defined by enum MAV_MODE. There is no target component id as the mode is by definition for the overall aircraft, not only for one component.

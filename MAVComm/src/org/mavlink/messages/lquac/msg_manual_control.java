@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.IMAVLinkCRC;
-import org.mavlink.MAVLinkCRC;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.mavlink.IMAVLinkCRC;
+import org.mavlink.MAVLinkCRC;
+import org.mavlink.messages.MAVLinkMessage;
 /**
  * Class msg_manual_control
  * This message provides an API for manually controlling the vehicle using standard joystick axes nomenclature, along with a joystick-like input device. Unused axes can be disabled an buttons are also transmit as boolean values of their

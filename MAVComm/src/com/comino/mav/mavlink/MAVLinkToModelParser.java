@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -41,7 +40,6 @@ import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_rc_channels;
-import org.mavlink.messages.lquac.msg_rc_channels_raw;
 import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_statustext;
 import org.mavlink.messages.lquac.msg_sys_status;

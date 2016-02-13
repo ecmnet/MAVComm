@@ -4,8 +4,8 @@
  **/
 package org.mavlink.messages;
 import java.io.IOException;
-import java.io.Serializable;import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
 /**
  * Class MAVLinkMessageCoder
  * Use to declarate encode and decode functions

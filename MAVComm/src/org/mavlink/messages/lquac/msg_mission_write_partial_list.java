@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.IMAVLinkCRC;
-import org.mavlink.MAVLinkCRC;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+
+import org.mavlink.IMAVLinkCRC;
+import org.mavlink.MAVLinkCRC;
+import org.mavlink.messages.MAVLinkMessage;
 /**
  * Class msg_mission_write_partial_list
  * This message is sent to the MAV to write a partial list. If start index == end index, only one item will be transmitted / updated. If the start index is NOT 0 and above the current list size, this request should be REJECTED!

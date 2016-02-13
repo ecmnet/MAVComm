@@ -17,22 +17,15 @@
 package com.comino.mav.comm.udp;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.Socket;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
@@ -163,8 +156,8 @@ public class MAVUdpComm implements IMAVComm {
 
 
 	public static void main(String[] args) {
-	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14555,"0.0.0.0",14550);
-		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
+		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14555,"0.0.0.0",14550);
+	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();
 

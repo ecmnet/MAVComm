@@ -24,8 +24,6 @@ import java.util.Map;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
-import org.mavlink.messages.lquac.msg_msp_status;
-import org.mavlink.messages.lquac.msg_vfr_hud;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;

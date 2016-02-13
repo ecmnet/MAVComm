@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
 public class ModelCollectorService {
