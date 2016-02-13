@@ -460,10 +460,7 @@ public class MAVLinkToModelParser {
 
 				} catch (Exception e) {
 
-
-
 				}
-
 			}
 		}
 	}

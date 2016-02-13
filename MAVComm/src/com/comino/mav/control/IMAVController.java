@@ -48,7 +48,6 @@ public interface IMAVController {
 	public boolean sendMSPLinkCmd(int command, float...params);
 
 	public void addModeChangeListener(IMSPModeChangedListener listener);
-
 	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener);
 
 

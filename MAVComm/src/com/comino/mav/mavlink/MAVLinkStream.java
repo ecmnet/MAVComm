@@ -59,26 +59,20 @@ public class MAVLinkStream {
 		int n = 1;
 		while (true) {
 			try {
-				rxBuffer.get(buf, 0, n);
-				return reader.getNextMessage(buf, n);
+				  rxBuffer.get(buf, 0, n);
+				  return reader.getNextMessage(buf, n);
+
 			} catch (BufferUnderflowException e) {
 				// Try to refill buffer
-
 				try {
 					rxBuffer.compact();
-					LockSupport.parkNanos(200000);
 					n = channel.read(rxBuffer);
-				} catch (IOException ioe) {
+					LockSupport.parkNanos(2000000);
+				} catch (Exception ioe) {
 					rxBuffer.flip();
-					LockSupport.parkNanos(500000);
 					throw ioe;
 				}
 				rxBuffer.flip();
-
-				if (n <= 0) {
-					//                     System.out.println("end");
-					//return null;
-				}
 			}
 		}
 	}
