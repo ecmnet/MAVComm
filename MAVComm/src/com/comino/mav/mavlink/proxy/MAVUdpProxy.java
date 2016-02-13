@@ -61,18 +61,17 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 		while(!isConnected) {
 			try {
 				isConnected = true;
-				System.out.println("Connect to UDP channel");
+	//			System.out.println("Connect to UDP channel");
 				try {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
-
 					channel.configureBlocking(false);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				channel.connect(peerPort);
 				in = new MAVLinkStream(channel);
-				System.out.println("MAVProxy connected to "+peerPort.toString());
+			//	System.out.println("MAVProxy connected to "+peerPort.toString());
 				return true;
 			} catch(Exception e) {
 				System.out.println(e.getMessage());
@@ -121,8 +120,8 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 
 
 		} catch (IOException e) {
-			try { Thread.sleep(1000); } catch(Exception k) { }
-			System.out.println(e.getMessage());
+			try { Thread.sleep(50); } catch(Exception k) { }
+		//	System.out.println(e.getMessage());
 			buffer.clear();
 			close();
 			isConnected = false;

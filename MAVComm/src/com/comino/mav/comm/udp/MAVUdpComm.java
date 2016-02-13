@@ -82,8 +82,8 @@ public class MAVUdpComm implements IMAVComm {
 				channel.configureBlocking(false);
 				channel.connect(peerPort);
 
-				LockSupport.parkNanos(1000000000);
-
+//				LockSupport.parkNanos(10000000);
+//
 				msg_heartbeat msg = new msg_heartbeat(255,0);
 				msg.isValid = true;
 				write(msg);
