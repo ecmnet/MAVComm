@@ -42,7 +42,7 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 
 
 	public MAVUdpProxy() {
-		this("172.168.178.2",14550,"172.168.178.1",14556);
+		this("172.168.178.2",14550,"172.168.178.1",14555);
 	}
 
 
