@@ -17,10 +17,13 @@
 package com.comino.mav.comm.udp;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.NetworkInterface;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +42,6 @@ import com.comino.msp.utils.ExecutorService;
 public class MAVUdpComm implements IMAVComm {
 
 
-	private String 				    peerAddress;
-	private String 				    bindAddress;
 	private DataModel 				model = null;
 
 	private SocketAddress 			bindPort = null;
@@ -79,13 +80,13 @@ public class MAVUdpComm implements IMAVComm {
 
 
 				channel = DatagramChannel.open();
-				channel.socket().bind(bindPort);
-				channel.configureBlocking(false);
+				channel.bind(bindPort);
+				channel.configureBlocking(true);
 				channel.connect(peerPort);
 
 				parser.start(channel);
 				isConnected = true;
-				System.out.println("UDP connected to "+peerPort.toString());
+				System.out.println("UDP connected to "+peerPort.toString()+" binding to "+channel.getLocalAddress().toString());
 				return true;
 			} catch(Exception e) {
 				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
@@ -150,7 +151,7 @@ public class MAVUdpComm implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14556,"172.168.178.2",14550);
+		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14556,"0.0.0.0",14550);
 
 		comm.open();
 
