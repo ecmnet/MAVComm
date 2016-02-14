@@ -236,8 +236,8 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_global_position_int pos = (msg_global_position_int)o;
 
-				model.gps.latitude 	= pos.lat/10000000f;
-				model.gps.longitude	= pos.lon/10000000f;
+//				model.gps.latitude 	= pos.lat/10000000f;
+//				model.gps.longitude	= pos.lon/10000000f;
 				model.gps.heading   = (short)(pos.hdg/1000);
 				model.gps.altitude  = (short)(pos.alt/1000);
 				model.gps.tms = pos.time_boot_ms * 1000;

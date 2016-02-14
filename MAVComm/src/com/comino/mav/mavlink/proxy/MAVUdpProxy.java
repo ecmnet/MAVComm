@@ -120,7 +120,7 @@ public class MAVUdpProxy implements IMAVLinkMsgListener  {
 
 
 		} catch (IOException e) {
-			try { Thread.sleep(50); } catch(Exception k) { }
+			try { Thread.sleep(150); } catch(Exception k) { }
 		//	System.out.println(e.getMessage());
 			buffer.clear();
 			close();

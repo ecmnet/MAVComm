@@ -25,7 +25,7 @@ import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.comm.udp.MAVUdpComm;
+import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
@@ -116,7 +116,7 @@ public class MAVController implements IMAVController {
 		}
 
 		try {
-			if(!(comm instanceof MAVUdpComm))
+			if(!(comm instanceof MAVUdpCommNIO))
 				throw new IOException("MSP Commands only via UDP to proxy allowed");
 
 			comm.write(cmd);

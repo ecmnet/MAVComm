@@ -18,7 +18,7 @@ package com.comino.mav.control.impl;
 
 import java.util.concurrent.TimeUnit;
 
-import com.comino.mav.comm.udp.MAVUdpComm;
+import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
@@ -35,7 +35,7 @@ public class MAVUdpController extends MAVController implements IMAVController {
 		super();
 
 		System.out.println("UDP Controller loaded");
-		comm = MAVUdpComm.getInstance(model, peerAddress,peerPort,bindAddress,bindPort);
+		comm = MAVUdpCommNIO.getInstance(model, peerAddress,peerPort,bindAddress,bindPort);
 
 		ExecutorService.get().scheduleAtFixedRate(new ConnectionWatch(), 0, 2, TimeUnit.SECONDS);
 	}

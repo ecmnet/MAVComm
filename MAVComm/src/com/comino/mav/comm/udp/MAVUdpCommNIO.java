@@ -39,7 +39,7 @@ import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
 
-public class MAVUdpComm implements IMAVComm {
+public class MAVUdpCommNIO implements IMAVComm {
 
 
 	private DataModel 				model = null;
@@ -52,15 +52,15 @@ public class MAVUdpComm implements IMAVComm {
 
 	private boolean					isConnected = false;
 
-	private static MAVUdpComm com = null;
+	private static MAVUdpCommNIO com = null;
 
-	public static MAVUdpComm getInstance(DataModel model, String peerAddress, int peerPort, String bindAddress, int bindPort) {
+	public static MAVUdpCommNIO getInstance(DataModel model, String peerAddress, int peerPort, String bindAddress, int bindPort) {
 		if(com==null)
-			com = new MAVUdpComm(model, peerAddress, peerPort, bindAddress, bindPort);
+			com = new MAVUdpCommNIO(model, peerAddress, peerPort, bindAddress, bindPort);
 		return com;
 	}
 
-	private MAVUdpComm(DataModel model, String peerAddress, int pPort, String bindAddress, int bPort) {
+	private MAVUdpCommNIO(DataModel model, String peerAddress, int pPort, String bindAddress, int bPort) {
 		this.model = model;
 		this.parser = new MAVLinkToModelParser(model,this);
 		peerPort = new InetSocketAddress(peerAddress, pPort);
@@ -156,7 +156,7 @@ public class MAVUdpComm implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		MAVUdpComm comm = new MAVUdpComm(new DataModel(), "172.168.178.1", 14555,"0.0.0.0",14550);
+		MAVUdpCommNIO comm = new MAVUdpCommNIO(new DataModel(), "172.168.178.1", 14555,"0.0.0.0",14550);
 	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();
