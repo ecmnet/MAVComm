@@ -187,9 +187,9 @@ public class MAVLinkToModelParser {
 				model.gps.ref_lon = ref.longitude/10000000f;
 				model.gps.ref_altitude = ref.altitude;
 				model.gps.setFlag(GPS.GPS_REF_VALID, true);
-				model.gps.rel_x = ref.x;
-				model.gps.rel_y = ref.y;
-				model.gps.rel_z = ref.z;
+				model.state.g_x = ref.x;
+				model.state.g_y = ref.y;
+				model.state.g_z = ref.z;
 			}
 		});
 
@@ -236,14 +236,14 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_global_position_int pos = (msg_global_position_int)o;
 
-//				model.gps.latitude 	= pos.lat/10000000f;
-//				model.gps.longitude	= pos.lon/10000000f;
+				model.state.lat 	= pos.lat/10000000f;
+				model.state.lon	    = pos.lon/10000000f;
 				model.gps.heading   = (short)(pos.hdg/1000);
 				model.gps.altitude  = (short)(pos.alt/1000);
 				model.gps.tms = pos.time_boot_ms * 1000;
-				model.gps.rel_vx = pos.vx;
-				model.gps.rel_vy = pos.vy;
-				model.gps.rel_vz = pos.vz;
+				model.state.g_vx = pos.vx;
+				model.state.g_vy = pos.vy;
+				model.state.g_vz = pos.vz;
 
 			}
 		});

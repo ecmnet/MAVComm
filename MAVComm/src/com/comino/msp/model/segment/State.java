@@ -42,10 +42,20 @@ public class State extends Segment {
 	public float    hy=0;			// home y-position in m (Pitch)
 	public float    hz=0;			// home z-position in m (Altitude)
 
-	public float    vx=0;			// relative x speed in m/s
-	public float 	vy=0;			// relative y speed in m/s
-	public float	vz=0;			// relative z speed in m/s
-	public float	vh=0;			// relative heading speed in radiant/s
+	public float    vx=0;			// gative x speed in m/s
+	public float 	vy=0;			// gative y speed in m/s
+	public float	vz=0;			// gative z speed in m/s
+	public float	vh=0;			// gative heading speed in radiant/s
+
+	public float    lat=0;
+	public float    lon=0;
+
+	public float	g_x		= 0;
+	public float    g_y 	= 0;
+	public float    g_z		= 0;
+	public float    g_vx	= 0;
+	public float    g_vy	= 0;
+	public float    g_vz	= 0;
 
 
 	// helpers
@@ -80,6 +90,17 @@ public class State extends Segment {
 		t.vy	= vy;
 		t.vz	= vz;
 		t.vh	= vh;
+
+		t.lat   = lat;
+		t.lon   = lon;
+		t.g_x	= g_x;
+		t.g_y   = g_y;
+		t.g_z	= g_z;
+		t.g_vx	= g_vx;
+		t.g_vy	= g_vy;
+		t.g_vz	= g_vz;
+
+
 		return t;
 	}
 
@@ -96,6 +117,15 @@ public class State extends Segment {
 		vy		= t.vy;
 		vz		= t.vz;
 		vh		= t.vh;
+
+		lat     = t.lat;
+		lon     = t.lon;
+		g_x		= t.g_x;
+		g_y 	= t.g_y;
+		g_z		= t.g_z;
+		g_vx	= t.g_vx;
+		g_vy	= t.g_vy;
+		g_vz	= t.g_vz;
 	}
 
 	public void clear() {
@@ -111,6 +141,14 @@ public class State extends Segment {
 		vy		= 0;
 		vz		= 0;
 		vh		= 0;
+		lat     = 0;
+		lon     = 0;
+		g_x		= 0;
+		g_y 	= 0;
+		g_z		= 0;
+		g_vx	= 0;
+		g_vy	= 0;
+		g_vz	= 0;
 	}
 
 	public void print(String header) {

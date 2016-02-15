@@ -44,12 +44,6 @@ public class GPS extends Segment {
 	public double   ref_lon     = 0;
 	public float    ref_altitude= 0;
 
-	public float	rel_x		= 0;
-	public float    rel_y 		= 0;
-	public float    rel_z		= 0;
-	public float    rel_vx		= 0;
-	public float    rel_vy		= 0;
-	public float    rel_vz		= 0;
 
 
 	public GPS() {
@@ -92,12 +86,6 @@ public class GPS extends Segment {
 		ref_lon     = gps.ref_lon;
 		ref_altitude= gps.ref_altitude;
 
-		rel_x		= gps.rel_x;
-		rel_y 		= gps.rel_y;
-		rel_z		= gps.rel_z;
-		rel_vx		= gps.rel_vx;
-		rel_vy		= gps.rel_vy;
-		rel_vz		= gps.rel_vz;
 	}
 
 	public void setReference(double _lat, double _lon, float _altitude) {
@@ -124,12 +112,6 @@ public class GPS extends Segment {
 		g.ref_lon     	= ref_lon;
 		g.ref_altitude	= ref_altitude;
 
-		g.rel_x			= rel_x;
-		g.rel_y 		= rel_y;
-		g.rel_z			= rel_z;
-		g.rel_vx		= rel_vx;
-		g.rel_vy		= rel_vy;
-		g.rel_vz		= rel_vz;
 
 		return g;
 	}
@@ -150,12 +132,6 @@ public class GPS extends Segment {
 		ref_lon     = 0;
 		ref_altitude= 0;
 
-		rel_x		= 0;
-		rel_y 		= 0;
-		rel_z		= 0;
-		rel_vx		= 0;
-		rel_vy		= 0;
-		rel_vz		= 0;
 	}
 
 	public void  setFlag(int box, boolean val) {
