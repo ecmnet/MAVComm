@@ -59,6 +59,9 @@ public class ModelCollectorService {
 	}
 
 
+	public int getCollectorInterval_ms() {
+		return MODELCOLLECTOR_INTERVAL_US/1000;
+	}
 
 	public boolean start() {
 
