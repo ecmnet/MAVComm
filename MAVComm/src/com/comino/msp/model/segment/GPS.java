@@ -37,7 +37,7 @@ public class GPS extends Segment {
 	public double 	longitude 	= 0;
 	public short  	heading 	= 0;
 	public short  	altitude 	= 0;
-	public float  	error2d 	= 0;
+	public float  	eph 	    = 0;
 	public float  	speed 		= 0;
 
 	public double	ref_lat     = 0;
@@ -58,7 +58,7 @@ public class GPS extends Segment {
 		numsat 		= 99;
 	}
 
-	public void set(int _fix, int _numsat, double _lat, double _lon, int _altitude, int _heading, float _error2d, float _speed) {
+	public void set(int _fix, int _numsat, double _lat, double _lon, int _altitude, int _heading, float _eph, float _speed) {
 
 	    setFlag(GPS_SAT_FIX, _fix > 0);
 	    setFlag(GPS_SAT_VALID, numsat > 6);
@@ -68,7 +68,7 @@ public class GPS extends Segment {
 		longitude 	= _lon;
 		heading 	= (short)_heading;
 		altitude 	= (short)_altitude;
-		error2d 	= _error2d;
+		eph 		= _eph;
 		speed 		= _speed;
 	}
 
@@ -79,7 +79,7 @@ public class GPS extends Segment {
 		longitude	= gps.longitude;
 		altitude	= gps.altitude;
 		heading		= gps.heading;
-		error2d		= gps.error2d;
+		eph			= gps.eph;
 		speed		= gps.speed;
 
 		ref_lat     = gps.ref_lat;
@@ -104,7 +104,7 @@ public class GPS extends Segment {
 		g.heading   	= heading;
 		g.latitude  	= latitude;
 		g.longitude 	= longitude;
-		g.error2d 		= error2d;
+		g.eph 			= eph;
 		g.altitude		= altitude;
 		g.speed     	= speed;
 
@@ -125,7 +125,7 @@ public class GPS extends Segment {
 		longitude 	= 0;
 		heading 	= 0;
 		altitude 	= 0;
-		error2d 	= 0;
+		eph 		= 0;
 		speed 		= 0;
 
 		ref_lat     = 0;

@@ -29,6 +29,7 @@ import org.mavlink.messages.MAV_STATE;
 import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_attitude;
+import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_distance_sensor;
 import org.mavlink.messages.lquac.msg_extended_sys_state;
 import org.mavlink.messages.lquac.msg_global_position_int;
@@ -167,7 +168,7 @@ public class MAVLinkToModelParser {
 				model.gps.numsat = (byte) gps.satellites_visible;
 				model.gps.setFlag(GPS.GPS_SAT_FIX, gps.fix_type>0);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
-				model.gps.error2d   = gps.eph/100f;
+				model.gps.eph   = gps.eph/100f;
 
 				model.gps.latitude = gps.lat/1e7d;
 				model.gps.longitude = gps.lon/1e7d;
@@ -335,6 +336,16 @@ public class MAVLinkToModelParser {
 
 
 			}
+		});
+
+		registerListener(msg_battery_status.class, new IMAVLinkMsgListener() {
+
+			@Override
+			public void received(Object o) {
+				msg_battery_status bat = (msg_battery_status)o;
+				model.battery.a0 = bat.current_consumed;
+			}
+
 		});
 
 

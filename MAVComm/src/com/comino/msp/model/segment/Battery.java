@@ -22,12 +22,14 @@ public class Battery extends Segment {
 
 	private static final long serialVersionUID = -4051617731611229443L;
 
-	public float  b0              = 0;
-	public float  c0			  = 0;
+	public float  b0              = 0; // Voltage
+	public float  c0			  = 0; // Current
+	public float  a0			  = 0; // Accumulated consumption
 	public short  p               = 0;
 
 
 	public void set(Battery m) {
+		 a0 = m.a0;
 		 b0 = m.b0;
 		 c0 = m.c0;
 		 p  = m.p;
@@ -38,6 +40,7 @@ public class Battery extends Segment {
 		s.b0	= b0;
 		s.c0    = c0;
 		s.p     = p;
+		s.a0    = a0;
 		return s;
 	}
 
@@ -45,6 +48,7 @@ public class Battery extends Segment {
 		b0    = 0;
 		c0    = 0;
 		p     = 0;
+		a0    = 0;
 	}
 
 

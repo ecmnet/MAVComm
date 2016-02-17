@@ -56,8 +56,8 @@ public class StartUp {
 				if(!control.isConnected())
 					control.connect();
 
-			} catch (InterruptedException e) {
-
+			} catch (Exception e) {
+				control.close();
 			}
 		}
 	}
