@@ -35,7 +35,7 @@ public class ModelCollectorService {
 	public static  final int POST_COLLECTING    = 3;
 
 
-	private static final int MAX_SIZE = 30000;
+	private static final int MAX_SIZE = 120000;
 	private static final int MODELCOLLECTOR_INTERVAL_US = 50000;
 
 	private DataModel				    current     = null;
@@ -47,6 +47,7 @@ public class ModelCollectorService {
 	private float ned_offset_x =0;
 	private float ned_offset_y =0;
 
+	private long elapsed_time_ms;
 
 	public ModelCollectorService(DataModel current) {
 		this.modelList     = new ArrayList<DataModel>();
@@ -125,6 +126,10 @@ public class ModelCollectorService {
 		return mode != STOPPED;
 	}
 
+	public long getElapsedTimeMS() {
+		return elapsed_time_ms;
+	}
+
 
 	public int getMode() {
 		return mode;
@@ -144,8 +149,10 @@ public class ModelCollectorService {
 
 		@Override
 		public void run() {
+			long tms = System.currentTimeMillis();
 			while(mode!=STOPPED) {
 				DataModel model = current.clone();
+				elapsed_time_ms = System.currentTimeMillis() - tms;
 
 				model.state.hx = ned_offset_x;
 				model.state.hy = ned_offset_y;
