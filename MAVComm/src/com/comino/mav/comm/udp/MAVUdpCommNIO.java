@@ -27,6 +27,7 @@ import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
+import org.mavlink.messages.lquac.msg_system_time;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
@@ -87,6 +88,11 @@ public class MAVUdpCommNIO implements IMAVComm {
 				msg_heartbeat msg = new msg_heartbeat(255,0);
 				msg.isValid = true;
 				write(msg);
+
+				msg_system_time time = new msg_system_time(255,0);
+				time.time_unix_usec = System.currentTimeMillis()/1000L;
+				time.isValid = true;
+				write(time);
 
 				parser.start(channel);
 				isConnected = true;

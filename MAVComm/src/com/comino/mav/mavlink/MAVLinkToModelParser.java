@@ -379,7 +379,7 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_extended_sys_state sys = (msg_extended_sys_state)o;
-				model.sys.setStatus(Status.MSP_LANDED, sys.landed_state>0);
+				model.sys.setStatus(Status.MSP_LANDED, sys.landed_state==1);
 
 			}
 		});
