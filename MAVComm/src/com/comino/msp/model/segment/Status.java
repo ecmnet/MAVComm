@@ -38,7 +38,7 @@ public class Status extends Segment {
 	public static final int MSP_MODE_POSITION			    = 12;
 	public static final int MSP_MODE_LOITER					= 13;
 
-	public static final int MSP_LANDED						= 31;
+	public static final int MSP_LANDED						= 24;
 
 
 

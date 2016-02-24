@@ -57,10 +57,10 @@ public class MAVSimController extends MAVController implements IMAVController {
 		return model;
 	}
 
-//	@Override
-//	public List<DataModel> getModelList() {
-//		return collector.getModelList();
-//	}
+	//	@Override
+	//	public List<DataModel> getModelList() {
+	//		return collector.getModelList();
+	//	}
 
 	@Override
 	public boolean close() {
@@ -71,10 +71,39 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 	private class Simulation implements Runnable {
 
+
+		long count = 0;
+
 		@Override
 		public void run() {
 
-			model.battery.b0 = (float)Math.random()*2+11;
+			if(getCollector().isCollecting()) {
+					count++;
+					if(model.state.z > -5.0f)
+						model.state.z = model.state.z - 0.001f - (float)Math.random()*0.001f;
+					model.state.x = (float)(Math.sin(count/100f))*0.2f;
+					model.state.y = (float)(Math.cos(count/100f))*0.2f;
+					if(model.battery.b0 > 11f)
+					   model.battery.b0 = model.battery.b0 - (float)Math.random()*0.0001f - 0.0001f;
+			} else {
+				count = 0;
+				model.state.z = 0;
+				model.battery.b0 = 12.4f;
+			}
+
+			model.raw.di = (float)Math.random()*0.5f+1;
+			model.imu.accx = (float)Math.random()*0.5f;
+			model.imu.accy = (float)Math.random()*0.5f;
+			model.imu.accz = (float)Math.random()*0.5f-9.81f;
+
+			model.imu.gyrox = (float)Math.random()*0.5f;
+			model.imu.gyroy = (float)Math.random()*0.5f;
+			model.imu.gyroz = (float)Math.random()*0.5f;
+
+			model.gps.latitude = 47.37174;
+			model.gps.longitude = 8.54226;
+
+			model.attitude.al = (float)Math.random()*10f+500f;
 
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
 			model.sys.setStatus(Status.MSP_READY, true);
@@ -82,6 +111,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 			model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, true);
 			model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, true);
+			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, true);
 
 		}
 
