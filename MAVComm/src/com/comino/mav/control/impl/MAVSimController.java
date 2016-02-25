@@ -76,6 +76,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 		@Override
 		public void run() {
+			model.battery.p = (short)(95+Math.random()*2f);
 
 			if(getCollector().isCollecting()) {
 					count++;
@@ -85,6 +86,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 					model.state.y = (float)(Math.cos(count/100f))*0.2f;
 					if(model.battery.b0 > 11f)
 					   model.battery.b0 = model.battery.b0 - (float)Math.random()*0.0001f - 0.0001f;
+
 			} else {
 				count = 0;
 				model.state.z = 0;
@@ -92,16 +94,17 @@ public class MAVSimController extends MAVController implements IMAVController {
 			}
 
 			model.raw.di = (float)Math.random()*0.5f+1;
-			model.imu.accx = (float)Math.random()*0.5f;
-			model.imu.accy = (float)Math.random()*0.5f;
+			model.imu.accx = (float)Math.random()*0.5f-0.25f;
+			model.imu.accy = (float)Math.random()*0.5f-0.25f;
 			model.imu.accz = (float)Math.random()*0.5f-9.81f;
 
-			model.imu.gyrox = (float)Math.random()*0.5f;
-			model.imu.gyroy = (float)Math.random()*0.5f;
-			model.imu.gyroz = (float)Math.random()*0.5f;
+			model.imu.gyrox = (float)Math.random()*0.5f-0.25f;
+			model.imu.gyroy = (float)Math.random()*0.5f-0.25f;
+			model.imu.gyroz = (float)Math.random()*0.5f-0.25f;
 
 			model.gps.latitude = 47.37174;
 			model.gps.longitude = 8.54226;
+			model.gps.numsat = 8;
 
 			model.attitude.al = (float)Math.random()*10f+500f;
 
