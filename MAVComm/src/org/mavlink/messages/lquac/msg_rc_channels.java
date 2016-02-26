@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
-import org.mavlink.messages.MAVLinkMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_rc_channels
  * The PPM values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.
@@ -114,68 +114,72 @@ public class msg_rc_channels extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_boot_ms = (int)dis.getInt()&0x00FFFFFFFF;
-  chan1_raw = (int)dis.getShort()&0x00FFFF;
-  chan2_raw = (int)dis.getShort()&0x00FFFF;
-  chan3_raw = (int)dis.getShort()&0x00FFFF;
-  chan4_raw = (int)dis.getShort()&0x00FFFF;
-  chan5_raw = (int)dis.getShort()&0x00FFFF;
-  chan6_raw = (int)dis.getShort()&0x00FFFF;
-  chan7_raw = (int)dis.getShort()&0x00FFFF;
-  chan8_raw = (int)dis.getShort()&0x00FFFF;
-  chan9_raw = (int)dis.getShort()&0x00FFFF;
-  chan10_raw = (int)dis.getShort()&0x00FFFF;
-  chan11_raw = (int)dis.getShort()&0x00FFFF;
-  chan12_raw = (int)dis.getShort()&0x00FFFF;
-  chan13_raw = (int)dis.getShort()&0x00FFFF;
-  chan14_raw = (int)dis.getShort()&0x00FFFF;
-  chan15_raw = (int)dis.getShort()&0x00FFFF;
-  chan16_raw = (int)dis.getShort()&0x00FFFF;
-  chan17_raw = (int)dis.getShort()&0x00FFFF;
-  chan18_raw = (int)dis.getShort()&0x00FFFF;
-  chancount = (int)dis.get()&0x00FF;
-  rssi = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
+  chan1_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan2_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan3_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan4_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan5_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan6_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan7_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan8_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan9_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan10_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan11_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan12_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan13_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan14_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan15_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan16_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan17_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan18_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chancount = (int)dis.readUnsignedByte()&0x00FF;
+  rssi = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+42];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putInt((int)(time_boot_ms&0x00FFFFFFFF));
-  dos.putShort((short)(chan1_raw&0x00FFFF));
-  dos.putShort((short)(chan2_raw&0x00FFFF));
-  dos.putShort((short)(chan3_raw&0x00FFFF));
-  dos.putShort((short)(chan4_raw&0x00FFFF));
-  dos.putShort((short)(chan5_raw&0x00FFFF));
-  dos.putShort((short)(chan6_raw&0x00FFFF));
-  dos.putShort((short)(chan7_raw&0x00FFFF));
-  dos.putShort((short)(chan8_raw&0x00FFFF));
-  dos.putShort((short)(chan9_raw&0x00FFFF));
-  dos.putShort((short)(chan10_raw&0x00FFFF));
-  dos.putShort((short)(chan11_raw&0x00FFFF));
-  dos.putShort((short)(chan12_raw&0x00FFFF));
-  dos.putShort((short)(chan13_raw&0x00FFFF));
-  dos.putShort((short)(chan14_raw&0x00FFFF));
-  dos.putShort((short)(chan15_raw&0x00FFFF));
-  dos.putShort((short)(chan16_raw&0x00FFFF));
-  dos.putShort((short)(chan17_raw&0x00FFFF));
-  dos.putShort((short)(chan18_raw&0x00FFFF));
-  dos.put((byte)(chancount&0x00FF));
-  dos.put((byte)(rssi&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
+  dos.writeShort(chan1_raw&0x00FFFF);
+  dos.writeShort(chan2_raw&0x00FFFF);
+  dos.writeShort(chan3_raw&0x00FFFF);
+  dos.writeShort(chan4_raw&0x00FFFF);
+  dos.writeShort(chan5_raw&0x00FFFF);
+  dos.writeShort(chan6_raw&0x00FFFF);
+  dos.writeShort(chan7_raw&0x00FFFF);
+  dos.writeShort(chan8_raw&0x00FFFF);
+  dos.writeShort(chan9_raw&0x00FFFF);
+  dos.writeShort(chan10_raw&0x00FFFF);
+  dos.writeShort(chan11_raw&0x00FFFF);
+  dos.writeShort(chan12_raw&0x00FFFF);
+  dos.writeShort(chan13_raw&0x00FFFF);
+  dos.writeShort(chan14_raw&0x00FFFF);
+  dos.writeShort(chan15_raw&0x00FFFF);
+  dos.writeShort(chan16_raw&0x00FFFF);
+  dos.writeShort(chan17_raw&0x00FFFF);
+  dos.writeShort(chan18_raw&0x00FFFF);
+  dos.writeByte(chancount&0x00FF);
+  dos.writeByte(rssi&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 42);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[48] = crcl;
   buffer[49] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

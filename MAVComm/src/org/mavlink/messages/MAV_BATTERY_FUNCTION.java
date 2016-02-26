@@ -9,7 +9,7 @@ package org.mavlink.messages;
  **/
 public interface MAV_BATTERY_FUNCTION {
     /**
-     * Lithium polymere battery
+     * Battery function is unknown
      */
     public final static int MAV_BATTERY_FUNCTION_UNKNOWN = 0;
     /**

@@ -124,4 +124,12 @@ public interface MAV_COMPONENT {
      * 
      */
     public final static int MAV_COMP_ID_ADSB = 156;
+    /**
+     * On Screen Display (OSD) devices for video links
+     */
+    public final static int MAV_COMP_ID_OSD = 157;
+    /**
+     * Generic autopilot peripheral component ID. Meant for devices that do not implement the parameter sub-protocol
+     */
+    public final static int MAV_COMP_ID_PERIPHERAL = 158;
 }

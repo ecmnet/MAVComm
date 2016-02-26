@@ -29,7 +29,7 @@ public interface MAV_PROTOCOL_CAPABILITY {
      */
     public final static int MAV_PROTOCOL_CAPABILITY_PARAM_UNION = 16;
     /**
-     * Autopilot supports the new param union message type.
+     * Autopilot supports the new FILE_TRANSFER_PROTOCOL message type.
      */
     public final static int MAV_PROTOCOL_CAPABILITY_FTP = 32;
     /**

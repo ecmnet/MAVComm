@@ -100,4 +100,8 @@ public interface MAV_SYS_STATUS_SENSOR {
      * 0x400000 Terrain subsystem health
      */
     public final static int MAV_SYS_STATUS_TERRAIN = 4194304;
+    /**
+     * 0x800000 Motors are reversed
+     */
+    public final static int MAV_SYS_STATUS_REVERSE_MOTOR = 8388608;
 }

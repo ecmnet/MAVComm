@@ -13,11 +13,11 @@ public interface MAV_BATTERY_TYPE {
      */
     public final static int MAV_BATTERY_TYPE_UNKNOWN = 0;
     /**
-     * Lithium polymere battery
+     * Lithium polymer battery
      */
     public final static int MAV_BATTERY_TYPE_LIPO = 1;
     /**
-     * Lithium ferrite battery
+     * Lithium-iron-phosphate battery
      */
     public final static int MAV_BATTERY_TYPE_LIFE = 2;
     /**

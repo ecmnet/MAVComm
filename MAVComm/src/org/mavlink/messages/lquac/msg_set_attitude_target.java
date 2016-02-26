@@ -3,16 +3,16 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
-import org.mavlink.messages.MAVLinkMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_set_attitude_target
- * Set the vehicle attitude and body angular rates.
+ * Sets a desired vehicle attitude. Used by an external controller to command the vehicle (manual controller or other system).
  **/
 public class msg_set_attitude_target extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_SET_ATTITUDE_TARGET = 82;
@@ -66,48 +66,52 @@ public class msg_set_attitude_target extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_boot_ms = (int)dis.getInt()&0x00FFFFFFFF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
   for (int i=0; i<4; i++) {
-    q[i] = (float)dis.getFloat();
+    q[i] = (float)dis.readFloat();
   }
-  body_roll_rate = (float)dis.getFloat();
-  body_pitch_rate = (float)dis.getFloat();
-  body_yaw_rate = (float)dis.getFloat();
-  thrust = (float)dis.getFloat();
-  target_system = (int)dis.get()&0x00FF;
-  target_component = (int)dis.get()&0x00FF;
-  type_mask = (int)dis.get()&0x00FF;
+  body_roll_rate = (float)dis.readFloat();
+  body_pitch_rate = (float)dis.readFloat();
+  body_yaw_rate = (float)dis.readFloat();
+  thrust = (float)dis.readFloat();
+  target_system = (int)dis.readUnsignedByte()&0x00FF;
+  target_component = (int)dis.readUnsignedByte()&0x00FF;
+  type_mask = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+39];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putInt((int)(time_boot_ms&0x00FFFFFFFF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
   for (int i=0; i<4; i++) {
-    dos.putFloat(q[i]);
+    dos.writeFloat(q[i]);
   }
-  dos.putFloat(body_roll_rate);
-  dos.putFloat(body_pitch_rate);
-  dos.putFloat(body_yaw_rate);
-  dos.putFloat(thrust);
-  dos.put((byte)(target_system&0x00FF));
-  dos.put((byte)(target_component&0x00FF));
-  dos.put((byte)(type_mask&0x00FF));
+  dos.writeFloat(body_roll_rate);
+  dos.writeFloat(body_pitch_rate);
+  dos.writeFloat(body_yaw_rate);
+  dos.writeFloat(thrust);
+  dos.writeByte(target_system&0x00FF);
+  dos.writeByte(target_component&0x00FF);
+  dos.writeByte(type_mask&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 39);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[45] = crcl;
   buffer[46] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

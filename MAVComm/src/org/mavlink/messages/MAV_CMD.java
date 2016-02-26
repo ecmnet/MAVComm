@@ -174,6 +174,28 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_SPLINE_WAYPOINT = 82;
     /**
+     * Takeoff from ground using VTOL mode
+     * PARAM 1 : Empty
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Yaw angle in degrees
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Altitude
+     */
+    public final static int MAV_CMD_NAV_VTOL_TAKEOFF = 84;
+    /**
+     * Land using VTOL mode
+     * PARAM 1 : Empty
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Yaw angle in degrees
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Altitude
+     */
+    public final static int MAV_CMD_NAV_VTOL_LAND = 85;
+    /**
      * hand control over to an external controller
      * PARAM 1 : On / Off (> 0.5f on)
      * PARAM 2 : Empty

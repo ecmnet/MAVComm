@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
-import org.mavlink.messages.MAVLinkMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_resource_request
  * The autopilot is requesting a resource (file, binary, other type of data)
@@ -50,15 +50,15 @@ public class msg_resource_request extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  request_id = (int)dis.get()&0x00FF;
-  uri_type = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  request_id = (int)dis.readUnsignedByte()&0x00FF;
+  uri_type = (int)dis.readUnsignedByte()&0x00FF;
   for (int i=0; i<120; i++) {
-    uri[i] = (int)dis.get()&0x00FF;
+    uri[i] = (int)dis.readUnsignedByte()&0x00FF;
   }
-  transfer_type = (int)dis.get()&0x00FF;
+  transfer_type = (int)dis.readUnsignedByte()&0x00FF;
   for (int i=0; i<120; i++) {
-    storage[i] = (int)dis.get()&0x00FF;
+    storage[i] = (int)dis.readUnsignedByte()&0x00FF;
   }
 }
 /**
@@ -66,28 +66,32 @@ public void decode(ByteBuffer dis) throws IOException {
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+243];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.put((byte)(request_id&0x00FF));
-  dos.put((byte)(uri_type&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeByte(request_id&0x00FF);
+  dos.writeByte(uri_type&0x00FF);
   for (int i=0; i<120; i++) {
-    dos.put((byte)(uri[i]&0x00FF));
+    dos.writeByte(uri[i]&0x00FF);
   }
-  dos.put((byte)(transfer_type&0x00FF));
+  dos.writeByte(transfer_type&0x00FF);
   for (int i=0; i<120; i++) {
-    dos.put((byte)(storage[i]&0x00FF));
+    dos.writeByte(storage[i]&0x00FF);
   }
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 243);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[249] = crcl;
   buffer[250] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

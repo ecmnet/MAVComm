@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
-import org.mavlink.messages.MAVLinkMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_optical_flow
  * Optical flow from a flow sensor (e.g. optical mouse sensor)
@@ -62,42 +62,46 @@ public class msg_optical_flow extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_usec = (long)dis.getLong();
-  flow_comp_m_x = (float)dis.getFloat();
-  flow_comp_m_y = (float)dis.getFloat();
-  ground_distance = (float)dis.getFloat();
-  flow_x = (int)dis.getShort();
-  flow_y = (int)dis.getShort();
-  sensor_id = (int)dis.get()&0x00FF;
-  quality = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_usec = (long)dis.readLong();
+  flow_comp_m_x = (float)dis.readFloat();
+  flow_comp_m_y = (float)dis.readFloat();
+  ground_distance = (float)dis.readFloat();
+  flow_x = (int)dis.readShort();
+  flow_y = (int)dis.readShort();
+  sensor_id = (int)dis.readUnsignedByte()&0x00FF;
+  quality = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+26];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putLong(time_usec);
-  dos.putFloat(flow_comp_m_x);
-  dos.putFloat(flow_comp_m_y);
-  dos.putFloat(ground_distance);
-  dos.putShort((short)(flow_x&0x00FFFF));
-  dos.putShort((short)(flow_y&0x00FFFF));
-  dos.put((byte)(sensor_id&0x00FF));
-  dos.put((byte)(quality&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeLong(time_usec);
+  dos.writeFloat(flow_comp_m_x);
+  dos.writeFloat(flow_comp_m_y);
+  dos.writeFloat(ground_distance);
+  dos.writeShort(flow_x&0x00FFFF);
+  dos.writeShort(flow_y&0x00FFFF);
+  dos.writeByte(sensor_id&0x00FF);
+  dos.writeByte(quality&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 26);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[32] = crcl;
   buffer[33] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

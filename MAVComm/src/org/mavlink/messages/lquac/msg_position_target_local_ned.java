@@ -3,16 +3,16 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
-import org.mavlink.messages.MAVLinkMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_position_target_local_ned
- * Set vehicle position, velocity and acceleration setpoint in local frame.
+ * Reports the current commanded vehicle position, velocity, and acceleration as specified by the autopilot. This should match the commands sent in SET_POSITION_TARGET_LOCAL_NED if the vehicle is being controlled this way.
  **/
 public class msg_position_target_local_ned extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED = 85;
@@ -86,54 +86,58 @@ public class msg_position_target_local_ned extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_boot_ms = (int)dis.getInt()&0x00FFFFFFFF;
-  x = (float)dis.getFloat();
-  y = (float)dis.getFloat();
-  z = (float)dis.getFloat();
-  vx = (float)dis.getFloat();
-  vy = (float)dis.getFloat();
-  vz = (float)dis.getFloat();
-  afx = (float)dis.getFloat();
-  afy = (float)dis.getFloat();
-  afz = (float)dis.getFloat();
-  yaw = (float)dis.getFloat();
-  yaw_rate = (float)dis.getFloat();
-  type_mask = (int)dis.getShort()&0x00FFFF;
-  coordinate_frame = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
+  x = (float)dis.readFloat();
+  y = (float)dis.readFloat();
+  z = (float)dis.readFloat();
+  vx = (float)dis.readFloat();
+  vy = (float)dis.readFloat();
+  vz = (float)dis.readFloat();
+  afx = (float)dis.readFloat();
+  afy = (float)dis.readFloat();
+  afz = (float)dis.readFloat();
+  yaw = (float)dis.readFloat();
+  yaw_rate = (float)dis.readFloat();
+  type_mask = (int)dis.readUnsignedShort()&0x00FFFF;
+  coordinate_frame = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+51];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putInt((int)(time_boot_ms&0x00FFFFFFFF));
-  dos.putFloat(x);
-  dos.putFloat(y);
-  dos.putFloat(z);
-  dos.putFloat(vx);
-  dos.putFloat(vy);
-  dos.putFloat(vz);
-  dos.putFloat(afx);
-  dos.putFloat(afy);
-  dos.putFloat(afz);
-  dos.putFloat(yaw);
-  dos.putFloat(yaw_rate);
-  dos.putShort((short)(type_mask&0x00FFFF));
-  dos.put((byte)(coordinate_frame&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
+  dos.writeFloat(x);
+  dos.writeFloat(y);
+  dos.writeFloat(z);
+  dos.writeFloat(vx);
+  dos.writeFloat(vy);
+  dos.writeFloat(vz);
+  dos.writeFloat(afx);
+  dos.writeFloat(afy);
+  dos.writeFloat(afz);
+  dos.writeFloat(yaw);
+  dos.writeFloat(yaw_rate);
+  dos.writeShort(type_mask&0x00FFFF);
+  dos.writeByte(coordinate_frame&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 51);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[57] = crcl;
   buffer[58] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

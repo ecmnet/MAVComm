@@ -3,13 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
-import org.mavlink.messages.MAVLinkMessage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_sim_state
  * Status of simulation environment, if used
@@ -114,68 +114,72 @@ public class msg_sim_state extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  q1 = (float)dis.getFloat();
-  q2 = (float)dis.getFloat();
-  q3 = (float)dis.getFloat();
-  q4 = (float)dis.getFloat();
-  roll = (float)dis.getFloat();
-  pitch = (float)dis.getFloat();
-  yaw = (float)dis.getFloat();
-  xacc = (float)dis.getFloat();
-  yacc = (float)dis.getFloat();
-  zacc = (float)dis.getFloat();
-  xgyro = (float)dis.getFloat();
-  ygyro = (float)dis.getFloat();
-  zgyro = (float)dis.getFloat();
-  lat = (float)dis.getFloat();
-  lon = (float)dis.getFloat();
-  alt = (float)dis.getFloat();
-  std_dev_horz = (float)dis.getFloat();
-  std_dev_vert = (float)dis.getFloat();
-  vn = (float)dis.getFloat();
-  ve = (float)dis.getFloat();
-  vd = (float)dis.getFloat();
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  q1 = (float)dis.readFloat();
+  q2 = (float)dis.readFloat();
+  q3 = (float)dis.readFloat();
+  q4 = (float)dis.readFloat();
+  roll = (float)dis.readFloat();
+  pitch = (float)dis.readFloat();
+  yaw = (float)dis.readFloat();
+  xacc = (float)dis.readFloat();
+  yacc = (float)dis.readFloat();
+  zacc = (float)dis.readFloat();
+  xgyro = (float)dis.readFloat();
+  ygyro = (float)dis.readFloat();
+  zgyro = (float)dis.readFloat();
+  lat = (float)dis.readFloat();
+  lon = (float)dis.readFloat();
+  alt = (float)dis.readFloat();
+  std_dev_horz = (float)dis.readFloat();
+  std_dev_vert = (float)dis.readFloat();
+  vn = (float)dis.readFloat();
+  ve = (float)dis.readFloat();
+  vd = (float)dis.readFloat();
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+84];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putFloat(q1);
-  dos.putFloat(q2);
-  dos.putFloat(q3);
-  dos.putFloat(q4);
-  dos.putFloat(roll);
-  dos.putFloat(pitch);
-  dos.putFloat(yaw);
-  dos.putFloat(xacc);
-  dos.putFloat(yacc);
-  dos.putFloat(zacc);
-  dos.putFloat(xgyro);
-  dos.putFloat(ygyro);
-  dos.putFloat(zgyro);
-  dos.putFloat(lat);
-  dos.putFloat(lon);
-  dos.putFloat(alt);
-  dos.putFloat(std_dev_horz);
-  dos.putFloat(std_dev_vert);
-  dos.putFloat(vn);
-  dos.putFloat(ve);
-  dos.putFloat(vd);
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeFloat(q1);
+  dos.writeFloat(q2);
+  dos.writeFloat(q3);
+  dos.writeFloat(q4);
+  dos.writeFloat(roll);
+  dos.writeFloat(pitch);
+  dos.writeFloat(yaw);
+  dos.writeFloat(xacc);
+  dos.writeFloat(yacc);
+  dos.writeFloat(zacc);
+  dos.writeFloat(xgyro);
+  dos.writeFloat(ygyro);
+  dos.writeFloat(zgyro);
+  dos.writeFloat(lat);
+  dos.writeFloat(lon);
+  dos.writeFloat(alt);
+  dos.writeFloat(std_dev_horz);
+  dos.writeFloat(std_dev_vert);
+  dos.writeFloat(vn);
+  dos.writeFloat(ve);
+  dos.writeFloat(vd);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 84);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[90] = crcl;
   buffer[91] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {
