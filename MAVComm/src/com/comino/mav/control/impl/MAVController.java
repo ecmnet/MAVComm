@@ -67,7 +67,7 @@ public class MAVController implements IMAVController {
 		cmd.target_system = 1;
 		cmd.target_component = 1;
 		cmd.command = command;
-		cmd.confirmation = 0;
+		cmd.confirmation = 1;
 
 		for(int i=0; i<params.length;i++) {
 			switch(i) {

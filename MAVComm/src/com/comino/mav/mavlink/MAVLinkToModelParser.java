@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_CMD_ACK;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_MODE_FLAG_DECODE_POSITION;
 import org.mavlink.messages.MAV_STATE;
@@ -30,6 +31,7 @@ import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_attitude;
 import org.mavlink.messages.lquac.msg_battery_status;
+import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_distance_sensor;
 import org.mavlink.messages.lquac.msg_extended_sys_state;
 import org.mavlink.messages.lquac.msg_global_position_int;
@@ -146,6 +148,16 @@ public class MAVLinkToModelParser {
 				model.attitude.ag   = alt.altitude_amsl;
 
 			}
+		});
+
+		registerListener(msg_command_ack.class, new IMAVLinkMsgListener() {
+
+			@Override
+			public void received(Object o) {
+				msg_command_ack ack = (msg_command_ack)o;
+
+			}
+
 		});
 
 		registerListener(msg_attitude.class, new IMAVLinkMsgListener() {
