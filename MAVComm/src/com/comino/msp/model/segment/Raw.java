@@ -26,6 +26,7 @@ public class Raw extends Segment {
 	public float fX     = 0;		// Flow integrated X
 	public float fY     = 0;		// Flow integrated Y
 	public int   fq		= 0;
+	public float fd		= 0;		// Flow distance
 
 
 
@@ -34,6 +35,7 @@ public class Raw extends Segment {
 		fY    	= a.fY;
 		di   	= a.di;
 		fq      = a.fq;
+		fd      = a.fd;
 
 	}
 
@@ -43,6 +45,7 @@ public class Raw extends Segment {
 		at.fY 		= fY;
 		at.di		= di;
 		at.fq		= fq;
+		at.fd       = fd;
 
 		return at;
 	}
@@ -55,6 +58,7 @@ public class Raw extends Segment {
 		fY    	= 0;
 		di   	= 0;
 		fq      = 0;
+		fd      = 0;
 	}
 
 }

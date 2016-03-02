@@ -135,6 +135,7 @@ public class MAVLinkToModelParser {
 				model.raw.fX   = flow.integrated_x;
 				model.raw.fY   = flow.integrated_y;
 				model.raw.fq   = flow.quality;
+				model.raw.fd   = flow.distance / 100f;
 
 				model.raw.tms  = flow.time_usec;
 			}
@@ -183,7 +184,7 @@ public class MAVLinkToModelParser {
 				model.gps.eph   = gps.eph/100f;
 				model.gps.latitude = gps.lat/1e7d;
 				model.gps.longitude = gps.lon/1e7d;
-				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);
+    			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);
 
 			}
 		});
@@ -377,9 +378,9 @@ public class MAVLinkToModelParser {
 				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY,
 						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW)>0);
 
-				// TODO: GPS not found
-				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
-						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
+//				// TODO: GPS not found
+//				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
+//						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
 
 
 
