@@ -28,6 +28,7 @@ public class Attitude extends Segment {
 	public float h      = 0;	// heading (compass)
 	public float al     = 0;	// altitude above ground
 	public float ag     = 0;	// est.altitude above sealevel
+	public float at     = 0;    // altitde terrain
 
 	public float s    	= 0;	// ground speed
 
@@ -39,18 +40,20 @@ public class Attitude extends Segment {
 		al      = a.al;
 		ag      = a.ag;
 		s   	= a.s;
+		at      = a.at;
 
 	}
 
 	public Attitude clone() {
-		Attitude at = new Attitude();
-		at.aX 		= aX;
-		at.aY 		= aY;
-		at.h		= h;
-		at.al       = al;
-		at.ag       = ag;
-		at.s		= s;
-		return at;
+		Attitude a = new Attitude();
+		a.aX 		= aX;
+		a.aY 		= aY;
+		a.h			= h;
+		a.al       	= al;
+		a.ag       	= ag;
+		a.s			= s;
+		a.at       	= at;
+		return a;
 	}
 
 	//--------------------------------------------------------------------------------------------------------
@@ -63,6 +66,7 @@ public class Attitude extends Segment {
 		al 		= 0;
 		ag      = 0;
 		s   	= 0;
+		at      = 0;
 	}
 
 }

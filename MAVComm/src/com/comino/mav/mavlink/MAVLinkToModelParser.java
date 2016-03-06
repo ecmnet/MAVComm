@@ -162,6 +162,7 @@ public class MAVLinkToModelParser {
 				msg_altitude alt = (msg_altitude)o;
 				model.attitude.al   = alt.altitude_local;
 				model.attitude.ag   = alt.altitude_amsl;
+				model.attitude.at   = alt.altitude_terrain;
 
 			}
 		});
