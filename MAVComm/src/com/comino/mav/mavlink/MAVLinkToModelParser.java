@@ -50,7 +50,8 @@ import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_vibration;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
@@ -69,8 +70,9 @@ public class MAVLinkToModelParser {
 
 	private IMAVComm link = null;
 
-	private HashMap<Class<?>,IMAVLinkMsgListener> listeners = null;
-	private List<IMAVLinkMsgListener> msgListener 			= null;
+	private HashMap<Class<?>,IMAVLinkListener> listeners = null;
+	private List<IMAVLinkListener> mavListener 			 = null;
+	private List<IMAVMessageListener> msgListener        = null;
 
 	private List<IMSPModeChangedListener> modeListener = null;
 
@@ -84,12 +86,13 @@ public class MAVLinkToModelParser {
 		this.mavList   = new HashMap<Class<?>,MAVLinkMessage>();
 
 		this.modeListener = new ArrayList<IMSPModeChangedListener>();
-		this.msgListener = new ArrayList<IMAVLinkMsgListener>();
+		this.mavListener = new ArrayList<IMAVLinkListener>();
+		this.msgListener = new ArrayList<IMAVMessageListener>();
 
-		listeners = new HashMap<Class<?>,IMAVLinkMsgListener>();
+		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 
-		registerListener(msg_vfr_hud.class, new IMAVLinkMsgListener() {
+		registerListener(msg_vfr_hud.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_vfr_hud hud = (msg_vfr_hud)o;
@@ -99,7 +102,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_distance_sensor.class, new IMAVLinkMsgListener() {
+		registerListener(msg_distance_sensor.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_distance_sensor lidar = (msg_distance_sensor)o;
@@ -110,7 +113,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_servo_output_raw.class, new IMAVLinkMsgListener() {
+		registerListener(msg_servo_output_raw.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_servo_output_raw servo = (msg_servo_output_raw)o;
@@ -128,7 +131,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_vibration.class, new IMAVLinkMsgListener() {
+		registerListener(msg_vibration.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_vibration vib = (msg_vibration)o;
@@ -143,7 +146,7 @@ public class MAVLinkToModelParser {
 		});
 
 
-		registerListener(msg_optical_flow_rad.class, new IMAVLinkMsgListener() {
+		registerListener(msg_optical_flow_rad.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_optical_flow_rad flow = (msg_optical_flow_rad)o;
@@ -156,7 +159,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_altitude.class, new IMAVLinkMsgListener() {
+		registerListener(msg_altitude.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_altitude alt = (msg_altitude)o;
@@ -167,17 +170,17 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_command_ack.class, new IMAVLinkMsgListener() {
+		registerListener(msg_command_ack.class, new IMAVLinkListener() {
 
 			@Override
 			public void received(Object o) {
 				msg_command_ack ack = (msg_command_ack)o;
-
+               // TODO handle acknowledgement
 			}
 
 		});
 
-		registerListener(msg_attitude.class, new IMAVLinkMsgListener() {
+		registerListener(msg_attitude.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_attitude att = (msg_attitude)o;
@@ -190,7 +193,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_gps_raw_int.class, new IMAVLinkMsgListener() {
+		registerListener(msg_gps_raw_int.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_gps_raw_int gps = (msg_gps_raw_int)o;
@@ -200,13 +203,13 @@ public class MAVLinkToModelParser {
 				model.gps.eph   = gps.eph/100f;
 				model.gps.latitude = gps.lat/1e7d;
 				model.gps.longitude = gps.lon/1e7d;
-    			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);
+				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);
 
 			}
 		});
 
 
-		registerListener(msg_home_position.class, new IMAVLinkMsgListener() {
+		registerListener(msg_home_position.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_home_position ref = (msg_home_position)o;
@@ -220,7 +223,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_local_position_ned.class, new IMAVLinkMsgListener() {
+		registerListener(msg_local_position_ned.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_local_position_ned ned = (msg_local_position_ned)o;
@@ -239,7 +242,7 @@ public class MAVLinkToModelParser {
 		});
 
 
-		registerListener(msg_position_target_local_ned.class, new IMAVLinkMsgListener() {
+		registerListener(msg_position_target_local_ned.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_position_target_local_ned ned = (msg_position_target_local_ned)o;
@@ -258,7 +261,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_global_position_int.class, new IMAVLinkMsgListener() {
+		registerListener(msg_global_position_int.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_global_position_int pos = (msg_global_position_int)o;
@@ -275,7 +278,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_highres_imu.class, new IMAVLinkMsgListener() {
+		registerListener(msg_highres_imu.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_highres_imu imu = (msg_highres_imu)o;
@@ -297,7 +300,7 @@ public class MAVLinkToModelParser {
 		});
 
 
-		registerListener(msg_statustext.class, new IMAVLinkMsgListener() {
+		registerListener(msg_statustext.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_statustext msg = (msg_statustext)o;
@@ -311,10 +314,15 @@ public class MAVLinkToModelParser {
 						msgList.add(m);
 				} else
 					msgList.add(m);
+
+				if(msgListener!=null) {
+					for(IMAVMessageListener msglistener : msgListener)
+						msglistener.messageReceived(msgList, m);
+				}
 			}
 		});
 
-		registerListener(msg_rc_channels.class, new IMAVLinkMsgListener() {
+		registerListener(msg_rc_channels.class, new IMAVLinkListener() {
 
 			@Override
 			public void received(Object o) {
@@ -332,7 +340,7 @@ public class MAVLinkToModelParser {
 		});
 
 
-		registerListener(msg_heartbeat.class, new IMAVLinkMsgListener() {
+		registerListener(msg_heartbeat.class, new IMAVLinkListener() {
 			Status old;
 			@Override
 			public void received(Object o) {
@@ -364,7 +372,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_battery_status.class, new IMAVLinkMsgListener() {
+		registerListener(msg_battery_status.class, new IMAVLinkListener() {
 
 			@Override
 			public void received(Object o) {
@@ -375,7 +383,7 @@ public class MAVLinkToModelParser {
 		});
 
 
-		registerListener(msg_sys_status.class, new IMAVLinkMsgListener() {
+		registerListener(msg_sys_status.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_sys_status sys = (msg_sys_status)o;
@@ -394,9 +402,9 @@ public class MAVLinkToModelParser {
 				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY,
 						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW)>0);
 
-//				// TODO: GPS not found
-//				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
-//						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
+				//				// TODO: GPS not found
+				//				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
+				//						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
 
 
 
@@ -404,7 +412,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_extended_sys_state.class, new IMAVLinkMsgListener() {
+		registerListener(msg_extended_sys_state.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_extended_sys_state sys = (msg_extended_sys_state)o;
@@ -417,7 +425,11 @@ public class MAVLinkToModelParser {
 
 	}
 
-	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
+	public void addMAVLinkListener(IMAVLinkListener listener) {
+		mavListener.add(listener);
+	}
+
+	public void addMAVMessagekListener(IMAVMessageListener listener) {
 		msgListener.add(listener);
 	}
 
@@ -446,7 +458,7 @@ public class MAVLinkToModelParser {
 	}
 
 
-	private void registerListener(Class<?> clazz, IMAVLinkMsgListener listener) {
+	private void registerListener(Class<?> clazz, IMAVLinkListener listener) {
 		listeners.put(clazz, listener);
 	}
 
@@ -471,13 +483,13 @@ public class MAVLinkToModelParser {
 						model.sys.tms = System.nanoTime()/1000;
 
 						mavList.put(msg.getClass(),msg);
-						IMAVLinkMsgListener listener = listeners.get(msg.getClass());
+						IMAVLinkListener listener = listeners.get(msg.getClass());
 						if(listener!=null)
 							listener.received(msg);
 
-						if(msgListener!=null) {
-							for(IMAVLinkMsgListener msglistener : msgListener)
-								msglistener.received(msg);
+						if(mavListener!=null) {
+							for(IMAVLinkListener mavlistener : mavListener)
+								mavlistener.received(msg);
 						}
 					}
 

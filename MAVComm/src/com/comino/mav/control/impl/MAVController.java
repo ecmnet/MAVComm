@@ -27,7 +27,8 @@ import org.mavlink.messages.lquac.msg_msp_command;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
-import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
@@ -92,7 +93,7 @@ public class MAVController implements IMAVController {
 		}
 	}
 
-    public boolean sendMSPLinkCmd(int command, float...params) {
+	public boolean sendMSPLinkCmd(int command, float...params) {
 
 		if(!controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
 			System.out.println("Command rejected. No connection.");
@@ -175,20 +176,27 @@ public class MAVController implements IMAVController {
 	@Override
 	public void addModeChangeListener(IMSPModeChangedListener listener) {
 		if(comm!=null)
-		  comm.addModeChangeListener(listener);
+			comm.addModeChangeListener(listener);
 
 	}
 
 
 	@Override
 	public ModelCollectorService getCollector() {
-	     return collector;
+		return collector;
 	}
 
 	@Override
-	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
-        if(comm!=null)
-        	comm.addMAVLinkMsgListener(listener);
+	public void addMAVLinkListener(IMAVLinkListener listener) {
+		if(comm!=null)
+			comm.addMAVLinkListener(listener);
+	}
+
+	@Override
+	public void addMAVMessageListener(IMAVMessageListener listener) {
+		if(comm!=null)
+			comm.addMAVMessageListener(listener);
+
 	}
 
 

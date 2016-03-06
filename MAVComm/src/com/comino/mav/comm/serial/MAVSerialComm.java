@@ -28,7 +28,8 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
-import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
@@ -172,8 +173,8 @@ public class MAVSerialComm implements IMAVComm {
 	}
 
 	@Override
-	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
-		parser.addMAVLinkMsgListener(listener);
+	public void addMAVLinkListener(IMAVLinkListener listener) {
+		parser.addMAVLinkListener(listener);
 
 	}
 
@@ -256,6 +257,12 @@ public class MAVSerialComm implements IMAVComm {
 	@Override
 	public void addModeChangeListener(IMSPModeChangedListener listener) {
 		parser.addModeChangeListener(listener);
+
+	}
+
+	@Override
+	public void addMAVMessageListener(IMAVMessageListener listener) {
+		parser.addMAVMessagekListener(listener);
 
 	}
 

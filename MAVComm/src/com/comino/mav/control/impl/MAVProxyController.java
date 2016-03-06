@@ -29,7 +29,8 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxy;
-import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
@@ -46,7 +47,7 @@ public class MAVProxyController implements IMAVController {
 	protected static IMAVController controller = null;
 	protected IMAVComm comm = null;
 
-	protected HashMap<Class<?>,IMAVLinkMsgListener> listeners = null;
+	protected HashMap<Class<?>,IMAVLinkListener> listeners = null;
 
 	protected   DataModel model = null;
 	protected   MAVUdpProxy proxy = null;
@@ -61,14 +62,14 @@ public class MAVProxyController implements IMAVController {
 	public MAVProxyController() {
 		controller = this;
 		model = new DataModel();
-		listeners = new HashMap<Class<?>,IMAVLinkMsgListener>();
+		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 		System.out.println("Proxy Controller loaded");
 
 
 		comm = MAVHighSpeedSerialComm.getInstance(model);
 		proxy = new MAVUdpProxy();
-		comm.addMAVLinkMsgListener(proxy);
+		comm.addMAVLinkListener(proxy);
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class MAVProxyController implements IMAVController {
 		return false;
 	}
 
-	public void registerListener(Class<?> clazz, IMAVLinkMsgListener listener) {
+	public void registerListener(Class<?> clazz, IMAVLinkListener listener) {
 		listeners.put(clazz, listener);
 	}
 
@@ -186,7 +187,7 @@ public class MAVProxyController implements IMAVController {
 					if(msg==null)
 						continue;
 
-					IMAVLinkMsgListener listener = listeners.get(msg.getClass());
+					IMAVLinkListener listener = listeners.get(msg.getClass());
 					if(listener!=null)
 						listener.received(msg);
 					else
@@ -208,7 +209,7 @@ public class MAVProxyController implements IMAVController {
 
 
 		// Example to execute MSP MAVLinkMessages via sendMSPLinkCommand(..)
-		control.registerListener(msg_msp_command.class, new IMAVLinkMsgListener() {
+		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_msp_command hud = (msg_msp_command)o;
@@ -257,7 +258,13 @@ public class MAVProxyController implements IMAVController {
 	}
 
 	@Override
-	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener) {
+	public void addMAVLinkListener(IMAVLinkListener listener) {
+
+	}
+
+	@Override
+	public void addMAVMessageListener(IMAVMessageListener listener) {
+
 
 	}
 

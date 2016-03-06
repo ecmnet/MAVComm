@@ -25,10 +25,10 @@ import java.nio.channels.DatagramChannel;
 import org.mavlink.messages.MAVLinkMessage;
 
 import com.comino.mav.mavlink.MAVLinkStream;
-import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 
-public class MAVUdpProxy implements IMAVLinkMsgListener  {
+public class MAVUdpProxy implements IMAVLinkListener  {
 
 	private SocketAddress 			bindPort = null;
 	private SocketAddress 			peerPort;

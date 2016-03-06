@@ -17,7 +17,7 @@
 package com.comino.msp.main.control.listener;
 
 
-public interface IMAVLinkMsgListener {
+public interface IMAVLinkListener {
 
 	public void received(Object o);
 

@@ -22,7 +22,8 @@ import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 
-import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Message;
@@ -41,7 +42,9 @@ public interface IMAVComm {
 
 	void write(MAVLinkMessage msg) throws IOException;
 
-	public void addMAVLinkMsgListener(IMAVLinkMsgListener listener);
+	public void addMAVLinkListener(IMAVLinkListener listener);
+
+	public void addMAVMessageListener(IMAVMessageListener listener);
 
 	public void addModeChangeListener(IMSPModeChangedListener listener);
 

@@ -19,7 +19,7 @@ package com.comino.msp.main;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.impl.MAVProxyController;
-import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 public class StartUp {
 
@@ -37,7 +37,7 @@ public class StartUp {
 
 		// TODO 1.0: register MSP commands here
 
-		control.registerListener(msg_msp_command.class, new IMAVLinkMsgListener() {
+		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_msp_command hud = (msg_msp_command)o;
