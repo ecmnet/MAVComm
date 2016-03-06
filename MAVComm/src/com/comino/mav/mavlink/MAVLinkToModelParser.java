@@ -47,6 +47,7 @@ import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_statustext;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_vfr_hud;
+import org.mavlink.messages.lquac.msg_vibration;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.msp.main.control.listener.IMAVLinkMsgListener;
@@ -127,6 +128,20 @@ public class MAVLinkToModelParser {
 			}
 		});
 
+		registerListener(msg_vibration.class, new IMAVLinkMsgListener() {
+			@Override
+			public void received(Object o) {
+				msg_vibration vib = (msg_vibration)o;
+				model.vibration.vibx = vib.vibration_x;
+				model.vibration.viby = vib.vibration_y;
+				model.vibration.vibz = vib.vibration_z;
+				model.vibration.cli0 = vib.clipping_0;
+				model.vibration.cli1 = vib.clipping_1;
+				model.vibration.cli2 = vib.clipping_2;
+				model.vibration.tms  = vib.time_usec;
+			}
+		});
+
 
 		registerListener(msg_optical_flow_rad.class, new IMAVLinkMsgListener() {
 			@Override
@@ -135,7 +150,7 @@ public class MAVLinkToModelParser {
 				model.raw.fX   = flow.integrated_x;
 				model.raw.fY   = flow.integrated_y;
 				model.raw.fq   = flow.quality;
-				model.raw.fd   = flow.distance / 100f;
+				model.raw.fd   = flow.distance;
 
 				model.raw.tms  = flow.time_usec;
 			}
