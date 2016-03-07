@@ -31,6 +31,7 @@ public class Attitude extends Segment {
 	public float at     = 0;    // altitde terrain
 
 	public float s    	= 0;	// ground speed
+	public float vs     = 0;    // vertical speed
 
 
 	public void set(Attitude a) {
@@ -41,6 +42,7 @@ public class Attitude extends Segment {
 		ag      = a.ag;
 		s   	= a.s;
 		at      = a.at;
+		vs      = a.vs;
 
 	}
 
@@ -53,6 +55,7 @@ public class Attitude extends Segment {
 		a.ag       	= ag;
 		a.s			= s;
 		a.at       	= at;
+		a.vs        = vs;
 		return a;
 	}
 
@@ -67,6 +70,7 @@ public class Attitude extends Segment {
 		ag      = 0;
 		s   	= 0;
 		at      = 0;
+		vs      = 0;
 	}
 
 }

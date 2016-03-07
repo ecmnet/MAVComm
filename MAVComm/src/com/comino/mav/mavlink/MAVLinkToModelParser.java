@@ -95,10 +95,11 @@ public class MAVLinkToModelParser {
 		registerListener(msg_vfr_hud.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
-				msg_vfr_hud hud = (msg_vfr_hud)o;
-				model.attitude.h = hud.heading;
-				model.attitude.s = hud.groundspeed;
-				model.state.h    = hud.heading;
+				msg_vfr_hud hud   = (msg_vfr_hud)o;
+				model.attitude.h  = hud.heading;
+				model.attitude.s  = hud.groundspeed;
+				model.attitude.vs = hud.climb;
+				model.state.h     = hud.heading;
 			}
 		});
 
