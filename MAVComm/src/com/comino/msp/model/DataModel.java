@@ -20,6 +20,7 @@ import java.io.Serializable;
 
 import com.comino.msp.model.segment.Attitude;
 import com.comino.msp.model.segment.Battery;
+import com.comino.msp.model.segment.Debug;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.Imu;
 import com.comino.msp.model.segment.Raw;
@@ -55,6 +56,7 @@ public class DataModel extends Segment implements Serializable {
 	public	 Servo			servo = null;
 	public	 Rc				  rc  = null;
 	public   Vibration  vibration = null;
+	public   Debug		    debug = null;
 
 
 	public DataModel()  {
@@ -70,6 +72,7 @@ public class DataModel extends Segment implements Serializable {
 		this.servo			= new Servo();
 		this.rc             = new Rc();
 		this.vibration      = new Vibration();
+		this.debug          = new Debug();
 
 
 	}
@@ -91,6 +94,7 @@ public class DataModel extends Segment implements Serializable {
 		this.servo			= m.servo.clone();
 		this.rc             = m.rc.clone();
 		this.vibration      = m.vibration.clone();
+		this.debug          = m.debug.clone();
 	}
 
 
@@ -107,6 +111,7 @@ public class DataModel extends Segment implements Serializable {
 		this.servo.set(m.servo);
 		this.rc.set(m.rc);
 		this.vibration.set(m.vibration);
+		this.debug.set(debug);
 	}
 
 	public DataModel clone() {
@@ -124,5 +129,6 @@ public class DataModel extends Segment implements Serializable {
 		this.servo.clear();
 		this.rc.clear();
 		this.vibration.clear();
+		this.debug.clear();
 	}
 }

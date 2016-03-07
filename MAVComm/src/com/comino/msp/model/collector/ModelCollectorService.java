@@ -42,6 +42,8 @@ public class ModelCollectorService {
 	private ArrayList<DataModel> 		modelList   = null;
 	private Future<?>          			service     = null;
 
+	private List<IDebugValueListener>   debugListener = null;
+
 	private int     mode = 0;
 
 	private float ned_offset_x =0;
@@ -52,6 +54,11 @@ public class ModelCollectorService {
 	public ModelCollectorService(DataModel current) {
 		this.modelList     = new ArrayList<DataModel>();
 		this.current = current;
+		this.debugListener = new ArrayList<IDebugValueListener>();
+	}
+
+	public void addDebugListener(IDebugValueListener listener) {
+		debugListener.add(listener);
 	}
 
 
@@ -153,6 +160,10 @@ public class ModelCollectorService {
 			while(mode!=STOPPED) {
 				DataModel model = current.clone();
 				elapsed_time_ms = System.currentTimeMillis() - tms;
+
+				for(IDebugValueListener listener :  debugListener) {
+					listener.addValue(model);
+				}
 
 				model.state.hx = ned_offset_x;
 				model.state.hy = ned_offset_y;
