@@ -310,15 +310,22 @@ public class MAVLinkToModelParser {
 				m.severity = msg.severity;
 
 				if(msgList.size()>0) {
-					if(msgList.get(msgList.size()-1).tms < m.tms)
+					if((msgList.get(msgList.size()-1).tms+100) < m.tms) {
 						msgList.add(m);
-				} else
+						if(msgListener!=null) {
+							for(IMAVMessageListener msglistener : msgListener)
+								msglistener.messageReceived(msgList, m);
+						}
+					}
+				} else {
 					msgList.add(m);
-
-				if(msgListener!=null) {
-					for(IMAVMessageListener msglistener : msgListener)
-						msglistener.messageReceived(msgList, m);
+					if(msgListener!=null) {
+						for(IMAVMessageListener msglistener : msgListener)
+							msglistener.messageReceived(msgList, m);
+					}
 				}
+
+
 			}
 		});
 
@@ -377,7 +384,8 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_battery_status bat = (msg_battery_status)o;
-				model.battery.a0 = bat.current_consumed;
+				if(bat.current_consumed>0)
+				   model.battery.a0 = bat.current_consumed;
 			}
 
 		});
