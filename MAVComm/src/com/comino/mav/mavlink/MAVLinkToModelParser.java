@@ -306,7 +306,7 @@ public class MAVLinkToModelParser {
 				msg_statustext msg = (msg_statustext)o;
 				Message m = new Message();
 				m.msg = new String(msg.text);
-				m.tms = System.nanoTime()/1000;
+				m.tms = System.currentTimeMillis();
 				m.severity = msg.severity;
 
 				if(msgList.size()>0) {
