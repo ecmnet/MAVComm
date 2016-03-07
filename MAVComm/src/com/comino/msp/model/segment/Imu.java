@@ -30,6 +30,10 @@ public class Imu extends Segment {
 	public float gyroy = 0;
 	public float gyroz = 0;
 
+	public float magx = 0;
+	public float magy = 0;
+	public float magz = 0;
+
 	public float abs_pressure = 0;
 
 
@@ -41,6 +45,10 @@ public class Imu extends Segment {
 		gyrox = a.gyrox;
 		gyroy = a.gyroy;
 		gyroz = a.gyroz;
+
+		magx = a.magx;
+		magy = a.magy;
+		magz = a.magz;
 
 		abs_pressure = a.abs_pressure;
 
@@ -55,6 +63,10 @@ public class Imu extends Segment {
 		a.gyrox = gyrox;
 		a.gyroy = gyroy;
 		a.gyroz = gyroz;
+
+		a.magx = magx;
+		a.magy = magy;
+		a.magz = magz;
 
 		a.abs_pressure = abs_pressure;
 
@@ -71,6 +83,10 @@ public class Imu extends Segment {
 		gyrox = 0;
 		gyroy = 0;
 		gyroz = 0;
+
+		magx = 0;
+		magy = 0;
+		magz = 0;
 
 	}
 

@@ -291,6 +291,10 @@ public class MAVLinkToModelParser {
 				model.imu.gyroy = imu.ygyro;
 				model.imu.gyroz = imu.zgyro;
 
+				model.imu.magx = imu.xmag;
+				model.imu.magy = imu.ymag;
+				model.imu.magz = imu.zmag;
+
 				model.imu.abs_pressure = imu.abs_pressure;
 
 				model.sys.imu_temp = (int)imu.temperature;
