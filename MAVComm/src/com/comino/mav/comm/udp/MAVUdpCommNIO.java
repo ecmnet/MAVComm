@@ -17,6 +17,9 @@
 package com.comino.mav.comm.udp;
 
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -56,17 +59,17 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 	private static MAVUdpCommNIO com = null;
 
-	public static MAVUdpCommNIO getInstance(DataModel model, String peerAddress, int peerPort, String bindAddress, int bindPort) {
+	public static MAVUdpCommNIO getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
-			com = new MAVUdpCommNIO(model, peerAddress, peerPort, bindAddress, bindPort);
+			com = new MAVUdpCommNIO(model, peerAddress, peerPort, bindPort);
 		return com;
 	}
 
-	private MAVUdpCommNIO(DataModel model, String peerAddress, int pPort, String bindAddress, int bPort) {
+	private MAVUdpCommNIO(DataModel model, String peerAddress, int pPort, int bPort) {
 		this.model = model;
 		this.parser = new MAVLinkToModelParser(model,this);
-		peerPort = new InetSocketAddress(peerAddress, pPort);
-		bindPort = new InetSocketAddress(bindAddress, bPort);
+		peerPort = new InetSocketAddress(peerAddress,pPort);
+		bindPort = new InetSocketAddress(bPort);
 
 	}
 
@@ -80,6 +83,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 			try {
 
 				channel = DatagramChannel.open();
+
 				channel.bind(bindPort);
 				channel.configureBlocking(false);
 				channel.connect(peerPort);
@@ -169,7 +173,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		MAVUdpCommNIO comm = new MAVUdpCommNIO(new DataModel(), "172.168.178.1", 14555,"0.0.0.0",14550);
+		MAVUdpCommNIO comm = new MAVUdpCommNIO(new DataModel(), "127.0.0.1", 14556, 14550);
 	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();
@@ -189,10 +193,10 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 			while(System.currentTimeMillis()< (time+60000)) {
 
-				//	comm.model.state.print("NED:");
-				//				System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
+//					comm.model.state.print("NED:");
+//								System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
 
-				if(comm.model.sys.isStatus(Status.MSP_CONNECTED))
+				if(comm.isConnected)
 				  System.out.println("ANGLEX="+comm.model.attitude.aX+" ANGLEY="+comm.model.attitude.aY+" "+comm.model.sys.toString());
 
 				Thread.sleep(1000);
@@ -228,7 +232,4 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 
 	}
-
-
-
 }

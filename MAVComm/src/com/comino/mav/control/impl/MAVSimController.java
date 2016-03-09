@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.comino.mav.control.IMAVController;
+import com.comino.mav.mavlink.MAVLinkToModelParser;
+import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.Message;
@@ -31,12 +33,19 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 	DataModel model = null;
 	ArrayList<Message>					msgList;
+	private List<IMAVMessageListener> msgListener        = null;
+
+
 
 	public MAVSimController() {
 		System.out.println("Simulation Controller loaded");
 		model = new DataModel();
 		collector = new ModelCollectorService(model);
 		msgList = new ArrayList<Message>();
+		msgListener = new ArrayList<IMAVMessageListener>();
+
+
+
 		ExecutorService.get().scheduleAtFixedRate(new Simulation(), 0, 50, TimeUnit.MILLISECONDS);
 	}
 
@@ -68,11 +77,16 @@ public class MAVSimController extends MAVController implements IMAVController {
 		return true;
 	}
 
+	@Override
+	public void addMAVMessageListener(IMAVMessageListener listener) {
+		msgListener.add(listener);
+	}
+
 
 	private class Simulation implements Runnable {
 
 
-		long count = 0;
+		long count = 0; int msg_count = 0;
 
 		@Override
 		public void run() {
@@ -93,6 +107,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 				model.battery.b0 = 12.4f;
 			}
 
+			if(Math.abs(Math.random()) > 0.9) {
+				Message m = new Message();
+				m.msg = "Count reached: "+count;
+				msgList.add(m);
+			}
+
 			model.raw.di = (float)Math.random()*0.5f+1;
 			model.imu.accx = (float)Math.random()*0.5f-0.25f;
 			model.imu.accy = (float)Math.random()*0.5f-0.25f;
@@ -106,7 +126,9 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.longitude = 8.54226;
 			model.gps.numsat = 8;
 
-			model.attitude.al = (float)Math.random()*10f+500f;
+			model.attitude.ag = (float)Math.random()*10f+500f;
+
+			model.imu.abs_pressure = 1013 +  (float)Math.random()*10f;
 
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
 			model.sys.setStatus(Status.MSP_READY, true);
@@ -115,6 +137,15 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, true);
 			model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, true);
 			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, true);
+
+			if(msgList.size()>msg_count) {
+				msg_count = msgList.size();
+				if(msgListener!=null) {
+					for(IMAVMessageListener msglistener : msgListener)
+						msglistener.messageReceived(msgList, msgList.get(msg_count-1));
+				}
+			}
+
 
 		}
 

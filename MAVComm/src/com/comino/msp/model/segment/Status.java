@@ -37,6 +37,8 @@ public class Status extends Segment {
 	public static final int MSP_MODE_ALTITUDE			    = 11;
 	public static final int MSP_MODE_POSITION			    = 12;
 	public static final int MSP_MODE_LOITER					= 13;
+	public static final int MSP_MODE_MISSION				= 14;
+	public static final int MSP_MODE_OFFBOARD				= 15;
 
 	public static final int MSP_LANDED						= 24;
 

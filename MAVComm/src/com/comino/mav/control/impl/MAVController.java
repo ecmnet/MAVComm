@@ -56,13 +56,29 @@ public class MAVController implements IMAVController {
 		collector = new ModelCollectorService(model);
 	}
 
+
 	@Override
-	public boolean sendMAVLinkCmd(int command, float...params) {
+	public boolean sendMAVLinkMessage(MAVLinkMessage msg) {
 
 		if(!controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
 			System.out.println("Command rejected. No connection.");
 			return false;
 		}
+
+		try {
+			comm.write(msg);
+			System.out.println("Execute: "+msg.toString());
+			return true;
+		} catch (IOException e1) {
+			System.out.println("Command rejected. "+e1.getMessage());
+			return false;
+		}
+
+	}
+
+	@Override
+	public boolean sendMAVLinkCmd(int command, float...params) {
+
 
 		msg_command_long cmd = new msg_command_long(255,1);
 		cmd.target_system = 1;
@@ -83,14 +99,7 @@ public class MAVController implements IMAVController {
 			}
 		}
 
-		try {
-			comm.write(cmd);
-			System.out.println("Execute: "+cmd.toString());
-			return true;
-		} catch (IOException e1) {
-			System.out.println("Command rejected. "+e1.getMessage());
-			return false;
-		}
+		return sendMAVLinkMessage(cmd);
 	}
 
 	public boolean sendMSPLinkCmd(int command, float...params) {
@@ -198,6 +207,7 @@ public class MAVController implements IMAVController {
 			comm.addMAVMessageListener(listener);
 
 	}
+
 
 
 

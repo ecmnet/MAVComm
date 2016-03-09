@@ -27,6 +27,7 @@ import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
+import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxy;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -73,18 +74,33 @@ public class MAVProxyController implements IMAVController {
 	}
 
 	@Override
-	public boolean sendMAVLinkCmd(int command, float...params) {
+	public boolean sendMAVLinkMessage(MAVLinkMessage msg) {
 
 		if(!controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
 			System.out.println("Command rejected. No connection.");
 			return false;
 		}
 
+		try {
+			comm.write(msg);
+			System.out.println("Execute: "+msg.toString());
+			return true;
+		} catch (IOException e1) {
+			System.out.println("Command rejected. "+e1.getMessage());
+			return false;
+		}
+
+	}
+
+	@Override
+	public boolean sendMAVLinkCmd(int command, float...params) {
+
+
 		msg_command_long cmd = new msg_command_long(255,1);
 		cmd.target_system = 1;
 		cmd.target_component = 1;
 		cmd.command = command;
-		cmd.confirmation = 0;
+		cmd.confirmation = 1;
 
 		for(int i=0; i<params.length;i++) {
 			switch(i) {
@@ -99,15 +115,9 @@ public class MAVProxyController implements IMAVController {
 			}
 		}
 
-		try {
-			comm.write(cmd);
-			System.out.println("Sent to PX4: "+cmd.toString());
-			return true;
-		} catch (IOException e1) {
-			System.out.println("Command rejected. "+e1.getMessage());
-			return false;
-		}
+		return sendMAVLinkMessage(cmd);
 	}
+
 
 	@Override
 	public boolean sendMSPLinkCmd(int command, float...params) {
