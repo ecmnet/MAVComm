@@ -284,4 +284,11 @@ public class MAVProxyController implements IMAVController {
 		return null;
 	}
 
+
+	@Override
+	public void writeMessage(String message) {
+		comm.writeMessage(message);
+
+	}
+
 }

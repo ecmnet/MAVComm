@@ -20,8 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.mavlink.messages.MAVLinkMessage;
+
 import com.comino.mav.control.IMAVController;
-import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
@@ -82,6 +83,34 @@ public class MAVSimController extends MAVController implements IMAVController {
 		msgListener.add(listener);
 	}
 
+	@Override
+	public boolean sendMAVLinkMessage(MAVLinkMessage msg) {
+
+		if(!controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
+			System.out.println("Command rejected. No connection.");
+			return false;
+		}
+		return true;
+
+	}
+
+	@Override
+	public boolean sendMAVLinkCmd(int command, float...params) {
+
+
+		return true;
+	}
+
+	public boolean sendMSPLinkCmd(int command, float...params) {
+
+		if(!controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
+			System.out.println("Command rejected. No connection.");
+			return false;
+		}
+
+		return true;
+	}
+
 
 	private class Simulation implements Runnable {
 
@@ -93,13 +122,13 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.battery.p = (short)(95+Math.random()*2f);
 
 			if(getCollector().isCollecting()) {
-					count++;
-					if(model.state.z > -5.0f)
-						model.state.z = model.state.z - 0.001f - (float)Math.random()*0.001f;
-					model.state.x = (float)(Math.sin(count/100f))*0.2f;
-					model.state.y = (float)(Math.cos(count/100f))*0.2f;
-					if(model.battery.b0 > 11f)
-					   model.battery.b0 = model.battery.b0 - (float)Math.random()*0.0001f - 0.0001f;
+				count++;
+				if(model.state.z > -5.0f)
+					model.state.z = model.state.z - 0.001f - (float)Math.random()*0.001f;
+				model.state.x = (float)(Math.sin(count/100f))*0.2f;
+				model.state.y = (float)(Math.cos(count/100f))*0.2f;
+				if(model.battery.b0 > 11f)
+					model.battery.b0 = model.battery.b0 - (float)Math.random()*0.0001f - 0.0001f;
 
 			} else {
 				count = 0;
@@ -107,10 +136,8 @@ public class MAVSimController extends MAVController implements IMAVController {
 				model.battery.b0 = 12.4f;
 			}
 
-			if(Math.abs(Math.random()) > 0.9) {
-				Message m = new Message();
-				m.msg = "Count reached: "+count;
-				msgList.add(m);
+			if(Math.abs(Math.random()) > 0.90) {
+				writeMessage("Testmessage "+count);
 			}
 
 			model.raw.di = (float)Math.random()*0.5f+1;

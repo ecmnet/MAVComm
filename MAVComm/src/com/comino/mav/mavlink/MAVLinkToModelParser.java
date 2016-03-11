@@ -176,7 +176,7 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_command_ack ack = (msg_command_ack)o;
-               // TODO handle acknowledgement
+				// TODO handle acknowledgement
 			}
 
 		});
@@ -392,7 +392,7 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_battery_status bat = (msg_battery_status)o;
 				if(bat.current_consumed>0)
-				   model.battery.a0 = bat.current_consumed;
+					model.battery.a0 = bat.current_consumed;
 			}
 
 		});
@@ -470,6 +470,16 @@ public class MAVLinkToModelParser {
 
 	public void addModeChangeListener(IMSPModeChangedListener listener) {
 		modeListener.add(listener);
+	}
+
+	public void writeMessage(String message) {
+		System.out.println(message);
+		Message m = new Message(message,0);
+		msgList.add(m);
+		if(msgListener!=null) {
+			for(IMAVMessageListener msglistener : msgListener)
+				msglistener.messageReceived(msgList, m);
+		}
 	}
 
 

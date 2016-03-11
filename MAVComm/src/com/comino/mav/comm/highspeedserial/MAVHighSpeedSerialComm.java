@@ -213,6 +213,12 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 
 	}
 
+	@Override
+	public void writeMessage(String message) {
+		parser.writeMessage(message);
+
+	}
+
 
 
 }

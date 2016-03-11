@@ -232,4 +232,10 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 
 	}
+
+	@Override
+	public void writeMessage(String message) {
+		parser.writeMessage(message);
+
+	}
 }

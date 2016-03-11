@@ -50,4 +50,7 @@ public interface IMAVComm {
 
 	public boolean isConnected();
 
+
+	public void writeMessage(String message);
+
 }

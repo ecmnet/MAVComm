@@ -33,7 +33,7 @@ public class Message extends Segment {
 	public Message(String msg, int severity) {
 		this.msg = msg;
 		this.severity = severity;
-		this.tms = System.currentTimeMillis()*1000;
+		this.tms = System.currentTimeMillis();
 	}
 
 }
