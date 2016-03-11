@@ -17,9 +17,6 @@
 package com.comino.mav.comm.udp;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
@@ -40,7 +37,6 @@ import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.Message;
-import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
 

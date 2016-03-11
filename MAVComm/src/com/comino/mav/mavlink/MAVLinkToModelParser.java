@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_CMD_ACK;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_MODE_FLAG_DECODE_POSITION;
 import org.mavlink.messages.MAV_STATE;

@@ -27,7 +27,6 @@ import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
-import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxy;
 import com.comino.msp.main.control.listener.IMAVLinkListener;

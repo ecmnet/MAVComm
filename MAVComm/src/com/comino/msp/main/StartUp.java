@@ -19,6 +19,7 @@ package com.comino.msp.main;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.impl.MAVProxyController;
+import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 public class StartUp {
@@ -31,6 +32,8 @@ public class StartUp {
 		config  = MSPConfig.getInstance("msp.properties");
 		System.out.println("MSPControlService version "+config.getVersion());
 		control = new MAVProxyController();
+
+		MSPLogger.getInstance(control);
 
 
 		// TODO 1.0: Start services if required
