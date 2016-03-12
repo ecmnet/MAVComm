@@ -18,20 +18,27 @@ package com.comino.msp.main;
 
 import org.mavlink.messages.lquac.msg_msp_command;
 
+import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
+import com.comino.mav.control.impl.MAVSimProxyController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 public class StartUp {
 
-	MAVProxyController control = null;
+	IMAVMSPController    control = null;
 	MSPConfig	          config  = null;
 
-	public StartUp() {
+	public StartUp(String[] args) {
 
 		config  = MSPConfig.getInstance("msp.properties");
 		System.out.println("MSPControlService version "+config.getVersion());
-		control = new MAVProxyController();
+
+		if(args.length>0)
+			control = new MAVSimProxyController();
+		else
+			control = new MAVProxyController();
+
 
 		MSPLogger.getInstance(control);
 
@@ -44,7 +51,7 @@ public class StartUp {
 			@Override
 			public void received(Object o) {
 				msg_msp_command hud = (msg_msp_command)o;
-				System.out.println("MSP Command "+hud.command+" executed");
+				MSPLogger.getInstance().writeLocalDebugMsg("MSP Command "+hud.command+" executed");
 			}
 		});
 
@@ -68,7 +75,7 @@ public class StartUp {
 
 
 	public static void main(String[] args) {
-		new StartUp();
+		new StartUp(args);
 
 	}
 

@@ -28,7 +28,9 @@ import org.mavlink.messages.lquac.msg_msp_command;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
 import com.comino.mav.control.IMAVController;
+import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxy;
+import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
@@ -42,9 +44,9 @@ import com.comino.msp.model.segment.Status;
  * serial driver (currently RPi only)
  */
 
-public class MAVProxyController implements IMAVController {
+public class MAVProxyController implements IMAVMSPController {
 
-	protected static IMAVController controller = null;
+	protected static IMAVMSPController controller = null;
 	protected IMAVComm comm = null;
 
 	protected HashMap<Class<?>,IMAVLinkListener> listeners = null;
@@ -82,10 +84,10 @@ public class MAVProxyController implements IMAVController {
 
 		try {
 			comm.write(msg);
-			System.out.println("Execute: "+msg.toString());
+			MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
 			return true;
 		} catch (IOException e1) {
-			System.out.println("Command rejected. "+e1.getMessage());
+			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getMessage());
 			return false;
 		}
 
@@ -120,7 +122,7 @@ public class MAVProxyController implements IMAVController {
 
 	@Override
 	public boolean sendMSPLinkCmd(int command, float...params) {
-		System.out.println("Command rejected: Proxy cannot send command to itself...");
+		MSPLogger.getInstance().writeLocalMsg("Command rejected: Proxy cannot send command to itself...");
 		return false;
 	}
 

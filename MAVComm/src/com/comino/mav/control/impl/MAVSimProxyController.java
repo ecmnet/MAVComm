@@ -23,7 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAVLinkMessage;
 
-import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -33,21 +32,22 @@ import com.comino.msp.model.segment.Message;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
-public class MAVSimController extends MAVController implements IMAVController {
+public class MAVSimProxyController extends MAVController implements IMAVMSPController {
 
 	DataModel model = null;
 	ArrayList<Message>					msgList;
 	private List<IMAVMessageListener> msgListener        = null;
+	protected HashMap<Class<?>,IMAVLinkListener> listeners = null;
 
 
 
-	public MAVSimController() {
+	public MAVSimProxyController() {
 		System.out.println("Simulation Controller loaded");
 		model = new DataModel();
 		collector = new ModelCollectorService(model);
 		msgList = new ArrayList<Message>();
 		msgListener = new ArrayList<IMAVMessageListener>();
-
+		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 
 
@@ -181,6 +181,20 @@ public class MAVSimController extends MAVController implements IMAVController {
 		}
 
 	}
+
+
+	@Override
+	public boolean start() {
+		return true;
+	}
+
+	@Override
+	public void registerListener(Class<?> clazz, IMAVLinkListener listener) {
+		listeners.put(clazz, listener);
+
+	}
+
+
 
 
 }
