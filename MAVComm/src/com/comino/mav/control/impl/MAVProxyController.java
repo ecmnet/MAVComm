@@ -69,7 +69,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 		if(sitl) {
 			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14556, 14551);
-			proxy = new MAVUdpProxy("127.0.0.1",14558,"0.0.0.0",14552);
+			proxy = new MAVUdpProxy("127.0.0.1",14550,"0.0.0.0",14558);
 			System.out.println("Proxy Controller loaded (SITL)");
 		}
 		else {
