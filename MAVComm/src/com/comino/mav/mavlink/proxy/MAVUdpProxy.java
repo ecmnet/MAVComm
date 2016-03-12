@@ -41,9 +41,9 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 	private boolean 			isConnected = false;
 
 
-	public MAVUdpProxy() {
-		this("172.168.178.2",14550,"172.168.178.1",14555);
-	}
+//	public MAVUdpProxy() {
+//		this("172.168.178.2",14550,"172.168.178.1",14555);
+//	}
 
 
 	public MAVUdpProxy(String peerAddress, int pPort, String bindAddress, int bPort) {

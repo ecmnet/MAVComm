@@ -20,7 +20,6 @@ import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
-import com.comino.mav.control.impl.MAVSimProxyController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
@@ -35,9 +34,9 @@ public class StartUp {
 		System.out.println("MSPControlService version "+config.getVersion());
 
 		if(args.length>0)
-			control = new MAVSimProxyController();
+			control = new MAVProxyController(true);
 		else
-			control = new MAVProxyController();
+			control = new MAVProxyController(false);
 
 
 		MSPLogger.getInstance(control);

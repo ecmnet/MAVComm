@@ -27,6 +27,7 @@ import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
+import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxy;
@@ -61,16 +62,21 @@ public class MAVProxyController implements IMAVMSPController {
 	}
 
 
-	public MAVProxyController() {
+	public MAVProxyController(boolean sitl) {
 		controller = this;
 		model = new DataModel();
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
-		System.out.println("Proxy Controller loaded");
-
-
-		comm = MAVHighSpeedSerialComm.getInstance(model);
-		proxy = new MAVUdpProxy();
+		if(sitl) {
+			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14556, 14551);
+			proxy = new MAVUdpProxy("127.0.0.1",14558,"0.0.0.0",14552);
+			System.out.println("Proxy Controller loaded (SITL)");
+		}
+		else {
+			comm = MAVHighSpeedSerialComm.getInstance(model);
+			proxy = new MAVUdpProxy("172.168.178.2",14550,"172.168.178.1",14555);
+			System.out.println("Proxy Controller loaded ");
+		}
 		comm.addMAVLinkListener(proxy);
 	}
 
@@ -189,6 +195,8 @@ public class MAVProxyController implements IMAVMSPController {
 
 		public void run() {
 
+			System.out.println("Starting proxy thread..");
+
 			while (isRunning) {
 				try {
 					Thread.sleep(5);
@@ -202,7 +210,7 @@ public class MAVProxyController implements IMAVMSPController {
 					if(listener!=null)
 						listener.received(msg);
 					else
-					    comm.write(msg);
+						comm.write(msg);
 
 				} catch (Exception e) {
 
@@ -216,7 +224,7 @@ public class MAVProxyController implements IMAVMSPController {
 	public static void main(String[] args) {
 
 
-		MAVProxyController control = new MAVProxyController();
+		MAVProxyController control = new MAVProxyController(true);
 
 
 		// Example to execute MSP MAVLinkMessages via sendMSPLinkCommand(..)
@@ -248,9 +256,9 @@ public class MAVProxyController implements IMAVMSPController {
 					control.connect();
 
 				// Example to send MAVLinkMessages from MSP
-//		           msg_msp_status sta = new msg_msp_status();
-//		           sta.load = 50;
-//		           control.proxy.write(sta);
+				//		           msg_msp_status sta = new msg_msp_status();
+				//		           sta.load = 50;
+				//		           control.proxy.write(sta);
 
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
