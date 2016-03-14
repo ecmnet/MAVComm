@@ -406,7 +406,7 @@ public class MAVLinkToModelParser {
 				model.battery.c0 = sys.current_battery / 100f;
 
 				model.sys.error1  = sys.errors_count1;
-				model.sys.load_p  = sys.load/1000f;
+				model.sys.load_p  = sys.load/10f;
 				model.sys.drops_p = sys.drop_rate_comm/10000f;
 
 				// Sensor availabilit
