@@ -1,8 +1,12 @@
 package com.comino.msp.log;
 
+import org.mavlink.messages.MAV_SEVERITY;
+
 import com.comino.mav.control.IMAVController;
 
 public class MSPLogger {
+
+	// TOOD: register proxy, and send messages if proxy is registered
 
 	private static MSPLogger log = null;
 	private IMAVController control = null;
@@ -29,12 +33,16 @@ public class MSPLogger {
 	}
 
 	public void writeLocalMsg(String msg) {
-		control.writeMessage("GCL: "+msg);
+		writeLocalMsg(msg,MAV_SEVERITY.MAV_SEVERITY_INFO);
+	}
+
+	public void writeLocalMsg(String msg, int severity) {
+		control.writeMessage(msg, severity);
 	}
 
 	public void writeLocalDebugMsg(String msg) {
 		if(debug_msg_enabled)
-		   control.writeMessage("DBG: "+msg);
+		   control.writeMessage(msg, MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 	}
 
 }

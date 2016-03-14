@@ -42,7 +42,7 @@ public interface IMAVController {
 	public ModelCollectorService getCollector();
 
 	public List<Message> getMessageList();
-	public void writeMessage(String message);
+	public void writeMessage(String message, int severity);
 
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap();
 

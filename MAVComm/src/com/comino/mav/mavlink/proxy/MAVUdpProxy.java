@@ -23,6 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -121,7 +122,6 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 
 		} catch (IOException e) {
 			try { Thread.sleep(150); } catch(Exception k) { }
-		//	System.out.println(e.getMessage());
 			buffer.clear();
 			close();
 			isConnected = false;

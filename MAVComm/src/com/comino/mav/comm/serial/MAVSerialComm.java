@@ -267,8 +267,8 @@ public class MAVSerialComm implements IMAVComm {
 	}
 
 	@Override
-	public void writeMessage(String message) {
-		parser.writeMessage(message);
+	public void writeMessage(String message, int severity) {
+
 
 	}
 

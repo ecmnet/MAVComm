@@ -230,7 +230,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 	}
 
 	@Override
-	public void writeMessage(String message) {
+	public void writeMessage(String message, int severity) {
 		parser.writeMessage(message);
 
 	}

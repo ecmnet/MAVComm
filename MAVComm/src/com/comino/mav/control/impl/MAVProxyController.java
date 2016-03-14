@@ -22,8 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
+import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
@@ -295,8 +297,12 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	@Override
-	public void writeMessage(String message) {
-		comm.writeMessage(message);
+	public void writeMessage(String message, int severity) {
+		msg_statustext msg = new msg_statustext();
+		msg.setText(message);
+		msg.componentId = 1;
+		msg.severity =severity;
+		proxy.write(msg);
 
 	}
 

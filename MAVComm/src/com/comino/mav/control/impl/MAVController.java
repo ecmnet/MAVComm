@@ -210,9 +210,9 @@ public class MAVController implements IMAVController {
 
 
 	@Override
-	public void writeMessage(String message) {
+	public void writeMessage(String message, int severity) {
 		if(comm!=null)
-		  comm.writeMessage(message);
+		  comm.writeMessage(message, severity);
 
 	}
 

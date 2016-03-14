@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_SEVERITY;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
@@ -141,7 +142,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			}
 
 			if(Math.abs(Math.random()) > 0.90) {
-				writeMessage("Testmessage "+count);
+				writeMessage("Testmessage "+count, MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 			}
 
 			model.raw.di = (float)Math.random()*0.5f+1;

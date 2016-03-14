@@ -50,7 +50,7 @@ public class StartUp {
 			@Override
 			public void received(Object o) {
 				msg_msp_command hud = (msg_msp_command)o;
-				MSPLogger.getInstance().writeLocalDebugMsg("MSP Command "+hud.command+" executed");
+				MSPLogger.getInstance().writeLocalMsg("MSP Command "+hud.command+" executed");
 			}
 		});
 
