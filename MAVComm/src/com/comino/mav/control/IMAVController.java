@@ -26,7 +26,7 @@ import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 
 public interface IMAVController {
 
@@ -41,8 +41,8 @@ public interface IMAVController {
 
 	public ModelCollectorService getCollector();
 
-	public List<Message> getMessageList();
-	public void writeMessage(String message, int severity);
+	public List<LogMessage> getMessageList();
+	public void writeLogMessage(LogMessage m);
 
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap();
 

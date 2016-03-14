@@ -32,7 +32,7 @@ import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
 
@@ -151,7 +151,7 @@ public class MAVController implements IMAVController {
 
 
 	@Override
-	public List<Message> getMessageList() {
+	public List<LogMessage> getMessageList() {
 		return comm.getMessageList();
 	}
 
@@ -210,9 +210,9 @@ public class MAVController implements IMAVController {
 
 
 	@Override
-	public void writeMessage(String message, int severity) {
+	public void writeLogMessage(LogMessage m) {
 		if(comm!=null)
-		  comm.writeMessage(message, severity);
+		  comm.writeMessage(m);
 
 	}
 

@@ -26,7 +26,7 @@ import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 
 public interface IMAVComm {
 
@@ -34,7 +34,7 @@ public interface IMAVComm {
 
 	public DataModel getModel();
 
-	public List<Message> getMessageList();
+	public List<LogMessage> getMessageList();
 
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap();
 
@@ -51,6 +51,6 @@ public interface IMAVComm {
 	public boolean isConnected();
 
 
-	public void writeMessage(String message, int severity);
+	public void writeMessage(LogMessage m);
 
 }

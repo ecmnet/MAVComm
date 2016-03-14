@@ -30,14 +30,14 @@ import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
 public class MAVSimController extends MAVController implements IMAVController {
 
 	DataModel model = null;
-	ArrayList<Message>					msgList;
+	ArrayList<LogMessage>					msgList;
 	private List<IMAVMessageListener> msgListener        = null;
 
 
@@ -46,7 +46,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 		System.out.println("Simulation Controller loaded");
 		model = new DataModel();
 		collector = new ModelCollectorService(model);
-		msgList = new ArrayList<Message>();
+		msgList = new ArrayList<LogMessage>();
 		msgListener = new ArrayList<IMAVMessageListener>();
 
 
@@ -61,7 +61,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 	}
 
 	@Override
-	public List<Message> getMessageList() {
+	public List<LogMessage> getMessageList() {
 		return msgList;
 	}
 
@@ -141,9 +141,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 				model.battery.b0 = 12.4f;
 			}
 
-			if(Math.abs(Math.random()) > 0.90) {
-				writeMessage("Testmessage "+count, MAV_SEVERITY.MAV_SEVERITY_DEBUG);
-			}
+
 
 			model.raw.di = (float)Math.random()*0.5f+1;
 			model.imu.accx = (float)Math.random()*0.5f-0.25f;

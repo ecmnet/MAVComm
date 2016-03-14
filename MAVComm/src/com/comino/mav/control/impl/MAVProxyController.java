@@ -39,7 +39,7 @@ import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
 /*
@@ -176,7 +176,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	@Override
-	public List<Message> getMessageList() {
+	public List<LogMessage> getMessageList() {
 		return comm.getMessageList();
 	}
 
@@ -297,11 +297,11 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	@Override
-	public void writeMessage(String message, int severity) {
+	public void writeLogMessage(LogMessage m) {
 		msg_statustext msg = new msg_statustext();
-		msg.setText(message);
+		msg.setText(m.msg);
 		msg.componentId = 1;
-		msg.severity =severity;
+		msg.severity =m.severity;
 		proxy.write(msg);
 
 	}

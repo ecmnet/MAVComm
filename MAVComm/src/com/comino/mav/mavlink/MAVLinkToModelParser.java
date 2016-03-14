@@ -54,7 +54,7 @@ import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
 
@@ -64,7 +64,7 @@ public class MAVLinkToModelParser {
 	private MAVLinkStream stream;
 	private DataModel model;
 
-	private ArrayList<Message>					msgList     = null;
+	private ArrayList<LogMessage>					msgList     = null;
 	private HashMap<Class<?>,MAVLinkMessage>	mavList     = null;
 
 	private IMAVComm link = null;
@@ -81,7 +81,7 @@ public class MAVLinkToModelParser {
 
 		this.model = model;
 		this.link = link;
-		this.msgList   = new ArrayList<Message>();
+		this.msgList   = new ArrayList<LogMessage>();
 		this.mavList   = new HashMap<Class<?>,MAVLinkMessage>();
 
 		this.modeListener = new ArrayList<IMSPModeChangedListener>();
@@ -308,7 +308,7 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_statustext msg = (msg_statustext)o;
-				Message m = new Message();
+				LogMessage m = new LogMessage();
 				m.msg = new String(msg.text);
 				m.tms = System.currentTimeMillis();
 				m.severity = msg.severity;
@@ -447,7 +447,7 @@ public class MAVLinkToModelParser {
 		msgListener.add(listener);
 	}
 
-	public List<Message> getMessageList() {
+	public List<LogMessage> getMessageList() {
 		return msgList;
 	}
 
@@ -471,9 +471,8 @@ public class MAVLinkToModelParser {
 		modeListener.add(listener);
 	}
 
-	public void writeMessage(String message) {
-		System.out.println(message);
-		Message m = new Message(message,0);
+	public void writeMessage(LogMessage m) {
+		System.out.println(m.msg);
 		msgList.add(m);
 		if(msgListener!=null) {
 			for(IMAVMessageListener msglistener : msgListener)
@@ -522,7 +521,7 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
 						for(IMSPModeChangedListener listener : modeListener)
 							listener.update(model.sys, model.sys);
-						msgList.add(new Message("Connection lost",2));
+						msgList.add(new LogMessage("Connection lost",2));
 						System.out.println("Connection lost");
 						link.close(); link.open();
 						model.sys.tms = System.nanoTime()/1000;

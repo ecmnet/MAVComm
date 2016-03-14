@@ -33,7 +33,7 @@ import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
 import jssc.SerialPort;
@@ -115,7 +115,7 @@ public class MAVSerialComm implements IMAVComm {
 	 * @see com.comino.px4.control.serial.IPX4Comm#getMessageList()
 	 */
 	@Override
-	public List<Message> getMessageList() {
+	public List<LogMessage> getMessageList() {
 		return parser.getMessageList();
 	}
 
@@ -267,7 +267,7 @@ public class MAVSerialComm implements IMAVComm {
 	}
 
 	@Override
-	public void writeMessage(String message, int severity) {
+	public void writeMessage(LogMessage m) {
 
 
 	}

@@ -50,14 +50,14 @@ public class StartUp {
 			@Override
 			public void received(Object o) {
 				msg_msp_command hud = (msg_msp_command)o;
-				MSPLogger.getInstance().writeLocalMsg("MSP Command "+hud.command+" executed");
+				MSPLogger.getInstance().writeLocalMsg("Companion Command "+hud.command+" executed");
 			}
 		});
 
 		control.start();
 
 		control.connect();
-
+		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
 
 		while(true) {
 			try {

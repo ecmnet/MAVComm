@@ -36,7 +36,7 @@ import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
-import com.comino.msp.model.segment.Message;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.utils.ExecutorService;
 
 
@@ -109,7 +109,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 	}
 
 
-	public List<Message> getMessageList() {
+	public List<LogMessage> getMessageList() {
 
 		return parser.getMessageList();
 	}
@@ -201,7 +201,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 			}
 
 
-			for(Message m : comm.getMessageList()) {
+			for(LogMessage m : comm.getMessageList()) {
 				System.out.println(m.severity+": "+m.msg);
 			}
 
@@ -230,8 +230,8 @@ public class MAVUdpCommNIO implements IMAVComm {
 	}
 
 	@Override
-	public void writeMessage(String message, int severity) {
-		parser.writeMessage(message);
+	public void writeMessage(LogMessage m) {
+		parser.writeMessage(m);
 
 	}
 }
