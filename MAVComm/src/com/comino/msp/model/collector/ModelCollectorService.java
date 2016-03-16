@@ -16,6 +16,13 @@
 
 package com.comino.msp.model.collector;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -24,6 +31,9 @@ import java.util.concurrent.locks.LockSupport;
 
 import com.comino.msp.model.DataModel;
 import com.comino.msp.utils.ExecutorService;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class ModelCollectorService {
 
@@ -113,6 +123,21 @@ public class ModelCollectorService {
 				}
 			}
 		}, delay_sec, TimeUnit.SECONDS);
+	}
+
+	public void writeToFile(File file) throws IOException {
+		Writer writer = new FileWriter(file);
+        Gson gson = new GsonBuilder().create();
+        gson.toJson(modelList, writer);
+        writer.close();
+	}
+
+	public void readFromFile(File file) throws IOException {
+		Type listType = new TypeToken<ArrayList<DataModel>>() {}.getType();
+		Reader reader = new FileReader(file);
+        Gson gson = new GsonBuilder().create();
+        modelList = gson.fromJson(reader,listType);
+        reader.close();
 	}
 
 

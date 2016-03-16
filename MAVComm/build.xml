@@ -4,7 +4,7 @@
 	<property name="dis.dir" value="dis" />
 	<property name="res.dir" value="resources" />
 	<property name="build.dir" value="bin" />
-	<property name="deploy.dir" value="/Volumes/pi" />
+	<property name="deploy.dir" value="/Volumes/pi-2" />
 	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib"/>
 
 	<target name="Build MAVComm" description="Build jar">
@@ -16,6 +16,7 @@
 				<attribute name="Class-Path"
 				     value="/home/pi/LQuaC/jna-4.1.0.jar
 					    	/home/pi/LQuaC/purejavacomm-0.0.21.jar
+					        /home/pi/LQuaC/gson-2.4.jar
 					        /home/pi/libAMA0.so
 					        /home/pi/resources/
 					         mavlink/message_definitions/common.xml"
