@@ -150,7 +150,7 @@ public class ModelCollectorService {
 			PX4toModelConverter converter = new PX4toModelConverter(reader,modelList);
 			converter.doConversion(current);
 		} catch (FormatErrorException e) {
-			throw new IOException("Unknown file format");
+			throw new IOException("PX4Log import error: "+e.getMessage());
 		}
 
 	}

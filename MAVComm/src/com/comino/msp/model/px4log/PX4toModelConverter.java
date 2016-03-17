@@ -51,7 +51,7 @@ public class PX4toModelConverter {
 							try {
 							  MSTYPE.putValue(current, types[i], (float)data.get(px4Name));
 							} catch(Exception e) {
-								throw new FormatErrorException(px4Name+" was not found");
+								//System.err.println(px4Name+" was not found");
 							}
 						}
 					}
