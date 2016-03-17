@@ -37,7 +37,7 @@ public class PX4toModelConverter {
 		}
 
 		list.clear();
-		current.clear();
+		DataModel model = new DataModel();
 
 		try {
 
@@ -55,7 +55,7 @@ public class PX4toModelConverter {
 							}
 						}
 					}
-					list.add(current.clone());
+					list.add(model.clone());
 				}
 			}
 
