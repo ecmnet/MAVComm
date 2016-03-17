@@ -36,6 +36,7 @@ public class PX4toModelConverter {
 		}
 
 		list.clear();
+		current.clear();
 
 		try {
 
