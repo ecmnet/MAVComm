@@ -49,7 +49,7 @@ public class PX4toModelConverter {
 						if(MSTYPE.getPX4LogName(types[i]).length()>0) {
 							String px4Name = MSTYPE.getPX4LogName(types[i]);
 							try {
-							  MSTYPE.putValue(current, types[i], (float)data.get(px4Name));
+							  MSTYPE.putValue(model, types[i], (float)data.get(px4Name));
 							} catch(Exception e) {
 								//System.err.println(px4Name+" was not found");
 							}
