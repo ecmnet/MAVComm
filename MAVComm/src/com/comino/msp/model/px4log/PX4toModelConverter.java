@@ -31,8 +31,9 @@ public class PX4toModelConverter {
 
 		MSTYPE[] types = MSTYPE.values();
 		for(int i=0; i< types.length;i++) {
-			if(MSTYPE.getPX4LogName(types[i]).length()>0)
+			if(MSTYPE.getPX4LogName(types[i]).length()>0) {
 				data.put(MSTYPE.getPX4LogName(types[i]), null);
+			}
 		}
 
 		list.clear();
@@ -45,8 +46,14 @@ public class PX4toModelConverter {
 				if(tms > tms_slot) {
 					tms_slot += 50000;
 					for(int i=0; i< types.length;i++) {
-						if(MSTYPE.getPX4LogName(types[i]).length()>0)
-							MSTYPE.putValue(current, types[i], (float)data.get(MSTYPE.getPX4LogName(types[i])));
+						if(MSTYPE.getPX4LogName(types[i]).length()>0) {
+							String px4Name = MSTYPE.getPX4LogName(types[i]);
+							try {
+							  MSTYPE.putValue(current, types[i], (float)data.get(px4Name));
+							} catch(Exception e) {
+								throw new FormatErrorException(px4Name+" was not found");
+							}
+						}
 					}
 					list.add(current.clone());
 				}
