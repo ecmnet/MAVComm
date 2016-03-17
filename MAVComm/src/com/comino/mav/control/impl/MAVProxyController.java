@@ -49,6 +49,8 @@ import com.comino.msp.model.segment.Status;
 
 public class MAVProxyController implements IMAVMSPController {
 
+	protected String peerAddress = null;
+
 	protected static IMAVMSPController controller = null;
 	protected IMAVComm comm = null;
 
@@ -72,11 +74,13 @@ public class MAVProxyController implements IMAVMSPController {
 		if(sitl) {
 			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14556, 14551);
 			proxy = new MAVUdpProxy("127.0.0.1",14550,"0.0.0.0",14558);
+			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller loaded (SITL)");
 		}
 		else {
 			comm = MAVHighSpeedSerialComm.getInstance(model);
 			proxy = new MAVUdpProxy("172.168.178.2",14550,"172.168.178.1",14555);
+			peerAddress = "172.168.178.2";
 			System.out.println("Proxy Controller loaded ");
 		}
 		comm.addMAVLinkListener(proxy);
@@ -304,6 +308,12 @@ public class MAVProxyController implements IMAVMSPController {
 		msg.severity =m.severity;
 		proxy.write(msg);
 
+	}
+
+
+	@Override
+	public String getConnectedAddress() {
+		return peerAddress;
 	}
 
 }

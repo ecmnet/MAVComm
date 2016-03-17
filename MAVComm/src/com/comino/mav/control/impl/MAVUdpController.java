@@ -34,6 +34,7 @@ public class MAVUdpController extends MAVController implements IMAVController {
 	public MAVUdpController(String peerAddress, int peerPort, int bindPort) {
 		super();
 
+		this.peerAddress = peerAddress;
 		System.out.println("UDP Controller loaded");
 		comm = MAVUdpCommNIO.getInstance(model, peerAddress,peerPort, bindPort);
 

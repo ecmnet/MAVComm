@@ -38,6 +38,8 @@ import com.comino.msp.model.segment.Status;
 
 public class MAVController implements IMAVController {
 
+	protected String peerAddress = null;
+
 	protected static IMAVController controller = null;
 	protected IMAVComm comm = null;
 
@@ -214,6 +216,12 @@ public class MAVController implements IMAVController {
 		if(comm!=null)
 		  comm.writeMessage(m);
 
+	}
+
+
+	@Override
+	public String getConnectedAddress() {
+        return peerAddress;
 	}
 
 

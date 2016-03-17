@@ -38,6 +38,8 @@ public interface IMAVController {
 
 	public DataModel getCurrentModel();
 
+	public String getConnectedAddress();
+
 
 	public ModelCollectorService getCollector();
 
