@@ -41,8 +41,6 @@ import me.drton.jmavlib.log.px4.PX4LogReader;
 
 public class ModelCollectorService {
 
-
-
 	public static  final int STOPPED		 	= 0;
 	public static  final int PRE_COLLECTING 	= 1;
 	public static  final int COLLECTING     	= 2;
@@ -62,6 +60,8 @@ public class ModelCollectorService {
 
 	private float ned_offset_x =0;
 	private float ned_offset_y =0;
+
+	private String name;
 
 
 	public ModelCollectorService(DataModel current) {
@@ -133,6 +133,7 @@ public class ModelCollectorService {
 		Gson gson = new GsonBuilder().create();
 		gson.toJson(modelList, writer);
 		writer.close();
+		name = file.getName();
 	}
 
 	public void readFromFile(File file) throws IOException {
@@ -141,6 +142,7 @@ public class ModelCollectorService {
 		Gson gson = new GsonBuilder().create();
 		modelList = gson.fromJson(reader,listType);
 		reader.close();
+		name = file.getName();
 	}
 
 	public void importPX4Log(File file) throws IOException {
@@ -148,6 +150,7 @@ public class ModelCollectorService {
 			PX4LogReader reader = new PX4LogReader(file.getAbsolutePath());
 			PX4toModelConverter converter = new PX4toModelConverter(reader,modelList);
 			converter.doConversion(current);
+			name = file.getName();
 		} catch (FormatErrorException e) {
 			throw new IOException("PX4Log import error: "+e.getMessage());
 		}
@@ -179,6 +182,10 @@ public class ModelCollectorService {
 			return 0;
 	}
 
+	public String getName() {
+		return name;
+	}
+
 
 	public int getMode() {
 		return mode;
@@ -199,6 +206,7 @@ public class ModelCollectorService {
 		@Override
 		public void run() {
 			long tms = System.nanoTime() / 1000;
+			name = "";
 			while(mode!=STOPPED) {
 				DataModel model = current.clone();
 				model.tms = System.nanoTime() / 1000 - tms;
