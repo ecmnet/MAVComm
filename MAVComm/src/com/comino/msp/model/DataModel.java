@@ -95,6 +95,7 @@ public class DataModel extends Segment implements Serializable {
 		this.rc             = m.rc.clone();
 		this.vibration      = m.vibration.clone();
 		this.debug          = m.debug.clone();
+		this.tms            = m.tms;
 	}
 
 
@@ -111,7 +112,8 @@ public class DataModel extends Segment implements Serializable {
 		this.servo.set(m.servo);
 		this.rc.set(m.rc);
 		this.vibration.set(m.vibration);
-		this.debug.set(debug);
+		this.debug.set(m.debug);
+		this.tms = m.tms;
 	}
 
 	public DataModel clone() {
@@ -130,5 +132,6 @@ public class DataModel extends Segment implements Serializable {
 		this.rc.clear();
 		this.vibration.clear();
 		this.debug.clear();
+		this.tms = 0;
 	}
 }

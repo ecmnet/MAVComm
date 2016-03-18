@@ -409,9 +409,7 @@ public class MAVLinkToModelParser {
 				model.sys.load_p  = sys.load/10;
 				model.sys.drops_p = sys.drop_rate_comm/10000f;
 
-				// Sensor availabilit
-
-				model.sys.tms = System.nanoTime()/1000;
+				// Sensor availability
 
 				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY,
 						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW)>0);

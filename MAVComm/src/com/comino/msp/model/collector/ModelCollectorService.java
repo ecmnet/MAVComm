@@ -63,7 +63,6 @@ public class ModelCollectorService {
 	private float ned_offset_x =0;
 	private float ned_offset_y =0;
 
-	private long elapsed_time_ms;
 
 	public ModelCollectorService(DataModel current) {
 		this.modelList     = new ArrayList<DataModel>();
@@ -174,7 +173,10 @@ public class ModelCollectorService {
 	}
 
 	public long getElapsedTimeMS() {
-		return elapsed_time_ms;
+		if(modelList.size()> 0)
+			return (modelList.get(modelList.size()-1).tms) / 1000;
+		else
+			return 0;
 	}
 
 
@@ -196,10 +198,10 @@ public class ModelCollectorService {
 
 		@Override
 		public void run() {
-			long tms = System.currentTimeMillis();
+			long tms = System.nanoTime() / 1000;
 			while(mode!=STOPPED) {
 				DataModel model = current.clone();
-				elapsed_time_ms = System.currentTimeMillis() - tms;
+				model.tms = System.nanoTime() / 1000 - tms;
 
 				for(IInjectValueListener listener :  debugListener) {
 					listener.addValue(model);
