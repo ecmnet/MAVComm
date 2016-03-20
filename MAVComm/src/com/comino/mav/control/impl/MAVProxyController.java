@@ -251,7 +251,6 @@ public class MAVProxyController implements IMAVMSPController {
 			if(!control.isConnected())
 				control.connect();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -267,7 +266,6 @@ public class MAVProxyController implements IMAVMSPController {
 				//		           control.proxy.write(sta);
 
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

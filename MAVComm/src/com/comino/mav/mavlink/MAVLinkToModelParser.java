@@ -175,7 +175,7 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_command_ack ack = (msg_command_ack)o;
-				// TODO handle acknowledgement
+				// TODO 1.0 handle acknowledgement
 			}
 
 		});
@@ -414,7 +414,7 @@ public class MAVLinkToModelParser {
 				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY,
 						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW)>0);
 
-				//				// TODO: GPS not found
+				//
 				//				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
 				//						(sys.onboard_control_sensors_enabled & MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
 

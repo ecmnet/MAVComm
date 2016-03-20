@@ -74,7 +74,6 @@ public class MSPConfig {
 			if(propStream!=null) {
 				prop.load(propStream);
 			propStream.close();
-				//		DefaultLogger.getInstance().log(prop.getProperty("description", "Default")+" configuration loaded");
 			} else
 				throw new IOException("Configuration file'"+fileName+"' not found in classpath");
 		} catch(IOException io ) {
@@ -83,7 +82,6 @@ public class MSPConfig {
 		return this;
 	}
 
-	// TODO: 2.8: Avoid permanent calls (status)
 	public String getVersion() {
 		return version;
 	}

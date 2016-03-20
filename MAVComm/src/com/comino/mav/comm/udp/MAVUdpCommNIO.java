@@ -221,7 +221,6 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 		} catch (Exception e) {
 			comm.close();
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 		}

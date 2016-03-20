@@ -206,6 +206,7 @@ public class ModelCollectorService {
 		@Override
 		public void run() {
 			long tms = System.nanoTime() / 1000;
+			// TODO 1.0: generate RecordingName (use also as template for saving data)
 			name = "";
 			while(mode!=STOPPED) {
 				DataModel model = current.clone();
@@ -246,7 +247,6 @@ public class ModelCollectorService {
 		try {
 			s.importPX4Log(px4);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

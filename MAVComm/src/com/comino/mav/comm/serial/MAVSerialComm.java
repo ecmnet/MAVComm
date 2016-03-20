@@ -147,7 +147,6 @@ public class MAVSerialComm implements IMAVComm {
 			try {
 				serialPort.closePort();
 			} catch (SerialPortException e) {
-				// TODO Auto-generated catch block
 				//e.printStackTrace();
 			}
 			//System.err.println(e2.getMessage());
@@ -239,7 +238,6 @@ public class MAVSerialComm implements IMAVComm {
 
 		} catch (Exception e) {
 			comm.close();
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 
 		}

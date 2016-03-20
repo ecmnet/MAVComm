@@ -142,7 +142,6 @@ public class MAVController implements IMAVController {
 
 	@Override
 	public boolean connect() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
