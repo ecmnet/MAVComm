@@ -200,7 +200,7 @@ public class MAVLinkToModelParser {
 				model.gps.numsat = (byte) gps.satellites_visible;
 				model.gps.setFlag(GPS.GPS_SAT_FIX, gps.fix_type>0);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
-				model.gps.eph   = gps.eph/100f;
+				model.gps.hdop   = gps.eph/100f;
 				model.gps.latitude = gps.lat/1e7d;
 				model.gps.longitude = gps.lon/1e7d;
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);

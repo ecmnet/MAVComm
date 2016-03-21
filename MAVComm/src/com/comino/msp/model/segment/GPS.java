@@ -38,6 +38,7 @@ public class GPS extends Segment {
 	public short  	heading 	= 0;
 	public short  	altitude 	= 0;
 	public float  	eph 	    = 0;
+	public float  	hdop 	    = 0;
 	public float  	speed 		= 0;
 
 	public double	ref_lat     = 0;
@@ -80,6 +81,7 @@ public class GPS extends Segment {
 		altitude	= gps.altitude;
 		heading		= gps.heading;
 		eph			= gps.eph;
+		hdop        = gps.hdop;
 		speed		= gps.speed;
 
 		ref_lat     = gps.ref_lat;
@@ -105,6 +107,7 @@ public class GPS extends Segment {
 		g.latitude  	= latitude;
 		g.longitude 	= longitude;
 		g.eph 			= eph;
+		g.hdop          = hdop;
 		g.altitude		= altitude;
 		g.speed     	= speed;
 
@@ -126,6 +129,7 @@ public class GPS extends Segment {
 		heading 	= 0;
 		altitude 	= 0;
 		eph 		= 0;
+		hdop        = 0;
 		speed 		= 0;
 
 		ref_lat     = 0;
