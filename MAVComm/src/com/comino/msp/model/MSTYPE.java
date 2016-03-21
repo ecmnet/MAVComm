@@ -185,6 +185,7 @@ public enum MSTYPE {
 		case MSP_REF_GPSLAT:    return (float) m.gps.ref_lat;
 		case MSP_REF_GPSLON:    return (float) m.gps.ref_lon;
 		case MSP_GPSEPH: 		return (float) m.gps.eph;
+		case MSP_GPSHDOP: 		return (float) m.gps.hdop;
 		case MSP_RAW_SATNUM:    return m.gps.numsat;
 		case MSP_VIBX:          return m.vibration.vibx;
 		case MSP_VIBY:          return m.vibration.viby;
