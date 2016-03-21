@@ -64,6 +64,7 @@ public enum MSTYPE {
 	MSP_GLOBRELVY   ("Global.rel.SpeedY",1,"cm/s","GPOS.VelE"),
 	MSP_GLOBRELVZ	("Global.rel.SpeedZ",1,"cm/s","GPOS.VelD"),
 	MSP_GPSEPH  	("GPS.eph",1,"","GPS.EPH"),
+	MSP_GPSHDOP     ("GPS.hdop",1,"","GPS.HDOP"),
 	MSP_RAW_SATNUM  ("Satellites",1,"","GPS.nSat"),
 	MSP_VIBX        ("VibrationX",1,"",""),
 	MSP_VIBY        ("VibrationY",1,"",""),
