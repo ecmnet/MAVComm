@@ -115,8 +115,6 @@ public class ModelCollectorService {
 	public void setModelList(List<DataModel> list) {
 		modelList.clear();
 		modelList.addAll(list);
-		current.set(list.get(list.size()-1).clone());
-		current.sys.tms = System.nanoTime()/1000;
 	}
 
 	public void setCurrentTo(float time_ms) {
