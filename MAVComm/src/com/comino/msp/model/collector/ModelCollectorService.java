@@ -47,8 +47,6 @@ public class ModelCollectorService {
 	private float ned_offset_x =0;
 	private float ned_offset_y =0;
 
-	private String name;
-
 
 	public ModelCollectorService(DataModel current) {
 		this.modelList     = new ArrayList<DataModel>();
@@ -114,40 +112,25 @@ public class ModelCollectorService {
 		}, delay_sec, TimeUnit.SECONDS);
 	}
 
-//	public void writeToFile(File file) throws IOException {
-//		Writer writer = new FileWriter(file);
-//		Gson gson = new GsonBuilder().create();
-//		gson.toJson(modelList, writer);
-//		writer.close();
-//		name = file.getName();
-//	}
-//
-//	public void readFromFile(File file) throws IOException {
-//		Type listType = new TypeToken<ArrayList<DataModel>>() {}.getType();
-//		Reader reader = new FileReader(file);
-//		Gson gson = new GsonBuilder().create();
-//		modelList = gson.fromJson(reader,listType);
-//		reader.close();
-//		name = file.getName();
-//	}
-//
-//	public void importPX4Log(File file) throws IOException {
-//		try {
-//			PX4LogReader reader = new PX4LogReader(file.getAbsolutePath());
-//			PX4toModelConverter converter = new PX4toModelConverter(reader,modelList);
-//			converter.doConversion();
-//			name = file.getName();
-//		} catch (FormatErrorException e) {
-//			throw new IOException("PX4Log import error: "+e.getMessage());
-//		}
-//
-//	}
-
 	public void setModelList(List<DataModel> list) {
 		modelList.clear();
 		modelList.addAll(list);
+		current.set(list.get(list.size()-1).clone());
+		current.sys.tms = System.nanoTime()/1000;
 	}
 
+	public void setCurrentTo(float time_ms) {
+		int index = (int)(time_ms * 1000f / MODELCOLLECTOR_INTERVAL_US);
+		if(index > 0 && index < modelList.size())
+			current.set(modelList.get(index));
+	}
+
+	public long getTotalRecordingTimeMS() {
+		if(modelList.size()> 0)
+			return (modelList.get(modelList.size()-1).tms) / 1000;
+		else
+			return 0;
+	}
 
 	public void start(int pre_sec) {
 		if(mode==STOPPED) {
@@ -165,17 +148,6 @@ public class ModelCollectorService {
 	public boolean isCollecting() {
 		return mode != STOPPED;
 	}
-
-	public long getElapsedTimeMS() {
-		if(modelList.size()> 0)
-			return (modelList.get(modelList.size()-1).tms) / 1000;
-		else
-			return 0;
-	}
-
-//	public String getName() {
-//		return name;
-//	}
 
 
 	public int getMode() {
@@ -197,11 +169,9 @@ public class ModelCollectorService {
 		@Override
 		public void run() {
 			long tms = System.nanoTime() / 1000;
-			// TODO 1.0: generate RecordingName (use also as template for saving data)
-			name = "";
 			while(mode!=STOPPED) {
+				current.tms = System.nanoTime() / 1000 - tms;
 				DataModel model = current.clone();
-				model.tms = System.nanoTime() / 1000 - tms;
 
 				for(IInjectValueListener listener :  debugListener) {
 					listener.addValue(model);
