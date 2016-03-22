@@ -16,13 +16,6 @@
 
 package com.comino.msp.model.collector;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
@@ -30,14 +23,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.px4log.PX4toModelConverter;
 import com.comino.msp.utils.ExecutorService;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import me.drton.jmavlib.log.FormatErrorException;
-import me.drton.jmavlib.log.px4.PX4LogReader;
 
 public class ModelCollectorService {
 
@@ -128,33 +114,38 @@ public class ModelCollectorService {
 		}, delay_sec, TimeUnit.SECONDS);
 	}
 
-	public void writeToFile(File file) throws IOException {
-		Writer writer = new FileWriter(file);
-		Gson gson = new GsonBuilder().create();
-		gson.toJson(modelList, writer);
-		writer.close();
-		name = file.getName();
-	}
+//	public void writeToFile(File file) throws IOException {
+//		Writer writer = new FileWriter(file);
+//		Gson gson = new GsonBuilder().create();
+//		gson.toJson(modelList, writer);
+//		writer.close();
+//		name = file.getName();
+//	}
+//
+//	public void readFromFile(File file) throws IOException {
+//		Type listType = new TypeToken<ArrayList<DataModel>>() {}.getType();
+//		Reader reader = new FileReader(file);
+//		Gson gson = new GsonBuilder().create();
+//		modelList = gson.fromJson(reader,listType);
+//		reader.close();
+//		name = file.getName();
+//	}
+//
+//	public void importPX4Log(File file) throws IOException {
+//		try {
+//			PX4LogReader reader = new PX4LogReader(file.getAbsolutePath());
+//			PX4toModelConverter converter = new PX4toModelConverter(reader,modelList);
+//			converter.doConversion();
+//			name = file.getName();
+//		} catch (FormatErrorException e) {
+//			throw new IOException("PX4Log import error: "+e.getMessage());
+//		}
+//
+//	}
 
-	public void readFromFile(File file) throws IOException {
-		Type listType = new TypeToken<ArrayList<DataModel>>() {}.getType();
-		Reader reader = new FileReader(file);
-		Gson gson = new GsonBuilder().create();
-		modelList = gson.fromJson(reader,listType);
-		reader.close();
-		name = file.getName();
-	}
-
-	public void importPX4Log(File file) throws IOException {
-		try {
-			PX4LogReader reader = new PX4LogReader(file.getAbsolutePath());
-			PX4toModelConverter converter = new PX4toModelConverter(reader,modelList);
-			converter.doConversion(current);
-			name = file.getName();
-		} catch (FormatErrorException e) {
-			throw new IOException("PX4Log import error: "+e.getMessage());
-		}
-
+	public void setModelList(List<DataModel> list) {
+		modelList.clear();
+		modelList.addAll(list);
 	}
 
 
@@ -182,9 +173,9 @@ public class ModelCollectorService {
 			return 0;
 	}
 
-	public String getName() {
-		return name;
-	}
+//	public String getName() {
+//		return name;
+//	}
 
 
 	public int getMode() {
@@ -238,18 +229,4 @@ public class ModelCollectorService {
 
 	}
 
-
-	public static void main(String[] args) {
-		ModelCollectorService s = new ModelCollectorService(new DataModel());
-
-		File px4 = new File("/Users/ecmnet/Desktop/log001.px4log");
-
-		try {
-			s.importPX4Log(px4);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
-
-	}
 }

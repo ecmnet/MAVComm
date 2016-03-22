@@ -200,6 +200,8 @@ public class MAVLinkToModelParser {
 				model.gps.numsat = (byte) gps.satellites_visible;
 				model.gps.setFlag(GPS.GPS_SAT_FIX, gps.fix_type>0);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
+
+				// TODO 1.0: Wrong assignment in MAVLINK (ref. #4051)
 				model.gps.hdop   = gps.eph/100f;
 				model.gps.latitude = gps.lat/1e7d;
 				model.gps.longitude = gps.lon/1e7d;
