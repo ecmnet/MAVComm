@@ -52,7 +52,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 
 
-		ExecutorService.get().scheduleAtFixedRate(new Simulation(), 0, 50, TimeUnit.MILLISECONDS);
+		ExecutorService.get().scheduleAtFixedRate(new Simulation(), 2000, 50, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -161,6 +161,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.imu.abs_pressure = 1013 +  (float)Math.random()*10f;
 
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
+			model.sys.setStatus(Status.MSP_ARMED, true);
 			model.sys.setStatus(Status.MSP_READY, true);
 
 			model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
