@@ -31,6 +31,7 @@ public class ModelCollectorService {
 	public static  final int PRE_COLLECTING 	= 1;
 	public static  final int COLLECTING     	= 2;
 	public static  final int POST_COLLECTING    = 3;
+	public static  final int LOG_DATA           = 4;
 
 
 	private static final int MAX_SIZE = 120000;
@@ -113,8 +114,14 @@ public class ModelCollectorService {
 	}
 
 	public void setModelList(List<DataModel> list) {
+		mode = LOG_DATA;
 		modelList.clear();
 		modelList.addAll(list);
+	}
+
+	public void clearModelList() {
+		mode = STOPPED;
+		modelList.clear();
 	}
 
 	public void setCurrentTo(float time_ms) {
@@ -131,7 +138,7 @@ public class ModelCollectorService {
 	}
 
 	public void start(int pre_sec) {
-		if(mode==STOPPED) {
+		if(mode==STOPPED || mode == LOG_DATA) {
 			modelList.clear();
 
 			ned_offset_x = current.state.x;
@@ -144,7 +151,7 @@ public class ModelCollectorService {
 
 
 	public boolean isCollecting() {
-		return mode != STOPPED;
+		return mode != STOPPED  && mode != LOG_DATA;
 	}
 
 
@@ -167,7 +174,7 @@ public class ModelCollectorService {
 		@Override
 		public void run() {
 			long tms = System.nanoTime() / 1000;
-			while(mode!=STOPPED) {
+			while(mode!=STOPPED && mode != LOG_DATA) {
 				current.tms = System.nanoTime() / 1000 - tms;
 				DataModel model = current.clone();
 
