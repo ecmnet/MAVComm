@@ -28,6 +28,7 @@ import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
+import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -39,6 +40,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 	DataModel model = null;
 	ArrayList<LogMessage>					msgList;
 	private List<IMAVMessageListener> msgListener        = null;
+	private ArrayList<IMSPModeChangedListener> modeListener;
 
 
 
@@ -48,6 +50,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 		collector = new ModelCollectorService(model);
 		msgList = new ArrayList<LogMessage>();
 		msgListener = new ArrayList<IMAVMessageListener>();
+		modeListener = new ArrayList<IMSPModeChangedListener>();
 
 
 
@@ -96,6 +99,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 			return false;
 		}
 		return true;
+
+	}
+
+	@Override
+	public void addModeChangeListener(IMSPModeChangedListener listener) {
+			this.modeListener.add(listener);
 
 	}
 
@@ -159,6 +168,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.attitude.ag = (float)Math.random()*10f+500f;
 
 			model.imu.abs_pressure = 1013 +  (float)Math.random()*10f;
+
+			if(model.sys.isStatus(Status.MSP_CONNECTED)) {
+				for(IMSPModeChangedListener listener : modeListener) {
+					listener.update(model.sys, model.sys);
+				}
+			}
 
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
 			model.sys.setStatus(Status.MSP_ARMED, true);
