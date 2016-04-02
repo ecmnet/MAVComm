@@ -205,7 +205,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 			while (isRunning) {
 				try {
-					Thread.sleep(5);
+					Thread.yield();
 
 					MAVLinkMessage msg = proxy.getInputStream().read();
 

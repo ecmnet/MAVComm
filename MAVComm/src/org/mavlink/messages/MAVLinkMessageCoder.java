@@ -4,7 +4,6 @@
  **/
 package org.mavlink.messages;
 import java.io.IOException;
-
 import org.mavlink.io.LittleEndianDataInputStream;
 /**
  * Class MAVLinkMessageCoder

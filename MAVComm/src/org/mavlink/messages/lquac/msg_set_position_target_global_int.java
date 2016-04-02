@@ -3,14 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
-import org.mavlink.messages.MAVLinkMessage;
 /**
  * Class msg_set_position_target_global_int
  * Sets a desired vehicle position, velocity, and/or acceleration in a global coordinate system (WGS84). Used by an external controller to command the vehicle (manual controller or other system).

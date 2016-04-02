@@ -3,14 +3,13 @@
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
+import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
-import org.mavlink.messages.MAVLinkMessage;
 /**
  * Class msg_terrain_check
  * Request that the vehicle report terrain height at the given location. Used by GCS to check if vehicle has all terrain data needed for a mission.

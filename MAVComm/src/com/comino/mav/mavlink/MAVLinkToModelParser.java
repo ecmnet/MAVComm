@@ -495,8 +495,8 @@ public class MAVLinkToModelParser {
 				try {
 
 					if(stream==null) {
-
-						Thread.sleep(10);
+						Thread.yield();
+					//	Thread.sleep(10);
 						continue;
 					}
 
