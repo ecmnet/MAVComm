@@ -45,6 +45,7 @@ public class MAVController implements IMAVController {
 
 	protected ModelCollectorService collector = null;
 
+	protected   boolean isSITL = false;
 	protected   DataModel model = null;
 
 	public static IMAVController getInstance() {
@@ -164,7 +165,7 @@ public class MAVController implements IMAVController {
 
 	@Override
 	public boolean isSimulation() {
-		return true;
+		return isSITL;
 	}
 
 

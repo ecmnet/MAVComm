@@ -16,24 +16,23 @@
 
 package com.comino.mav.control.impl;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+
+import org.mavlink.messages.lquac.msg_rc_channels_override;
 
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
-/*
- * UDP connection to simulation or MAVProxies
- */
 
 public class MAVUdpController extends MAVController implements IMAVController {
 
-	private boolean isSimulation = false;
 
-	public MAVUdpController(String peerAddress, int peerPort, int bindPort) {
+	public MAVUdpController(String peerAddress, int peerPort, int bindPort, boolean isSITL) {
 		super();
-
+        this.isSITL = isSITL;
 		this.peerAddress = peerAddress;
 		System.out.println("UDP Controller loaded");
 		comm = MAVUdpCommNIO.getInstance(model, peerAddress,peerPort, bindPort);
@@ -46,10 +45,6 @@ public class MAVUdpController extends MAVController implements IMAVController {
         return comm.open();
 	}
 
-	@Override
-	public boolean isSimulation() {
-		return isSimulation;
-	}
 
 	@Override
 	public boolean isConnected() {
@@ -62,8 +57,21 @@ public class MAVUdpController extends MAVController implements IMAVController {
 
 		@Override
 		public void run() {
-		     if(isConnected())
+		     if(isConnected()) {
+		    	 if(isSimulation()) {
+		    			msg_rc_channels_override cmd = new msg_rc_channels_override(255,1);
+						cmd.chan1_raw = 1500;
+						cmd.chan2_raw = 1500;
+						cmd.chan3_raw = 1500;
+						cmd.chan4_raw = 1500;
+						try {
+							comm.write(cmd);
+						} catch (IOException e) {
+
+						}
+		    	 }
 		    	 return;
+		     }
 		     comm.close(); comm.open();
 
 
