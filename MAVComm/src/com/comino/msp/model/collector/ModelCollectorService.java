@@ -40,8 +40,6 @@ public class ModelCollectorService {
 	private ArrayList<DataModel> 		modelList   = null;
 	private Future<?>          			service     = null;
 
-	private List<IInjectValueListener>   debugListener = null;
-
 	private int     mode = 0;
 
 	private float ned_offset_x =0;
@@ -51,11 +49,7 @@ public class ModelCollectorService {
 	public ModelCollectorService(DataModel current) {
 		this.modelList     = new ArrayList<DataModel>();
 		this.current = current;
-		this.debugListener = new ArrayList<IInjectValueListener>();
-	}
 
-	public void addInjectionListener(IInjectValueListener listener) {
-		debugListener.add(listener);
 	}
 
 
@@ -176,10 +170,6 @@ public class ModelCollectorService {
 			while(mode!=STOPPED) {
 				current.tms = System.nanoTime() / 1000 - tms;
 				DataModel model = current.clone();
-
-				for(IInjectValueListener listener :  debugListener) {
-					listener.addValue(model);
-				}
 
 				model.state.hx = ned_offset_x;
 				model.state.hy = ned_offset_y;

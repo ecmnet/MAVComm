@@ -54,7 +54,6 @@ public interface IMAVController {
 
 	public void addModeChangeListener(IMSPModeChangedListener listener);
 	public void addMAVLinkListener(IMAVLinkListener listener);
-
 	public void addMAVMessageListener(IMAVMessageListener listener);
 
 
