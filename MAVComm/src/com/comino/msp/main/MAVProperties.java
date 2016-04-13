@@ -18,6 +18,7 @@ package com.comino.msp.main;
 
 
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -74,8 +75,11 @@ public class MAVProperties {
 			if(propStream!=null) {
 				prop.load(propStream);
 			propStream.close();
-			} else
-				throw new IOException("Configuration file'"+fileName+"' not found in classpath");
+			} else {
+				System.err.println("Configuration file'"+fileName+"' not found in classpath. Create empty one");
+				File file = new File(this.fileName);
+				file.createNewFile();
+			}
 		} catch(IOException io ) {
 			System.err.println(io.getMessage());
 		}
