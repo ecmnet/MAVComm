@@ -26,27 +26,27 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
-public class MSPConfig {
+public class MAVProperties {
 
-	private static final String VERSION = "1.0 build ";
+	private static final String VERSION = "Build ";
 
-	private static MSPConfig config = null;
+	private static MAVProperties config = null;
 	private String fileName = null;
 	private String version = null;
 
 	private Properties prop = null;
 
-	public static MSPConfig getInstance(String filename) {
+	public static MAVProperties getInstance(String filename) {
 		if(config==null)
-			config = new MSPConfig(filename);
+			config = new MAVProperties(filename);
 		return config;
 	}
 
-	public static MSPConfig getInstance() {
+	public static MAVProperties getInstance() {
 		return config;
 	}
 
-	private MSPConfig(String filename) {
+	private MAVProperties(String filename) {
 		this.fileName = filename;
 		this.prop = new Properties();
 		System.out.println();
@@ -68,7 +68,7 @@ public class MSPConfig {
 		file.close();
 	}
 
-	public MSPConfig refreshProperties() {
+	public MAVProperties refreshProperties() {
 		try {
 			InputStream propStream = getClass().getClassLoader().getResourceAsStream(fileName);
 			if(propStream!=null) {
