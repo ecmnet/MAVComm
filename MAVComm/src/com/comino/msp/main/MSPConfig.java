@@ -27,27 +27,27 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Properties;
 
-public class MAVProperties {
+public class MSPConfig {
 
 	private static final String VERSION = "Build ";
 
-	private static MAVProperties config = null;
+	private static MSPConfig config = null;
 	private String fileName = null;
 	private String version = null;
 
 	private Properties prop = null;
 
-	public static MAVProperties getInstance(String filename) {
+	public static MSPConfig getInstance(String filename) {
 		if(config==null)
-			config = new MAVProperties(filename);
+			config = new MSPConfig(filename);
 		return config;
 	}
 
-	public static MAVProperties getInstance() {
+	public static MSPConfig getInstance() {
 		return config;
 	}
 
-	private MAVProperties(String filename) {
+	private MSPConfig(String filename) {
 		this.fileName = filename;
 		this.prop = new Properties();
 		System.out.println();
@@ -69,16 +69,14 @@ public class MAVProperties {
 		file.close();
 	}
 
-	public MAVProperties refreshProperties() {
+	public MSPConfig refreshProperties() {
 		try {
 			InputStream propStream = getClass().getClassLoader().getResourceAsStream(fileName);
 			if(propStream!=null) {
 				prop.load(propStream);
 			propStream.close();
 			} else {
-				System.err.println("Configuration file'"+fileName+"' not found in classpath. Create empty one");
-				File file = new File(this.fileName);
-				file.createNewFile();
+				throw new IOException("Configuration file'"+fileName+"' not found.");
 			}
 		} catch(IOException io ) {
 			System.err.println(io.getMessage());
