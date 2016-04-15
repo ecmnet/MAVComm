@@ -70,7 +70,7 @@ public class MAVController implements IMAVController {
 
 		try {
 			comm.write(msg);
-			System.out.println("Execute: "+msg.toString());
+		//	System.out.println("Execute: "+msg.toString());
 			return true;
 		} catch (IOException e1) {
 			System.out.println("Command rejected. "+e1.getMessage());
