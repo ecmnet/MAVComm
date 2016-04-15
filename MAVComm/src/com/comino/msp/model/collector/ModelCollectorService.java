@@ -16,8 +16,8 @@
 
 package com.comino.msp.model.collector;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
@@ -36,9 +36,9 @@ public class ModelCollectorService {
 	private static final int MAX_SIZE = 120000;
 	private static final int MODELCOLLECTOR_INTERVAL_US = 50000;
 
-	private DataModel				    current     = null;
-	private ArrayList<DataModel> 		modelList   = null;
-	private Future<?>          			service     = null;
+	private DataModel				    			current     = null;
+	private CopyOnWriteArrayList<DataModel> 		modelList   = null;
+	private Future<?>          						service     = null;
 
 	private int     mode = 0;
 
@@ -47,7 +47,7 @@ public class ModelCollectorService {
 
 
 	public ModelCollectorService(DataModel current) {
-		this.modelList     = new ArrayList<DataModel>();
+		this.modelList     = new CopyOnWriteArrayList<DataModel>();
 		this.current = current;
 
 	}
