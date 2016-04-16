@@ -1,0 +1,19 @@
+Note: msg_param_value is not generated correctly:
+Use:
+
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  int val = dis.readInt();
+  param_count = (int)dis.readUnsignedShort()&0x00FFFF;
+  param_index = (int)dis.readUnsignedShort()&0x00FFFF;
+  for (int i=0; i<16; i++) {
+    param_id[i] = (char)dis.readByte();
+  }
+  param_type = (int)dis.readUnsignedByte()&0x00FF;
+  switch(param_type) {
+  case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL32:
+  case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL64:
+	  param_value = (float)Float.intBitsToFloat(val); break;
+  default:
+	  param_value = val;
+  }
+}
