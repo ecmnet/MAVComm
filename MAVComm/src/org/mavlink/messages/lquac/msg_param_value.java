@@ -4,6 +4,7 @@
  **/
 package org.mavlink.messages.lquac;
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_PARAM_TYPE;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
@@ -67,13 +68,20 @@ public class msg_param_value extends MAVLinkMessage {
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
-  param_value = (float)dis.readFloat();
+  int val = dis.readInt();
   param_count = (int)dis.readUnsignedShort()&0x00FFFF;
   param_index = (int)dis.readUnsignedShort()&0x00FFFF;
   for (int i=0; i<16; i++) {
     param_id[i] = (char)dis.readByte();
   }
   param_type = (int)dis.readUnsignedByte()&0x00FF;
+  switch(param_type) {
+  case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL32:
+  case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL64:
+	  param_value = (float)Float.intBitsToFloat(val); break;
+  default:
+	  param_value = val;
+  }
 }
 /**
  * Encode message with raw data and other informations
