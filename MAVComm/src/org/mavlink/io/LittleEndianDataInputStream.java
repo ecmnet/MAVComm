@@ -48,7 +48,10 @@ public final class LittleEndianDataInputStream extends InputStream implements Da
     }
 
     public final float readFloat() throws IOException {
-        return Float.intBitsToFloat(readInt());
+    	int val = readInt();
+    	if(Math.abs(val)<32768)
+    		return val;
+        return Float.intBitsToFloat(val);
     }
 
     public final void readFully(byte ba[]) throws IOException {
