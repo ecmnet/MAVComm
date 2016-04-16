@@ -65,7 +65,7 @@ public class MAVLinkToModelParser {
 	private DataModel model;
 
 	private ArrayList<LogMessage>					msgList     = null;
-	private HashMap<Class<?>,MAVLinkMessage>	mavList     = null;
+	private HashMap<Class<?>,MAVLinkMessage>	    mavList     = null;
 
 	private IMAVComm link = null;
 

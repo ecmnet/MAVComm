@@ -16,6 +16,7 @@
 
 package com.comino.msp.model.collector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Future;
@@ -37,7 +38,7 @@ public class ModelCollectorService {
 	private static final int MODELCOLLECTOR_INTERVAL_US = 50000;
 
 	private DataModel				    			current     = null;
-	private CopyOnWriteArrayList<DataModel> 		modelList   = null;
+	private ArrayList<DataModel> 		           modelList   = null;
 	private Future<?>          						service     = null;
 
 	private int     mode = 0;
@@ -47,7 +48,7 @@ public class ModelCollectorService {
 
 
 	public ModelCollectorService(DataModel current) {
-		this.modelList     = new CopyOnWriteArrayList<DataModel>();
+		this.modelList     = new ArrayList<DataModel>();
 		this.current = current;
 
 	}
@@ -168,17 +169,19 @@ public class ModelCollectorService {
 		public void run() {
 			long tms = System.nanoTime() / 1000;
 			while(mode!=STOPPED) {
-				current.tms = System.nanoTime() / 1000 - tms;
-				DataModel model = current.clone();
+				synchronized(this) {
+					current.tms = System.nanoTime() / 1000 - tms;
+					DataModel model = current.clone();
 
-				model.state.hx = ned_offset_x;
-				model.state.hy = ned_offset_y;
+					model.state.hx = ned_offset_x;
+					model.state.hy = ned_offset_y;
 
-				modelList.add(model);
-				if(modelList.size()>MAX_SIZE)
-					modelList.remove(0);
+					modelList.add(model);
+					if(modelList.size()>MAX_SIZE)
+						modelList.remove(0);
 
-				count++;
+					count++;
+				}
 				LockSupport.parkNanos(MODELCOLLECTOR_INTERVAL_US*1000);
 				if(mode==PRE_COLLECTING) {
 					int _delcount = count - pre_delay_count;

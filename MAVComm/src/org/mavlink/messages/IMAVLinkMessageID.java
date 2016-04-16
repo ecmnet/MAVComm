@@ -89,6 +89,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN = 49;
   public static int MAVLINK_MSG_ID_LOG_REQUEST_END = 122;
   public static int MAVLINK_MSG_ID_RADIO_STATUS = 109;
+  public static int MAVLINK_MSG_ID_FOLLOW_TARGET = 144;
   public static int MAVLINK_MSG_ID_GPS_RAW_INT = 24;
   public static int MAVLINK_MSG_ID_SYS_STATUS = 1;
   public static int MAVLINK_MSG_ID_MISSION_ITEM_INT = 73;

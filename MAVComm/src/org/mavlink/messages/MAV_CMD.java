@@ -141,6 +141,28 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_LOITER_TO_ALT = 31;
     /**
+     * Being following a target
+     * PARAM 1 : System ID (the system ID of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode
+     * PARAM 2 : RESERVED
+     * PARAM 3 : RESERVED
+     * PARAM 4 : altitude flag: 0: Keep current altitude, 1: keep altitude difference to target, 2: go to a fixed altitude above home
+     * PARAM 5 : altitude
+     * PARAM 6 : RESERVED
+     * PARAM 7 : TTL in seconds in which the MAV should go to the default position hold mode after a message rx timeout
+     */
+    public final static int MAV_CMD_DO_FOLLOW = 32;
+    /**
+     * Reposition the MAV after a follow target command has been sent
+     * PARAM 1 : Camera q1 (where 0 is on the ray from the camera to the tracking device)
+     * PARAM 2 : Camera q2
+     * PARAM 3 : Camera q3
+     * PARAM 4 : Camera q4
+     * PARAM 5 : altitude offset from target (m)
+     * PARAM 6 : X offset from target (m)
+     * PARAM 7 : Y offset from target (m)
+     */
+    public final static int MAV_CMD_DO_FOLLOW_REPOSITION = 33;
+    /**
      * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
      * PARAM 2 : MISSION index/ target ID. (see MAV_ROI enum)
@@ -415,6 +437,28 @@ public interface MAV_CMD {
      * PARAM 7 : Empty
      */
     public final static int MAV_CMD_DO_GO_AROUND = 191;
+    /**
+     * Reposition the vehicle to a specific WGS84 global position.
+     * PARAM 1 : Ground speed, less than 0 (-1) for default
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Yaw heading, NaN for unchanged
+     * PARAM 5 : Latitude (deg * 1E7)
+     * PARAM 6 : Longitude (deg * 1E7)
+     * PARAM 7 : Altitude (meters)
+     */
+    public final static int MAV_CMD_DO_REPOSITION = 192;
+    /**
+     * If in a GPS controlled position mode, hold the current position or continue.
+     * PARAM 1 : 0: Pause current mission or reposition command, hold current position. 1: Continue mission. A VTOL capable vehicle should enter hover mode (multicopter and VTOL planes). A plane should loiter with the default loiter radius.
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Reserved
+     * PARAM 5 : Reserved
+     * PARAM 6 : Reserved
+     * PARAM 7 : Reserved
+     */
+    public final static int MAV_CMD_DO_PAUSE_CONTINUE = 193;
     /**
      * Control onboard camera system.
      * PARAM 1 : Camera ID (-1 for all)

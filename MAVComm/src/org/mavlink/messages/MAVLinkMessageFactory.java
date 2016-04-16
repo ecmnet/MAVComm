@@ -88,6 +88,7 @@ import org.mavlink.messages.lquac.msg_safety_allowed_area;
 import org.mavlink.messages.lquac.msg_gps_global_origin;
 import org.mavlink.messages.lquac.msg_log_request_end;
 import org.mavlink.messages.lquac.msg_radio_status;
+import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_mission_item_int;
@@ -216,6 +217,7 @@ import org.mavlink.messages.lquac.msg_safety_allowed_area;
 import org.mavlink.messages.lquac.msg_gps_global_origin;
 import org.mavlink.messages.lquac.msg_log_request_end;
 import org.mavlink.messages.lquac.msg_radio_status;
+import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_mission_item_int;
@@ -595,6 +597,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_RADIO_STATUS:
       msg = new msg_radio_status(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_FOLLOW_TARGET:
+      msg = new msg_follow_target(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_GPS_RAW_INT:
