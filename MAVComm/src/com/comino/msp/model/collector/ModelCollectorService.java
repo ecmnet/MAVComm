@@ -65,6 +65,8 @@ public class ModelCollectorService {
 
 	public boolean start() {
 
+		current.tms = 0;
+
 		if(mode==PRE_COLLECTING) {
 			mode = COLLECTING;
 			return true;
@@ -115,6 +117,7 @@ public class ModelCollectorService {
 
 	public void clearModelList() {
 		mode = STOPPED;
+		current.tms = 0;
 		modelList.clear();
 	}
 
