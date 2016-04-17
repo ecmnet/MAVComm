@@ -4,7 +4,7 @@
 
 This Java based tool enables companions to be connected to PixHawk and serves as MAVLink proxy for QGC / MAVGC. Additionally MAVcomm can serve as central hub for distributed high-level flight control. 
 
-**Status:** Last updated 30/03/2016 
+**Status:** Last updated 16/04/2016 
 
 **Supported companion platforms:**
 
