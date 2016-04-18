@@ -27,7 +27,7 @@ public class LogMessage extends Segment {
 	public int   severity = 0;
 
 	public LogMessage() {
-
+		this.tms = System.currentTimeMillis();
 	}
 
 	public LogMessage(String msg, int severity) {
