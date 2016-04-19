@@ -32,6 +32,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_LOG_REQUEST_DATA = 119;
   public static int MAVLINK_MSG_ID_LOG_ERASE = 121;
   public static int MAVLINK_MSG_ID_DISTANCE_SENSOR = 132;
+  public static int MAVLINK_MSG_ID_WIND = 231;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV = 64;
   public static int MAVLINK_MSG_ID_ATTITUDE_TARGET = 83;
   public static int MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL = 5;
@@ -80,6 +81,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GPS2_RTK = 128;
   public static int MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN = 48;
   public static int MAVLINK_MSG_ID_LOG_DATA = 120;
+  public static int MAVLINK_MSG_ID_ESTIMATOR_STATUS = 230;
   public static int MAVLINK_MSG_ID_ATTITUDE = 30;
   public static int MAVLINK_MSG_ID_SERIAL_CONTROL = 126;
   public static int MAVLINK_MSG_ID_PARAM_VALUE = 22;

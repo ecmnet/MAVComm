@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import org.mavlink.io.LittleEndianDataInputStream;
-import org.mavlink.io.LittleEndianDataOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 /**
  * Class msg_terrain_data
  * Terrain data sent from GCS. The lat/lon and grid_spacing must be the same as a lat/lon from a TERRAIN_REQUEST
@@ -50,44 +50,40 @@ public class msg_terrain_data extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(LittleEndianDataInputStream dis) throws IOException {
-  lat = (int)dis.readInt();
-  lon = (int)dis.readInt();
-  grid_spacing = (int)dis.readUnsignedShort()&0x00FFFF;
+public void decode(ByteBuffer dis) throws IOException {
+  lat = (int)dis.getInt();
+  lon = (int)dis.getInt();
+  grid_spacing = (int)dis.getShort()&0x00FFFF;
   for (int i=0; i<16; i++) {
-    data[i] = (int)dis.readShort();
+    data[i] = (int)dis.getShort();
   }
-  gridbit = (int)dis.readUnsignedByte()&0x00FF;
+  gridbit = (int)dis.get()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+43];
-   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
-  dos.writeByte((byte)0xFE);
-  dos.writeByte(length & 0x00FF);
-  dos.writeByte(sequence & 0x00FF);
-  dos.writeByte(sysId & 0x00FF);
-  dos.writeByte(componentId & 0x00FF);
-  dos.writeByte(messageType & 0x00FF);
-  dos.writeInt((int)(lat&0x00FFFFFFFF));
-  dos.writeInt((int)(lon&0x00FFFFFFFF));
-  dos.writeShort(grid_spacing&0x00FFFF);
+   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
+  dos.put((byte)0xFE);
+  dos.put((byte)(length & 0x00FF));
+  dos.put((byte)(sequence & 0x00FF));
+  dos.put((byte)(sysId & 0x00FF));
+  dos.put((byte)(componentId & 0x00FF));
+  dos.put((byte)(messageType & 0x00FF));
+  dos.putInt((int)(lat&0x00FFFFFFFF));
+  dos.putInt((int)(lon&0x00FFFFFFFF));
+  dos.putShort((short)(grid_spacing&0x00FFFF));
   for (int i=0; i<16; i++) {
-    dos.writeShort(data[i]&0x00FFFF);
+    dos.putShort((short)(data[i]&0x00FFFF));
   }
-  dos.writeByte(gridbit&0x00FF);
-  dos.flush();
-  byte[] tmp = dos.toByteArray();
-  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
+  dos.put((byte)(gridbit&0x00FF));
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 43);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[49] = crcl;
   buffer[50] = crch;
-  dos.close();
   return buffer;
 }
 public String toString() {

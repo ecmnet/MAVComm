@@ -6,8 +6,8 @@ package org.mavlink.messages;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkMessage;
 import java.io.IOException;
-import org.mavlink.io.LittleEndianDataInputStream;
-import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_hil_sensor;
@@ -31,6 +31,7 @@ import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
 import org.mavlink.messages.lquac.msg_log_erase;
 import org.mavlink.messages.lquac.msg_distance_sensor;
+import org.mavlink.messages.lquac.msg_wind;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_change_operator_control;
@@ -79,6 +80,7 @@ import org.mavlink.messages.lquac.msg_nav_controller_output;
 import org.mavlink.messages.lquac.msg_gps2_rtk;
 import org.mavlink.messages.lquac.msg_set_gps_global_origin;
 import org.mavlink.messages.lquac.msg_log_data;
+import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_attitude;
 import org.mavlink.messages.lquac.msg_serial_control;
 import org.mavlink.messages.lquac.msg_param_value;
@@ -160,6 +162,7 @@ import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
 import org.mavlink.messages.lquac.msg_log_erase;
 import org.mavlink.messages.lquac.msg_distance_sensor;
+import org.mavlink.messages.lquac.msg_wind;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_change_operator_control;
@@ -208,6 +211,7 @@ import org.mavlink.messages.lquac.msg_nav_controller_output;
 import org.mavlink.messages.lquac.msg_gps2_rtk;
 import org.mavlink.messages.lquac.msg_set_gps_global_origin;
 import org.mavlink.messages.lquac.msg_log_data;
+import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_attitude;
 import org.mavlink.messages.lquac.msg_serial_control;
 import org.mavlink.messages.lquac.msg_param_value;
@@ -273,7 +277,7 @@ import org.mavlink.messages.lquac.msg_resource_request;
 public class MAVLinkMessageFactory implements IMAVLinkMessage, IMAVLinkMessageID {
 public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, byte[] rawData) throws IOException {
     MAVLinkMessage msg=null;
-    LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(rawData));
+    ByteBuffer dis = ByteBuffer.wrap(rawData).order(ByteOrder.LITTLE_ENDIAN);
     switch(msgid) {
   case MAVLINK_MSG_ID_REQUEST_DATA_STREAM:
       msg = new msg_request_data_stream(sysId, componentId);
@@ -369,6 +373,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_DISTANCE_SENSOR:
       msg = new msg_distance_sensor(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_WIND:
+      msg = new msg_wind(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV:
@@ -561,6 +569,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_LOG_DATA:
       msg = new msg_log_data(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_ESTIMATOR_STATUS:
+      msg = new msg_estimator_status(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_ATTITUDE:

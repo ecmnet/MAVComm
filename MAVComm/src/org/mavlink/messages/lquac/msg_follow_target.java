@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import org.mavlink.io.LittleEndianDataInputStream;
-import org.mavlink.io.LittleEndianDataOutputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 /**
  * Class msg_follow_target
  * current motion information from a designated system
@@ -74,72 +74,68 @@ public class msg_follow_target extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(LittleEndianDataInputStream dis) throws IOException {
-  timestamp = (long)dis.readLong();
-  custom_state = (long)dis.readLong();
-  lat = (int)dis.readInt();
-  lon = (int)dis.readInt();
-  alt = (float)dis.readFloat();
+public void decode(ByteBuffer dis) throws IOException {
+  timestamp = (long)dis.getLong();
+  custom_state = (long)dis.getLong();
+  lat = (int)dis.getInt();
+  lon = (int)dis.getInt();
+  alt = (float)dis.getFloat();
   for (int i=0; i<3; i++) {
-    vel[i] = (float)dis.readFloat();
+    vel[i] = (float)dis.getFloat();
   }
   for (int i=0; i<3; i++) {
-    acc[i] = (float)dis.readFloat();
+    acc[i] = (float)dis.getFloat();
   }
   for (int i=0; i<4; i++) {
-    attitude_q[i] = (float)dis.readFloat();
+    attitude_q[i] = (float)dis.getFloat();
   }
   for (int i=0; i<3; i++) {
-    rates[i] = (float)dis.readFloat();
+    rates[i] = (float)dis.getFloat();
   }
   for (int i=0; i<3; i++) {
-    position_cov[i] = (float)dis.readFloat();
+    position_cov[i] = (float)dis.getFloat();
   }
-  est_capabilities = (int)dis.readUnsignedByte()&0x00FF;
+  est_capabilities = (int)dis.get()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+93];
-   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
-  dos.writeByte((byte)0xFE);
-  dos.writeByte(length & 0x00FF);
-  dos.writeByte(sequence & 0x00FF);
-  dos.writeByte(sysId & 0x00FF);
-  dos.writeByte(componentId & 0x00FF);
-  dos.writeByte(messageType & 0x00FF);
-  dos.writeLong(timestamp);
-  dos.writeLong(custom_state);
-  dos.writeInt((int)(lat&0x00FFFFFFFF));
-  dos.writeInt((int)(lon&0x00FFFFFFFF));
-  dos.writeFloat(alt);
+   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
+  dos.put((byte)0xFE);
+  dos.put((byte)(length & 0x00FF));
+  dos.put((byte)(sequence & 0x00FF));
+  dos.put((byte)(sysId & 0x00FF));
+  dos.put((byte)(componentId & 0x00FF));
+  dos.put((byte)(messageType & 0x00FF));
+  dos.putLong(timestamp);
+  dos.putLong(custom_state);
+  dos.putInt((int)(lat&0x00FFFFFFFF));
+  dos.putInt((int)(lon&0x00FFFFFFFF));
+  dos.putFloat(alt);
   for (int i=0; i<3; i++) {
-    dos.writeFloat(vel[i]);
+    dos.putFloat(vel[i]);
   }
   for (int i=0; i<3; i++) {
-    dos.writeFloat(acc[i]);
+    dos.putFloat(acc[i]);
   }
   for (int i=0; i<4; i++) {
-    dos.writeFloat(attitude_q[i]);
+    dos.putFloat(attitude_q[i]);
   }
   for (int i=0; i<3; i++) {
-    dos.writeFloat(rates[i]);
+    dos.putFloat(rates[i]);
   }
   for (int i=0; i<3; i++) {
-    dos.writeFloat(position_cov[i]);
+    dos.putFloat(position_cov[i]);
   }
-  dos.writeByte(est_capabilities&0x00FF);
-  dos.flush();
-  byte[] tmp = dos.toByteArray();
-  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
+  dos.put((byte)(est_capabilities&0x00FF));
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 93);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[99] = crcl;
   buffer[100] = crch;
-  dos.close();
   return buffer;
 }
 public String toString() {

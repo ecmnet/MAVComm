@@ -35,7 +35,7 @@ public interface MAV_CMD {
      * PARAM 1 : Turns
      * PARAM 2 : Empty
      * PARAM 3 : Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise
-     * PARAM 4 : Desired yaw angle.
+     * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -46,7 +46,7 @@ public interface MAV_CMD {
      * PARAM 1 : Seconds (decimal)
      * PARAM 2 : Empty
      * PARAM 3 : Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise
-     * PARAM 4 : Desired yaw angle.
+     * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -134,7 +134,7 @@ public interface MAV_CMD {
      * PARAM 1 : Heading Required (0 = False)
      * PARAM 2 : Radius in meters. If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.
      * PARAM 3 : Empty
-     * PARAM 4 : Empty
+     * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -440,9 +440,9 @@ public interface MAV_CMD {
     /**
      * Reposition the vehicle to a specific WGS84 global position.
      * PARAM 1 : Ground speed, less than 0 (-1) for default
-     * PARAM 2 : Reserved
+     * PARAM 2 : Bitmask of option flags, see the MAV_DO_REPOSITION_FLAGS enum.
      * PARAM 3 : Reserved
-     * PARAM 4 : Yaw heading, NaN for unchanged
+     * PARAM 4 : Yaw heading, NaN for unchanged. For planes indicates loiter direction (0: clockwise, 1: counter clockwise)
      * PARAM 5 : Latitude (deg * 1E7)
      * PARAM 6 : Longitude (deg * 1E7)
      * PARAM 7 : Altitude (meters)
@@ -792,4 +792,169 @@ public interface MAV_CMD {
      * PARAM 7 : Reserved
      */
     public final static int MAV_CMD_PAYLOAD_CONTROL_DEPLOY = 30002;
+    /**
+     * User defined waypoint item. Ground Station will show the Vehicle as flying through this item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_WAYPOINT_USER_1 = 31000;
+    /**
+     * User defined waypoint item. Ground Station will show the Vehicle as flying through this item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_WAYPOINT_USER_2 = 31001;
+    /**
+     * User defined waypoint item. Ground Station will show the Vehicle as flying through this item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_WAYPOINT_USER_3 = 31002;
+    /**
+     * User defined waypoint item. Ground Station will show the Vehicle as flying through this item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_WAYPOINT_USER_4 = 31003;
+    /**
+     * User defined waypoint item. Ground Station will show the Vehicle as flying through this item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_WAYPOINT_USER_5 = 31004;
+    /**
+     * User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_SPATIAL_USER_1 = 31005;
+    /**
+     * User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_SPATIAL_USER_2 = 31006;
+    /**
+     * User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_SPATIAL_USER_3 = 31007;
+    /**
+     * User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_SPATIAL_USER_4 = 31008;
+    /**
+     * User defined spatial item. Ground Station will not show the Vehicle as flying through this item. Example: ROI item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Latitude unscaled
+     * PARAM 6 : Longitude unscaled
+     * PARAM 7 : Altitude, in meters AMSL
+     */
+    public final static int MAV_CMD_SPATIAL_USER_5 = 31009;
+    /**
+     * User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : User defined
+     * PARAM 6 : User defined
+     * PARAM 7 : User defined
+     */
+    public final static int MAV_CMD_USER_1 = 31010;
+    /**
+     * User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : User defined
+     * PARAM 6 : User defined
+     * PARAM 7 : User defined
+     */
+    public final static int MAV_CMD_USER_2 = 31011;
+    /**
+     * User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : User defined
+     * PARAM 6 : User defined
+     * PARAM 7 : User defined
+     */
+    public final static int MAV_CMD_USER_3 = 31012;
+    /**
+     * User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : User defined
+     * PARAM 6 : User defined
+     * PARAM 7 : User defined
+     */
+    public final static int MAV_CMD_USER_4 = 31013;
+    /**
+     * User defined command. Ground Station will not show the Vehicle as flying through this item. Example: MAV_CMD_DO_SET_PARAMETER item.
+     * PARAM 1 : User defined
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : User defined
+     * PARAM 6 : User defined
+     * PARAM 7 : User defined
+     */
+    public final static int MAV_CMD_USER_5 = 31014;
 }
