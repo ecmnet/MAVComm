@@ -4,6 +4,7 @@
  **/
 package org.mavlink.messages.lquac;
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_PARAM_TYPE;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
@@ -87,7 +88,16 @@ public byte[] encode() throws IOException {
   dos.put((byte)(sysId & 0x00FF));
   dos.put((byte)(componentId & 0x00FF));
   dos.put((byte)(messageType & 0x00FF));
-  dos.putFloat(param_value);
+  //dos.putFloat(param_value);
+switch(param_type) {
+	case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL32:
+	case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL64:
+		dos.putFloat(param_value);
+		break;
+	default:
+		dos.putInt((int)param_value);
+
+	}
   dos.put((byte)(target_system&0x00FF));
   dos.put((byte)(target_component&0x00FF));
   for (int i=0; i<16; i++) {
