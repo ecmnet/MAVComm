@@ -90,9 +90,9 @@ public byte[] encode() throws IOException {
   dos.put((byte)(messageType & 0x00FF));
   //dos.putFloat(param_value);
 switch(param_type) {
+    case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL64:
 	case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL32:
-	case MAV_PARAM_TYPE.MAV_PARAM_TYPE_REAL64:
-		dos.putFloat(param_value);
+		dos.putInt(Float.floatToIntBits(param_value));
 		break;
 	default:
 		dos.putInt((int)param_value);
