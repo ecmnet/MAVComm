@@ -76,6 +76,7 @@ public class MAVLinkToModelParser {
 	private List<IMSPModeChangedListener> modeListener = null;
 
 	private boolean isRunning = false;
+	private Status old = new Status();
 
 	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
 
@@ -354,12 +355,11 @@ public class MAVLinkToModelParser {
 
 
 		registerListener(msg_heartbeat.class, new IMAVLinkListener() {
-			Status old;
 			@Override
 			public void received(Object o) {
 				msg_heartbeat hb = (msg_heartbeat)o;
 
-				old = model.sys.clone();
+				old.set(model.sys);
 
 				model.sys.setStatus(Status.MSP_ARMED,(hb.base_mode & MAV_MODE_FLAG_DECODE_POSITION.MAV_MODE_FLAG_DECODE_POSITION_SAFETY)>0);
 
@@ -381,7 +381,8 @@ public class MAVLinkToModelParser {
 				model.sys.tms = System.nanoTime()/1000;
 
 				for(IMSPModeChangedListener listener : modeListener)
-					listener.update(old, model.sys);
+					if(!old.isEqual(model.sys))
+					  listener.update(old, model.sys);
 
 
 			}
@@ -430,7 +431,13 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_extended_sys_state sys = (msg_extended_sys_state)o;
+				old.set(model.sys);
 				model.sys.setStatus(Status.MSP_LANDED, sys.landed_state==1);
+				for(IMSPModeChangedListener listener : modeListener)
+					if(!old.isEqual(model.sys))
+					  listener.update(old, model.sys);
+
+
 
 			}
 		});
