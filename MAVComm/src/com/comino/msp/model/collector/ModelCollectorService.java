@@ -46,6 +46,8 @@ public class ModelCollectorService {
 	private float ned_offset_x =0;
 	private float ned_offset_y =0;
 
+	private  int  totalTime_sec = 30;
+
 
 	public ModelCollectorService(DataModel current) {
 		this.modelList     = new ArrayList<DataModel>();
@@ -121,10 +123,12 @@ public class ModelCollectorService {
 		modelList.clear();
 	}
 
-	public void setCurrentTo(float time_ms) {
-		int index = (int)(time_ms * 1000f / MODELCOLLECTOR_INTERVAL_US);
-		if(index > 0 && index < modelList.size())
-			current.set(modelList.get(index));
+	public void setTotalTimeSec(int totalTime) {
+		this.totalTime_sec = totalTime;
+	}
+
+	public int getTotalTimeSec() {
+		return totalTime_sec;
 	}
 
 	public long getTotalRecordingTimeMS() {
