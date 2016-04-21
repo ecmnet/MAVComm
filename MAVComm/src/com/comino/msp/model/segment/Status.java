@@ -138,16 +138,24 @@ public class Status extends Segment {
 		return text;
 	}
 
+	public void clear() {
+		load_m	  	  = 0;
+		load_p	  	  = 0;
+		imu_temp	  = 0;
+		drops_p   	  = 0;
+		error1        = 0;
+
+	}
+
 
 	public boolean isEqual(Status m) {
 		return (status == m.status) && ( basemode == m.basemode );
 	}
 
 
-
-
-
-
+	public String toString() {
+		return "Connected="+isStatus(Status.MSP_CONNECTED)+" Sensors="+getSensorString();
+	}
 
 
 }

@@ -124,6 +124,7 @@ public class DataModel extends Segment implements Serializable {
 		this.battery.clear();
 		this.attitude.clear();
 		this.imu.clear();
+		this.sys.clear();
 		this.state.clear();
 		this.target_state.clear();
 		this.telemetry.clear();

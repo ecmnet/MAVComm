@@ -76,7 +76,8 @@ public class MAVLinkToModelParser {
 	private List<IMSPModeChangedListener> modeListener = null;
 
 	private boolean isRunning = false;
-	private Status old = new Status();
+
+	private Status oldStatus = new Status();
 
 	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
 
@@ -176,7 +177,7 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_command_ack ack = (msg_command_ack)o;
-				// TODO 1.0 handle acknowledgement
+				// TODO 1.0 handle acknowledgement via Listener
 			}
 
 		});
@@ -350,6 +351,8 @@ public class MAVLinkToModelParser {
 				model.rc.s3 = rc.chan4_raw < 65534 ? (short)rc.chan4_raw : 0;
 				model.rc.tms = rc.time_boot_ms;
 
+				notifyStatusChange();
+
 			}
 		});
 
@@ -358,8 +361,6 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_heartbeat hb = (msg_heartbeat)o;
-
-				old.set(model.sys);
 
 				model.sys.setStatus(Status.MSP_ARMED,(hb.base_mode & MAV_MODE_FLAG_DECODE_POSITION.MAV_MODE_FLAG_DECODE_POSITION_SAFETY)>0);
 
@@ -380,11 +381,7 @@ public class MAVLinkToModelParser {
 
 				model.sys.tms = System.nanoTime()/1000;
 
-				for(IMSPModeChangedListener listener : modeListener)
-					if(!old.isEqual(model.sys))
-					  listener.update(old, model.sys);
-
-
+				notifyStatusChange();
 			}
 		});
 
@@ -431,14 +428,9 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_extended_sys_state sys = (msg_extended_sys_state)o;
-				old.set(model.sys);
 				model.sys.setStatus(Status.MSP_LANDED, sys.landed_state==1);
-				for(IMSPModeChangedListener listener : modeListener)
-					if(!old.isEqual(model.sys))
-					  listener.update(old, model.sys);
 
-
-
+				notifyStatusChange();
 			}
 		});
 
@@ -467,6 +459,20 @@ public class MAVLinkToModelParser {
 		stream = new MAVLinkStream(channel);
 		Thread s = new Thread(new MAVLinkParserWorker());
 		s.start();
+	}
+
+	public boolean isConnected() {
+
+		if(!oldStatus.isEqual(model.sys)) {
+
+			notifyStatusChange();
+
+			if(!model.sys.isStatus(Status.MSP_CONNECTED)) {
+				model.clear();
+				return false;
+			}
+		}
+		return model.sys.isStatus(Status.MSP_CONNECTED);
 	}
 
 
@@ -503,7 +509,7 @@ public class MAVLinkToModelParser {
 
 					if(stream==null) {
 						Thread.yield();
-					//	Thread.sleep(10);
+						//	Thread.sleep(10);
 						continue;
 					}
 
@@ -525,9 +531,10 @@ public class MAVLinkToModelParser {
 
 					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&
 							model.sys.isStatus(Status.MSP_CONNECTED)) {
+
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
-						for(IMSPModeChangedListener listener : modeListener)
-							listener.update(model.sys, model.sys);
+						notifyStatusChange();
+
 						msgList.add(new LogMessage("Connection lost",2));
 						System.out.println("Connection lost");
 						link.close(); link.open();
@@ -540,6 +547,16 @@ public class MAVLinkToModelParser {
 				}
 			}
 		}
+	}
+
+
+	private void notifyStatusChange() {
+		if(!oldStatus.isEqual(model.sys)) {
+			for(IMSPModeChangedListener listener : modeListener)
+				listener.update(oldStatus, model.sys);
+			oldStatus.set(model.sys);
+		}
+
 	}
 
 }

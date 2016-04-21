@@ -16,37 +16,59 @@
 
 package com.comino.mav.control.impl;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-
-import org.mavlink.messages.lquac.msg_rc_channels_override;
-
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
-import com.comino.msp.model.segment.Status;
 
 
-public class MAVUdpController extends MAVController implements IMAVController {
+public class MAVUdpController extends MAVController implements IMAVController, Runnable {
 
+
+	private boolean connect;
 
 	public MAVUdpController(String peerAddress, int peerPort, int bindPort, boolean isSITL) {
 		super();
-        this.isSITL = isSITL;
+		this.isSITL = isSITL;
 		this.peerAddress = peerAddress;
-		System.out.println("UDP Controller loaded");
+		System.out.println("UDP Controller loaded ("+peerAddress+":"+peerPort+")");
 		comm = MAVUdpCommNIO.getInstance(model, peerAddress,peerPort, bindPort);
 
 	}
 
 	@Override
 	public boolean connect() {
-        return comm.open();
+		this.connect = true;
+		new Thread(this).start();
+		return connect;
+	}
+
+	@Override
+	public boolean close() {
+		this.connect = true;
+		return true;
 	}
 
 
 	@Override
 	public boolean isConnected() {
-		return comm.isConnected() && model.sys.isStatus(Status.MSP_CONNECTED);
+		return comm.isConnected();
+	}
+
+	@Override
+	public void run() {
+		while(connect) {
+			if(!comm.isConnected()) {
+				comm.close();
+				comm.open();
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) { }
+		}
+
+		collector.stop();
+		comm.close();
+
+
 	}
 
 

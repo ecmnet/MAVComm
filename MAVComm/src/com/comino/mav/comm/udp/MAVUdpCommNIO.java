@@ -96,8 +96,6 @@ public class MAVUdpCommNIO implements IMAVComm {
 				write(time);
 
 				parser.start(channel);
-				isConnected = true;
-				System.out.println("UDP connected to "+peerPort.toString()+" binding to "+channel.getLocalAddress().toString());
 				return true;
 			} catch(Exception e) {
 				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
@@ -146,7 +144,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 
 	public boolean isConnected() {
-		return isConnected;
+		return parser.isConnected();
 	}
 
 	public DataModel getModel() {

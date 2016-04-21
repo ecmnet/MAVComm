@@ -88,6 +88,8 @@ public class Imu extends Segment {
 		magy = 0;
 		magz = 0;
 
+		abs_pressure = 0;
+
 	}
 
 
