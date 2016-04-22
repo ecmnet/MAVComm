@@ -22,6 +22,8 @@ public class Rc extends Segment {
 
 	private static final long serialVersionUID = -1177166201561030663L;
 
+	public short  rssi = 0;
+
 	public short 	s0 = 0;
 	public short 	s1 = 0;
 	public short 	s2 = 0;
@@ -33,6 +35,7 @@ public class Rc extends Segment {
 		s1		= a.s1;
 		s2		= a.s2;
 		s3		= a.s3;
+		rssi    = a.rssi;
 
 
 	}
@@ -43,6 +46,7 @@ public class Rc extends Segment {
 		at.s1 		= s1;
 		at.s2 		= s2;
 		at.s3 		= s3;
+		at.rssi     = rssi;
 
 
 		return at;
@@ -56,6 +60,7 @@ public class Rc extends Segment {
 		s1 = 0;
 		s2 = 0;
 		s3 = 0;
+		rssi = 0;
 
 	}
 

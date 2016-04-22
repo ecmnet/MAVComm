@@ -131,6 +131,33 @@ public class ModelCollectorService {
 		return totalTime_sec;
 	}
 
+	public int calculateX0Time(double factor) {
+		int current_x0_pt = (int)(
+				( modelList.size()
+						- totalTime_sec *  1000f
+						/ getCollectorInterval_ms())
+				* factor);
+
+		if(current_x0_pt<0)
+			current_x0_pt = 0;
+
+		return current_x0_pt;
+	}
+
+	public int calculateX1Time(double factor) {
+		int current_x1_pt = (int)(
+				( modelList.size()
+						- totalTime_sec *  1000f
+						/ getCollectorInterval_ms())
+				* factor + - totalTime_sec *  1000f
+				/ getCollectorInterval_ms());
+
+		if(current_x1_pt>modelList.size()-1)
+			current_x1_pt = modelList.size()-1;
+
+		return current_x1_pt;
+	}
+
 	public long getTotalRecordingTimeMS() {
 		if(modelList.size()> 0)
 			return (modelList.get(modelList.size()-1).tms) / 1000;

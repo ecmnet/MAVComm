@@ -345,6 +345,8 @@ public class MAVLinkToModelParser {
 				msg_rc_channels rc = (msg_rc_channels)o;
 				model.sys.setStatus(Status.MSP_RC_ATTACHED, (rc.rssi>0));
 
+				model.rc.rssi = (short)rc.rssi;
+
 				model.rc.s0 = rc.chan1_raw < 65534 ? (short)rc.chan1_raw : 0;
 				model.rc.s1 = rc.chan2_raw < 65534 ? (short)rc.chan2_raw : 0;
 				model.rc.s2 = rc.chan3_raw < 65534 ? (short)rc.chan3_raw : 0;
