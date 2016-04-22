@@ -339,13 +339,17 @@ public class MAVLinkToModelParser {
 
 		registerListener(msg_rc_channels.class, new IMAVLinkListener() {
 
+			short rssi_old=0;
+
 			@Override
 			public void received(Object o) {
 
 				msg_rc_channels rc = (msg_rc_channels)o;
-				model.sys.setStatus(Status.MSP_RC_ATTACHED, (rc.rssi>0));
 
-				model.rc.rssi = (short)rc.rssi;
+				model.rc.rssi = (short)((rc.rssi+rssi_old)/2);
+				rssi_old = (short)rc.rssi;
+
+				model.sys.setStatus(Status.MSP_RC_ATTACHED, (model.rc.rssi>0));
 
 				model.rc.s0 = rc.chan1_raw < 65534 ? (short)rc.chan1_raw : 0;
 				model.rc.s1 = rc.chan2_raw < 65534 ? (short)rc.chan2_raw : 0;
