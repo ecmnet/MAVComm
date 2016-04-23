@@ -161,6 +161,8 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.imu.gyroy = (float)Math.random()*0.5f-0.25f;
 			model.imu.gyroz = (float)Math.random()*0.5f-0.25f;
 
+			model.sys.setStatus(Status.MSP_LANDED, true);
+
 			model.gps.latitude = 47.37174;
 			model.gps.longitude = 8.54226;
 			model.gps.numsat = 8;
