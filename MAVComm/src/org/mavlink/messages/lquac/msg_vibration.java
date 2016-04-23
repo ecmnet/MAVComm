@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_vibration
  * Vibration levels and accelerometer clipping
@@ -58,40 +58,44 @@ public class msg_vibration extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_usec = (long)dis.getLong();
-  vibration_x = (float)dis.getFloat();
-  vibration_y = (float)dis.getFloat();
-  vibration_z = (float)dis.getFloat();
-  clipping_0 = (int)dis.getInt()&0x00FFFFFFFF;
-  clipping_1 = (int)dis.getInt()&0x00FFFFFFFF;
-  clipping_2 = (int)dis.getInt()&0x00FFFFFFFF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_usec = (long)dis.readLong();
+  vibration_x = (float)dis.readFloat();
+  vibration_y = (float)dis.readFloat();
+  vibration_z = (float)dis.readFloat();
+  clipping_0 = (int)dis.readInt()&0x00FFFFFFFF;
+  clipping_1 = (int)dis.readInt()&0x00FFFFFFFF;
+  clipping_2 = (int)dis.readInt()&0x00FFFFFFFF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+32];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putLong(time_usec);
-  dos.putFloat(vibration_x);
-  dos.putFloat(vibration_y);
-  dos.putFloat(vibration_z);
-  dos.putInt((int)(clipping_0&0x00FFFFFFFF));
-  dos.putInt((int)(clipping_1&0x00FFFFFFFF));
-  dos.putInt((int)(clipping_2&0x00FFFFFFFF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeLong(time_usec);
+  dos.writeFloat(vibration_x);
+  dos.writeFloat(vibration_y);
+  dos.writeFloat(vibration_z);
+  dos.writeInt((int)(clipping_0&0x00FFFFFFFF));
+  dos.writeInt((int)(clipping_1&0x00FFFFFFFF));
+  dos.writeInt((int)(clipping_2&0x00FFFFFFFF));
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 32);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[38] = crcl;
   buffer[39] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

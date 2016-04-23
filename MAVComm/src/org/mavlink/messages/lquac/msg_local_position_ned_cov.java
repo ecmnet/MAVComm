@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_local_position_ned_cov
  * The filtered local position (e.g. fused computer vision and accelerometers). Coordinate frame is right-handed, Z-axis down (aeronautical frame, NED / north-east-down convention)
@@ -82,56 +82,60 @@ public class msg_local_position_ned_cov extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_utc = (long)dis.getLong();
-  time_boot_ms = (int)dis.getInt()&0x00FFFFFFFF;
-  x = (float)dis.getFloat();
-  y = (float)dis.getFloat();
-  z = (float)dis.getFloat();
-  vx = (float)dis.getFloat();
-  vy = (float)dis.getFloat();
-  vz = (float)dis.getFloat();
-  ax = (float)dis.getFloat();
-  ay = (float)dis.getFloat();
-  az = (float)dis.getFloat();
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_utc = (long)dis.readLong();
+  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
+  x = (float)dis.readFloat();
+  y = (float)dis.readFloat();
+  z = (float)dis.readFloat();
+  vx = (float)dis.readFloat();
+  vy = (float)dis.readFloat();
+  vz = (float)dis.readFloat();
+  ax = (float)dis.readFloat();
+  ay = (float)dis.readFloat();
+  az = (float)dis.readFloat();
   for (int i=0; i<45; i++) {
-    covariance[i] = (float)dis.getFloat();
+    covariance[i] = (float)dis.readFloat();
   }
-  estimator_type = (int)dis.get()&0x00FF;
+  estimator_type = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+229];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putLong(time_utc);
-  dos.putInt((int)(time_boot_ms&0x00FFFFFFFF));
-  dos.putFloat(x);
-  dos.putFloat(y);
-  dos.putFloat(z);
-  dos.putFloat(vx);
-  dos.putFloat(vy);
-  dos.putFloat(vz);
-  dos.putFloat(ax);
-  dos.putFloat(ay);
-  dos.putFloat(az);
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeLong(time_utc);
+  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
+  dos.writeFloat(x);
+  dos.writeFloat(y);
+  dos.writeFloat(z);
+  dos.writeFloat(vx);
+  dos.writeFloat(vy);
+  dos.writeFloat(vz);
+  dos.writeFloat(ax);
+  dos.writeFloat(ay);
+  dos.writeFloat(az);
   for (int i=0; i<45; i++) {
-    dos.putFloat(covariance[i]);
+    dos.writeFloat(covariance[i]);
   }
-  dos.put((byte)(estimator_type&0x00FF));
+  dos.writeByte(estimator_type&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 229);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[235] = crcl;
   buffer[236] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

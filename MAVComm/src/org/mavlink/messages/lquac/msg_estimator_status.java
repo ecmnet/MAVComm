@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_estimator_status
  * Estimator status message including flags, innovation test ratios and estimated accuracies. The flags message is an integer bitmask containing information on which EKF outputs are valid. See the ESTIMATOR_STATUS_FLAGS enum definition for further information. The innovaton test ratios show the magnitude of the sensor innovation divided by the innovation check threshold. Under normal operation the innovaton test ratios should be below 0.5 with occasional values up to 1.0. Values greater than 1.0 should be rare under normal operation and indicate that a measurement has been rejected by the filter. The user should be notified if an innovation test ratio greater than 1.0 is recorded. Notifications for values in the range between 0.5 and 1.0 should be optional and controllable by the user.
@@ -70,46 +70,50 @@ public class msg_estimator_status extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_usec = (long)dis.getLong();
-  vel_ratio = (float)dis.getFloat();
-  pos_horiz_ratio = (float)dis.getFloat();
-  pos_vert_ratio = (float)dis.getFloat();
-  mag_ratio = (float)dis.getFloat();
-  hagl_ratio = (float)dis.getFloat();
-  tas_ratio = (float)dis.getFloat();
-  pos_horiz_accuracy = (float)dis.getFloat();
-  pos_vert_accuracy = (float)dis.getFloat();
-  flags = (int)dis.getShort()&0x00FFFF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_usec = (long)dis.readLong();
+  vel_ratio = (float)dis.readFloat();
+  pos_horiz_ratio = (float)dis.readFloat();
+  pos_vert_ratio = (float)dis.readFloat();
+  mag_ratio = (float)dis.readFloat();
+  hagl_ratio = (float)dis.readFloat();
+  tas_ratio = (float)dis.readFloat();
+  pos_horiz_accuracy = (float)dis.readFloat();
+  pos_vert_accuracy = (float)dis.readFloat();
+  flags = (int)dis.readUnsignedShort()&0x00FFFF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+42];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putLong(time_usec);
-  dos.putFloat(vel_ratio);
-  dos.putFloat(pos_horiz_ratio);
-  dos.putFloat(pos_vert_ratio);
-  dos.putFloat(mag_ratio);
-  dos.putFloat(hagl_ratio);
-  dos.putFloat(tas_ratio);
-  dos.putFloat(pos_horiz_accuracy);
-  dos.putFloat(pos_vert_accuracy);
-  dos.putShort((short)(flags&0x00FFFF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeLong(time_usec);
+  dos.writeFloat(vel_ratio);
+  dos.writeFloat(pos_horiz_ratio);
+  dos.writeFloat(pos_vert_ratio);
+  dos.writeFloat(mag_ratio);
+  dos.writeFloat(hagl_ratio);
+  dos.writeFloat(tas_ratio);
+  dos.writeFloat(pos_horiz_accuracy);
+  dos.writeFloat(pos_vert_accuracy);
+  dos.writeShort(flags&0x00FFFF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 42);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[48] = crcl;
   buffer[49] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

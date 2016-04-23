@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_optical_flow_rad
  * Optical flow from an angular rate flow sensor (e.g. PX4FLOW or mouse sensor)
@@ -78,50 +78,54 @@ public class msg_optical_flow_rad extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_usec = (long)dis.getLong();
-  integration_time_us = (int)dis.getInt()&0x00FFFFFFFF;
-  integrated_x = (float)dis.getFloat();
-  integrated_y = (float)dis.getFloat();
-  integrated_xgyro = (float)dis.getFloat();
-  integrated_ygyro = (float)dis.getFloat();
-  integrated_zgyro = (float)dis.getFloat();
-  time_delta_distance_us = (int)dis.getInt()&0x00FFFFFFFF;
-  distance = (float)dis.getFloat();
-  temperature = (int)dis.getShort();
-  sensor_id = (int)dis.get()&0x00FF;
-  quality = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_usec = (long)dis.readLong();
+  integration_time_us = (int)dis.readInt()&0x00FFFFFFFF;
+  integrated_x = (float)dis.readFloat();
+  integrated_y = (float)dis.readFloat();
+  integrated_xgyro = (float)dis.readFloat();
+  integrated_ygyro = (float)dis.readFloat();
+  integrated_zgyro = (float)dis.readFloat();
+  time_delta_distance_us = (int)dis.readInt()&0x00FFFFFFFF;
+  distance = (float)dis.readFloat();
+  temperature = (int)dis.readShort();
+  sensor_id = (int)dis.readUnsignedByte()&0x00FF;
+  quality = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+44];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putLong(time_usec);
-  dos.putInt((int)(integration_time_us&0x00FFFFFFFF));
-  dos.putFloat(integrated_x);
-  dos.putFloat(integrated_y);
-  dos.putFloat(integrated_xgyro);
-  dos.putFloat(integrated_ygyro);
-  dos.putFloat(integrated_zgyro);
-  dos.putInt((int)(time_delta_distance_us&0x00FFFFFFFF));
-  dos.putFloat(distance);
-  dos.putShort((short)(temperature&0x00FFFF));
-  dos.put((byte)(sensor_id&0x00FF));
-  dos.put((byte)(quality&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeLong(time_usec);
+  dos.writeInt((int)(integration_time_us&0x00FFFFFFFF));
+  dos.writeFloat(integrated_x);
+  dos.writeFloat(integrated_y);
+  dos.writeFloat(integrated_xgyro);
+  dos.writeFloat(integrated_ygyro);
+  dos.writeFloat(integrated_zgyro);
+  dos.writeInt((int)(time_delta_distance_us&0x00FFFFFFFF));
+  dos.writeFloat(distance);
+  dos.writeShort(temperature&0x00FFFF);
+  dos.writeByte(sensor_id&0x00FF);
+  dos.writeByte(quality&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 44);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[50] = crcl;
   buffer[51] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

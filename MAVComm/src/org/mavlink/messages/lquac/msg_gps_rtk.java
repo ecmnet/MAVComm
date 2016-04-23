@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_gps_rtk
  * RTK GPS data. Gives information on the relative baseline calculation the GPS is reporting
@@ -82,52 +82,56 @@ public class msg_gps_rtk extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_last_baseline_ms = (int)dis.getInt()&0x00FFFFFFFF;
-  tow = (int)dis.getInt()&0x00FFFFFFFF;
-  baseline_a_mm = (int)dis.getInt();
-  baseline_b_mm = (int)dis.getInt();
-  baseline_c_mm = (int)dis.getInt();
-  accuracy = (int)dis.getInt()&0x00FFFFFFFF;
-  iar_num_hypotheses = (int)dis.getInt();
-  wn = (int)dis.getShort()&0x00FFFF;
-  rtk_receiver_id = (int)dis.get()&0x00FF;
-  rtk_health = (int)dis.get()&0x00FF;
-  rtk_rate = (int)dis.get()&0x00FF;
-  nsats = (int)dis.get()&0x00FF;
-  baseline_coords_type = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_last_baseline_ms = (int)dis.readInt()&0x00FFFFFFFF;
+  tow = (int)dis.readInt()&0x00FFFFFFFF;
+  baseline_a_mm = (int)dis.readInt();
+  baseline_b_mm = (int)dis.readInt();
+  baseline_c_mm = (int)dis.readInt();
+  accuracy = (int)dis.readInt()&0x00FFFFFFFF;
+  iar_num_hypotheses = (int)dis.readInt();
+  wn = (int)dis.readUnsignedShort()&0x00FFFF;
+  rtk_receiver_id = (int)dis.readUnsignedByte()&0x00FF;
+  rtk_health = (int)dis.readUnsignedByte()&0x00FF;
+  rtk_rate = (int)dis.readUnsignedByte()&0x00FF;
+  nsats = (int)dis.readUnsignedByte()&0x00FF;
+  baseline_coords_type = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+35];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putInt((int)(time_last_baseline_ms&0x00FFFFFFFF));
-  dos.putInt((int)(tow&0x00FFFFFFFF));
-  dos.putInt((int)(baseline_a_mm&0x00FFFFFFFF));
-  dos.putInt((int)(baseline_b_mm&0x00FFFFFFFF));
-  dos.putInt((int)(baseline_c_mm&0x00FFFFFFFF));
-  dos.putInt((int)(accuracy&0x00FFFFFFFF));
-  dos.putInt((int)(iar_num_hypotheses&0x00FFFFFFFF));
-  dos.putShort((short)(wn&0x00FFFF));
-  dos.put((byte)(rtk_receiver_id&0x00FF));
-  dos.put((byte)(rtk_health&0x00FF));
-  dos.put((byte)(rtk_rate&0x00FF));
-  dos.put((byte)(nsats&0x00FF));
-  dos.put((byte)(baseline_coords_type&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeInt((int)(time_last_baseline_ms&0x00FFFFFFFF));
+  dos.writeInt((int)(tow&0x00FFFFFFFF));
+  dos.writeInt((int)(baseline_a_mm&0x00FFFFFFFF));
+  dos.writeInt((int)(baseline_b_mm&0x00FFFFFFFF));
+  dos.writeInt((int)(baseline_c_mm&0x00FFFFFFFF));
+  dos.writeInt((int)(accuracy&0x00FFFFFFFF));
+  dos.writeInt((int)(iar_num_hypotheses&0x00FFFFFFFF));
+  dos.writeShort(wn&0x00FFFF);
+  dos.writeByte(rtk_receiver_id&0x00FF);
+  dos.writeByte(rtk_health&0x00FF);
+  dos.writeByte(rtk_rate&0x00FF);
+  dos.writeByte(nsats&0x00FF);
+  dos.writeByte(baseline_coords_type&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 35);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[41] = crcl;
   buffer[42] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_adsb_vehicle
  * The location and information of an ADSB vehicle
@@ -98,56 +98,60 @@ public class msg_adsb_vehicle extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  ICAO_address = (int)dis.getInt()&0x00FFFFFFFF;
-  lat = (int)dis.getInt();
-  lon = (int)dis.getInt();
-  altitude = (int)dis.getInt();
-  heading = (int)dis.getShort()&0x00FFFF;
-  hor_velocity = (int)dis.getShort()&0x00FFFF;
-  ver_velocity = (int)dis.getShort();
-  flags = (int)dis.getShort()&0x00FFFF;
-  squawk = (int)dis.getShort()&0x00FFFF;
-  altitude_type = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  ICAO_address = (int)dis.readInt()&0x00FFFFFFFF;
+  lat = (int)dis.readInt();
+  lon = (int)dis.readInt();
+  altitude = (int)dis.readInt();
+  heading = (int)dis.readUnsignedShort()&0x00FFFF;
+  hor_velocity = (int)dis.readUnsignedShort()&0x00FFFF;
+  ver_velocity = (int)dis.readShort();
+  flags = (int)dis.readUnsignedShort()&0x00FFFF;
+  squawk = (int)dis.readUnsignedShort()&0x00FFFF;
+  altitude_type = (int)dis.readUnsignedByte()&0x00FF;
   for (int i=0; i<9; i++) {
-    callsign[i] = (char)dis.get();
+    callsign[i] = (char)dis.readByte();
   }
-  emitter_type = (int)dis.get()&0x00FF;
-  tslc = (int)dis.get()&0x00FF;
+  emitter_type = (int)dis.readUnsignedByte()&0x00FF;
+  tslc = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+38];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putInt((int)(ICAO_address&0x00FFFFFFFF));
-  dos.putInt((int)(lat&0x00FFFFFFFF));
-  dos.putInt((int)(lon&0x00FFFFFFFF));
-  dos.putInt((int)(altitude&0x00FFFFFFFF));
-  dos.putShort((short)(heading&0x00FFFF));
-  dos.putShort((short)(hor_velocity&0x00FFFF));
-  dos.putShort((short)(ver_velocity&0x00FFFF));
-  dos.putShort((short)(flags&0x00FFFF));
-  dos.putShort((short)(squawk&0x00FFFF));
-  dos.put((byte)(altitude_type&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeInt((int)(ICAO_address&0x00FFFFFFFF));
+  dos.writeInt((int)(lat&0x00FFFFFFFF));
+  dos.writeInt((int)(lon&0x00FFFFFFFF));
+  dos.writeInt((int)(altitude&0x00FFFFFFFF));
+  dos.writeShort(heading&0x00FFFF);
+  dos.writeShort(hor_velocity&0x00FFFF);
+  dos.writeShort(ver_velocity&0x00FFFF);
+  dos.writeShort(flags&0x00FFFF);
+  dos.writeShort(squawk&0x00FFFF);
+  dos.writeByte(altitude_type&0x00FF);
   for (int i=0; i<9; i++) {
-    dos.put((byte)(callsign[i]));
+    dos.writeByte(callsign[i]);
   }
-  dos.put((byte)(emitter_type&0x00FF));
-  dos.put((byte)(tslc&0x00FF));
+  dos.writeByte(emitter_type&0x00FF);
+  dos.writeByte(tslc&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 38);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[44] = crcl;
   buffer[45] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

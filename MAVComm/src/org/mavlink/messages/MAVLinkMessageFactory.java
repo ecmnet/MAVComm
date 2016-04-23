@@ -6,8 +6,8 @@ package org.mavlink.messages;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.IMAVLinkMessage;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import java.io.ByteArrayInputStream;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_hil_sensor;
@@ -277,7 +277,7 @@ import org.mavlink.messages.lquac.msg_resource_request;
 public class MAVLinkMessageFactory implements IMAVLinkMessage, IMAVLinkMessageID {
 public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, byte[] rawData) throws IOException {
     MAVLinkMessage msg=null;
-    ByteBuffer dis = ByteBuffer.wrap(rawData).order(ByteOrder.LITTLE_ENDIAN);
+    LittleEndianDataInputStream dis = new LittleEndianDataInputStream(new ByteArrayInputStream(rawData));
     switch(msgid) {
   case MAVLINK_MSG_ID_REQUEST_DATA_STREAM:
       msg = new msg_request_data_stream(sysId, componentId);

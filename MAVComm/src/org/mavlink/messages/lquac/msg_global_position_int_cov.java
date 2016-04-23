@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_global_position_int_cov
  * The filtered global position (e.g. fused GPS and accelerometers). The position is in GPS-frame (right-handed, Z-up). It  is designed as scaled integer message since the resolution of float is not sufficient. NOTE: This message is intended for onboard networks / companion computers and higher-bandwidth links and optimized for accuracy and completeness. Please use the GLOBAL_POSITION_INT message for a minimal subset.
@@ -74,52 +74,56 @@ public class msg_global_position_int_cov extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  time_utc = (long)dis.getLong();
-  time_boot_ms = (int)dis.getInt()&0x00FFFFFFFF;
-  lat = (int)dis.getInt();
-  lon = (int)dis.getInt();
-  alt = (int)dis.getInt();
-  relative_alt = (int)dis.getInt();
-  vx = (float)dis.getFloat();
-  vy = (float)dis.getFloat();
-  vz = (float)dis.getFloat();
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  time_utc = (long)dis.readLong();
+  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
+  lat = (int)dis.readInt();
+  lon = (int)dis.readInt();
+  alt = (int)dis.readInt();
+  relative_alt = (int)dis.readInt();
+  vx = (float)dis.readFloat();
+  vy = (float)dis.readFloat();
+  vz = (float)dis.readFloat();
   for (int i=0; i<36; i++) {
-    covariance[i] = (float)dis.getFloat();
+    covariance[i] = (float)dis.readFloat();
   }
-  estimator_type = (int)dis.get()&0x00FF;
+  estimator_type = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+185];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putLong(time_utc);
-  dos.putInt((int)(time_boot_ms&0x00FFFFFFFF));
-  dos.putInt((int)(lat&0x00FFFFFFFF));
-  dos.putInt((int)(lon&0x00FFFFFFFF));
-  dos.putInt((int)(alt&0x00FFFFFFFF));
-  dos.putInt((int)(relative_alt&0x00FFFFFFFF));
-  dos.putFloat(vx);
-  dos.putFloat(vy);
-  dos.putFloat(vz);
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeLong(time_utc);
+  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
+  dos.writeInt((int)(lat&0x00FFFFFFFF));
+  dos.writeInt((int)(lon&0x00FFFFFFFF));
+  dos.writeInt((int)(alt&0x00FFFFFFFF));
+  dos.writeInt((int)(relative_alt&0x00FFFFFFFF));
+  dos.writeFloat(vx);
+  dos.writeFloat(vy);
+  dos.writeFloat(vz);
   for (int i=0; i<36; i++) {
-    dos.putFloat(covariance[i]);
+    dos.writeFloat(covariance[i]);
   }
-  dos.put((byte)(estimator_type&0x00FF));
+  dos.writeByte(estimator_type&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 185);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[191] = crcl;
   buffer[192] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

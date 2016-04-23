@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_data_transmission_handshake
  * 
@@ -58,40 +58,44 @@ public class msg_data_transmission_handshake extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  size = (int)dis.getInt()&0x00FFFFFFFF;
-  width = (int)dis.getShort()&0x00FFFF;
-  height = (int)dis.getShort()&0x00FFFF;
-  packets = (int)dis.getShort()&0x00FFFF;
-  type = (int)dis.get()&0x00FF;
-  payload = (int)dis.get()&0x00FF;
-  jpg_quality = (int)dis.get()&0x00FF;
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  size = (int)dis.readInt()&0x00FFFFFFFF;
+  width = (int)dis.readUnsignedShort()&0x00FFFF;
+  height = (int)dis.readUnsignedShort()&0x00FFFF;
+  packets = (int)dis.readUnsignedShort()&0x00FFFF;
+  type = (int)dis.readUnsignedByte()&0x00FF;
+  payload = (int)dis.readUnsignedByte()&0x00FF;
+  jpg_quality = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+13];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putInt((int)(size&0x00FFFFFFFF));
-  dos.putShort((short)(width&0x00FFFF));
-  dos.putShort((short)(height&0x00FFFF));
-  dos.putShort((short)(packets&0x00FFFF));
-  dos.put((byte)(type&0x00FF));
-  dos.put((byte)(payload&0x00FF));
-  dos.put((byte)(jpg_quality&0x00FF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeInt((int)(size&0x00FFFFFFFF));
+  dos.writeShort(width&0x00FFFF);
+  dos.writeShort(height&0x00FFFF);
+  dos.writeShort(packets&0x00FFFF);
+  dos.writeByte(type&0x00FF);
+  dos.writeByte(payload&0x00FF);
+  dos.writeByte(jpg_quality&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 13);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[19] = crcl;
   buffer[20] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {

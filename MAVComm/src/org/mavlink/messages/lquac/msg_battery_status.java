@@ -8,8 +8,8 @@ import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import org.mavlink.io.LittleEndianDataInputStream;
+import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_battery_status
  * Battery information
@@ -66,48 +66,52 @@ public class msg_battery_status extends MAVLinkMessage {
 /**
  * Decode message with raw data
  */
-public void decode(ByteBuffer dis) throws IOException {
-  current_consumed = (int)dis.getInt();
-  energy_consumed = (int)dis.getInt();
-  temperature = (int)dis.getShort();
+public void decode(LittleEndianDataInputStream dis) throws IOException {
+  current_consumed = (int)dis.readInt();
+  energy_consumed = (int)dis.readInt();
+  temperature = (int)dis.readShort();
   for (int i=0; i<10; i++) {
-    voltages[i] = (int)dis.getShort()&0x00FFFF;
+    voltages[i] = (int)dis.readUnsignedShort()&0x00FFFF;
   }
-  current_battery = (int)dis.getShort();
-  id = (int)dis.get()&0x00FF;
-  battery_function = (int)dis.get()&0x00FF;
-  type = (int)dis.get()&0x00FF;
-  battery_remaining = (int)dis.get();
+  current_battery = (int)dis.readShort();
+  id = (int)dis.readUnsignedByte()&0x00FF;
+  battery_function = (int)dis.readUnsignedByte()&0x00FF;
+  type = (int)dis.readUnsignedByte()&0x00FF;
+  battery_remaining = (int)dis.readByte();
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+36];
-   ByteBuffer dos = ByteBuffer.wrap(buffer).order(ByteOrder.LITTLE_ENDIAN);
-  dos.put((byte)0xFE);
-  dos.put((byte)(length & 0x00FF));
-  dos.put((byte)(sequence & 0x00FF));
-  dos.put((byte)(sysId & 0x00FF));
-  dos.put((byte)(componentId & 0x00FF));
-  dos.put((byte)(messageType & 0x00FF));
-  dos.putInt((int)(current_consumed&0x00FFFFFFFF));
-  dos.putInt((int)(energy_consumed&0x00FFFFFFFF));
-  dos.putShort((short)(temperature&0x00FFFF));
+   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
+  dos.writeByte((byte)0xFE);
+  dos.writeByte(length & 0x00FF);
+  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(sysId & 0x00FF);
+  dos.writeByte(componentId & 0x00FF);
+  dos.writeByte(messageType & 0x00FF);
+  dos.writeInt((int)(current_consumed&0x00FFFFFFFF));
+  dos.writeInt((int)(energy_consumed&0x00FFFFFFFF));
+  dos.writeShort(temperature&0x00FFFF);
   for (int i=0; i<10; i++) {
-    dos.putShort((short)(voltages[i]&0x00FFFF));
+    dos.writeShort(voltages[i]&0x00FFFF);
   }
-  dos.putShort((short)(current_battery&0x00FFFF));
-  dos.put((byte)(id&0x00FF));
-  dos.put((byte)(battery_function&0x00FF));
-  dos.put((byte)(type&0x00FF));
-  dos.put((byte)(battery_remaining&0x00FF));
+  dos.writeShort(current_battery&0x00FFFF);
+  dos.writeByte(id&0x00FF);
+  dos.writeByte(battery_function&0x00FF);
+  dos.writeByte(type&0x00FF);
+  dos.write(battery_remaining&0x00FF);
+  dos.flush();
+  byte[] tmp = dos.toByteArray();
+  for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
   int crc = MAVLinkCRC.crc_calculate_encode(buffer, 36);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
   buffer[42] = crcl;
   buffer[43] = crch;
+  dos.close();
   return buffer;
 }
 public String toString() {
