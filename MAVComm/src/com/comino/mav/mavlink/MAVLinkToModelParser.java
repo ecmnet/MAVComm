@@ -76,6 +76,7 @@ public class MAVLinkToModelParser {
 	private List<IMSPModeChangedListener> modeListener = null;
 
 	private boolean isRunning = false;
+	private long    startUpAt = 0;
 
 	private Status oldStatus = new Status();
 
@@ -510,6 +511,7 @@ public class MAVLinkToModelParser {
 		MAVLinkMessage msg = null;
 
 		public void run() {
+			startUpAt = System.currentTimeMillis();
 			model.sys.tms = System.nanoTime()/1000;
 
 			while (isRunning) {
@@ -559,7 +561,7 @@ public class MAVLinkToModelParser {
 
 
 	private void notifyStatusChange() {
-		if(!oldStatus.isEqual(model.sys)) {
+		if(!oldStatus.isEqual(model.sys) && (System.currentTimeMillis() - startUpAt)>2000) {
 			for(IMSPModeChangedListener listener : modeListener)
 				listener.update(oldStatus, model.sys);
 			oldStatus.set(model.sys);
