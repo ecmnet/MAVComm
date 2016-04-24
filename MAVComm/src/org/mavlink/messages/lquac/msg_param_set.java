@@ -4,7 +4,6 @@
  **/
 package org.mavlink.messages.lquac;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_PARAM_TYPE;
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkCRC;
 import java.io.ByteArrayOutputStream;

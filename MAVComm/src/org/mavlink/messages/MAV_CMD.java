@@ -321,7 +321,7 @@ public interface MAV_CMD {
      * PARAM 1 : Speed type (0=Airspeed, 1=Ground Speed)
      * PARAM 2 : Speed  (m/s, -1 indicates no change)
      * PARAM 3 : Throttle  ( Percent, -1 indicates no change)
-     * PARAM 4 : Empty
+     * PARAM 4 : absolute or relative [0,1]
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty

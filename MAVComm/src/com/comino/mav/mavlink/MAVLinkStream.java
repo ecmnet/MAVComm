@@ -66,7 +66,7 @@ public class MAVLinkStream {
 
 				try {
 					rxBuffer.compact();
-					LockSupport.parkNanos(200000);
+					LockSupport.parkNanos(500000);
 					n = channel.read(rxBuffer);
 				} catch (IOException ioe) {
 					rxBuffer.flip();
