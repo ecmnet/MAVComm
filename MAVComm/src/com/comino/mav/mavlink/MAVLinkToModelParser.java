@@ -77,6 +77,7 @@ public class MAVLinkToModelParser {
 
 	private boolean isRunning = false;
 	private long    startUpAt = 0;
+	private long    t_armed_start = 0;
 
 	private Status oldStatus = new Status();
 
@@ -374,6 +375,7 @@ public class MAVLinkToModelParser {
 				model.sys.setStatus(Status.MSP_ACTIVE, (hb.system_status & MAV_STATE.MAV_STATE_ACTIVE)>0);
 				model.sys.setStatus(Status.MSP_READY, (hb.system_status & MAV_STATE.MAV_STATE_STANDBY)>0);
 				model.sys.setStatus(Status.MSP_ARMED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED)!=0);
+
 				model.sys.setStatus(Status.MSP_MODE_STABILIZED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_STABILIZE_ENABLED)!=0);
 
 				model.sys.setStatus(Status.MSP_CONNECTED, true);
@@ -563,6 +565,13 @@ public class MAVLinkToModelParser {
 		if(!oldStatus.isEqual(model.sys) && (System.currentTimeMillis() - startUpAt)>2000) {
 			for(IMSPModeChangedListener listener : modeListener)
 				listener.update(oldStatus, model.sys);
+
+			if(!oldStatus.isStatus(Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))
+					t_armed_start = System.currentTimeMillis();
+
+			if(oldStatus.isStatus(Status.MSP_ARMED) && !model.sys.isStatus(Status.MSP_ARMED))
+				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+
 			oldStatus.set(model.sys);
 		}
 

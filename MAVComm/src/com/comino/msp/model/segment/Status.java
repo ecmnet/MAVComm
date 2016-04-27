@@ -70,18 +70,19 @@ public class Status extends Segment {
 	};
 
 
-	private int     sensors   = 0;
-	private int     status    = 0;
+	private int     sensors    = 0;
+	private int     status     = 0;
 
-	public int      error1    = 0;
-	public float    load_p    = 0;
-	public float   drops_p    = 0;
-	public int    imu_temp	  = 0;
+	public int      error1     = 0;
+	public float    load_p     = 0;
+	public float   drops_p     = 0;
+	public int    imu_temp	   = 0;
 
-	public int		basemode  = 0;
+	public int		basemode   = 0;
 
 
-	public float	load_m	  = 0;
+	public float	load_m	   = 0;
+	public long     t_armed_ms = 0;
 
 
 	public void set(Status s) {
@@ -93,6 +94,8 @@ public class Status extends Segment {
 		drops_p  = s.drops_p;
 		imu_temp = s.imu_temp;
 		basemode = s.basemode;
+
+		t_armed_ms = s.t_armed_ms;
 	}
 
 
@@ -146,6 +149,7 @@ public class Status extends Segment {
 		imu_temp	  = 0;
 		drops_p   	  = 0;
 		error1        = 0;
+		t_armed_ms    = 0;
 
 	}
 
