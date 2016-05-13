@@ -5,22 +5,42 @@
 	<property name="res.dir" value="resources" />
 	<property name="build.dir" value="bin" />
 	<property name="deploy.dir" value="/Volumes/pi-2" />
-	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib"/>
+	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib" />
 
-	<target name="Build MAVComm" description="Build jar">
+	<target name="dependencies">
+		<get src="https://github.com/mavlink/mavlink/raw/master/message_definitions/v1.0/common.xml" dest="mavlink/common.xml" />
+	</target>
+
+	<target name="build_mavlink" depends="dependencies">
+		<java classname="org.mavlink.generator.MAVLinkGenerator">
+			<arg line="mavlink/lquac.xml src/ true true true true" />
+			<classpath>
+				<pathelement location="dis/mavcomm.jar" />
+				<pathelement path="${java.class.path}" />
+			</classpath>
+		</java>
+		<javac destdir="bin" includeantruntime="false">
+			<src path="src" />
+			<classpath>
+				<fileset dir="lib">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="Build MAVComm" depends="build_mavlink" description="Build jar">
 		<!--	 <mkdir dir="${dis.dir}"/> -->
 		<jar destfile="${dis.dir}/mavcomm.jar" basedir="${build.dir}">
 			<manifest>
 				<attribute name="Main-Class" value="com.comino.msp.main.StartUp" />
 				<attribute name="Built-By" value="${user.name}" />
-				<attribute name="Class-Path"
-				     value="/home/pi/LQuaC/jna-4.1.0.jar
+				<attribute name="Class-Path" value="/home/pi/LQuaC/jna-4.1.0.jar
 					    	/home/pi/LQuaC/purejavacomm-0.0.21.jar
 					        /home/pi/LQuaC/gson-2.4.jar
 					        /home/pi/libAMA0.so
 					        /home/pi/resources/
-					         mavlink/message_definitions/common.xml"
-				/>
+					         mavlink/message_definitions/common.xml" />
 			</manifest>
 		</jar>
 	</target>
@@ -36,10 +56,10 @@
 			<fileset dir="${dis.dir}/" />
 		</copy>
 		<buildnumber />
-		   <echo>Current build number:${build.number}</echo>
-			<propertyfile file="${deploy.dir}/resources/msp.properties">
-			   <entry key="build" value="${build.number}" />
-		    </propertyfile>
+		<echo>Current build number:${build.number}</echo>
+		<propertyfile file="${deploy.dir}/resources/msp.properties">
+			<entry key="build" value="${build.number}" />
+		</propertyfile>
 	</target>
 
 
