@@ -229,6 +229,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_GUIDED_ENABLE = 92;
     /**
+     * Delay the next navigation command a number of seconds or until a specified time
+     * PARAM 1 : Delay in seconds (decimal, -1 to enable time-of-day fields)
+     * PARAM 2 : hour (24h format, UTC, -1 to ignore)
+     * PARAM 3 : minute (24h format, UTC, -1 to ignore)
+     * PARAM 4 : second (24h format, UTC)
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_NAV_DELAY = 93;
+    /**
      * NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration
      * PARAM 1 : Empty
      * PARAM 2 : Empty

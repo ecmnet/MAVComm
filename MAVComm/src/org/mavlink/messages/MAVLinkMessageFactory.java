@@ -73,6 +73,7 @@ import org.mavlink.messages.lquac.msg_terrain_check;
 import org.mavlink.messages.lquac.msg_adsb_vehicle;
 import org.mavlink.messages.lquac.msg_memory_vect;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
+import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
 import org.mavlink.messages.lquac.msg_wind_cov;
 import org.mavlink.messages.lquac.msg_local_position_ned;
@@ -94,6 +95,7 @@ import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_mission_item_int;
+import org.mavlink.messages.lquac.msg_mission_request_int;
 import org.mavlink.messages.lquac.msg_manual_setpoint;
 import org.mavlink.messages.lquac.msg_named_value_float;
 import org.mavlink.messages.lquac.msg_scaled_imu;
@@ -204,6 +206,7 @@ import org.mavlink.messages.lquac.msg_terrain_check;
 import org.mavlink.messages.lquac.msg_adsb_vehicle;
 import org.mavlink.messages.lquac.msg_memory_vect;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
+import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
 import org.mavlink.messages.lquac.msg_wind_cov;
 import org.mavlink.messages.lquac.msg_local_position_ned;
@@ -225,6 +228,7 @@ import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_mission_item_int;
+import org.mavlink.messages.lquac.msg_mission_request_int;
 import org.mavlink.messages.lquac.msg_manual_setpoint;
 import org.mavlink.messages.lquac.msg_named_value_float;
 import org.mavlink.messages.lquac.msg_scaled_imu;
@@ -543,6 +547,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_hil_rc_inputs_raw(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_GPS_RTCM_DATA:
+      msg = new msg_gps_rtcm_data(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_RAW_PRESSURE:
       msg = new msg_raw_pressure(sysId, componentId);
       msg.decode(dis);
@@ -625,6 +633,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_MISSION_ITEM_INT:
       msg = new msg_mission_item_int(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_MISSION_REQUEST_INT:
+      msg = new msg_mission_request_int(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_MANUAL_SETPOINT:

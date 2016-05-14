@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_nav_controller_output
- * Outputs of the APM navigation controller. The primary use of this message is to check the response and signs of the controller before actual flight and to assist with tuning controller parameters.
+ * The state of the fixed wing navigation and position controller.
  **/
 public class msg_nav_controller_output extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT = 62;

@@ -772,6 +772,16 @@
                     <param index="6">Empty</param>
                     <param index="7">Empty</param>
                </entry>
+               <entry value="93" name="MAV_CMD_NAV_DELAY">
+                    <description>Delay the next navigation command a number of seconds or until a specified time</description>
+                    <param index="1">Delay in seconds (decimal, -1 to enable time-of-day fields)</param>
+                    <param index="2">hour (24h format, UTC, -1 to ignore)</param>
+                    <param index="3">minute (24h format, UTC, -1 to ignore)</param>
+                    <param index="4">second (24h format, UTC)</param>
+                    <param index="5">Empty</param>
+                    <param index="6">Empty</param>
+                    <param index="7">Empty</param>
+               </entry>
                <entry value="95" name="MAV_CMD_NAV_LAST">
                     <description>NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration</description>
                     <param index="1">Empty</param>
@@ -2417,6 +2427,12 @@
                <field type="float" name="param_value_min">Minimum param value. The protocol does not define if this overwrites an onboard minimum value. (Depends on implementation)</field>
                <field type="float" name="param_value_max">Maximum param value. The protocol does not define if this overwrites an onboard maximum value. (Depends on implementation)</field>
           </message>
+          <message id="51" name="MISSION_REQUEST_INT">
+               <description>Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM_INT message. http://qgroundcontrol.org/mavlink/waypoint_protocol</description>
+               <field type="uint8_t" name="target_system">System ID</field>
+               <field type="uint8_t" name="target_component">Component ID</field>
+               <field type="uint16_t" name="seq">Sequence</field>
+          </message>
           <message id="54" name="SAFETY_SET_ALLOWED_AREA">
                <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/MISSIONs to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
                <field type="uint8_t" name="target_system">System ID</field>
@@ -2449,7 +2465,7 @@
                <field type="float[9]" name="covariance">Attitude covariance</field>
           </message>
           <message id="62" name="NAV_CONTROLLER_OUTPUT">
-               <description>Outputs of the APM navigation controller. The primary use of this message is to check the response and signs of the controller before actual flight and to assist with tuning controller parameters.</description>
+               <description>The state of the fixed wing navigation and position controller.</description>
                <field type="float" name="nav_roll">Current desired roll in degrees</field>
                <field type="float" name="nav_pitch">Current desired pitch in degrees</field>
                <field type="int16_t" name="nav_bearing">Current desired heading in degrees</field>
@@ -3311,6 +3327,12 @@
             <field type="float" name="wind_alt">AMSL altitude (m) this measurement was taken at</field>
             <field name="horiz_accuracy" type="float">Horizontal speed 1-STD accuracy</field>
             <field name="vert_accuracy" type="float">Vertical speed 1-STD accuracy</field>
+        </message>
+        <message id="233" name="GPS_RTCM_DATA">
+           <description>WORK IN PROGRESS! RTCM message for injecting into the onboard GPS (used for DGPS)</description>
+           <field type="uint8_t" name="flags">LSB: 1 means message is fragmented</field>
+           <field type="uint8_t" name="len">data length</field>
+           <field type="uint8_t[180]" name="data">RTCM message (may be fragmented)</field>
         </message>
         <message id="241" name="VIBRATION">
             <description>Vibration levels and accelerometer clipping</description>

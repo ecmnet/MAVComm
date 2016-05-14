@@ -74,6 +74,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_ADSB_VEHICLE = 246;
   public static int MAVLINK_MSG_ID_MEMORY_VECT = 249;
   public static int MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW = 92;
+  public static int MAVLINK_MSG_ID_GPS_RTCM_DATA = 233;
   public static int MAVLINK_MSG_ID_RAW_PRESSURE = 28;
   public static int MAVLINK_MSG_ID_WIND_COV = 231;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED = 32;
@@ -95,6 +96,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GPS_RAW_INT = 24;
   public static int MAVLINK_MSG_ID_SYS_STATUS = 1;
   public static int MAVLINK_MSG_ID_MISSION_ITEM_INT = 73;
+  public static int MAVLINK_MSG_ID_MISSION_REQUEST_INT = 51;
   public static int MAVLINK_MSG_ID_MANUAL_SETPOINT = 81;
   public static int MAVLINK_MSG_ID_NAMED_VALUE_FLOAT = 251;
   public static int MAVLINK_MSG_ID_SCALED_IMU = 26;
