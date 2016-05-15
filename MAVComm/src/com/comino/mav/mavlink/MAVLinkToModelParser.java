@@ -79,6 +79,8 @@ public class MAVLinkToModelParser {
 	private long    startUpAt = 0;
 	private long    t_armed_start = 0;
 
+	private long    gpos_tms = 0;
+
 	private Status oldStatus = new Status();
 
 	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
@@ -209,7 +211,7 @@ public class MAVLinkToModelParser {
 				model.gps.hdop   = gps.eph/100f;
 				model.gps.latitude = gps.lat/1e7d;
 				model.gps.longitude = gps.lon/1e7d;
-				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);
+				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>6);
 
 			}
 		});
@@ -264,6 +266,8 @@ public class MAVLinkToModelParser {
 
 				model.target_state.tms = ned.time_boot_ms*1000;
 
+				model.sys.setStatus(Status.MSP_LPOS_AVAILABILITY, true);
+
 			}
 		});
 
@@ -280,6 +284,9 @@ public class MAVLinkToModelParser {
 				model.state.g_vx = pos.vx;
 				model.state.g_vy = pos.vy;
 				model.state.g_vz = pos.vz;
+
+				gpos_tms = System.currentTimeMillis();
+				model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, true);
 
 			}
 		});
@@ -542,6 +549,11 @@ public class MAVLinkToModelParser {
 						if(model.sys.isStatus(Status.MSP_ARMED))
 							model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 					}
+
+					// if no global position was published within the last second:
+					if((System.currentTimeMillis() - gpos_tms)>1000)
+						model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
+
 
 					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&
 							model.sys.isStatus(Status.MSP_CONNECTED)) {
