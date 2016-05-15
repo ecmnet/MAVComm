@@ -54,4 +54,19 @@ public class LogMessage extends Segment {
 		this.tms = System.currentTimeMillis();
 	}
 
+	public LogMessage clone() {
+		return new LogMessage(this.msg,this.severity);
+	}
+
+	public void set(LogMessage m) {
+		this.msg = m.msg;
+		this.severity = m.severity;
+		this.tms = m.tms;
+	}
+
+	public void clear() {
+		this.msg = null;
+		this.severity = 0;
+	}
+
 }

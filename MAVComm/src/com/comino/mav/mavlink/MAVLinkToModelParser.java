@@ -344,6 +344,8 @@ public class MAVLinkToModelParser {
 				m.tms = System.currentTimeMillis();
 				m.severity = msg.severity;
 
+				model.msg.set(m);
+
 				if(msgList.size()>0) {
 					if((msgList.get(msgList.size()-1).tms+100) < m.tms) {
 						msgList.add(m);

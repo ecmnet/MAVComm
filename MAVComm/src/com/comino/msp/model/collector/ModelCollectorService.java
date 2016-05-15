@@ -223,6 +223,8 @@ public class ModelCollectorService {
 					current.tms = System.nanoTime() / 1000 - tms;
 					DataModel model = current.clone();
 
+					current.msg.clear();
+
 					model.state.hx = ned_offset_x;
 					model.state.hy = ned_offset_y;
 
