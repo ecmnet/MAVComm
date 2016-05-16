@@ -57,6 +57,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_highres_imu;
 import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
+import org.mavlink.messages.lquac.msg_manual_control;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_rc_channels;
@@ -246,6 +247,14 @@ public class MAVLinkToModelParser {
 				model.state.g_x = ref.x;
 				model.state.g_y = ref.y;
 				model.state.g_z = ref.z;
+			}
+		});
+
+		registerListener(msg_manual_control.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_manual_control ctl = (msg_manual_control)o;
+				model.sys.setStatus(Status.MSP_JOY_ATTACHED,true);
 			}
 		});
 

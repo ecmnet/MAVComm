@@ -8,7 +8,9 @@
 	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib" />
 
 	<target name="dependencies">
+		<!--
 		<get src="https://github.com/mavlink/mavlink/raw/master/message_definitions/v1.0/common.xml" dest="mavlink/common.xml" />
+		-->
 	</target>
 
 	<target name="build_mavlink" depends="dependencies">
