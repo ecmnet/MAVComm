@@ -59,7 +59,7 @@ public class MAV_CUST_MODE {
 //	}
 
 	public static boolean is(long mode, int flag) {
-	return (mode >> 16) == flag;
+	return ((mode >> 16)  ) == flag;
     }
 
 

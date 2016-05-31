@@ -50,6 +50,8 @@ public class Status extends Segment {
 	public static final int MSP_RC_ATTACHED					= 3;
 	public static final int MSP_JOY_ATTACHED			    = 4;
 
+	// TODO: Replace with PX4_NAVSTATES
+
 	public static final int MSP_ARMED						= 8;
 	public static final int MSP_MODE_MANUAL			        = 9;
 	public static final int MSP_MODE_STABILIZED			    = 10;
@@ -105,6 +107,7 @@ public class Status extends Segment {
 	public int    imu_temp	   = 0;
 
 	public int		basemode   = 0;
+	public int		custommode = 0;
 
 
 	public float	load_m	   = 0;
@@ -120,6 +123,7 @@ public class Status extends Segment {
 		drops_p  = s.drops_p;
 		imu_temp = s.imu_temp;
 		basemode = s.basemode;
+		custommode = s.custommode;
 
 		t_armed_ms = s.t_armed_ms;
 	}
