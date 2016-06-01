@@ -412,20 +412,27 @@ public class MAVLinkToModelParser {
 				model.sys.setStatus(Status.MSP_READY, (hb.system_status & MAV_STATE.MAV_STATE_STANDBY)>0);
 				model.sys.setStatus(Status.MSP_ARMED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED)!=0);
 
-				model.sys.setStatus(Status.MSP_MODE_STABILIZED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_STABILIZE_ENABLED)!=0);
-
 				model.sys.setStatus(Status.MSP_CONNECTED, true);
+
 
 				model.sys.setStatus(Status.MSP_MODE_ALTITUDE, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_ALTCTL));
 				model.sys.setStatus(Status.MSP_MODE_POSITION, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL));
-				model.sys.setStatus(Status.MSP_MODE_LOITER, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LOITER));
-				model.sys.setStatus(Status.MSP_MODE_MISSION, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_MISSION));
 				model.sys.setStatus(Status.MSP_MODE_OFFBOARD, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD));
-				model.sys.setStatus(Status.MSP_MODE_LANDING, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LAND));
-				model.sys.setStatus(Status.MSP_MODE_RTL, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_RTL));
-				model.sys.setStatus(Status.MSP_MODE_TAKEOFF, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF));
+				model.sys.setStatus(Status.MSP_MODE_STABILIZED, MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_STABILIZED));
+
+				model.sys.setStatus(Status.MSP_MODE_LOITER,
+						MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LOITER));
+				model.sys.setStatus(Status.MSP_MODE_MISSION,
+						MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_MISSION));
+				model.sys.setStatus(Status.MSP_MODE_LANDING,
+						MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LAND));
+				model.sys.setStatus(Status.MSP_MODE_RTL,
+						MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_RTL));
+				model.sys.setStatus(Status.MSP_MODE_TAKEOFF,
+						MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO,MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF));
 
 				model.sys.basemode = hb.base_mode;
+				model.sys.custommode = (int)(hb.custom_mode);
 
 				model.sys.tms = System.nanoTime()/1000;
 
