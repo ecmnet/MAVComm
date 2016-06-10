@@ -57,6 +57,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_highres_imu;
 import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
+import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_manual_control;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
@@ -244,9 +245,7 @@ public class MAVLinkToModelParser {
 				model.gps.ref_lon = ref.longitude/10000000f;
 				model.gps.ref_altitude = ref.altitude;
 				model.gps.setFlag(GPS.GPS_REF_VALID, true);
-				model.state.g_x = ref.x;
-				model.state.g_y = ref.y;
-				model.state.g_z = ref.z;
+
 			}
 		});
 
@@ -258,18 +257,22 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_local_position_ned.class, new IMAVLinkListener() {
+		registerListener(msg_local_position_ned_cov.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
-				msg_local_position_ned ned = (msg_local_position_ned)o;
+				msg_local_position_ned_cov ned = (msg_local_position_ned_cov)o;
 
-				model.state.x = ned.x;
-				model.state.y = ned.y;
-				model.state.z = ned.z;
+				model.state.l_x = ned.x;
+				model.state.l_y = ned.y;
+				model.state.l_z = ned.z;
 
-				model.state.vx = ned.vx;
-				model.state.vy = ned.vy;
-				model.state.vz = ned.vz;
+				model.state.l_vx = ned.vx;
+				model.state.l_vy = ned.vy;
+				model.state.l_vz = ned.vz;
+
+				model.state.l_ax = ned.ax;
+				model.state.l_ay = ned.ay;
+				model.state.l_az = ned.az;
 
 				model.state.tms = ned.time_boot_ms*1000;
 
@@ -283,13 +286,13 @@ public class MAVLinkToModelParser {
 				msg_position_target_local_ned ned = (msg_position_target_local_ned)o;
 
 
-				model.target_state.x = ned.x;
-				model.target_state.y = ned.y;
-				model.target_state.z = ned.z;
+				model.target_state.l_x = ned.x;
+				model.target_state.l_y = ned.y;
+				model.target_state.l_z = ned.z;
 
-				model.target_state.vx = ned.vx;
-				model.target_state.vy = ned.vy;
-				model.target_state.vz = ned.vz;
+				model.target_state.l_vx = ned.vx;
+				model.target_state.l_vy = ned.vy;
+				model.target_state.l_vz = ned.vz;
 
 				model.target_state.tms = ned.time_boot_ms*1000;
 
@@ -302,9 +305,9 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_global_position_int pos = (msg_global_position_int)o;
-
-				model.state.lat 	= pos.lat/10000000f;
-				model.state.lon	    = pos.lon/10000000f;
+				model.state.g_lat 	= pos.lat/10000000f;
+				model.state.g_lon	= pos.lon/10000000f;
+				model.state.g_alt   = (pos.alt/1000);
 				model.gps.heading   = (short)(pos.hdg/1000);
 				model.gps.altitude  = (short)(pos.alt/1000);
 				model.gps.tms = pos.time_boot_ms * 1000;

@@ -61,9 +61,6 @@ public class ModelCollectorService {
 
 	private int     mode = 0;
 
-	private float ned_offset_x =0;
-	private float ned_offset_y =0;
-
 	private  int  totalTime_sec = 30;
 
 
@@ -95,8 +92,6 @@ public class ModelCollectorService {
 			modelList.clear();
 			mode = COLLECTING;
 
-			ned_offset_x = current.state.x;
-			ned_offset_y = current.state.y;
 
 			new Thread(new Collector(0)).start();
 		}
@@ -185,9 +180,6 @@ public class ModelCollectorService {
 		if(mode==STOPPED) {
 			modelList.clear();
 
-			ned_offset_x = current.state.x;
-			ned_offset_y = current.state.y;
-
 			mode = PRE_COLLECTING;
 			new Thread(new Collector(pre_sec)).start();
 		}
@@ -224,9 +216,6 @@ public class ModelCollectorService {
 					DataModel model = current.clone();
 
 					current.msg.clear();
-
-					model.state.hx = ned_offset_x;
-					model.state.hy = ned_offset_y;
 
 					modelList.add(model);
 					if(modelList.size()>MAX_SIZE)

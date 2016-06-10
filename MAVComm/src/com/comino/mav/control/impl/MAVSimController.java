@@ -155,16 +155,16 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 			if(getCollector().isCollecting()) {
 				count++;
-				if(model.state.z > -5.0f)
-					model.state.z = model.state.z - 0.001f - (float)Math.random()*0.001f;
-				model.state.x = (float)(Math.sin(count/100f))*0.2f;
-				model.state.y = (float)(Math.cos(count/100f))*0.2f;
+				if(model.state.l_z > -5.0f)
+					model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
+				model.state.l_x = (float)(Math.sin(count/100f))*0.2f;
+				model.state.l_y = (float)(Math.cos(count/100f))*0.2f;
 				if(model.battery.b0 > 11f)
 					model.battery.b0 = model.battery.b0 - (float)Math.random()*0.0001f - 0.0001f;
 
 			} else {
 				count = 0;
-				model.state.z = 0;
+				model.state.l_z = 0;
 				model.battery.b0 = 12.4f;
 			}
 

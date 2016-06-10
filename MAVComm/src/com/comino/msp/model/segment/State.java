@@ -51,26 +51,27 @@ public class State extends Segment {
 
 	// positioning actual
 
-	public float	x=0;			//  x-position in m (Roll)
-	public float    y=0;			//  y-position in m (Pitch)
-	public float    z=0;			//  z-position in m (Altitude)
+	public float	l_x=0;			//  x-position in m (Roll)
+	public float    l_y=0;			//  y-position in m (Pitch)
+	public float    l_z=0;			//  z-position in m (Altitude)
+
 	public float    h=0;			// heading in radiant
 
-	public float	hx=0;			// home x-position in m (Roll)
-	public float    hy=0;			// home y-position in m (Pitch)
-	public float    hz=0;			// home z-position in m (Altitude)
+	public float    l_vx=0;			// gative x speed in m/s
+	public float 	l_vy=0;			// gative y speed in m/s
+	public float	l_vz=0;			// gative z speed in m/s
 
-	public float    vx=0;			// gative x speed in m/s
-	public float 	vy=0;			// gative y speed in m/s
-	public float	vz=0;			// gative z speed in m/s
 	public float	vh=0;			// gative heading speed in radiant/s
 
-	public float    lat=0;
-	public float    lon=0;
+	public float    l_ax=0;			// gative x speed in m/s^2
+	public float 	l_ay=0;			// gative y speed in m/s^2
+	public float	l_az=0;			// gative z speed in m/s^2
 
-	public float	g_x		= 0;
-	public float    g_y 	= 0;
-	public float    g_z		= 0;
+	public float	ah=0;			// gative heading speed in radiant/s^2
+
+	public float	g_lon	= 0;
+	public float    g_lat 	= 0;
+	public float    g_alt	= 0;
 	public float    g_vx	= 0;
 	public float    g_vy	= 0;
 	public float    g_vz	= 0;
@@ -97,23 +98,24 @@ public class State extends Segment {
 	public State clone() {
 		State t = new State();
 		t.flags = flags;
-		t.x		= x;
-		t.y		= y;
-		t.z		= z;
-		t.hx	= hx;
-		t.hy	= hy;
-		t.hz	= hz;
+		t.l_x		= l_x;
+		t.l_y		= l_y;
+		t.l_z		= l_z;
 		t.h		= h;
-		t.vx	= vx;
-		t.vy	= vy;
-		t.vz	= vz;
+
+		t.l_vx	= l_vx;
+		t.l_vy	= l_vy;
+		t.l_vz	= l_vz;
 		t.vh	= vh;
 
-		t.lat   = lat;
-		t.lon   = lon;
-		t.g_x	= g_x;
-		t.g_y   = g_y;
-		t.g_z	= g_z;
+		t.l_ax	= l_ax;
+		t.l_ay	= l_ay;
+		t.l_az	= l_az;
+		t.ah	= ah;
+
+		t.g_lon	= g_lon;
+		t.g_lat = g_lat;
+		t.g_alt	= g_alt;
 		t.g_vx	= g_vx;
 		t.g_vy	= g_vy;
 		t.g_vz	= g_vz;
@@ -124,23 +126,23 @@ public class State extends Segment {
 
 	public void set(State t) {
 		flags = t.flags;
-		x		= t.x;
-		y		= t.y;
-		z		= t.z;
-		hx		= t.hx;
-		hy		= t.hy;
-		hz		= t.hz;
+		l_x		= t.l_x;
+		l_y		= t.l_y;
+		l_z		= t.l_z;
 		h		= t.h;
-		vx		= t.vx;
-		vy		= t.vy;
-		vz		= t.vz;
+		l_vx	= t.l_vx;
+		l_vy	= t.l_vy;
+		l_vz	= t.l_vz;
 		vh		= t.vh;
 
-		lat     = t.lat;
-		lon     = t.lon;
-		g_x		= t.g_x;
-		g_y 	= t.g_y;
-		g_z		= t.g_z;
+		l_ax	= t.l_ax;
+		l_ay	= t.l_ay;
+		l_az	= t.l_az;
+		ah		= t.ah;
+
+		g_lon	= t.g_lon;
+		g_lat 	= t.g_lat;
+		g_alt	= t.g_alt;
 		g_vx	= t.g_vx;
 		g_vy	= t.g_vy;
 		g_vz	= t.g_vz;
@@ -148,22 +150,21 @@ public class State extends Segment {
 
 	public void clear() {
 		flags 	= 0;
-		x		= 0;
-		y		= 0;
-		z		= 0;
-		hx		= 0;
-		hy		= 0;
-		hz		= 0;
+		l_x		= 0;
+		l_y		= 0;
+		l_z		= 0;
 		h		= 0;
-		vx		= 0;
-		vy		= 0;
-		vz		= 0;
+		l_vx	= 0;
+		l_vy	= 0;
+		l_vz	= 0;
 		vh		= 0;
-		lat     = 0;
-		lon     = 0;
-		g_x		= 0;
-		g_y 	= 0;
-		g_z		= 0;
+		l_ax	= 0;
+		l_ay	= 0;
+		l_az	= 0;
+		ah		= 0;
+		g_lon	= 0;
+		g_lat 	= 0;
+		g_alt	= 0;
 		g_vx	= 0;
 		g_vy	= 0;
 		g_vz	= 0;
@@ -171,7 +172,7 @@ public class State extends Segment {
 
 	public void print(String header) {
 		System.out.printf("%s State: x= %3.2f y=%3.2f z=%3.2f h=%3.2f - vx= %3.2f vy=%3.2f vz=%3.2f vh=%3.2f \n",
-				header,x,y,z,h,vx,vy,vz,vh);
+				header,l_x,l_y,l_z,h);
 	}
 
 }
