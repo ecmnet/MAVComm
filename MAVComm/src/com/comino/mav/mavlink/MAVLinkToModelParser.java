@@ -248,7 +248,7 @@ public class MAVLinkToModelParser {
 
 				model.home_state.g_lat = ref.latitude/10000000f;
 				model.home_state.g_lon = ref.longitude/10000000f;
-				model.home_state.g_alt = (int)(ref.altitude/1000f);
+				model.home_state.g_alt = (int)((ref.altitude+500)/1000f);
 
 			}
 		});
