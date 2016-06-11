@@ -46,7 +46,6 @@ public class GPS extends Segment {
 
 	public static final int GPS_SAT_FIX   = 0;
 	public static final int GPS_SAT_VALID = 1;
-	public static final int GPS_REF_VALID = 2;
 
 	public int		flags		= 0;
 
@@ -58,10 +57,6 @@ public class GPS extends Segment {
 	public float  	eph 	    = 0;
 	public float  	hdop 	    = 0;
 	public float  	speed 		= 0;
-
-	public double	ref_lat     = 0;
-	public double   ref_lon     = 0;
-	public float    ref_altitude= 0;
 
 
 
@@ -101,18 +96,6 @@ public class GPS extends Segment {
 		eph			= gps.eph;
 		hdop        = gps.hdop;
 		speed		= gps.speed;
-
-		ref_lat     = gps.ref_lat;
-		ref_lon     = gps.ref_lon;
-		ref_altitude= gps.ref_altitude;
-
-	}
-
-	public void setReference(double _lat, double _lon, float _altitude) {
-		ref_lon 		= _lon;
-		ref_lat			= _lat;
-		ref_altitude	= _altitude;
-		setFlag(GPS_REF_VALID,true);
 	}
 
 
@@ -128,10 +111,6 @@ public class GPS extends Segment {
 		g.hdop          = hdop;
 		g.altitude		= altitude;
 		g.speed     	= speed;
-
-		g.ref_lat     	= ref_lat;
-		g.ref_lon     	= ref_lon;
-		g.ref_altitude	= ref_altitude;
 
 
 		return g;
@@ -149,10 +128,6 @@ public class GPS extends Segment {
 		eph 		= 0;
 		hdop        = 0;
 		speed 		= 0;
-
-		ref_lat     = 0;
-		ref_lon     = 0;
-		ref_altitude= 0;
 
 	}
 

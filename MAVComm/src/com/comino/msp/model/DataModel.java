@@ -68,6 +68,7 @@ public class DataModel extends Segment implements Serializable {
 	public 	 Imu			 imu  = null;
 	public   State		   state  = null;
 	public   State	 target_state = null;
+	public   State     home_state = null;
 	public   Telemetry telemetry  = null;
 	public	 GPS	         gps  = null;
 	public	 Raw			 raw  = null;
@@ -85,6 +86,7 @@ public class DataModel extends Segment implements Serializable {
 		this.imu       		= new Imu();
 		this.state     		= new State();
 		this.target_state 	= new State();
+		this.home_state 	= new State();
 		this.telemetry 		= new Telemetry();
 		this.gps       		= new GPS();
 		this.raw            = new Raw();
@@ -108,6 +110,7 @@ public class DataModel extends Segment implements Serializable {
 		this.imu       		= m.imu.clone();
 		this.state     		= m.state.clone();
 		this.target_state   = m.target_state.clone();
+		this.home_state     = m.home_state.clone();
 		this.telemetry 		= m.telemetry.clone();
 		this.gps       		= m.gps.clone();
 		this.raw            = m.raw.clone();
@@ -127,6 +130,7 @@ public class DataModel extends Segment implements Serializable {
 		this.imu.set(m.imu);
 		this.state.set(m.state);
 		this.target_state.set(m.target_state);
+		this.home_state.set(m.home_state);
 		this.telemetry.set(m.telemetry);
 		this.gps.set(m.gps);
 		this.raw.set(raw);
@@ -150,6 +154,7 @@ public class DataModel extends Segment implements Serializable {
 		this.sys.clear();
 		this.state.clear();
 		this.target_state.clear();
+		this.home_state.clear();
 		this.telemetry.clear();
 		this.gps.clear();
 		this.servo.clear();

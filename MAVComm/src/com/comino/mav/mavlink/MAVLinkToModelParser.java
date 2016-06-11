@@ -241,10 +241,14 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_home_position ref = (msg_home_position)o;
-				model.gps.ref_lat = ref.latitude/10000000f;
-				model.gps.ref_lon = ref.longitude/10000000f;
-				model.gps.ref_altitude = ref.altitude;
-				model.gps.setFlag(GPS.GPS_REF_VALID, true);
+
+				model.home_state.l_x = ref.x;
+				model.home_state.l_y = ref.y;
+				model.home_state.l_z = ref.z;
+
+				model.home_state.g_lat = ref.latitude/10000000f;
+				model.home_state.g_lon = ref.latitude/10000000f;
+				model.home_state.g_alt = ref.altitude/1000f;
 
 			}
 		});
