@@ -1,7 +1,7 @@
 /**
  * $Id: MAVLinkGenerator.java 23 2014-05-09 07:47:41Z ghelle31 $
  * $Date: 2014-05-09 09:47:41 +0200 (ven., 09 mai 2014) $
- * 
+ *
  * ======================================================
  * Copyright (C) 2012 Guillaume Helle.
  * Project : MAVLink Java Generator
@@ -14,7 +14,7 @@
  * Who       yyyy/mm/dd   Action
  * --------  ----------   ------
  * ghelle   31 mars 2012        Create
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
 
 /**
  * MAVLink Java generator.
- * 
+ *
  * @author ghelle
  * @version $Rev: 23 $
  * @see main
@@ -67,20 +67,20 @@ public class MAVLinkGenerator {
     public static int[] MAVLINK_MESSAGE_CRCS = new int[256];
 
     /**
-     * Main class for the generator. 
-     * 
-     * Command line arguments are : 
-     *     source : directory path containing xml files to parse for generation 
-     *     target : directory path for output Java source files 
+     * Main class for the generator.
+     *
+     * Command line arguments are :
+     *     source : directory path containing xml files to parse for generation
+     *     target : directory path for output Java source files
      *     isLittleEndian : true if type are stored in LittleEndian in buffer, false for BigEndian
-     *     forEmbeddedJava : true if generated code must use apis for embedded code, false else 
+     *     forEmbeddedJava : true if generated code must use apis for embedded code, false else
      *     useExtraByte : if true use extra crc byte to compute CRC. If true generate for MAVLink 1.0 else MAVLink 0.9
-     *     debug : true to generate toString methods in each message class 
-     *     
-     * Example : java org.mavlink.generator.MAVLinkGenerator resources/1.0 target/ true true true true 
-     *   Generate MAVLink message Java classes for mavlink xml files contains in resources/1.0 in target directory 
+     *     debug : true to generate toString methods in each message class
+     *
+     * Example : java org.mavlink.generator.MAVLinkGenerator resources/1.0 target/ true true true true
+     *   Generate MAVLink message Java classes for mavlink xml files contains in resources/1.0 in target directory
      *   for Little Endian data, embedded code using extra byte for crc and generating debug code
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -135,7 +135,7 @@ public class MAVLinkGenerator {
 
     /**
      * Parse all xml files in directory and call generators methods
-     * 
+     *
      * @param path
      */
     protected void parseDirectory(String path) {
@@ -196,7 +196,7 @@ public class MAVLinkGenerator {
 
     /**
      * Parse a MAVLink xml messages descriptor file.
-     * 
+     *
      * @param mavlink
      *            MAVLink data used and to fill
      * @param file
@@ -236,7 +236,7 @@ public class MAVLinkGenerator {
 
     /**
      * Generate MAVLink messages Java classes
-     * 
+     *
      * @param mavlink
      * @param targetPath
      */
@@ -463,7 +463,7 @@ public class MAVLinkGenerator {
 
     /**
      * Generate MAVLink Java Enum classes
-     * 
+     *
      * @param mavlink
      * @param targetPath
      * @param implementations
@@ -519,7 +519,7 @@ public class MAVLinkGenerator {
 
     /**
      * Generate Interface which extends all enums classes
-     * 
+     *
      * @param targetPath
      * @param implementation
      */
@@ -567,7 +567,7 @@ public class MAVLinkGenerator {
 
     /**
      * Generate a factory classe which generate MAVLink messages from byte array
-     * 
+     *
      * @param mavlink
      * @param targetPath
      */
@@ -659,7 +659,7 @@ public class MAVLinkGenerator {
 
     /**
      * Generate Interface with all MAVLink messages ID
-     * 
+     *
      * @param mavlink
      * @param targetPath
      */
@@ -705,7 +705,7 @@ public class MAVLinkGenerator {
 
     /**
      * Generate interface with all extra crc for messages
-     * 
+     *
      * @param targetPath
      */
     protected void generateIMavlinkCRC(String targetPath) {
@@ -760,7 +760,7 @@ public class MAVLinkGenerator {
 
     /**
      * Generate encode and decode methods for all MAVLink messages
-     * 
+     *
      * @param mavlink
      * @param targetPath
      */

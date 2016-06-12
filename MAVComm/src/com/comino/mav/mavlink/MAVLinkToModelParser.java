@@ -266,6 +266,20 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_local_position_ned_cov ned = (msg_local_position_ned_cov)o;
 
+				model.state.l_ax = ned.ax;
+				model.state.l_ay = ned.ay;
+				model.state.l_az = ned.az;
+
+				model.state.tms = ned.time_boot_ms*1000;
+
+			}
+		});
+
+		registerListener(msg_local_position_ned.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_local_position_ned ned = (msg_local_position_ned)o;
+
 				model.state.l_x = ned.x;
 				model.state.l_y = ned.y;
 				model.state.l_z = ned.z;
@@ -273,10 +287,6 @@ public class MAVLinkToModelParser {
 				model.state.l_vx = ned.vx;
 				model.state.l_vy = ned.vy;
 				model.state.l_vz = ned.vz;
-
-				model.state.l_ax = ned.ax;
-				model.state.l_ay = ned.ay;
-				model.state.l_az = ned.az;
 
 				model.state.tms = ned.time_boot_ms*1000;
 
