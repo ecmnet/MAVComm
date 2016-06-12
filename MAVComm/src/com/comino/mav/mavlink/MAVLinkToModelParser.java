@@ -322,12 +322,12 @@ public class MAVLinkToModelParser {
 				model.state.g_lat 	= pos.lat/10000000f;
 				model.state.g_lon	= pos.lon/10000000f;
 				model.state.g_alt   = (pos.alt/1000);
-				model.gps.heading   = (short)(pos.hdg/1000);
+				model.gps.heading   = (short)(pos.hdg/1000f);
 				model.gps.altitude  = (short)(pos.alt/1000);
 				model.gps.tms = pos.time_boot_ms * 1000;
-				model.state.g_vx = pos.vx;
-				model.state.g_vy = pos.vy;
-				model.state.g_vz = pos.vz;
+				model.state.g_vx = pos.vx/100f;
+				model.state.g_vy = pos.vy/100f;
+				model.state.g_vz = pos.vz/100f;
 
 				gpos_tms = System.currentTimeMillis();
 				model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, true);
