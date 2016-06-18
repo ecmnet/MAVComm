@@ -47,6 +47,7 @@ import org.mavlink.messages.MAV_STATE;
 import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_attitude;
+import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_distance_sensor;
@@ -76,6 +77,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.MSPMathUtils;
 
 
 public class MAVLinkToModelParser {
@@ -121,9 +123,9 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_vfr_hud hud   = (msg_vfr_hud)o;
-				model.attitude.h  = hud.heading;
-				model.attitude.s  = hud.groundspeed;
-				model.attitude.vs = hud.climb;
+				model.hud.h  = hud.heading;
+				model.hud.s  = hud.groundspeed;
+				model.hud.vs = hud.climb;
 				model.state.h     = hud.heading;
 			}
 		});
@@ -189,9 +191,9 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_altitude alt = (msg_altitude)o;
-				model.attitude.al   = alt.altitude_local;
-				model.attitude.ag   = alt.altitude_amsl;
-				model.attitude.at   = alt.altitude_terrain;
+				model.hud.al   = alt.altitude_local;
+				model.hud.ag   = alt.altitude_amsl;
+				model.hud.at   = alt.altitude_terrain;
 
 			}
 		});
@@ -210,10 +212,41 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_attitude att = (msg_attitude)o;
-				model.attitude.aX   = att.roll;
-				model.attitude.aY   = att.pitch;
+
+				model.attitude.r = MSPMathUtils.fromRad(att.roll);
+				model.attitude.p = MSPMathUtils.fromRad(att.pitch);
+				model.attitude.y = MSPMathUtils.fromRad(att.yaw);
+
+				model.attitude.rr = MSPMathUtils.fromRad(att.rollspeed);
+				model.attitude.pr = MSPMathUtils.fromRad(att.pitchspeed);
+				model.attitude.yr = MSPMathUtils.fromRad(att.yawspeed);
+
 				model.attitude.tms  = att.time_boot_ms*1000;
+
+				model.hud.aX   = att.roll;
+				model.hud.aY   = att.pitch;
+				model.hud.tms  = att.time_boot_ms*1000;
 				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
+
+				//System.out.println(att.toString());
+			}
+		});
+
+
+		registerListener(msg_attitude_target.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_attitude_target att = (msg_attitude_target)o;
+
+				float[] sp = MSPMathUtils.eulerAnglesByQuaternion(att.q);
+
+				model.attitude.sr = MSPMathUtils.fromRad(sp[0]);
+				model.attitude.sp = MSPMathUtils.fromRad(sp[1]);
+				model.attitude.sy = MSPMathUtils.fromRad(sp[2]);
+
+				model.attitude.srr = 0;
+				model.attitude.spr = 0;
+				model.attitude.syr = 0;
 
 				//System.out.println(att.toString());
 			}

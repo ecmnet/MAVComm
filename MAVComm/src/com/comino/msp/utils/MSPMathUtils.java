@@ -31,12 +31,34 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.model.utils;
+package com.comino.msp.utils;
 
-public class Utils {
+public class MSPMathUtils {
 
-	private static final double toRad   = Math.PI / 180.0;
-	private static final double fromRad = 180.0 / Math.PI ;
+	public static final double toRad   = Math.PI / 180.0;
+	public static final double fromRad = 180.0 / Math.PI ;
+	private static final double CONSTANTS_RADIUS_OF_EARTH  = 6371000.0;
+
+	public static float getDistance(double lat1, double lon1, double lat2, double lon2) {
+
+
+		float distance = (float) (
+				Math.acos(Math.sin(lat1*toRad) * Math.sin(lat1*toRad)
+						+ Math.cos(lat1*toRad) * Math.cos(lat2*toRad) *
+						Math.cos((lon2 - lon1)*toRad)
+						)
+				* CONSTANTS_RADIUS_OF_EARTH );
+
+		return distance;
+	}
+
+	public static float[] eulerAnglesByQuaternion(float[] q) {
+		return new float[]{
+				(float)Math.atan2(2.0 * (q[0] * q[1] + q[2] * q[3]), 1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2])),
+				(float)Math.asin(2 * (q[0] * q[2] - q[3] * q[1])),
+				(float)Math.atan2(2.0 * (q[0] * q[3] + q[1] * q[2]), 1.0 - 2.0 * (q[2] * q[2] + q[3] * q[3])),
+		};
+	}
 
 	public static float fromRad(float radians) {
 		return (float)(radians * fromRad ) % 360;
@@ -45,4 +67,5 @@ public class Utils {
 	public static float toRad(float angle) {
 		return (float)(angle * toRad);
 	}
+
 }

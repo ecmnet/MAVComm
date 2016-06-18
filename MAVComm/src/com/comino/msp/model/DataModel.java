@@ -36,6 +36,7 @@ package com.comino.msp.model;
 
 import java.io.Serializable;
 
+import com.comino.msp.model.segment.Hud;
 import com.comino.msp.model.segment.Attitude;
 import com.comino.msp.model.segment.Battery;
 import com.comino.msp.model.segment.Debug;
@@ -62,9 +63,9 @@ public class DataModel extends Segment implements Serializable {
 	 */
 	private static final long serialVersionUID = 3439530621929819600L;
 
-
+	public   Attitude    attitude = null;
 	public   Battery     battery  = null;
-	public   Attitude   attitude  = null;
+	public   Hud   			 hud  = null;
 	public 	 Imu			 imu  = null;
 	public   State		   state  = null;
 	public   State	 target_state = null;
@@ -81,8 +82,9 @@ public class DataModel extends Segment implements Serializable {
 
 
 	public DataModel()  {
+		this.attitude       = new Attitude();
 		this.battery   		= new Battery();
-		this.attitude  		= new Attitude();
+		this.hud  			= new Hud();
 		this.imu       		= new Imu();
 		this.state     		= new State();
 		this.target_state 	= new State();
@@ -105,8 +107,9 @@ public class DataModel extends Segment implements Serializable {
 	}
 
 	public void copy(DataModel m) {
+		this.attitude       = m.attitude.clone();
 		this.battery   		= m.battery.clone();
-		this.attitude 		= m.attitude.clone();
+		this.hud 			= m.hud.clone();
 		this.imu       		= m.imu.clone();
 		this.state     		= m.state.clone();
 		this.target_state   = m.target_state.clone();
@@ -125,8 +128,9 @@ public class DataModel extends Segment implements Serializable {
 
 
 	public void set(DataModel m) {
-		this.battery.set(m.battery);
 		this.attitude.set(m.attitude);
+		this.battery.set(m.battery);
+		this.hud.set(m.hud);
 		this.imu.set(m.imu);
 		this.state.set(m.state);
 		this.target_state.set(m.target_state);
@@ -148,8 +152,9 @@ public class DataModel extends Segment implements Serializable {
 	}
 
 	public void clear() {
-		this.battery.clear();
 		this.attitude.clear();
+		this.battery.clear();
+		this.hud.clear();
 		this.imu.clear();
 		this.sys.clear();
 		this.state.clear();

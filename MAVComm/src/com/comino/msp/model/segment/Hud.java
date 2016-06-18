@@ -31,25 +31,57 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.utils;
 
-public class MSPGeoUtils {
+package com.comino.msp.model.segment;
 
-	public static final double toRad   = Math.PI / 180.0;
-	public static final double fromRad = 180.0 / Math.PI ;
-	private static final double CONSTANTS_RADIUS_OF_EARTH  = 6371000.0;
+import com.comino.msp.model.segment.generic.Segment;
 
-	public static float getDistance(double lat1, double lon1, double lat2, double lon2) {
+public class Hud extends Segment {
+
+	private static final long serialVersionUID = -1123989934184248219L;
+
+	public float aX     = 0;	// angleX
+	public float aY     = 0;	// angleY
+
+	public float h      = 0;	// heading (compass)
+	public float al     = 0;	// altitude above ground
+	public float ag     = 0;	// est.altitude above sealevel
+	public float at     = 0;    // altitde terrain
+
+	public float s    	= 0;	// ground speed
+	public float vs     = 0;    // vertical speed
 
 
-		float distance = (float) (
-				Math.acos(Math.sin(lat1*toRad) * Math.sin(lat1*toRad)
-						+ Math.cos(lat1*toRad) * Math.cos(lat2*toRad) *
-						Math.cos((lon2 - lon1)*toRad)
-						)
-				* CONSTANTS_RADIUS_OF_EARTH );
+	public void set(Hud a) {
+		aX    	= a.aX;
+		aY    	= a.aY;
+		h   	= a.h;
+		al      = a.al;
+		ag      = a.ag;
+		s   	= a.s;
+		at      = a.at;
+		vs      = a.vs;
 
-		return distance;
+	}
+
+	public Hud clone() {
+		Hud a = new Hud();
+		a.set(this);
+		return a;
+	}
+
+	//--------------------------------------------------------------------------------------------------------
+
+
+	public void clear() {
+		aX    	= 0;
+		aY    	= 0;
+		h   	= 0;
+		al 		= 0;
+		ag      = 0;
+		s   	= 0;
+		at      = 0;
+		vs      = 0;
 	}
 
 }

@@ -209,7 +209,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 //								System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
 
 				if(comm.isConnected)
-				  System.out.println("ANGLEX="+comm.model.attitude.aX+" ANGLEY="+comm.model.attitude.aY+" "+comm.model.sys.toString());
+				  System.out.println("ANGLEX="+comm.model.hud.aX+" ANGLEY="+comm.model.hud.aY+" "+comm.model.sys.toString());
 
 				Thread.sleep(1000);
 
