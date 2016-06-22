@@ -45,6 +45,7 @@ import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_MODE_FLAG_DECODE_POSITION;
 import org.mavlink.messages.MAV_STATE;
 import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
+import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_attitude;
 import org.mavlink.messages.lquac.msg_attitude_target;
@@ -145,17 +146,25 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_servo_output_raw servo = (msg_servo_output_raw)o;
-				model.servo.s0 = (short)servo.servo1_raw;
-				model.servo.s1 = (short)servo.servo2_raw;
-				model.servo.s2 = (short)servo.servo3_raw;
-				model.servo.s3 = (short)servo.servo4_raw;
-				model.servo.s4 = (short)servo.servo5_raw;
-				model.servo.s5 = (short)servo.servo6_raw;
-				model.servo.s6 = (short)servo.servo7_raw;
-				model.servo.s7 = (short)servo.servo8_raw;
+				model.servo.actuators[0] = (servo.servo1_raw - 1500) / 1000f;
+				model.servo.actuators[1] = (servo.servo2_raw - 1500) / 1000f;
+				model.servo.actuators[2] = (servo.servo3_raw - 1500) / 1000f;
+				model.servo.actuators[3] = (servo.servo4_raw - 1500) / 1000f;
+				model.servo.actuators[4] = (servo.servo5_raw - 1500) / 1000f;
+				model.servo.actuators[5] = (servo.servo6_raw - 1500) / 1000f;
+				model.servo.actuators[6] = (servo.servo7_raw - 1500) / 1000f;
+				model.servo.actuators[7] = (servo.servo8_raw - 1500) / 1000f;
 
 				model.servo.tms = servo.time_usec;
 
+			}
+		});
+
+		registerListener(msg_actuator_control_target.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_actuator_control_target act = (msg_actuator_control_target)o;
+				System.arraycopy(model.servo.controls , 0, act.controls , 0, 8);
 			}
 		});
 
