@@ -125,11 +125,6 @@ public class MAVUdpCommNIO implements IMAVComm {
 	}
 
 
-	public List<LogMessage> getMessageList() {
-
-		return parser.getMessageList();
-	}
-
 	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		if(parser!=null)
@@ -216,10 +211,6 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 			}
 
-
-			for(LogMessage m : comm.getMessageList()) {
-				System.out.println(m.severity+": "+m.msg);
-			}
 
 			colService.stop();
 			comm.close();

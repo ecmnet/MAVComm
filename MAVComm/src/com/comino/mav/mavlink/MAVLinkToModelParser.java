@@ -43,6 +43,7 @@ import java.util.Map;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_MODE_FLAG_DECODE_POSITION;
+import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MAV_STATE;
 import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
@@ -71,6 +72,7 @@ import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_vibration;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPModeChangedListener;
@@ -87,7 +89,6 @@ public class MAVLinkToModelParser {
 	private MAVLinkStream stream;
 	private DataModel model;
 
-	private ArrayList<LogMessage>					msgList     = null;
 	private HashMap<Class<?>,MAVLinkMessage>	    mavList     = null;
 
 	private IMAVComm link = null;
@@ -104,13 +105,14 @@ public class MAVLinkToModelParser {
 
 	private long    gpos_tms = 0;
 
+	private LogMessage lastMessage = null;
+
 	private Status oldStatus = new Status();
 
 	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
 
 		this.model = model;
 		this.link = link;
-		this.msgList   = new ArrayList<LogMessage>();
 		this.mavList   = new HashMap<Class<?>,MAVLinkMessage>();
 
 		this.modeListener = new ArrayList<IMSPModeChangedListener>();
@@ -411,24 +413,24 @@ public class MAVLinkToModelParser {
 				m.msg = new String(msg.text);
 				m.tms = System.currentTimeMillis();
 				m.severity = msg.severity;
-
 				model.msg.set(m);
+				writeMessage(m);
 
-				if(msgList.size()>0) {
-					if((msgList.get(msgList.size()-1).tms+100) < m.tms) {
-						msgList.add(m);
-						if(msgListener!=null) {
-							for(IMAVMessageListener msglistener : msgListener)
-								msglistener.messageReceived(msgList, m);
-						}
-					}
-				} else {
-					msgList.add(m);
-					if(msgListener!=null) {
-						for(IMAVMessageListener msglistener : msgListener)
-							msglistener.messageReceived(msgList, m);
-					}
-				}
+				//				if(msgList.size()>0) {
+				//					if((msgList.get(msgList.size()-1).tms+100) < m.tms) {
+				//						msgList.add(m);
+				//						if(msgListener!=null) {
+				//							for(IMAVMessageListener msglistener : msgListener)
+				//								msglistener.messageReceived(msgList, m);
+				//						}
+				//					}
+				//				} else {
+				//					msgList.add(m);
+				//					if(msgListener!=null) {
+				//						for(IMAVMessageListener msglistener : msgListener)
+				//							msglistener.messageReceived(msgList, m);
+				//					}
+				//				}
 
 
 			}
@@ -562,9 +564,6 @@ public class MAVLinkToModelParser {
 		msgListener.add(listener);
 	}
 
-	public List<LogMessage> getMessageList() {
-		return msgList;
-	}
 
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return mavList;
@@ -601,11 +600,12 @@ public class MAVLinkToModelParser {
 	}
 
 	public void writeMessage(LogMessage m) {
-		System.out.println(m.msg);
-		msgList.add(m);
-		if(msgListener!=null) {
-			for(IMAVMessageListener msglistener : msgListener)
-				msglistener.messageReceived(msgList, m);
+		if(lastMessage == null || lastMessage.tms < m.tms) {
+			System.out.println(m.msg);
+			if(msgListener!=null) {
+				for(IMAVMessageListener msglistener : msgListener)
+					msglistener.messageReceived(m);
+			}
 		}
 	}
 
@@ -659,8 +659,7 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
 						notifyStatusChange();
 
-						msgList.add(new LogMessage("Connection lost",2));
-						System.out.println("Connection lost");
+						writeMessage(new LogMessage("Connection lost",2));
 						link.close(); link.open();
 						model.sys.tms = System.nanoTime()/1000;
 						Thread.sleep(50);
@@ -674,15 +673,25 @@ public class MAVLinkToModelParser {
 	}
 
 
-	private void notifyStatusChange() {
+	private synchronized void notifyStatusChange() {
 		if(!oldStatus.isEqual(model.sys) && (System.currentTimeMillis() - startUpAt)>2000) {
+
 			for(IMSPModeChangedListener listener : modeListener)
 				listener.update(oldStatus, model.sys);
 
 			if(!oldStatus.isStatus(Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))
-					t_armed_start = System.currentTimeMillis();
+				t_armed_start = System.currentTimeMillis();
+
+			if(!oldStatus.isStatus(Status.MSP_MODE_ALTITUDE) && model.sys.isStatus(Status.MSP_MODE_ALTITUDE))
+				MSPLogger.getInstance().writeLocalMsg("Altitude hold enabled", MAV_SEVERITY.MAV_SEVERITY_INFO);
+			if(!oldStatus.isStatus(Status.MSP_MODE_POSITION) && model.sys.isStatus(Status.MSP_MODE_POSITION))
+				MSPLogger.getInstance().writeLocalMsg("Position hold enabled", MAV_SEVERITY.MAV_SEVERITY_INFO);
+			if(!oldStatus.isStatus(Status.MSP_MODE_OFFBOARD) && model.sys.isStatus(Status.MSP_MODE_OFFBOARD))
+				MSPLogger.getInstance().writeLocalMsg("Offboard enabled", MAV_SEVERITY.MAV_SEVERITY_INFO);
 
 			oldStatus.set(model.sys);
+
+
 		}
 
 	}

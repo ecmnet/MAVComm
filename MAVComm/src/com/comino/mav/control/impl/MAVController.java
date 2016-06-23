@@ -171,11 +171,6 @@ public class MAVController implements IMAVController {
 
 
 	@Override
-	public List<LogMessage> getMessageList() {
-		return comm.getMessageList();
-	}
-
-	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return comm.getMavLinkMessageMap();
 	}

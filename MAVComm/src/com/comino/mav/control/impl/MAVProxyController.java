@@ -198,11 +198,6 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	@Override
-	public List<LogMessage> getMessageList() {
-		return comm.getMessageList();
-	}
-
-	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return comm.getMavLinkMessageMap();
 	}

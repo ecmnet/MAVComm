@@ -39,6 +39,6 @@ import com.comino.msp.model.segment.LogMessage;
 
 public interface IMAVMessageListener {
 
-	public void messageReceived(List<LogMessage> messageList, LogMessage currentMessage);
+	public void messageReceived(LogMessage currentMessage);
 
 }

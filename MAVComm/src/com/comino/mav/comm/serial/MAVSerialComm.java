@@ -129,15 +129,6 @@ public class MAVSerialComm implements IMAVComm {
 	}
 
 
-	/* (non-Javadoc)
-	 * @see com.comino.px4.control.serial.IPX4Comm#getMessageList()
-	 */
-	@Override
-	public List<LogMessage> getMessageList() {
-		return parser.getMessageList();
-	}
-
-
 	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return parser.getMavLinkMessageMap();

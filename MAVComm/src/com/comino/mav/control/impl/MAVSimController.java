@@ -82,13 +82,6 @@ public class MAVSimController extends MAVController implements IMAVController {
 	}
 
 	@Override
-	public List<LogMessage> getMessageList() {
-		return msgList;
-	}
-
-
-
-	@Override
 	public DataModel getCurrentModel() {
 		return model;
 	}
@@ -208,7 +201,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 				msg_count = msgList.size();
 				if(msgListener!=null) {
 					for(IMAVMessageListener msglistener : msgListener)
-						msglistener.messageReceived(msgList, msgList.get(msg_count-1));
+						msglistener.messageReceived(msgList.get(msg_count-1));
 				}
 			}
 

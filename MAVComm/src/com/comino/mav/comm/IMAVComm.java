@@ -52,8 +52,6 @@ public interface IMAVComm {
 
 	public DataModel getModel();
 
-	public List<LogMessage> getMessageList();
-
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap();
 
 	void close();
