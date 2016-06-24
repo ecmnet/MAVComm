@@ -129,6 +129,7 @@ public class MAVLinkToModelParser {
 				model.hud.h  = hud.heading;
 				model.hud.s  = hud.groundspeed;
 				model.hud.vs = hud.climb;
+				model.hud.as = hud.airspeed;
 				model.state.h     = hud.heading;
 			}
 		});
@@ -205,6 +206,8 @@ public class MAVLinkToModelParser {
 				model.hud.al   = alt.altitude_local;
 				model.hud.ag   = alt.altitude_amsl;
 				model.hud.at   = alt.altitude_terrain;
+				model.hud.ar   = alt.altitude_relative;
+				model.hud.bc   = alt.bottom_clearance;
 
 			}
 		});
@@ -415,24 +418,6 @@ public class MAVLinkToModelParser {
 				m.severity = msg.severity;
 				model.msg.set(m);
 				writeMessage(m);
-
-				//				if(msgList.size()>0) {
-				//					if((msgList.get(msgList.size()-1).tms+100) < m.tms) {
-				//						msgList.add(m);
-				//						if(msgListener!=null) {
-				//							for(IMAVMessageListener msglistener : msgListener)
-				//								msglistener.messageReceived(msgList, m);
-				//						}
-				//					}
-				//				} else {
-				//					msgList.add(m);
-				//					if(msgListener!=null) {
-				//						for(IMAVMessageListener msglistener : msgListener)
-				//							msglistener.messageReceived(msgList, m);
-				//					}
-				//				}
-
-
 			}
 		});
 
