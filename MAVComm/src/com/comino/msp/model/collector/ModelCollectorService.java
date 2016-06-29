@@ -214,7 +214,7 @@ public class ModelCollectorService {
 				synchronized(this) {
 					current.tms = System.nanoTime() / 1000 - tms;
 					DataModel model = current.clone();
-
+                    model.tms = System.currentTimeMillis();
 					current.msg.clear();
 
 					modelList.add(model);

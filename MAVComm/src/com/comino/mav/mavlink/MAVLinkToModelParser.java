@@ -434,6 +434,7 @@ public class MAVLinkToModelParser {
 				rssi_old = (short)rc.rssi;
 
 				model.sys.setStatus(Status.MSP_RC_ATTACHED, (model.rc.rssi>0));
+//				model.sys.setStatus(Status.MSP_RC_ATTACHED, (true));
 
 				model.rc.s0 = rc.chan1_raw < 65534 ? (short)rc.chan1_raw : 0;
 				model.rc.s1 = rc.chan2_raw < 65534 ? (short)rc.chan2_raw : 0;
