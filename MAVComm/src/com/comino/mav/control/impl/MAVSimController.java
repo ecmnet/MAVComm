@@ -139,6 +139,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 	private class Simulation implements Runnable {
 
+		Status old = new Status();
 
 		long count = 0; int msg_count = 0;
 
@@ -182,12 +183,6 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 			model.imu.abs_pressure = 1013 +  (float)Math.random()*10f;
 
-			if(model.sys.isStatus(Status.MSP_CONNECTED)) {
-				for(IMSPModeChangedListener listener : modeListener) {
-					listener.update(model.sys, model.sys);
-				}
-			}
-
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
 			model.sys.setStatus(Status.MSP_ARMED, true);
 			model.sys.setStatus(Status.MSP_READY, true);
@@ -196,6 +191,14 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, true);
 			model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, true);
 			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, true);
+
+			if(!old.isEqual(model.sys)) {
+				for(IMSPModeChangedListener listener : modeListener) {
+					listener.update(old, model.sys);
+				}
+			}
+
+			old.set(model.sys);
 
 			if(msgList.size()>msg_count) {
 				msg_count = msgList.size();
