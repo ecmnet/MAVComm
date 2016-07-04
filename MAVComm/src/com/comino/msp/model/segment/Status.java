@@ -109,6 +109,8 @@ public class Status extends Segment {
 	public int		basemode   = 0;
 	public int		custommode = 0;
 
+	public int     sys_status  = 0;
+
 
 	public float	load_m	   = 0;
 	public long     t_armed_ms = 0;
@@ -124,6 +126,7 @@ public class Status extends Segment {
 		imu_temp = s.imu_temp;
 		basemode = s.basemode;
 		custommode = s.custommode;
+		sys_status = s.sys_status;
 
 		t_armed_ms = s.t_armed_ms;
 	}
@@ -180,6 +183,7 @@ public class Status extends Segment {
 		drops_p   	  = 0;
 		error1        = 0;
 		t_armed_ms    = 0;
+		sys_status    = 0;
 
 	}
 

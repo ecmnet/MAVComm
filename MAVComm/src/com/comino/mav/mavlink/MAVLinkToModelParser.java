@@ -453,6 +453,8 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_heartbeat hb = (msg_heartbeat)o;
 
+				model.sys.sys_status = hb.system_status;
+
 				model.sys.setStatus(Status.MSP_ARMED,(hb.base_mode & MAV_MODE_FLAG_DECODE_POSITION.MAV_MODE_FLAG_DECODE_POSITION_SAFETY)>0);
 
 				model.sys.setStatus(Status.MSP_ACTIVE, (hb.system_status & MAV_STATE.MAV_STATE_ACTIVE)>0);
