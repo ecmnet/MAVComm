@@ -276,8 +276,8 @@ public class MAVLinkToModelParser {
 
 				// TODO 1.0: Wrong assignment in MAVLINK (ref. #4051)
 				model.gps.hdop   = gps.eph/100f;
-				model.gps.latitude = gps.lat/1e7d;
-				model.gps.longitude = gps.lon/1e7d;
+				model.gps.latitude = gps.lat/1e7f;
+				model.gps.longitude = gps.lon/1e7f;
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>6);
 
 			}

@@ -115,7 +115,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 	@Override
 	public void addModeChangeListener(IMSPModeChangedListener listener) {
-			this.modeListener.add(listener);
+		this.modeListener.add(listener);
 
 	}
 
@@ -147,22 +147,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 		public void run() {
 			model.battery.p = (short)(95+Math.random()*2f);
 
-			if(getCollector().isCollecting()) {
-				count++;
-				if(model.state.l_z > -5.0f)
-					model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
-				model.state.l_x = (float)(Math.sin(count/100f))*0.2f;
-				model.state.l_y = (float)(Math.cos(count/100f))*0.2f;
-				if(model.battery.b0 > 11f)
-					model.battery.b0 = model.battery.b0 - (float)Math.random()*0.0001f - 0.0001f;
 
-			} else {
-				count = 0;
-				model.state.l_z = 0;
-				model.battery.b0 = 12.4f;
-			}
-
-
+			count++;
+			if(model.state.l_z > -5.0f)
+				model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
+			model.state.l_x = (float)(Math.sin(count/100f))*0.2f;
+			model.state.l_y = (float)(Math.cos(count/100f))*0.2f;
 
 			model.raw.di = (float)Math.random()*0.5f+1;
 			model.imu.accx = (float)Math.random()*0.5f-0.25f;
@@ -175,8 +165,8 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 			model.sys.setStatus(Status.MSP_LANDED, true);
 
-			model.gps.latitude = 47.37174;
-			model.gps.longitude = 8.54226;
+			model.gps.latitude = 47.37174f;
+			model.gps.longitude = 8.54226f;
 			model.gps.numsat = 8;
 
 			model.hud.ag = (float)Math.random()*10f+500f;

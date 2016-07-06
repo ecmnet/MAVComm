@@ -50,8 +50,8 @@ public class GPS extends Segment {
 	public int		flags		= 0;
 
 	public byte   	numsat 		= 0;
-	public double 	latitude 	= 0;
-	public double 	longitude 	= 0;
+	public float 	latitude 	= 0;
+	public float 	longitude 	= 0;
 	public short  	heading 	= 0;
 	public short  	altitude 	= 0;
 	public float  	eph 	    = 0;
@@ -64,7 +64,7 @@ public class GPS extends Segment {
 
 	}
 
-	public GPS(double _lat, double _lon, int _heading ) {
+	public GPS(float _lat, float _lon, int _heading ) {
 		latitude 	= _lat;
 		longitude 	= _lon;
 		heading 	= (short)_heading;
@@ -72,7 +72,7 @@ public class GPS extends Segment {
 		numsat 		= 99;
 	}
 
-	public void set(int _fix, int _numsat, double _lat, double _lon, int _altitude, int _heading, float _eph, float _speed) {
+	public void set(int _fix, int _numsat, float _lat, float _lon, int _altitude, int _heading, float _eph, float _speed) {
 
 	    setFlag(GPS_SAT_FIX, _fix > 0);
 	    setFlag(GPS_SAT_VALID, numsat > 6);
