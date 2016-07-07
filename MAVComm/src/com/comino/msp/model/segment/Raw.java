@@ -43,7 +43,7 @@ public class Raw extends Segment {
 	public float di     = 0;		// LIDAR distance
 	public float fX     = 0;		// Flow integrated X
 	public float fY     = 0;		// Flow integrated Y
-	public int   fq		= 0;
+	public float fq		= 0;
 	public float fd		= 0;		// Flow distance
 
 
