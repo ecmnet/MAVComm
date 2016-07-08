@@ -257,6 +257,7 @@ public class MAVLinkToModelParser {
 				model.attitude.sr = MSPMathUtils.fromRad(sp[0]);
 				model.attitude.sp = MSPMathUtils.fromRad(sp[1]);
 				model.attitude.sy = MSPMathUtils.fromRad(sp[2]);
+				model.attitude.st = att.thrust;
 
 				model.attitude.srr = 0;
 				model.attitude.spr = 0;
