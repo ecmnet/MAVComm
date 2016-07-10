@@ -45,6 +45,7 @@ public class Raw extends Segment {
 	public float fY     = 0;		// Flow integrated Y
 	public float fq		= 0;
 	public float fd		= 0;		// Flow distance
+	public float dicov	= 0;		// LIDAR covariance
 
 
 
@@ -54,6 +55,7 @@ public class Raw extends Segment {
 		di   	= a.di;
 		fq      = a.fq;
 		fd      = a.fd;
+		dicov   = a.dicov;
 
 	}
 
@@ -64,6 +66,7 @@ public class Raw extends Segment {
 		at.di		= di;
 		at.fq		= fq;
 		at.fd       = fd;
+		at.dicov    = dicov;
 
 		return at;
 	}
@@ -77,6 +80,7 @@ public class Raw extends Segment {
 		di   	= 0;
 		fq      = 0;
 		fd      = 0;
+		dicov   = 0;
 	}
 
 }
