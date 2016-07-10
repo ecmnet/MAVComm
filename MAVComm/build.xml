@@ -47,6 +47,22 @@
 		</jar>
 	</target>
 
+	<target name="build_travis" description="Build jar">
+			<!--	 <mkdir dir="${dis.dir}"/> -->
+			<jar destfile="${dis.dir}/mavcomm.jar" basedir="${build.dir}">
+				<manifest>
+					<attribute name="Main-Class" value="com.comino.msp.main.StartUp" />
+					<attribute name="Built-By" value="${user.name}" />
+					<attribute name="Class-Path" value="/home/pi/LQuaC/jna-4.1.0.jar
+						    	/home/pi/LQuaC/purejavacomm-0.0.21.jar
+						        /home/pi/LQuaC/gson-2.4.jar
+						        /home/pi/libAMA0.so
+						        /home/pi/resources/
+						         mavlink/message_definitions/common.xml" />
+				</manifest>
+			</jar>
+		</target>
+
 	<target name="LquacGCL" description="Copy build to GCL">
 		<copy todir="${deploy2.dir}">
 			<fileset dir="${dis.dir}/" />
