@@ -7,6 +7,13 @@
 	<property name="deploy.dir" value="/Volumes/pi" />
 	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib" />
 
+	<target name="clean">
+			<delete dir="dist" />
+			<mkdir dir="dist" />
+			<delete dir="bin" />
+			<mkdir dir="bin" />
+	</target>
+
 	<target name="dependencies">
 		<!--
 		<get src="https://github.com/mavlink/mavlink/raw/master/message_definitions/v1.0/common.xml" dest="mavlink/common.xml" />
@@ -47,7 +54,7 @@
 		</jar>
 	</target>
 
-	<target name="build_travis" description="Build jar">
+	<target name="build_travis" depends="clean" description="Build for travis check">
 			<!--	 <mkdir dir="${dis.dir}"/> -->
 			<jar destfile="${dis.dir}/mavcomm.jar" basedir="${build.dir}">
 				<manifest>
