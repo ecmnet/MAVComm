@@ -31,7 +31,7 @@
 		</javac>
 	</target>
 
-	<target name="Build MAVComm" depends="build_mavlink" description="Build jar">
+	<target name="build_mavcomm" depends="build_mavlink" description="Build jar">
 		<!--	 <mkdir dir="${dis.dir}"/> -->
 		<jar destfile="${dis.dir}/mavcomm.jar" basedir="${build.dir}">
 			<manifest>

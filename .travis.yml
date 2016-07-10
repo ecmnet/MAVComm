@@ -20,6 +20,6 @@ before_install:
 
 script:
   - git submodule update --quiet --init --recursive
-  - cd MAVComm && ant all
+  - cd MAVComm && ant build_mavcomm
 
 
