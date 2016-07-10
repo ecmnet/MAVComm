@@ -9,9 +9,7 @@ matrix:
       jdk: oraclejdk8
       sudo: required
       env: DEPLOY=deploy_linux
-    - os: osx
-      osx_image: xcode7.3
-      env: DEPLOY=deploy_osx
+
 
 before_install:
   - if [ "${TRAVIS_OS_NAME}" = "linux" ]; then
