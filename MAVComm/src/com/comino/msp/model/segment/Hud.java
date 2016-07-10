@@ -49,6 +49,7 @@ public class Hud extends Segment {
 	public float at     = 0;    // altitde terrain
 	public float ar     = 0;    // altitde relative
 	public float bc     = 0;    // bottom clearance
+	public float ap     = 0;    // pressure altitude
 
 	public float s    	= 0;	// ground speed
 	public float vs     = 0;    // vertical speed
@@ -67,6 +68,7 @@ public class Hud extends Segment {
 		ar      = a.ar;
 		bc      = a.bc;
 		as      = a.as;
+		ap      = a.ap;
 
 	}
 
@@ -91,6 +93,7 @@ public class Hud extends Segment {
 		ar      = 0;
 		bc      = 0;
 		as      = 0;
+		ap      = 0;
 	}
 
 }

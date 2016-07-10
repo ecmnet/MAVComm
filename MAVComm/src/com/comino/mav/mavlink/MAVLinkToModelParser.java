@@ -398,6 +398,8 @@ public class MAVLinkToModelParser {
 				model.imu.magx = imu.xmag;
 				model.imu.magy = imu.ymag;
 				model.imu.magz = imu.zmag;
+				model.hud.ap   = imu.pressure_alt;
+
 
 				model.imu.abs_pressure = imu.abs_pressure;
 
