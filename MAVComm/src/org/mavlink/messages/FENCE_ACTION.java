@@ -24,4 +24,8 @@ public interface FENCE_ACTION {
      * Switched to guided mode to return point (fence point 0) with manual throttle control
      */
     public final static int FENCE_ACTION_GUIDED_THR_PASS = 3;
+    /**
+     * Switch to RTL (return to launch) mode and head for the return point.
+     */
+    public final static int FENCE_ACTION_RTL = 4;
 }

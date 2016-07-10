@@ -2,25 +2,25 @@
 
 <mavlink>
 
-      <include>common.xml</include> 
+      <include>common.xml</include>
       <version>3</version>
- 
+
       <enums>
            <enum name="MSP_CMD">
               <description>MSP Companion commands</description>
-              <entry value="0" name="MSP_CMD_RESTART">
+              <entry value="99" name="MSP_CMD_RESTART">
                   <description>Reboot the MSP companion</description>
               </entry>
            </enum>
       </enums>
-          
-    
+
+
       <messages>
            <message id="180" name="MSP_STATUS">
                <description>MSP Status message.</description>
                <field type="uint8_t" name="load">The CPU load of the companion</field>
            </message>
-           
+
            <message id="181" name="MSP_COMMAND">
                <description>MSP Commands.</description>
                <field type="uint8_t" name="command">Command to be executed by MSP (defined in MSP_COMMANDS)</field>
@@ -31,6 +31,6 @@
                <field type="float" name="param5">Parameter 5, as defined by MSP_COMMANDS enum.</field>
                <field type="float" name="param6">Parameter 6, as defined by MSP_COMMANDS enum.</field>
                <field type="float" name="param7">Parameter 7, as defined by MSP_COMMANDS enum.</field>
-           </message>       
+           </message>
       </messages>
 </mavlink>

@@ -8,37 +8,43 @@
 	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib" />
 
 	<target name="clean">
-			<delete dir="dist" />
-			<mkdir dir="dist" />
-			<delete dir="bin" />
+			<mkdir dir="dis" />
 			<mkdir dir="bin" />
 	</target>
 
-	<target name="dependencies">
-		<!--
+	<target name="get_metadata" depends="clean">
+
 		<get src="https://github.com/mavlink/mavlink/raw/master/message_definitions/v1.0/common.xml" dest="mavlink/common.xml" />
-		-->
+
 	</target>
 
-	<target name="build_mavlink" depends="dependencies">
-		<java classname="org.mavlink.generator.MAVLinkGenerator">
-			<arg line="mavlink/lquac.xml src/ true true true true" />
+	<target name="build_mavlink" depends="get_metadata">
+		<java classname="org.mavlink.generator.MAVLinkGenerator" fork="true" dir=".">
+			<arg value="mavlink/lquac.xml"/>
+			<arg value="src/"/>
+			<arg value="true"/>
+			<arg value="true"/>
+			<arg value="true"/>
+			<arg value="true"/>
 			<classpath>
 				<pathelement location="dis/mavcomm.jar" />
 				<pathelement path="${java.class.path}" />
 			</classpath>
 		</java>
-		<javac destdir="bin" includeantruntime="false">
-			<src path="src" />
-			<classpath>
-				<fileset dir="lib">
-					<include name="*.jar" />
-				</fileset>
-			</classpath>
-		</javac>
 	</target>
 
-	<target name="build_mavcomm" depends="build_mavlink" description="Build jar">
+	<target name="compile_mavcomm" depends="build_mavlink">
+	<javac destdir="bin" includeantruntime="false">
+		<src path="src" />
+		<classpath>
+			<fileset dir="lib">
+				<include name="*.jar" />
+			</fileset>
+		</classpath>
+	</javac>
+	</target>
+
+	<target name="build_mavcomm" depends="compile_mavcomm" description="Build jar">
 		<!--	 <mkdir dir="${dis.dir}"/> -->
 		<jar destfile="${dis.dir}/mavcomm.jar" basedir="${build.dir}">
 			<manifest>

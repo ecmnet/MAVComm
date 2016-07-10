@@ -64,7 +64,7 @@ public class MAVLinkGenerator {
 
     protected String target = "target";
 
-    public static int[] MAVLINK_MESSAGE_CRCS = new int[256];
+    public static int[] MAVLINK_MESSAGE_CRCS = new int[512];
 
     /**
      * Main class for the generator.
@@ -90,7 +90,8 @@ public class MAVLinkGenerator {
             generator.usage(args);
             System.exit(-1);
         }
-        System.out.println("Generating..."+args[0]);
+
+        System.out.println("Generating..."+args[0]+" ...to "+args[1]);
         generator.source = args[0];
         generator.target = args[1];
         generator.isLittleEndian = Boolean.parseBoolean(args[2]);
@@ -106,7 +107,7 @@ public class MAVLinkGenerator {
             generator.parseFile(generator.source, generator.target);
         }
         else {
-
+         System.out.println("Do nothing");
         }
 
         //System.exit(0);

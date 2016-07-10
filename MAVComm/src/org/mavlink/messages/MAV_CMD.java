@@ -416,6 +416,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_FLIGHTTERMINATION = 185;
     /**
+     * Change altitude set point.
+     * PARAM 1 : Altitude in meters
+     * PARAM 2 : Mav frame of new altitude (see MAV_FRAME)
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_DO_CHANGE_ALTITUDE = 186;
+    /**
      * Mission command to perform a landing. This is used as a marker in a mission to tell the autopilot where a sequence of mission items that represents a landing starts. It may also be sent via a COMMAND_LONG to trigger a landing, in which case the nearest (geographically) landing sequence in the mission will be used. The Latitude/Longitude is optional, and may be set to 0/0 if not needed. If specified then it will be used to help find the closest landing sequence.
      * PARAM 1 : Empty
      * PARAM 2 : Empty
@@ -637,7 +648,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_PREFLIGHT_CALIBRATION = 241;
     /**
      * Set sensor offsets. This command will be only accepted if in pre-flight mode.
-     * PARAM 1 : Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer, 3: barometer, 4: optical flow, 5: second magnetometer
+     * PARAM 1 : Sensor to adjust the offsets for: 0: gyros, 1: accelerometer, 2: magnetometer, 3: barometer, 4: optical flow, 5: second magnetometer, 6: third magnetometer
      * PARAM 2 : X axis offset (or generic dimension 1), in the sensor's raw units
      * PARAM 3 : Y axis offset (or generic dimension 2), in the sensor's raw units
      * PARAM 4 : Z axis offset (or generic dimension 3), in the sensor's raw units
@@ -781,6 +792,20 @@ public interface MAV_CMD {
      * PARAM 1 : The target VTOL state, as defined by ENUM MAV_VTOL_STATE. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.
      */
     public final static int MAV_CMD_DO_VTOL_TRANSITION = 3000;
+    /**
+     * This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocites along all three axes.
+     */
+    public final static int MAV_CMD_SET_GUIDED_SUBMODE_STANDARD = 4000;
+    /**
+     * This command sets submode circle when vehicle is in guided mode. Vehicle flies along a circle facing the center of the circle. The user can input the velocity along the circle and change the radius. If no input is given the vehicle will hold position.
+     * PARAM 1 : Radius of desired circle in CIRCLE_MODE
+     * PARAM 2 : User defined
+     * PARAM 3 : User defined
+     * PARAM 4 : User defined
+     * PARAM 5 : Unscaled target latitude of center of circle in CIRCLE_MODE
+     * PARAM 6 : Unscaled target longitude of center of circle in CIRCLE_MODE
+     */
+    public final static int MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE = 4001;
     /**
      * Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.
      * PARAM 1 : Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.

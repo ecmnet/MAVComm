@@ -28,7 +28,7 @@ public class msg_altitude extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (micros since boot or Unix epoch)
    */
   public long time_usec;
   /**

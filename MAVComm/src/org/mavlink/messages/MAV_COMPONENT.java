@@ -132,4 +132,8 @@ public interface MAV_COMPONENT {
      * Generic autopilot peripheral component ID. Meant for devices that do not implement the parameter sub-protocol
      */
     public final static int MAV_COMP_ID_PERIPHERAL = 158;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_QX1_GIMBAL = 159;
 }

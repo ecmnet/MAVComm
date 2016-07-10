@@ -11,5 +11,5 @@ public interface MSP_CMD {
     /**
      * Reboot the MSP companion
      */
-    public final static int MSP_CMD_RESTART = 0;
+    public final static int MSP_CMD_RESTART = 99;
 }

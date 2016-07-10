@@ -10,6 +10,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import java.io.ByteArrayInputStream;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
+import org.mavlink.messages.lquac.msg_setup_signing;
 import org.mavlink.messages.lquac.msg_hil_sensor;
 import org.mavlink.messages.lquac.msg_camera_trigger;
 import org.mavlink.messages.lquac.msg_param_request_list;
@@ -142,6 +143,7 @@ import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
+import org.mavlink.messages.lquac.msg_setup_signing;
 import org.mavlink.messages.lquac.msg_hil_sensor;
 import org.mavlink.messages.lquac.msg_camera_trigger;
 import org.mavlink.messages.lquac.msg_param_request_list;
@@ -289,6 +291,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET:
       msg = new msg_actuator_control_target(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_SETUP_SIGNING:
+      msg = new msg_setup_signing(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_HIL_SENSOR:
