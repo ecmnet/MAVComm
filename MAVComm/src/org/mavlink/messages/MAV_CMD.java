@@ -581,6 +581,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_PARACHUTE = 208;
     /**
+     * Mission command to perform motor test
+     * PARAM 1 : motor sequence number (a number from 1 to max number of motors on the vehicle)
+     * PARAM 2 : throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)
+     * PARAM 3 : throttle
+     * PARAM 4 : timeout (in seconds)
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_DO_MOTOR_TEST = 209;
+    /**
      * Change to/from inverted flight
      * PARAM 1 : inverted (0=normal, 1=inverted)
      * PARAM 2 : Empty
