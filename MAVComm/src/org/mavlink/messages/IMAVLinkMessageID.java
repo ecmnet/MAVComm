@@ -137,6 +137,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_DEBUG = 254;
   public static int MAVLINK_MSG_ID_PARAM_REQUEST_READ = 20;
   public static int MAVLINK_MSG_ID_COMMAND_INT = 75;
+  public static int MAVLINK_MSG_ID_GPS_INPUT = 232;
   public static int MAVLINK_MSG_ID_MISSION_SET_CURRENT = 41;
   public static int MAVLINK_MSG_ID_RC_CHANNELS = 65;
   public static int MAVLINK_MSG_ID_GPS_INJECT_DATA = 123;

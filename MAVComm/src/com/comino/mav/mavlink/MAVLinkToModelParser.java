@@ -193,7 +193,7 @@ public class MAVLinkToModelParser {
 				msg_optical_flow_rad flow = (msg_optical_flow_rad)o;
 				model.raw.fX   = flow.integrated_x;
 				model.raw.fY   = flow.integrated_y;
-				model.raw.fq   = flow.quality / 255.0f;
+				model.raw.fq   = flow.quality;
 				model.raw.fd   = flow.distance;
 
 				model.raw.tms  = flow.time_usec;

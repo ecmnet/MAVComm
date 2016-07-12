@@ -135,6 +135,7 @@ import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_debug;
 import org.mavlink.messages.lquac.msg_param_request_read;
 import org.mavlink.messages.lquac.msg_command_int;
+import org.mavlink.messages.lquac.msg_gps_input;
 import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
 import org.mavlink.messages.lquac.msg_gps_inject_data;
@@ -270,6 +271,7 @@ import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_debug;
 import org.mavlink.messages.lquac.msg_param_request_read;
 import org.mavlink.messages.lquac.msg_command_int;
+import org.mavlink.messages.lquac.msg_gps_input;
 import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
 import org.mavlink.messages.lquac.msg_gps_inject_data;
@@ -799,6 +801,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_COMMAND_INT:
       msg = new msg_command_int(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_GPS_INPUT:
+      msg = new msg_gps_input(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_MISSION_SET_CURRENT:

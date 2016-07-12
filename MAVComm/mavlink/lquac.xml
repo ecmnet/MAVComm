@@ -19,6 +19,7 @@
            <message id="180" name="MSP_STATUS">
                <description>MSP Status message.</description>
                <field type="uint8_t" name="load">The CPU load of the companion</field>
+               <field type="float"   name="rssi">RSSI of the WLAN connection</field>
            </message>
 
            <message id="181" name="MSP_COMMAND">
