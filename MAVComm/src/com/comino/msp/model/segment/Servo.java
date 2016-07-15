@@ -42,20 +42,29 @@ public class Servo extends Segment {
 
 	private static final long serialVersionUID = 6155451845240484694L;
 
-	public float[] controls  = new float[8];
-	public float[] actuators = new float[8];
+	public float servo1 = 0;
+	public float servo2 = 0;
+	public float servo3 = 0;
+	public float servo4 = 0;
+	public float servo5 = 0;
+	public float servo6 = 0;
+	public float servo7 = 0;
+	public float servo8 = 0;
 
 	public void set(Servo a) {
-		System.arraycopy(a.controls , 0, controls , 0, 8);
-		System.arraycopy(a.actuators, 0, actuators, 0, 8);
-
-
+		this.servo1 = a.servo1;
+		this.servo2 = a.servo2;
+		this.servo3 = a.servo3;
+		this.servo4 = a.servo4;
+		this.servo5 = a.servo5;
+		this.servo6 = a.servo6;
+		this.servo7 = a.servo7;
+		this.servo8 = a.servo8;
 	}
 
 	public Servo clone() {
 		Servo at = new Servo();
-		System.arraycopy(controls , 0, at.controls , 0, 8);
-		System.arraycopy(actuators, 0, at.actuators, 0, 8);
+		at.set(this);
 		return at;
 	}
 
@@ -63,8 +72,14 @@ public class Servo extends Segment {
 
 
 	public void clear() {
-		Arrays.fill(controls ,0.0f);
-		Arrays.fill(actuators,0.0f);
+		servo1 = 0;
+		servo2 = 0;
+		servo3 = 0;
+		servo4 = 0;
+		servo5 = 0;
+		servo6 = 0;
+		servo7 = 0;
+		servo8 = 0;
 	}
 
 }

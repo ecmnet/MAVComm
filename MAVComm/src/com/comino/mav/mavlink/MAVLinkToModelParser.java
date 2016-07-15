@@ -150,25 +150,17 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_servo_output_raw servo = (msg_servo_output_raw)o;
-				model.servo.actuators[0] = (servo.servo1_raw - 1500) / 1000f;
-				model.servo.actuators[1] = (servo.servo2_raw - 1500) / 1000f;
-				model.servo.actuators[2] = (servo.servo3_raw - 1500) / 1000f;
-				model.servo.actuators[3] = (servo.servo4_raw - 1500) / 1000f;
-				model.servo.actuators[4] = (servo.servo5_raw - 1500) / 1000f;
-				model.servo.actuators[5] = (servo.servo6_raw - 1500) / 1000f;
-				model.servo.actuators[6] = (servo.servo7_raw - 1500) / 1000f;
-				model.servo.actuators[7] = (servo.servo8_raw - 1500) / 1000f;
+				model.servo.servo1 = (servo.servo1_raw - 1500) / 1000f;
+				model.servo.servo2 = (servo.servo2_raw - 1500) / 1000f;
+				model.servo.servo3 = (servo.servo3_raw - 1500) / 1000f;
+				model.servo.servo4 = (servo.servo4_raw - 1500) / 1000f;
+				model.servo.servo5 = (servo.servo5_raw - 1500) / 1000f;
+				model.servo.servo6 = (servo.servo6_raw - 1500) / 1000f;
+				model.servo.servo7 = (servo.servo7_raw - 1500) / 1000f;
+				model.servo.servo8 = (servo.servo8_raw - 1500) / 1000f;
 
 				model.servo.tms = servo.time_usec;
 
-			}
-		});
-
-		registerListener(msg_actuator_control_target.class, new IMAVLinkListener() {
-			@Override
-			public void received(Object o) {
-				msg_actuator_control_target act = (msg_actuator_control_target)o;
-				System.arraycopy(model.servo.controls , 0, act.controls , 0, 8);
 			}
 		});
 

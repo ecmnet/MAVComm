@@ -35,6 +35,7 @@
 package com.comino.msp.main;
 
 import org.mavlink.messages.lquac.msg_msp_command;
+import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
