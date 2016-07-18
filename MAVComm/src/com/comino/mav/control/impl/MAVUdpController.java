@@ -81,6 +81,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 			if(!comm.isConnected()) {
 				comm.close();
 				comm.open();
+				System.out.println("Try to connect....");
 			}
 		}
 
