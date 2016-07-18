@@ -75,7 +75,8 @@ public class MAVCommTest implements Runnable {
 		while(true) {
 			try {
 				Thread.sleep(100);
-				System.out.println(control.getCurrentModel().rc.rssi);
+				if(control.isConnected())
+				    System.out.println(control.getCurrentModel().sys.imu_temp);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
