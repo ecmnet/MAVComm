@@ -32,6 +32,7 @@ import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
 import org.mavlink.messages.lquac.msg_log_erase;
 import org.mavlink.messages.lquac.msg_distance_sensor;
+import org.mavlink.messages.lquac.msg_button_change;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_change_operator_control;
@@ -81,6 +82,7 @@ import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
 import org.mavlink.messages.lquac.msg_gps2_rtk;
 import org.mavlink.messages.lquac.msg_set_gps_global_origin;
+import org.mavlink.messages.lquac.msg_collision;
 import org.mavlink.messages.lquac.msg_log_data;
 import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_attitude;
@@ -119,6 +121,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_terrain_report;
 import org.mavlink.messages.lquac.msg_mission_ack;
 import org.mavlink.messages.lquac.msg_mission_request_list;
+import org.mavlink.messages.lquac.msg_play_tune;
 import org.mavlink.messages.lquac.msg_param_set;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
@@ -167,6 +170,7 @@ import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
 import org.mavlink.messages.lquac.msg_log_erase;
 import org.mavlink.messages.lquac.msg_distance_sensor;
+import org.mavlink.messages.lquac.msg_button_change;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_change_operator_control;
@@ -216,6 +220,7 @@ import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
 import org.mavlink.messages.lquac.msg_gps2_rtk;
 import org.mavlink.messages.lquac.msg_set_gps_global_origin;
+import org.mavlink.messages.lquac.msg_collision;
 import org.mavlink.messages.lquac.msg_log_data;
 import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_attitude;
@@ -255,6 +260,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_terrain_report;
 import org.mavlink.messages.lquac.msg_mission_ack;
 import org.mavlink.messages.lquac.msg_mission_request_list;
+import org.mavlink.messages.lquac.msg_play_tune;
 import org.mavlink.messages.lquac.msg_param_set;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
@@ -385,6 +391,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_DISTANCE_SENSOR:
       msg = new msg_distance_sensor(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_BUTTON_CHANGE:
+      msg = new msg_button_change(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV:
@@ -583,6 +593,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_set_gps_global_origin(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_COLLISION:
+      msg = new msg_collision(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_LOG_DATA:
       msg = new msg_log_data(sysId, componentId);
       msg.decode(dis);
@@ -737,6 +751,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_MISSION_REQUEST_LIST:
       msg = new msg_mission_request_list(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_PLAY_TUNE:
+      msg = new msg_play_tune(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_PARAM_SET:

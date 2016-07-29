@@ -482,6 +482,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_PAUSE_CONTINUE = 193;
     /**
+     * Set moving direction to forward or reverse.
+     * PARAM 1 : Direction (0=Forward, 1=Reverse)
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_DO_SET_REVERSE = 194;
+    /**
      * Control onboard camera system.
      * PARAM 1 : Camera ID (-1 for all)
      * PARAM 2 : Transmission: 0: disabled, 1: enabled compressed, 2: enabled raw
@@ -635,6 +646,18 @@ public interface MAV_CMD {
      * PARAM 7 : Empty
      */
     public final static int MAV_CMD_DO_GUIDED_LIMITS = 222;
+    /**
+     * Control vehicle engine. This is interpreted by the vehicles engine controller to change the target engine state. It is intended for vehicles with internal combustion engines
+     * PARAM 1 : 0: Stop engine, 1:Start Engine
+     * PARAM 2 : 0: Warm start, 1:Cold start. Controls use of choke where applicable
+     * PARAM 3 : Height delay (meters). This is for commanding engine start only after the vehicle has gained the specified height. Used in VTOL vehicles during takeoff to start engine after the aircraft is off the ground. Zero for no delay.
+     * PARAM 4 : Empty
+     * PARAM 5 : Empty
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_DO_ENGINE_CONTROL = 223;
     /**
      * NOP - This command is only used to mark the upper limit of the DO commands in the enumeration
      * PARAM 1 : Empty
