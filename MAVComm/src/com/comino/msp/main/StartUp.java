@@ -34,6 +34,9 @@
 
 package com.comino.msp.main;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_status;
 
@@ -46,6 +49,9 @@ public class StartUp {
 
 	IMAVMSPController    control = null;
 	MSPConfig	          config  = null;
+
+	private int         comm_errors = 0;
+	private OperatingSystemMXBean osBean = null;
 
 	public StartUp(String[] args) {
 
@@ -78,13 +84,21 @@ public class StartUp {
 		control.connect();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
 
+		osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+
 		while(true) {
 			try {
 				Thread.sleep(100);
 				if(!control.isConnected())
 					control.connect();
 
+//				msg_msp_status msg = new msg_msp_status(1,1);
+//				msg.load = (int)(osBean.getSystemLoadAverage()*100);
+//				msg.com_error = comm_errors;
+//				control.sendMAVLinkMessage(msg);
+
 			} catch (Exception e) {
+				comm_errors++;
 				control.close();
 			}
 		}

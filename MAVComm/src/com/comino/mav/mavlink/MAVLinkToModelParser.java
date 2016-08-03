@@ -130,7 +130,7 @@ public class MAVLinkToModelParser {
 				model.hud.s  = hud.groundspeed;
 				model.hud.vs = hud.climb;
 				model.hud.as = hud.airspeed;
-				model.state.h     = hud.heading;
+				model.state.h  = hud.heading;
 			}
 		});
 

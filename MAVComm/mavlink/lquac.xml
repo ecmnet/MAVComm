@@ -18,8 +18,9 @@
       <messages>
            <message id="180" name="MSP_STATUS">
                <description>MSP Status message.</description>
-               <field type="uint8_t" name="load">The CPU load of the companion</field>
-               <field type="float"   name="rssi">RSSI of the WLAN connection</field>
+               <field type="uint8_t"    name="load">The CPU load of the companion</field>
+               <field type="uint16_t"   name="version">MAVComm version running</field>
+               <field type="uint32_t"   name="com_error">AMA0 communication errors</field>
            </message>
 
            <message id="181" name="MSP_COMMAND">

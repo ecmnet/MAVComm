@@ -145,6 +145,7 @@ import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
+import org.mavlink.messages.lquac.msg_landing_map;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_setup_signing;
@@ -284,6 +285,7 @@ import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
+import org.mavlink.messages.lquac.msg_landing_map;
 /**
  * Class MAVLinkMessageFactory
  * Generate MAVLink message classes from byte array
@@ -847,6 +849,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_RESOURCE_REQUEST:
       msg = new msg_resource_request(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_LANDING_MAP:
+      msg = new msg_landing_map(sysId, componentId);
       msg.decode(dis);
       break;
   default:

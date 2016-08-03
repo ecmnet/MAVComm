@@ -113,8 +113,12 @@ public class MAVProxyController implements IMAVMSPController {
 		}
 
 		try {
-			comm.write(msg);
-			MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
+//			if(msg.sysId==255) {
+				comm.write(msg);
+				MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
+//			} else {
+//				proxy.put(msg);
+//			}
 			return true;
 		} catch (IOException e1) {
 			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getMessage());

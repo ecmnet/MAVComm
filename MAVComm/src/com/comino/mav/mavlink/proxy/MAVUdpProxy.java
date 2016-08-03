@@ -60,9 +60,9 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 	private boolean 			isConnected = false;
 
 
-//	public MAVUdpProxy() {
-//		this("172.168.178.2",14550,"172.168.178.1",14555);
-//	}
+	//	public MAVUdpProxy() {
+	//		this("172.168.178.2",14550,"172.168.178.1",14555);
+	//	}
 
 
 	public MAVUdpProxy(String peerAddress, int pPort, String bindAddress, int bPort) {
@@ -80,7 +80,7 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 		while(!isConnected) {
 			try {
 				isConnected = true;
-	//			System.out.println("Connect to UDP channel");
+				//			System.out.println("Connect to UDP channel");
 				try {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
@@ -90,7 +90,7 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 				}
 				channel.connect(peerPort);
 				in = new MAVLinkStream(channel);
-			//	System.out.println("MAVProxy connected to "+peerPort.toString());
+				//	System.out.println("MAVProxy connected to "+peerPort.toString());
 				return true;
 			} catch(Exception e) {
 				System.out.println(e.getMessage());
