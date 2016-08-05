@@ -114,6 +114,7 @@ public class Status extends Segment {
 
 	public float	load_m	   = 0;
 	public long     t_armed_ms = 0;
+	public long     t_boot_ms  = 0;
 
 
 	public void set(Status s) {
@@ -129,6 +130,7 @@ public class Status extends Segment {
 		sys_status = s.sys_status;
 
 		t_armed_ms = s.t_armed_ms;
+		t_boot_ms  = s.t_boot_ms;
 	}
 
 
@@ -183,6 +185,7 @@ public class Status extends Segment {
 		drops_p   	  = 0;
 		error1        = 0;
 		t_armed_ms    = 0;
+		t_boot_ms     = 0;
 		sys_status    = 0;
 
 	}

@@ -68,6 +68,7 @@ import org.mavlink.messages.lquac.msg_rc_channels;
 import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_statustext;
 import org.mavlink.messages.lquac.msg_sys_status;
+import org.mavlink.messages.lquac.msg_system_time;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_vibration;
 
@@ -273,6 +274,15 @@ public class MAVLinkToModelParser {
 				model.gps.latitude = gps.lat/1e7f;
 				model.gps.longitude = gps.lon/1e7f;
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>6);
+
+			}
+		});
+
+		registerListener(msg_system_time.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_system_time time = (msg_system_time)o;
+				model.sys.t_boot_ms = time.time_boot_ms;
 
 			}
 		});
