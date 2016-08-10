@@ -100,6 +100,7 @@ public class StartUp implements Runnable {
 
 	@Override
 	public void run() {
+		long tms = System.currentTimeMillis();
 		while(true) {
 			try {
 				Thread.sleep(2000);
@@ -109,6 +110,7 @@ public class StartUp implements Runnable {
 				msg_msp_status msg = new msg_msp_status(1,2);
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);
 				msg.com_error = comm_errors;
+				msg.uptime_ms = System.currentTimeMillis() - tms;
 				control.sendMAVLinkMessage(msg);
 
 			} catch (Exception e) {

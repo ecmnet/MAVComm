@@ -82,18 +82,20 @@ public class Status extends Segment {
 	public static final  int MSP_GPS_AVAILABILITY     		= 3;
 	public static final  int MSP_PIX4FLOW_AVAILABILITY    	= 4;
 
+
 	// High level services
 
-	public static final  int MSP_OPCV_AVAILABILITY    		= 5;
-	public static final  int MSP_SYSM_AVAILABILITY    		= 6;
-	public static final  int MSP_SLAM_AVAILABILITY    		= 7;
-	public static final  int MSP_BASE_AVAILABILITY    		= 8;
+	public static final  int MSP_MSP_AVAILABILITY    		= 5;
+	public static final  int MSP_OPCV_AVAILABILITY    		= 6;
+	public static final  int MSP_SYSM_AVAILABILITY    		= 7;
+	public static final  int MSP_SLAM_AVAILABILITY    		= 8;
+	public static final  int MSP_BASE_AVAILABILITY    		= 9;
 
 
 
 	private static final String[] sensor_names = {
 
-		"IMU","LIDAR","SONAR","GPS","FLOW","OPCV","SYSM","SLAM","BASE",
+		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","OPCV","SYSM","SLAM","BASE",
 
 	};
 
