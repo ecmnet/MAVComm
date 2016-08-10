@@ -18,7 +18,7 @@
 
 	</target>
 
-	<target name="build_mavlink" depends="get_metadata">
+	<target name="build_mavlink">
 		<java classname="org.mavlink.generator.MAVLinkGenerator" fork="true" dir=".">
 			<arg value="mavlink/lquac.xml"/>
 			<arg value="src/"/>
@@ -33,7 +33,7 @@
 		</java>
 	</target>
 
-	<target name="compile_mavcomm">
+	<target name="compile_mavcomm" depends="build_mavlink">
 	<javac destdir="bin" includeantruntime="false">
 		<src path="src" />
 		<classpath>
