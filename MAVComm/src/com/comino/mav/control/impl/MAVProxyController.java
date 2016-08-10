@@ -248,7 +248,6 @@ public class MAVProxyController implements IMAVMSPController {
 
 				}
 			}
-
 		}
 	}
 

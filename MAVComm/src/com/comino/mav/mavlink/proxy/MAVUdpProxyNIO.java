@@ -39,6 +39,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.LinkedList;
 
 import org.mavlink.messages.MAVLinkMessage;
@@ -75,7 +77,9 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 
 		this.queue = new LinkedList<MAVLinkMessage>();
 
+
 		System.out.println("Proxy: BindPort="+bPort+" PeerPort="+pPort);
+
 	}
 
 	public boolean open() {
@@ -86,23 +90,26 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 		}
 		while(!isConnected) {
 			try {
+
 				isConnected = true;
 				buffer.clear(); queue.clear();
 				//			System.out.println("Connect to UDP channel");
 				try {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
+					channel.socket().setTrafficClass(0x10);
 					channel.configureBlocking(false);
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 				channel.connect(peerPort);
 				in = new MAVLinkStream(channel);
 				System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
-				//	new Thread(this).start();
+
 				return true;
 			} catch(Exception e) {
-				System.out.println(e.getMessage());
+				System.err.println(e.getMessage());
 				close();
 				isConnected = false;
 
@@ -119,7 +126,7 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 	public void close() {
 		isConnected = false;
 		try {
-			if (channel != null) {
+			if (channel != null && channel.isOpen()) {
 				channel.close();
 			}
 		} catch(IOException e) {
@@ -142,7 +149,8 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 			if(isConnected) {
 
 				if(!channel.isConnected())
-					throw new IOException("Channel not bound");
+					return;
+
 				if(msg!=null) {
 					buffer.put(msg.encode());
 					buffer.flip();
@@ -153,7 +161,7 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 
 
 		} catch (Exception e) {
-			try { Thread.sleep(150); } catch(Exception k) { }
+		//	try { Thread.sleep(150); } catch(Exception k) { }
 			buffer.clear();
 			close();
 			isConnected = false;
@@ -165,37 +173,5 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 	public void received(Object o) {
 		write((MAVLinkMessage) o);
 	}
-
-	//	@Override
-	//	public void run() {
-	//		try {
-	//			while(isConnected) {
-	//
-	//				Thread.sleep(10);
-	//				if(isConnected) {
-	//
-	//					if(!channel.isConnected())
-	//						throw new IOException("Channel not bound");
-	//
-	//					if(!queue.isEmpty()) {
-	//						while(!queue.isEmpty()) {
-	//							MAVLinkMessage m = queue.poll();
-	//							if(m!=null) {
-	//								buffer.put(m.encode());
-	//								buffer.flip();
-	//								channel.write(buffer);
-	//								buffer.compact();
-	//							}
-	//						}
-	//					}
-	//				}
-	//			}
-	//		} catch (Exception e) {
-	//			System.err.println(e.getMessage());
-	//			buffer.clear(); queue.clear();
-	//			close();
-	//			isConnected = false;
-	//		}
-	//  }
 
 }

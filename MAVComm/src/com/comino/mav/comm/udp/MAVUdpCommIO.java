@@ -73,17 +73,17 @@ public class MAVUdpCommIO implements IMAVComm {
 
 	private static MAVUdpCommIO com = null;
 
-	public static MAVUdpCommIO getInstance(DataModel model, String peerAddress, int peerPort, String bindAddress, int bindPort) {
+	public static MAVUdpCommIO getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
-			com = new MAVUdpCommIO(model, peerAddress, peerPort, bindAddress, bindPort);
+			com = new MAVUdpCommIO(model, peerAddress, peerPort, bindPort);
 		return com;
 	}
 
-	private MAVUdpCommIO(DataModel model, String peerAddress, int pPort, String bindAddress, int bPort) {
+	private MAVUdpCommIO(DataModel model, String peerAddress, int pPort, int bPort) {
 		this.model = model;
 		this.parser = new MAVLinkToModelParser(model,this);
 		peerPort = new InetSocketAddress(peerAddress, pPort);
-		bindPort = new InetSocketAddress(bindAddress, bPort);
+		bindPort = new InetSocketAddress(bPort);
 
 	}
 
@@ -174,7 +174,7 @@ public class MAVUdpCommIO implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		MAVUdpCommIO comm = new MAVUdpCommIO(new DataModel(), "127.0.0.1", 14556,"0.0.0.0",14550);
+		MAVUdpCommIO comm = new MAVUdpCommIO(new DataModel(), "127.0.0.1", 14556,14550);
 	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();

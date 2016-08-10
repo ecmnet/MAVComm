@@ -128,6 +128,7 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_msp_status status = (msg_msp_status)o;
 				model.sys.load_m = status.load / 4f;
+				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
 
 			}
 		});
@@ -640,7 +641,7 @@ public class MAVLinkToModelParser {
 				try {
 
 					if(stream==null) {
-						Thread.sleep(1);
+						Thread.sleep(5);
 						Thread.yield();
 						continue;
 					}

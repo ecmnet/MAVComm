@@ -39,6 +39,10 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_statustext;
@@ -47,7 +51,7 @@ import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 
-public class MAVUdpProxyIO implements IMAVLinkListener  {
+public class MAVUdpProxyNIO2 implements IMAVLinkListener  {
 
 	private SocketAddress 			bindPort = null;
 	private SocketAddress 			peerPort;
@@ -58,14 +62,10 @@ public class MAVUdpProxyIO implements IMAVLinkListener  {
 
 
 	private boolean 			isConnected = false;
+	private Selector selector;
 
 
-	//	public MAVUdpProxy() {
-	//		this("172.168.178.2",14550,"172.168.178.1",14555);
-	//	}
-
-
-	public MAVUdpProxyIO(String peerAddress, int pPort, String bindAddress, int bPort) {
+	public MAVUdpProxyNIO2(String peerAddress, int pPort, String bindAddress, int bPort) {
 		buffer = ByteBuffer.allocate(8192);
 		peerPort = new InetSocketAddress(peerAddress, pPort);
 		bindPort = new InetSocketAddress(bindAddress, bPort);
@@ -75,33 +75,82 @@ public class MAVUdpProxyIO implements IMAVLinkListener  {
 
 	public boolean open() {
 
+
 		if(channel!=null && channel.isConnected()) {
 			isConnected = true;
 			return true;
 		}
-		while(!isConnected) {
-			try {
-				isConnected = true;
-				//			System.out.println("Connect to UDP channel");
-				try {
-					channel = DatagramChannel.open();
-					channel.socket().bind(bindPort);
-					channel.configureBlocking(true);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				channel.connect(peerPort);
-				in = new MAVLinkStream(channel);
-				System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
-				return true;
-			} catch(Exception e) {
-				System.out.println(e.getMessage());
-				close();
-				isConnected = false;
 
-			}
+		try {
+			isConnected = true;
+			selector = Selector.open();
+			channel = DatagramChannel.open();
+			channel.socket().bind(bindPort);
+			channel.configureBlocking(false);
+			channel.connect(peerPort);
+			SelectionKey key = channel.register(selector, SelectionKey.OP_WRITE);
+
+			while(true) {
+
+				  int readyChannels = selector.select();
+				  if(readyChannels == 0) continue;
+
+				  Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
+
+				  while(keyIterator.hasNext()) {
+
+				    SelectionKey k = keyIterator.next();
+
+				    if(k.isAcceptable()) {
+				    	System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
+
+				    } else if (k.isConnectable()) {
+				    	System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
+
+				    } else if (k.isReadable()) {
+				        // a channel is ready for reading
+
+				    } else if (k.isWritable()) {
+				        // a channel is ready for writing
+				    }
+				    keyIterator.remove();
+				  }
+				}
+
+
+
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+			close();
+			isConnected = false;
 		}
-		return false;
+
+
+  return true;
+
+//		while(!isConnected) {
+//			try {
+//				isConnected = true;
+//				//			System.out.println("Connect to UDP channel");
+//				try {
+//					channel = DatagramChannel.open();
+//					channel.socket().bind(bindPort);
+//					channel.configureBlocking(true);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//				channel.connect(peerPort);
+//				in = new MAVLinkStream(channel);
+//				System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
+//				return true;
+//			} catch(Exception e) {
+//				System.out.println(e.getMessage());
+//				close();
+//				isConnected = false;
+//
+//			}
+//		}
+//		return false;
 	}
 
 	public boolean isConnected() {
