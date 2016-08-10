@@ -249,8 +249,7 @@ public class MAVLinkReader {
         // we are allowed to block in this version of the function, take advantage
         // of that ASAP
         // otherwise getNextMessage will burn 100% of the CPU spinning...
-        // if (dis.available() == 0)
-        // return validData;
+
         receivedBuffer[nbReceived] = dis.readByte();
         totalBytesReceived++;
         if (receivedBuffer[nbReceived++] == start) {

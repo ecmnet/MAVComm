@@ -174,7 +174,7 @@ public class MAVUdpCommIO implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		MAVUdpCommIO comm = new MAVUdpCommIO(new DataModel(), "172.168.178.1", 14555,"0.0.0.0",14550);
+		MAVUdpCommIO comm = new MAVUdpCommIO(new DataModel(), "127.0.0.1", 14556,"0.0.0.0",14550);
 	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();

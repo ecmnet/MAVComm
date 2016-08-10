@@ -51,9 +51,9 @@ public class MAVLinkStream {
 	private final ByteChannel channel;
 
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(8192);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
-	byte[] buf = new byte[500];
+	byte[] buf = new byte[1000];
 
 	private MAVLinkReader reader;
 
@@ -74,6 +74,7 @@ public class MAVLinkStream {
 	public MAVLinkMessage read() throws IOException, EOFException {
 
 
+
 		int n = 1;
 		while (true) {
 			try {
@@ -81,22 +82,16 @@ public class MAVLinkStream {
 				return reader.getNextMessage(buf, n);
 			} catch (BufferUnderflowException e) {
 				// Try to refill buffer
-
 				try {
+
 					rxBuffer.compact();
 					LockSupport.parkNanos(500000);
 					n = channel.read(rxBuffer);
+
 				} catch (Exception ioe) {
-					rxBuffer.flip();
-					LockSupport.parkNanos(5000000);
 					throw new IOException(ioe.getMessage());
 				}
 				rxBuffer.flip();
-
-				if (n <= 0) {
-					//                     System.out.println("end");
-					//return null;
-				}
 			}
 		}
 	}

@@ -35,7 +35,9 @@
 package com.comino.mav.control.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -43,6 +45,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
+import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
@@ -50,7 +53,7 @@ import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.mav.mavlink.proxy.MAVUdpProxy;
+import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -70,12 +73,13 @@ public class MAVProxyController implements IMAVMSPController {
 	protected String peerAddress = null;
 
 	protected static IMAVMSPController controller = null;
+
 	protected IMAVComm comm = null;
 
 	protected HashMap<Class<?>,IMAVLinkListener> listeners = null;
 
 	protected   DataModel model = null;
-	protected   MAVUdpProxy proxy = null;
+	protected   MAVUdpProxyNIO proxy = null;
 
 	private     boolean  isRunning = false;
 
@@ -90,14 +94,14 @@ public class MAVProxyController implements IMAVMSPController {
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 		if(sitl) {
-			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14556, 14551);
-			proxy = new MAVUdpProxy("127.0.0.1",14550,"0.0.0.0",14558);
+			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14556, 14550);
+			proxy = new MAVUdpProxyNIO("127.0.0.1",14650,"0.0.0.0",14656);
 			peerAddress = "127.0.0.1";
-			System.out.println("Proxy Controller loaded (SITL)");
+			System.out.println("Proxy Controller loaded (SITL) ");
 		}
 		else {
 			comm = MAVHighSpeedSerialComm.getInstance(model);
-			proxy = new MAVUdpProxy("172.168.178.2",14550,"172.168.178.1",14555);
+			proxy = new MAVUdpProxyNIO("172.168.178.2",14550,"172.168.178.1",14555);
 			peerAddress = "172.168.178.2";
 			System.out.println("Proxy Controller loaded ");
 		}
@@ -113,12 +117,12 @@ public class MAVProxyController implements IMAVMSPController {
 		}
 
 		try {
-//			if(msg.sysId==255) {
+			if(msg.componentId==2) {
+				proxy.write(msg);
+			} else {
 				comm.write(msg);
 				MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
-//			} else {
-//				proxy.put(msg);
-//			}
+			}
 			return true;
 		} catch (IOException e1) {
 			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getMessage());
@@ -176,8 +180,9 @@ public class MAVProxyController implements IMAVMSPController {
 
 	public boolean start() {
 		isRunning = true;
-		new Thread(new MAVLinkProxyWorker()).start();
 		comm.open();
+		Thread worker = new Thread(new MAVLinkProxyWorker());
+		worker.start();
 		return true;
 	}
 
@@ -219,27 +224,29 @@ public class MAVProxyController implements IMAVMSPController {
 		public void run() {
 
 			System.out.println("Starting proxy thread..");
+			MAVLinkMessage msg = null;
 
 			while (isRunning) {
 				try {
 					Thread.yield();
 
-					MAVLinkMessage msg = proxy.getInputStream().read();
+					msg = proxy.getInputStream().read();
 
-					if(msg==null)
-						continue;
+					if(msg!=null) {
 
-					IMAVLinkListener listener = listeners.get(msg.getClass());
-					if(listener!=null)
-						listener.received(msg);
-					else
-						comm.write(msg);
+						IMAVLinkListener listener = listeners.get(msg.getClass());
+
+						if(listener!=null)
+							listener.received(msg);
+						else
+							comm.write(msg);
+					}
 
 				} catch (Exception e) {
 
 				}
-
 			}
+			comm.close();
 		}
 	}
 
@@ -273,7 +280,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 		while(true) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(500);
 				if(!control.isConnected())
 					control.connect();
 

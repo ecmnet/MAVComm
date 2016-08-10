@@ -39,6 +39,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.LinkedList;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_statustext;
@@ -47,7 +48,7 @@ import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 
-public class MAVUdpProxy implements IMAVLinkListener  {
+public class MAVUdpProxyNIO implements IMAVLinkListener  {
 
 	private SocketAddress 			bindPort = null;
 	private SocketAddress 			peerPort;
@@ -55,6 +56,8 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 
 	private ByteBuffer 				buffer = null;
 	private MAVLinkStream			in	   = null;
+
+	private LinkedList<MAVLinkMessage> queue = null;
 
 
 	private boolean 			isConnected = false;
@@ -65,10 +68,14 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 	//	}
 
 
-	public MAVUdpProxy(String peerAddress, int pPort, String bindAddress, int bPort) {
-		buffer = ByteBuffer.allocate(8192);
+	public MAVUdpProxyNIO(String peerAddress, int pPort, String bindAddress, int bPort) {
+		buffer = ByteBuffer.allocate(16384);
 		peerPort = new InetSocketAddress(peerAddress, pPort);
 		bindPort = new InetSocketAddress(bindAddress, bPort);
+
+		this.queue = new LinkedList<MAVLinkMessage>();
+
+		System.out.println("Proxy: BindPort="+bPort+" PeerPort="+pPort);
 	}
 
 	public boolean open() {
@@ -80,6 +87,7 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 		while(!isConnected) {
 			try {
 				isConnected = true;
+				buffer.clear(); queue.clear();
 				//			System.out.println("Connect to UDP channel");
 				try {
 					channel = DatagramChannel.open();
@@ -90,7 +98,8 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 				}
 				channel.connect(peerPort);
 				in = new MAVLinkStream(channel);
-				//	System.out.println("MAVProxy connected to "+peerPort.toString());
+				System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
+				//	new Thread(this).start();
 				return true;
 			} catch(Exception e) {
 				System.out.println(e.getMessage());
@@ -122,23 +131,28 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 		return in;
 	}
 
+	//	public synchronized  void write(MAVLinkMessage msg) {
+	//		queue.add(msg);
+	//	}
 
-	public void write(MAVLinkMessage msg) {
+
+	public synchronized  void write(MAVLinkMessage msg) {
 		try {
 
 			if(isConnected) {
 
 				if(!channel.isConnected())
 					throw new IOException("Channel not bound");
-
-				buffer.put(msg.encode());
-				buffer.flip();
-				channel.write(buffer);
-				buffer.compact();
+				if(msg!=null) {
+					buffer.put(msg.encode());
+					buffer.flip();
+					channel.write(buffer);
+					buffer.compact();
+				}
 			}
 
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			try { Thread.sleep(150); } catch(Exception k) { }
 			buffer.clear();
 			close();
@@ -152,12 +166,36 @@ public class MAVUdpProxy implements IMAVLinkListener  {
 		write((MAVLinkMessage) o);
 	}
 
-
-
-
-
-
-
-
+	//	@Override
+	//	public void run() {
+	//		try {
+	//			while(isConnected) {
+	//
+	//				Thread.sleep(10);
+	//				if(isConnected) {
+	//
+	//					if(!channel.isConnected())
+	//						throw new IOException("Channel not bound");
+	//
+	//					if(!queue.isEmpty()) {
+	//						while(!queue.isEmpty()) {
+	//							MAVLinkMessage m = queue.poll();
+	//							if(m!=null) {
+	//								buffer.put(m.encode());
+	//								buffer.flip();
+	//								channel.write(buffer);
+	//								buffer.compact();
+	//							}
+	//						}
+	//					}
+	//				}
+	//			}
+	//		} catch (Exception e) {
+	//			System.err.println(e.getMessage());
+	//			buffer.clear(); queue.clear();
+	//			close();
+	//			isConnected = false;
+	//		}
+	//  }
 
 }

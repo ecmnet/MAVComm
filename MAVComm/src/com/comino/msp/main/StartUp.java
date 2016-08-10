@@ -45,7 +45,7 @@ import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
-public class StartUp {
+public class StartUp implements Runnable {
 
 	IMAVMSPController    control = null;
 	MSPConfig	          config  = null;
@@ -83,31 +83,37 @@ public class StartUp {
 
 		control.connect();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
+        Thread worker = new Thread(this);
+        worker.start();
 
-		osBean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
-
-		while(true) {
-			try {
-				Thread.sleep(100);
-				if(!control.isConnected())
-					control.connect();
-
-//				msg_msp_status msg = new msg_msp_status(1,1);
-//				msg.load = (int)(osBean.getSystemLoadAverage()*100);
-//				msg.com_error = comm_errors;
-//				control.sendMAVLinkMessage(msg);
-
-			} catch (Exception e) {
-				comm_errors++;
-				control.close();
-			}
-		}
 	}
 
 
 
 	public static void main(String[] args) {
 		new StartUp(args);
+
+	}
+
+
+
+	@Override
+	public void run() {
+		while(true) {
+			try {
+				Thread.sleep(1000);
+				if(!control.isConnected())
+					control.connect();
+				////
+				msg_msp_status msg = new msg_msp_status(1,2);
+				msg.com_error = comm_errors++;
+				control.sendMAVLinkMessage(msg);
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				control.close();
+			}
+		}
 
 	}
 
