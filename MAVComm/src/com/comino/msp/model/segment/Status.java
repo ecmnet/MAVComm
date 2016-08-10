@@ -112,7 +112,7 @@ public class Status extends Segment {
 	public int     sys_status  = 0;
 
 
-	public float	load_m	   = 0;
+	public float	load_m	   = 0;	  	//MSP
 	public long     t_armed_ms = 0;
 	public long     t_boot_ms  = 0;
 

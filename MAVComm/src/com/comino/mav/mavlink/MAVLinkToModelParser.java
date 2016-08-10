@@ -62,6 +62,7 @@ import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_manual_control;
+import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_rc_channels;
@@ -122,6 +123,14 @@ public class MAVLinkToModelParser {
 
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
+		registerListener(msg_msp_status.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_msp_status status = (msg_msp_status)o;
+				model.sys.load_m = status.load / 4f;
+
+			}
+		});
 
 		registerListener(msg_vfr_hud.class, new IMAVLinkListener() {
 			@Override
@@ -415,8 +424,11 @@ public class MAVLinkToModelParser {
 				model.imu.abs_pressure = imu.abs_pressure;
 
 				model.sys.imu_temp = (int)imu.temperature;
+				model.imu.tms = System.nanoTime()/1000;;
 
-				model.imu.tms =imu.time_usec;
+				model.sys.setStatus(Status.MSP_READY,true);
+				notifyStatusChange();
+
 
 			}
 		});
@@ -661,12 +673,20 @@ public class MAVLinkToModelParser {
 							model.sys.isStatus(Status.MSP_CONNECTED)) {
 
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
+						model.sys.setStatus(Status.MSP_READY, false);
 						notifyStatusChange();
 
 						writeMessage(new LogMessage("Connection lost",2));
 						link.close(); link.open();
 						model.sys.tms = System.nanoTime()/1000;
 						Thread.sleep(50);
+					}
+
+
+					if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
+							model.sys.isStatus(Status.MSP_READY)) {
+						model.sys.setStatus(Status.MSP_READY, false);
+						notifyStatusChange();
 					}
 
 				} catch (Exception e) {

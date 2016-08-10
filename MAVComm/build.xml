@@ -33,7 +33,7 @@
 		</java>
 	</target>
 
-	<target name="compile_mavcomm" depends="build_mavlink">
+	<target name="compile_mavcomm">
 	<javac destdir="bin" includeantruntime="false">
 		<src path="src" />
 		<classpath>

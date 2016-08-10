@@ -111,17 +111,19 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public boolean sendMAVLinkMessage(MAVLinkMessage msg) {
 
-		if(!controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
-			System.out.println("Command rejected. No connection.");
-			return false;
-		}
 
 		try {
 			if(msg.componentId==2) {
 				proxy.write(msg);
 			} else {
-				comm.write(msg);
-				MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
+				if(controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
+					comm.write(msg);
+					MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
+				} else {
+					System.out.println("Command rejected. No connection.");
+					return false;
+				}
+
 			}
 			return true;
 		} catch (IOException e1) {
@@ -174,13 +176,13 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean connect() {
+		comm.open();
 		return proxy.open();
 	}
 
 
 	public boolean start() {
 		isRunning = true;
-		comm.open();
 		Thread worker = new Thread(new MAVLinkProxyWorker());
 		worker.start();
 		return true;
@@ -189,13 +191,13 @@ public class MAVProxyController implements IMAVMSPController {
 
 	public boolean stop() {
 		isRunning = false;
-		comm.close();
 		return false;
 	}
 
 	@Override
 	public boolean close() {
 		comm.close();
+		proxy.close();
 		return true;
 	}
 
@@ -246,7 +248,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 				}
 			}
-			comm.close();
+
 		}
 	}
 

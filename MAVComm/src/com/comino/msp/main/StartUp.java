@@ -63,6 +63,7 @@ public class StartUp implements Runnable {
 		else
 			control = new MAVProxyController(false);
 
+		 osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
 
 		MSPLogger.getInstance(control);
 
@@ -101,16 +102,17 @@ public class StartUp implements Runnable {
 	public void run() {
 		while(true) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(2000);
 				if(!control.isConnected())
 					control.connect();
-				////
+
 				msg_msp_status msg = new msg_msp_status(1,2);
-				msg.com_error = comm_errors++;
+				msg.load = (int)(osBean.getSystemLoadAverage()*100);
+				msg.com_error = comm_errors;
 				control.sendMAVLinkMessage(msg);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				comm_errors++;
 				control.close();
 			}
 		}
