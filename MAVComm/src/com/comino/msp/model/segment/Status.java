@@ -72,6 +72,10 @@ public class Status extends Segment {
 	public static final int MSP_INAIR						= 25;
 	public static final int MSP_FREEFALL					= 26;
 
+	// MSP status flags
+
+	public static final int MSP_PARAMCHECK_OK				= 32;
+
 
 
 	// Low level sensors
@@ -101,7 +105,7 @@ public class Status extends Segment {
 
 
 	private int     sensors    = 0;
-	private int     status     = 0;
+	private long    status     = 0;
 
 	public int      error1     = 0;
 	public float    load_p     = 0;
