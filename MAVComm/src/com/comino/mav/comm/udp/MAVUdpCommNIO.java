@@ -136,7 +136,10 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 	public void write(MAVLinkMessage msg) throws IOException {
 		ByteBuffer buf = ByteBuffer.wrap(msg.encode());
-		channel.write(buf);
+		if(channel.isConnected())
+		   channel.write(buf);
+		else
+			throw new IOException("Channel not connected");
 	}
 
 	@Override
