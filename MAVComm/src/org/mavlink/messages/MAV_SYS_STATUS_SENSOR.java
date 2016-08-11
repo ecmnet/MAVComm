@@ -104,4 +104,8 @@ public interface MAV_SYS_STATUS_SENSOR {
      * 0x800000 Motors are reversed
      */
     public final static int MAV_SYS_STATUS_REVERSE_MOTOR = 8388608;
+    /**
+     * 0x1000000 Logging
+     */
+    public final static int MAV_SYS_STATUS_LOGGING = 16777216;
 }
