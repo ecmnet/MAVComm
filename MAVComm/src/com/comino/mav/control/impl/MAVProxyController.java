@@ -174,14 +174,13 @@ public class MAVProxyController implements IMAVMSPController {
 	}
 
 	public boolean isConnected() {
-		return proxy.isConnected();
+		return proxy.isConnected() && comm.isConnected();
 	}
 
 	@Override
 	public boolean connect() {
 		commError=0;
-		comm.open();
-		return proxy.open();
+		return proxy.open() && comm.open();
 	}
 
 
