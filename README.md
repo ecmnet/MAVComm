@@ -16,4 +16,4 @@ It is currently tested with the following systems:
 
 - Raspberry PI 2
 
-- UP-Board (in progress)
+- [UP-Board](http://www.up-board.org) (requires re-compiling high speed serial connection)
