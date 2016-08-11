@@ -44,6 +44,7 @@ import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.model.segment.Status;
 
 public class StartUp implements Runnable {
 
@@ -86,6 +87,8 @@ public class StartUp implements Runnable {
         Thread worker = new Thread(this);
         worker.start();
 
+        control.getCurrentModel().sys.setMSPStatus(Status.MSP_HEALTH_OK, true);
+
 	}
 
 
@@ -110,6 +113,7 @@ public class StartUp implements Runnable {
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);
 				msg.com_error = control.getErrorCount();
 				msg.uptime_ms = System.currentTimeMillis() - tms;
+				msg.status = control.getCurrentModel().sys.msp_status;
 				msg.setVersion(config.getVersion());
 				control.sendMAVLinkMessage(msg);
 

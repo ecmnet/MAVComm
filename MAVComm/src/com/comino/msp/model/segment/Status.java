@@ -72,9 +72,10 @@ public class Status extends Segment {
 	public static final int MSP_INAIR						= 25;
 	public static final int MSP_FREEFALL					= 26;
 
-	// MSP status flags
+	// MSP System status flags
 
-	public static final int MSP_PARAMCHECK_OK				= 32;
+	public static final int MSP_HEALTH_OK					= 0;
+	public static final int MSP_PARAMETER_CHECK_OK			= 1;
 
 
 
@@ -105,7 +106,7 @@ public class Status extends Segment {
 
 
 	private int     sensors    = 0;
-	private long    status     = 0;
+	private int     status     = 0;
 
 	public int      error1     = 0;
 	public float    load_p     = 0;
@@ -116,6 +117,7 @@ public class Status extends Segment {
 	public int		custommode = 0;
 
 	public int     sys_status  = 0;
+	public int     msp_status  = 0;
 
 
 	public float	load_m	   = 0;	  	//MSP
@@ -170,6 +172,20 @@ public class Status extends Segment {
 	public boolean isStatus(int ...box) {
 		for(int b : box)
 		  if((status & (1<<b))==0)
+            return false;
+		return true;
+	}
+
+	public void  setMSPStatus(int box, boolean val) {
+		if(val)
+			msp_status = (int) (status | (1<<box));
+		else
+			msp_status = (int) (status & ~(1<<box));
+	}
+
+	public boolean isMSPStatus(int ...box) {
+		for(int b : box)
+		  if((msp_status & (1<<b))==0)
             return false;
 		return true;
 	}
