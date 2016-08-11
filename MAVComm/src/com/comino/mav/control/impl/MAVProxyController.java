@@ -81,6 +81,8 @@ public class MAVProxyController implements IMAVMSPController {
 	protected   DataModel model = null;
 	protected   MAVUdpProxyNIO proxy = null;
 
+	protected  int commError=0;
+
 	private     boolean  isRunning = false;
 
 	public static IMAVController getInstance() {
@@ -127,6 +129,7 @@ public class MAVProxyController implements IMAVMSPController {
 			}
 			return true;
 		} catch (IOException e1) {
+			commError++;
 			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getMessage());
 			return false;
 		}
@@ -176,12 +179,14 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean connect() {
+		commError=0;
 		comm.open();
 		return proxy.open();
 	}
 
 
 	public boolean start() {
+		commError=0;
 		isRunning = true;
 		Thread worker = new Thread(new MAVLinkProxyWorker());
 		worker.start();
@@ -245,7 +250,7 @@ public class MAVProxyController implements IMAVMSPController {
 					}
 
 				} catch (Exception e) {
-
+					commError++;
 				}
 			}
 		}
@@ -337,6 +342,12 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public String getConnectedAddress() {
 		return peerAddress;
+	}
+
+
+	@Override
+	public int getErrorCount() {
+		return commError;
 	}
 
 }

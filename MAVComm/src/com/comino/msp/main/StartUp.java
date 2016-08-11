@@ -50,7 +50,6 @@ public class StartUp implements Runnable {
 	IMAVMSPController    control = null;
 	MSPConfig	          config  = null;
 
-	private int         comm_errors = 0;
 	private OperatingSystemMXBean osBean = null;
 
 	public StartUp(String[] args) {
@@ -109,13 +108,12 @@ public class StartUp implements Runnable {
 
 				msg_msp_status msg = new msg_msp_status(1,2);
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);
-				msg.com_error = comm_errors;
+				msg.com_error = control.getErrorCount();
 				msg.uptime_ms = System.currentTimeMillis() - tms;
-//				msg.version = "tmp".toCharArray();
+				msg.setVersion(config.getVersion());
 				control.sendMAVLinkMessage(msg);
 
 			} catch (Exception e) {
-				comm_errors++;
 				control.close();
 			}
 		}

@@ -54,6 +54,8 @@ public interface IMAVController {
 	public boolean isSimulation();
 	public boolean isConnected();
 
+	public int getErrorCount();
+
 	public DataModel getCurrentModel();
 
 	public String getConnectedAddress();

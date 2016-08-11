@@ -18,9 +18,10 @@
       <messages>
            <message id="180" name="MSP_STATUS">
                <description>MSP Status message.</description>
-               <field type="uint8_t"    name="load">The CPU load of the companion</field>
-               <field type="uint64_t"   name="uptime_ms">MAVComm version running</field>
-               <field type="uint32_t"   name="com_error">AMA0 communication errors</field>
+               <field type="uint8_t"       name="load">The CPU load of the companion</field>
+               <field type="uint64_t"      name="uptime_ms">MAVComm version running</field>
+               <field type="uint32_t"      name="com_error">AMA0 communication errors</field>
+               <field type="char[16]"      name="version">MSP software build</field>
            </message>
 
            <message id="181" name="MSP_COMMAND">
@@ -32,7 +33,6 @@
                <field type="float" name="param4">Parameter 4, as defined by MSP_COMMANDS enum.</field>
                <field type="float" name="param5">Parameter 5, as defined by MSP_COMMANDS enum.</field>
                <field type="float" name="param6">Parameter 6, as defined by MSP_COMMANDS enum.</field>
-               <field type="float" name="param7">Parameter 7, as defined by MSP_COMMANDS enum.</field>
            </message>
       </messages>
 </mavlink>

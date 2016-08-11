@@ -47,11 +47,9 @@ import java.util.Properties;
 
 public class MSPConfig {
 
-	private static final String VERSION = "Build ";
-
 	private static MSPConfig config = null;
 	private String fileName = null;
-	private String version = null;
+	private String version = "tmp";
 
 	private Properties prop = null;
 
@@ -71,7 +69,7 @@ public class MSPConfig {
 		System.out.println();
 		System.out.println("Initializing ("+filename+")...");
 		refreshProperties();
-		this.version = VERSION + prop.getProperty("build","tmp");
+		this.version = prop.getProperty("build","tmp");
 	}
 
 

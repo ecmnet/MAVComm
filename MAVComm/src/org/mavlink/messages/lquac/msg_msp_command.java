@@ -24,7 +24,7 @@ public class msg_msp_command extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_COMMAND;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 29;
+    length = 25;
 }
 
   /**
@@ -52,10 +52,6 @@ public class msg_msp_command extends MAVLinkMessage {
    */
   public float param6;
   /**
-   * Parameter 7, as defined by MSP_COMMANDS enum.
-   */
-  public float param7;
-  /**
    * Command to be executed by MSP (defined in MSP_COMMANDS)
    */
   public int command;
@@ -69,14 +65,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   param4 = (float)dis.readFloat();
   param5 = (float)dis.readFloat();
   param6 = (float)dis.readFloat();
-  param7 = (float)dis.readFloat();
   command = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[8+29];
+  byte[] buffer = new byte[8+25];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFE);
   dos.writeByte(length & 0x00FF);
@@ -90,20 +85,19 @@ public byte[] encode() throws IOException {
   dos.writeFloat(param4);
   dos.writeFloat(param5);
   dos.writeFloat(param6);
-  dos.writeFloat(param7);
   dos.writeByte(command&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 29);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 25);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[35] = crcl;
-  buffer[36] = crch;
+  buffer[31] = crcl;
+  buffer[32] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_COMMAND : " +   "  param1="+param1+  "  param2="+param2+  "  param3="+param3+  "  param4="+param4+  "  param5="+param5+  "  param6="+param6+  "  param7="+param7+  "  command="+command;}
+return "MAVLINK_MSG_ID_MSP_COMMAND : " +   "  param1="+param1+  "  param2="+param2+  "  param3="+param3+  "  param4="+param4+  "  param5="+param5+  "  param6="+param6+  "  command="+command;}
 }

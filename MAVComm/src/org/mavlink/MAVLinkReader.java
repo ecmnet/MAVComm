@@ -47,7 +47,7 @@ public class MAVLinkReader {
     /**
        *
        */
-    public final static int RECEIVED_BUFFER_SIZE = 512;
+    public final static int RECEIVED_BUFFER_SIZE = 1024;
 
     /**
        *

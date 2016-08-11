@@ -66,6 +66,8 @@ public class MAVController implements IMAVController {
 	protected   boolean isSITL = false;
 	protected   DataModel model = null;
 
+	protected   int commError = 0;
+
 	public static IMAVController getInstance() {
 		return controller;
 	}
@@ -91,7 +93,8 @@ public class MAVController implements IMAVController {
 		//	System.out.println("Execute: "+msg.toString());
 			return true;
 		} catch (IOException e1) {
-			System.out.println("Command rejected. "+e1.getMessage());
+			commError++;
+			System.out.println("Command not executed. "+e1.getMessage());
 			return false;
 		}
 
@@ -141,7 +144,6 @@ public class MAVController implements IMAVController {
 			case 3: cmd.param4 = params[3]; break;
 			case 4: cmd.param5 = params[4]; break;
 			case 5: cmd.param6 = params[5]; break;
-			case 6: cmd.param7 = params[6]; break;
 
 			}
 		}
@@ -154,6 +156,7 @@ public class MAVController implements IMAVController {
 			System.out.println("Execute: "+cmd.toString());
 			return true;
 		} catch (IOException e1) {
+			commError++;
 			System.out.println("Command rejected: "+e1.getMessage());
 			return false;
 		}
@@ -230,6 +233,12 @@ public class MAVController implements IMAVController {
 		  comm.writeMessage(m);
 		model.msg.set(m);
 
+	}
+
+
+	@Override
+	public int getErrorCount() {
+		return commError;
 	}
 
 
