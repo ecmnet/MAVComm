@@ -24,6 +24,7 @@
                <field type="uint32_t"      name="com_error">AMA0 communication errors</field>
                <field type="uint32_t"      name="status">MSP Statusflags</field>
                <field type="char[16]"      name="version">MSP software build</field>
+               <field type="char[10]"      name="arch">Companion architecture</field>
            </message>
 
            <message id="181" name="MSP_COMMAND">

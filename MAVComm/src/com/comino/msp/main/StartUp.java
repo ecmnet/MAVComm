@@ -117,7 +117,8 @@ public class StartUp implements Runnable {
 				msg.com_error = control.getErrorCount();
 				msg.uptime_ms = System.currentTimeMillis() - tms;
 				msg.status = control.getCurrentModel().sys.msp_status;
-				msg.setVersion(config.getVersion()+"-"+osBean.getArch());
+				msg.setVersion(config.getVersion());
+				msg.setArch(osBean.getArch());
 				control.sendMAVLinkMessage(msg);
 
 			} catch (Exception e) {
