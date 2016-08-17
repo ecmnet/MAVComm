@@ -35,6 +35,7 @@
 package com.comino.msp.main;
 
 import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
 import org.mavlink.messages.lquac.msg_msp_command;
@@ -52,6 +53,7 @@ public class StartUp implements Runnable {
 	MSPConfig	          config  = null;
 
 	private OperatingSystemMXBean osBean = null;
+	private MemoryMXBean mxBean = null;
 
 	public StartUp(String[] args) {
 
@@ -64,6 +66,7 @@ public class StartUp implements Runnable {
 			control = new MAVProxyController(false);
 
 		 osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+		 mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
 
 		MSPLogger.getInstance(control);
 
@@ -88,7 +91,6 @@ public class StartUp implements Runnable {
         worker.start();
 
         control.getCurrentModel().sys.setMSPStatus(Status.MSP_HEALTH_OK, true);
-
 	}
 
 
@@ -111,10 +113,11 @@ public class StartUp implements Runnable {
 
 				msg_msp_status msg = new msg_msp_status(1,2);
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);
+				msg.memory = (int)(mxBean.getHeapMemoryUsage().getUsed() * 100 /mxBean.getHeapMemoryUsage().getMax());
 				msg.com_error = control.getErrorCount();
 				msg.uptime_ms = System.currentTimeMillis() - tms;
 				msg.status = control.getCurrentModel().sys.msp_status;
-				msg.setVersion(config.getVersion());
+				msg.setVersion(config.getVersion()+"-"+osBean.getArch());
 				control.sendMAVLinkMessage(msg);
 
 			} catch (Exception e) {
