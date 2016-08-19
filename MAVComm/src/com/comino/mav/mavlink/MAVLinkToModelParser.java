@@ -108,6 +108,7 @@ public class MAVLinkToModelParser {
 	private long    t_armed_start = 0;
 
 	private long    gpos_tms = 0;
+	private long    mocap_tms = 0;
 
 	private LogMessage lastMessage = null;
 
@@ -137,6 +138,7 @@ public class MAVLinkToModelParser {
 				model.mocap.flags= (int)mocap.flags;
 				model.mocap.fps= mocap.fps;
 				model.mocap.tms= System.nanoTime()/1000;
+				mocap_tms = System.currentTimeMillis();
 				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true);
 			}
 		});
@@ -147,8 +149,6 @@ public class MAVLinkToModelParser {
 				msg_msp_status status = (msg_msp_status)o;
 				model.sys.load_m = status.load / 4f;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
-				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
-
 			}
 		});
 
@@ -687,6 +687,9 @@ public class MAVLinkToModelParser {
 					// if no global position was published within the last second:
 					if((System.currentTimeMillis() - gpos_tms)>1000)
 						model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
+
+					if((System.currentTimeMillis() - mocap_tms)>1000)
+					     model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
 
 
 					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&
