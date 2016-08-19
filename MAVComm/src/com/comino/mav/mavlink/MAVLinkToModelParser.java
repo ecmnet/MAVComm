@@ -62,6 +62,7 @@ import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_manual_control;
+import org.mavlink.messages.lquac.msg_msp_mocap;
 import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
@@ -122,6 +123,21 @@ public class MAVLinkToModelParser {
 		this.msgListener = new ArrayList<IMAVMessageListener>();
 
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
+
+
+		registerListener(msg_msp_mocap.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_msp_mocap mocap = (msg_msp_mocap)o;
+				model.mocap.vx= mocap.vx;
+				model.mocap.vy= mocap.vy;
+				model.mocap.vz= mocap.vz;
+
+				model.mocap.flags= (int)mocap.flags;
+				model.mocap.fps= mocap.fps;
+				model.mocap.tms= mocap.tms;
+			}
+		});
 
 		registerListener(msg_msp_status.class, new IMAVLinkListener() {
 			@Override
