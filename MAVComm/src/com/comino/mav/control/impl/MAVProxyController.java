@@ -50,6 +50,7 @@ import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
+import com.comino.mav.comm.serial.MAVSerialComm;
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
@@ -102,7 +103,12 @@ public class MAVProxyController implements IMAVMSPController {
 			System.out.println("Proxy Controller loaded (SITL) ");
 		}
 		else {
-			comm = MAVHighSpeedSerialComm.getInstance(model);
+
+			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
+			    comm = MAVSerialComm.getInstance(model);
+			else
+				comm = MAVHighSpeedSerialComm.getInstance(model);
+			comm.open();
 			proxy = new MAVUdpProxyNIO("172.168.178.2",14550,"172.168.178.1",14555);
 			peerAddress = "172.168.178.2";
 			System.out.println("Proxy Controller loaded ");
@@ -180,7 +186,7 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public boolean connect() {
 		commError=0;
-		return proxy.open() && comm.open();
+		return proxy.open();
 	}
 
 
@@ -200,7 +206,6 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean close() {
-		comm.close();
 		proxy.close();
 		return true;
 	}

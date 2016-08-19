@@ -61,8 +61,8 @@ import jssc.SerialPortList;
 
 public class MAVSerialComm implements IMAVComm {
 
-	private static final int BAUDRATE  = 57600;
-//	private static final int BAUDRATE  = 921600;
+//	private static final int BAUDRATE  = 57600;
+	private static final int BAUDRATE  = 921600;
 
 
 	private SerialPort 			serialPort;

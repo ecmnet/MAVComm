@@ -108,8 +108,11 @@ public class StartUp implements Runnable {
 		while(true) {
 			try {
 				Thread.sleep(2000);
-				if(!control.isConnected())
+				if(!control.isConnected()) {
+					if(control.isConnected())
+					  control.close();
 					control.connect();
+				}
 
 				msg_msp_status msg = new msg_msp_status(1,2);
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);

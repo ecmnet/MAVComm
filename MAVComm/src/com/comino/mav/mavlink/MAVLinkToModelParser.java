@@ -82,6 +82,7 @@ import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.model.segment.Mocap;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSPMathUtils;
 
@@ -135,8 +136,7 @@ public class MAVLinkToModelParser {
 
 				model.mocap.flags= (int)mocap.flags;
 				model.mocap.fps= mocap.fps;
-				model.mocap.tms= mocap.tms;
-
+				model.mocap.tms= System.nanoTime()/1000;
 				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true);
 			}
 		});
@@ -147,6 +147,7 @@ public class MAVLinkToModelParser {
 				msg_msp_status status = (msg_msp_status)o;
 				model.sys.load_m = status.load / 4f;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
+				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
 
 			}
 		});

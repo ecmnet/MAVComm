@@ -100,7 +100,7 @@ public class Status extends Segment {
 
 	private static final String[] sensor_names = {
 
-		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","OPCV","SYSM","SLAM","BASE",
+		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE",
 
 	};
 
