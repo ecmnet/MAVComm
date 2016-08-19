@@ -282,9 +282,9 @@ public class MAVLinkToModelParser {
 				model.attitude.sy = MSPMathUtils.fromRad(sp[2]);
 				model.attitude.st = att.thrust;
 
-				model.attitude.srr = 0;
-				model.attitude.spr = 0;
-				model.attitude.syr = 0;
+				model.attitude.srr = MSPMathUtils.fromRad(att.body_roll_rate);
+				model.attitude.spr = MSPMathUtils.fromRad(att.body_pitch_rate);
+				model.attitude.syr = MSPMathUtils.fromRad(att.body_yaw_rate);
 
 				//System.out.println(att.toString());
 			}
