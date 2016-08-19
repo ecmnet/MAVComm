@@ -6,6 +6,7 @@
 	<property name="build.dir" value="bin" />
 	<property name="deploy.dir" value="/Volumes/pi" />
 	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib" />
+	<property name="deploy3.dir" value="/Users/ecmnet/PixHawk/java/MAVSlam/MAVSlam/lib" />
 
 	<target name="clean">
 			<mkdir dir="dis" />
@@ -91,6 +92,12 @@
 		<copy todir="${deploy2.dir}">
 			<fileset dir="${dis.dir}/" />
 		</copy>
+	</target>
+
+	<target name="MAVSlam" description="Copy build to MAVSlam">
+			<copy todir="${deploy3.dir}">
+				<fileset dir="${dis.dir}/" />
+			</copy>
 	</target>
 
 	<target name="raspberry" description="Copy build to raspberry">
