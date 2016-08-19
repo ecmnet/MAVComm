@@ -136,6 +136,8 @@ public class MAVLinkToModelParser {
 				model.mocap.flags= (int)mocap.flags;
 				model.mocap.fps= mocap.fps;
 				model.mocap.tms= mocap.tms;
+
+				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true);
 			}
 		});
 
