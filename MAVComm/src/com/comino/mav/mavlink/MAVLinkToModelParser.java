@@ -62,8 +62,9 @@ import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_manual_control;
-import org.mavlink.messages.lquac.msg_msp_mocap;
+
 import org.mavlink.messages.lquac.msg_msp_status;
+import org.mavlink.messages.lquac.msg_msp_vision;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_rc_channels;
@@ -82,7 +83,7 @@ import com.comino.msp.main.control.listener.IMSPModeChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
-import com.comino.msp.model.segment.Mocap;
+import com.comino.msp.model.segment.Vision;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSPMathUtils;
 
@@ -127,17 +128,19 @@ public class MAVLinkToModelParser {
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 
-		registerListener(msg_msp_mocap.class, new IMAVLinkListener() {
+		registerListener(msg_msp_vision.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
-				msg_msp_mocap mocap = (msg_msp_mocap)o;
-				model.mocap.vx= mocap.vx;
-				model.mocap.vy= mocap.vy;
-				model.mocap.vz= mocap.vz;
+				msg_msp_vision mocap = (msg_msp_vision)o;
+				model.vision.vx= mocap.vx;
+				model.vision.vy= mocap.vy;
+				model.vision.vz= mocap.vz;
 
-				model.mocap.flags= (int)mocap.flags;
-				model.mocap.fps= mocap.fps;
-				model.mocap.tms= System.nanoTime()/1000;
+				model.vision.dh= mocap.vh;
+
+				model.vision.flags= (int)mocap.flags;
+				model.vision.fps= mocap.fps;
+				model.vision.tms= System.nanoTime()/1000;
 				mocap_tms = System.currentTimeMillis();
 				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true);
 			}

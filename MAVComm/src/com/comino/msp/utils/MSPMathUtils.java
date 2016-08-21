@@ -68,4 +68,11 @@ public class MSPMathUtils {
 		return (float)(angle * toRad);
 	}
 
+	public static float[] rotateRad(float posx, float posy, float heading_rad) {
+		float[] rotated = new float[2];
+		rotated[0] =  posx * (float)Math.cos(heading_rad) + posy * (float)Math.sin(heading_rad);
+		rotated[1] = -posx * (float)Math.sin(heading_rad) + posy * (float)Math.cos(heading_rad);
+		return rotated;
+	}
+
 }

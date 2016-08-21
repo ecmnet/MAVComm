@@ -1,5 +1,5 @@
 /**
- * Generated class : msg_msp_mocap
+ * Generated class : msg_msp_vision
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
@@ -11,20 +11,20 @@ import java.io.IOException;
 import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
- * Class msg_msp_mocap
- * MSP Status message.
+ * Class msg_msp_vision
+ * MSP Vision
  **/
-public class msg_msp_mocap extends MAVLinkMessage {
-  public static final int MAVLINK_MSG_ID_MSP_MOCAP = 182;
-  private static final long serialVersionUID = MAVLINK_MSG_ID_MSP_MOCAP;
-  public msg_msp_mocap() {
+public class msg_msp_vision extends MAVLinkMessage {
+  public static final int MAVLINK_MSG_ID_MSP_VISION = 182;
+  private static final long serialVersionUID = MAVLINK_MSG_ID_MSP_VISION;
+  public msg_msp_vision() {
     this(1,1);
 }
-  public msg_msp_mocap(int sysId, int componentId) {
-    messageType = MAVLINK_MSG_ID_MSP_MOCAP;
+  public msg_msp_vision(int sysId, int componentId) {
+    messageType = MAVLINK_MSG_ID_MSP_VISION;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 28;
+    length = 32;
 }
 
   /**
@@ -44,6 +44,10 @@ public class msg_msp_mocap extends MAVLinkMessage {
    */
   public float vz;
   /**
+   * Initial heading
+   */
+  public float vh;
+  /**
    * FPS of mocap system
    */
   public float fps;
@@ -59,6 +63,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   vx = (float)dis.readFloat();
   vy = (float)dis.readFloat();
   vz = (float)dis.readFloat();
+  vh = (float)dis.readFloat();
   fps = (float)dis.readFloat();
   flags = (int)dis.readInt()&0x00FFFFFFFF;
 }
@@ -66,7 +71,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[8+28];
+  byte[] buffer = new byte[8+32];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFE);
   dos.writeByte(length & 0x00FF);
@@ -78,20 +83,21 @@ public byte[] encode() throws IOException {
   dos.writeFloat(vx);
   dos.writeFloat(vy);
   dos.writeFloat(vz);
+  dos.writeFloat(vh);
   dos.writeFloat(fps);
   dos.writeInt((int)(flags&0x00FFFFFFFF));
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 28);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 32);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[34] = crcl;
-  buffer[35] = crch;
+  buffer[38] = crcl;
+  buffer[39] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_MOCAP : " +   "  tms="+tms+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  fps="+fps+  "  flags="+flags;}
+return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  vh="+vh+  "  fps="+fps+  "  flags="+flags;}
 }

@@ -62,6 +62,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_HOME_POSITION = 242;
   public static int MAVLINK_MSG_ID_MISSION_ITEM = 39;
   public static int MAVLINK_MSG_ID_RAW_IMU = 27;
+  public static int MAVLINK_MSG_ID_MSP_VISION = 182;
   public static int MAVLINK_MSG_ID_HIGHRES_IMU = 105;
   public static int MAVLINK_MSG_ID_OPTICAL_FLOW = 100;
   public static int MAVLINK_MSG_ID_LANDING_TARGET = 149;
@@ -110,7 +111,6 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV = 63;
   public static int MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE = 103;
   public static int MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE = 70;
-  public static int MAVLINK_MSG_ID_MSP_MOCAP = 182;
   public static int MAVLINK_MSG_ID_VFR_HUD = 74;
   public static int MAVLINK_MSG_ID_OPTICAL_FLOW_RAD = 106;
   public static int MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED = 84;

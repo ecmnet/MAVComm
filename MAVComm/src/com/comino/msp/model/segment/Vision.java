@@ -35,7 +35,7 @@ package com.comino.msp.model.segment;
 
 import com.comino.msp.model.segment.generic.Segment;
 
-public class Mocap extends Segment {
+public class Vision extends Segment {
 
 	private static final long serialVersionUID = 270248566309263309L;
 
@@ -47,23 +47,28 @@ public class Mocap extends Segment {
 	public float vz = 0;
 
 	public int   flags = 0;
-	public float fps = 0;
+	public float fps   = 0;
+	public float dh    = 0;
 
 
-	public void set(Mocap a) {
+	public void set(Vision a) {
 		vx = a.vx;
 		vy = a.vy;
 		vz = a.vz;
+
+		dh = a.dh;
 
 		flags = a.flags;
 		fps   = a.fps;
 	}
 
-	public Mocap clone() {
-		Mocap a = new Mocap();
+	public Vision clone() {
+		Vision a = new Vision();
 		a.vx = vx;
 		a.vy = vy;
 		a.vz = vz;
+
+		a.dh = dh;
 
 		a.flags = flags;
 		a.fps = fps;
@@ -75,6 +80,8 @@ public class Mocap extends Segment {
 		vx = 0;
 		vy = 0;
 		vz = 0;
+
+		dh = 0;
 
 		flags = 0;
 		fps = 0;

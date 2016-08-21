@@ -200,6 +200,7 @@ import org.mavlink.messages.lquac.msg_ping;
 import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_mission_item;
 import org.mavlink.messages.lquac.msg_raw_imu;
+import org.mavlink.messages.lquac.msg_msp_vision;
 import org.mavlink.messages.lquac.msg_highres_imu;
 import org.mavlink.messages.lquac.msg_optical_flow;
 import org.mavlink.messages.lquac.msg_landing_target;
@@ -248,7 +249,6 @@ import org.mavlink.messages.lquac.msg_mission_request_partial_list;
 import org.mavlink.messages.lquac.msg_global_position_int_cov;
 import org.mavlink.messages.lquac.msg_vision_speed_estimate;
 import org.mavlink.messages.lquac.msg_rc_channels_override;
-import org.mavlink.messages.lquac.msg_msp_mocap;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
@@ -512,6 +512,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_raw_imu(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_MSP_VISION:
+      msg = new msg_msp_vision(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_HIGHRES_IMU:
       msg = new msg_highres_imu(sysId, componentId);
       msg.decode(dis);
@@ -702,10 +706,6 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:
       msg = new msg_rc_channels_override(sysId, componentId);
-      msg.decode(dis);
-      break;
-  case MAVLINK_MSG_ID_MSP_MOCAP:
-      msg = new msg_msp_mocap(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_VFR_HUD:
