@@ -42,6 +42,10 @@ public class Vision extends Segment {
 	public static final int MOCAP_VALID = 1;
 	public static final int MOCAP_COLLISION_WARNING = 2;
 
+	public float x = 0;
+	public float y = 0;
+	public float z = 0;
+
 	public float vx = 0;
 	public float vy = 0;
 	public float vz = 0;
@@ -52,6 +56,10 @@ public class Vision extends Segment {
 
 
 	public void set(Vision a) {
+		x  = a.x;
+		y  = a.y;
+		z  = a.z;
+
 		vx = a.vx;
 		vy = a.vy;
 		vz = a.vz;
@@ -64,6 +72,11 @@ public class Vision extends Segment {
 
 	public Vision clone() {
 		Vision a = new Vision();
+
+		a.x  = x;
+		a.y  = y;
+		a.z  = z;
+
 		a.vx = vx;
 		a.vy = vy;
 		a.vz = vz;
@@ -77,6 +90,10 @@ public class Vision extends Segment {
 
 
 	public void clear() {
+		x  = 0;
+		y  = 0;
+		z  = 0;
+
 		vx = 0;
 		vy = 0;
 		vz = 0;
