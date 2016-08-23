@@ -278,11 +278,12 @@ public class MAVLinkToModelParser {
 
 
 		registerListener(msg_attitude_target.class, new IMAVLinkListener() {
+			float[] sp = new float[3];
 			@Override
 			public void received(Object o) {
 				msg_attitude_target att = (msg_attitude_target)o;
 
-				float[] sp = MSPMathUtils.eulerAnglesByQuaternion(att.q);
+				MSPMathUtils.eulerAnglesByQuaternion(sp,att.q);
 
 				model.attitude.sr = MSPMathUtils.fromRad(sp[0]);
 				model.attitude.sp = MSPMathUtils.fromRad(sp[1]);

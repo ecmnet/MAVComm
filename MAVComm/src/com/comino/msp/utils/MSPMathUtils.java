@@ -52,12 +52,11 @@ public class MSPMathUtils {
 		return distance;
 	}
 
-	public static float[] eulerAnglesByQuaternion(float[] q) {
-		return new float[]{
-				(float)Math.atan2(2.0 * (q[0] * q[1] + q[2] * q[3]), 1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2])),
-				(float)Math.asin(2 * (q[0] * q[2] - q[3] * q[1])),
-				(float)Math.atan2(2.0 * (q[0] * q[3] + q[1] * q[2]), 1.0 - 2.0 * (q[2] * q[2] + q[3] * q[3])),
-		};
+	public static float[] eulerAnglesByQuaternion(float euler[], float[] q) {
+		euler[0] = (float)Math.atan2(2.0 * (q[0] * q[1] + q[2] * q[3]), 1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
+		euler[1] = (float)Math.asin(2 * (q[0] * q[2] - q[3] * q[1]));
+		euler[2] = (float)Math.atan2(2.0 * (q[0] * q[3] + q[1] * q[2]), 1.0 - 2.0 * (q[2] * q[2] + q[3] * q[3]));
+		return euler;
 	}
 
 	public static float fromRad(float radians) {
@@ -68,8 +67,7 @@ public class MSPMathUtils {
 		return (float)(angle * toRad);
 	}
 
-	public static float[] rotateRad(float posx, float posy, float heading_rad) {
-		float[] rotated = new float[2];
+	public static float[] rotateRad(float[] rotated, float posx, float posy, float heading_rad) {
 		rotated[0] =  posx * (float)Math.cos(heading_rad) + posy * (float)Math.sin(heading_rad);
 		rotated[1] = -posx * (float)Math.sin(heading_rad) + posy * (float)Math.cos(heading_rad);
 		return rotated;
