@@ -738,18 +738,9 @@ public class MAVLinkToModelParser {
 			if(!oldStatus.isStatus(Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
 
-			if(!oldStatus.isStatus(Status.MSP_MODE_ALTITUDE) && model.sys.isStatus(Status.MSP_MODE_ALTITUDE))
-				MSPLogger.getInstance().writeLocalMsg("Altitude hold enabled", MAV_SEVERITY.MAV_SEVERITY_INFO);
-			if(!oldStatus.isStatus(Status.MSP_MODE_POSITION) && model.sys.isStatus(Status.MSP_MODE_POSITION))
-				MSPLogger.getInstance().writeLocalMsg("Position hold enabled", MAV_SEVERITY.MAV_SEVERITY_INFO);
-			if(!oldStatus.isStatus(Status.MSP_MODE_OFFBOARD) && model.sys.isStatus(Status.MSP_MODE_OFFBOARD))
-				MSPLogger.getInstance().writeLocalMsg("Offboard enabled", MAV_SEVERITY.MAV_SEVERITY_INFO);
-
 			oldStatus.set(model.sys);
 
-
 		}
-
 	}
 
 }
