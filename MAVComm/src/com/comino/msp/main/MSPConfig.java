@@ -38,6 +38,7 @@ package com.comino.msp.main;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -87,15 +88,13 @@ public class MSPConfig {
 
 	public MSPConfig refreshProperties() {
 		try {
-			InputStream propStream = getClass().getClassLoader().getResourceAsStream(fileName);
+			InputStream propStream = new FileInputStream(fileName);
 			if(propStream!=null) {
 				prop.load(propStream);
-			propStream.close();
-			} else {
-				throw new IOException("Configuration file'"+fileName+"' not found.");
+			    propStream.close();
 			}
 		} catch(IOException io ) {
-			System.err.println(io.getMessage());
+			System.err.println("Configuration file'"+fileName+"' not found.");
 		}
 		return this;
 	}
