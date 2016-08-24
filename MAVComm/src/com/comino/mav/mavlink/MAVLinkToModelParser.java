@@ -140,7 +140,8 @@ public class MAVLinkToModelParser {
 				model.vision.y = mocap.y;
 				model.vision.z = mocap.z;
 
-				model.vision.dh= mocap.vh;
+				model.vision.dh= mocap.h;
+				model.vision.qual= mocap.quality;
 
 				model.vision.flags= (int)mocap.flags;
 				model.vision.fps= mocap.fps;

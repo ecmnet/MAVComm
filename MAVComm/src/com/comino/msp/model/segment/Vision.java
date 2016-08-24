@@ -53,6 +53,7 @@ public class Vision extends Segment {
 	public int   flags = 0;
 	public float fps   = 0;
 	public float dh    = 0;
+	public int   qual  = 0;
 
 
 	public void set(Vision a) {
@@ -65,6 +66,7 @@ public class Vision extends Segment {
 		vz = a.vz;
 
 		dh = a.dh;
+		qual = a.qual;
 
 		flags = a.flags;
 		fps   = a.fps;
@@ -82,6 +84,7 @@ public class Vision extends Segment {
 		a.vz = vz;
 
 		a.dh = dh;
+		a.qual = qual;
 
 		a.flags = flags;
 		a.fps = fps;
@@ -99,6 +102,7 @@ public class Vision extends Segment {
 		vz = 0;
 
 		dh = 0;
+		qual=0;
 
 		flags = 0;
 		fps = 0;
