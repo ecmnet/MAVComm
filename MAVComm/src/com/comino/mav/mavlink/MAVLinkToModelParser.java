@@ -311,6 +311,7 @@ public class MAVLinkToModelParser {
 				model.gps.hdop   = gps.eph/100f;
 				model.gps.latitude = gps.lat/1e7f;
 				model.gps.longitude = gps.lon/1e7f;
+				model.gps.altitude = (short)(gps.alt/1000);
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>6);
 
 			}

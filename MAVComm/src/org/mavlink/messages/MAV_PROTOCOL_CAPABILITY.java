@@ -60,4 +60,8 @@ public interface MAV_PROTOCOL_CAPABILITY {
      * Autopilot supports onboard compass calibration.
      */
     public final static int MAV_PROTOCOL_CAPABILITY_COMPASS_CALIBRATION = 4096;
+    /**
+     * Autopilot supports mavlink version 2.
+     */
+    public final static int MAV_PROTOCOL_CAPABILITY_MAVLINK2 = 8192;
 }
