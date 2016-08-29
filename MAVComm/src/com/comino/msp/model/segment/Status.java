@@ -49,6 +49,7 @@ public class Status extends Segment {
 	public static final int MSP_ACTIVE						= 2;
 	public static final int MSP_RC_ATTACHED					= 3;
 	public static final int MSP_JOY_ATTACHED			    = 4;
+	public static final int MSP_OFFBOARD_UPDATER_STARTED    = 5;
 
 	// TODO: Replace with PX4_NAVSTATES
 
@@ -71,12 +72,6 @@ public class Status extends Segment {
 	public static final int MSP_LANDED						= 24;
 	public static final int MSP_INAIR						= 25;
 	public static final int MSP_FREEFALL					= 26;
-
-	// MSP System status flags
-
-	public static final int MSP_HEALTH_OK					= 0;
-	public static final int MSP_PARAMETER_CHECK_OK			= 1;
-
 
 
 	// Low level sensors
@@ -116,8 +111,7 @@ public class Status extends Segment {
 	public int		basemode   = 0;
 	public int		custommode = 0;
 
-	public int     sys_status  = 0;
-	public int     msp_status  = 0;
+	public int     px4_status  = 0;
 
 
 	public float	load_m	   = 0;	  	//MSP
@@ -135,7 +129,7 @@ public class Status extends Segment {
 		imu_temp = s.imu_temp;
 		basemode = s.basemode;
 		custommode = s.custommode;
-		sys_status = s.sys_status;
+		px4_status = s.px4_status;
 
 		t_armed_ms = s.t_armed_ms;
 		t_boot_ms  = s.t_boot_ms;
@@ -176,20 +170,6 @@ public class Status extends Segment {
 		return true;
 	}
 
-	public void  setMSPStatus(int box, boolean val) {
-		if(val)
-			msp_status = (int) (status | (1<<box));
-		else
-			msp_status = (int) (status & ~(1<<box));
-	}
-
-	public boolean isMSPStatus(int ...box) {
-		for(int b : box)
-		  if((msp_status & (1<<b))==0)
-            return false;
-		return true;
-	}
-
 
 	public String getSensorString() {
 		String text=" ";
@@ -208,8 +188,13 @@ public class Status extends Segment {
 		error1        = 0;
 		t_armed_ms    = 0;
 		t_boot_ms     = 0;
-		sys_status    = 0;
+		px4_status    = 0;
 
+	}
+
+
+	public int getStatus() {
+		return status;
 	}
 
 

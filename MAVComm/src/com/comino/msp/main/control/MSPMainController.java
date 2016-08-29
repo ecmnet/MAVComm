@@ -34,6 +34,75 @@
 
 package com.comino.msp.main.control;
 
+import java.io.IOException;
+
+import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_CMD;
+import org.mavlink.messages.MSP_OFFBOARD;
+import org.mavlink.messages.lquac.msg_msp_command;
+
+import com.comino.mav.control.IMAVMSPController;
+import com.comino.msp.log.MSPLogger;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.main.offboard.OffboardPositionUpdater;
+import com.comino.msp.model.DataModel;
+
 public class MSPMainController {
+
+	private IMAVMSPController        control = null;
+	private OffboardPositionUpdater offboard = null;
+	private DataModel                  model = null;
+
+	public MSPMainController(IMAVMSPController control) {
+		this.control = control;
+		this.model   = control.getCurrentModel();
+		registerCommands();
+
+		offboard = new OffboardPositionUpdater(control);
+	}
+
+	private void registerCommands() {
+
+		// register MSP commands here
+
+		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_msp_command cmd = (msg_msp_command)o;
+				switch(cmd.command) {
+				case MSP_CMD.MSP_CMD_RESTART:
+					restartCompanion(cmd); break;
+//				case MSP_CMD.MSP_CMD_OFFBOARD:
+//					enableOffboardUpdater(cmd); break;
+				default:
+				MSPLogger.getInstance().writeLocalMsg("Unknown companion command "+cmd.command+" received");
+				}
+			}
+		});
+	}
+
+	private void restartCompanion(msg_msp_command cmd) {
+		executeConsoleCommand("reboot");
+	}
+
+	private void enableOffboardUpdater(msg_msp_command cmd) {
+		if((int)(cmd.param1)==MSP_OFFBOARD.MSP_OFFBOARD_ENABLE && !offboard.isRunning())
+			offboard.start();
+		else
+			offboard.stop();
+
+	}
+
+
+	// -----------------------------------------------------------------------------------------------helper
+
+	private void executeConsoleCommand(String command) {
+		try {
+		   Runtime.getRuntime().exec(command);
+		} catch (IOException e) {
+			MSPLogger.getInstance().writeLocalMsg("LINUX command '"+command+"' failed: "+e.getMessage(),
+					 MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+		}
+	}
 
 }

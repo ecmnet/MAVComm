@@ -11,6 +11,18 @@
               <entry value="99" name="MSP_CMD_RESTART">
                   <description>Reboot the MSP companion</description>
               </entry>
+              <entry value="70" name="MSP_CMD_OFFBOARD">
+                  <description>Enable/Disable offboard control</description>
+              </entry>
+            </enum>
+            <enum name="MSP_OFFBOARD">
+              <description>MSP Offboard control</description>
+              <entry value="0" name="MSP_OFFBOARD_DISABLE">
+                  <description>Reboot the MSP companion</description>
+              </entry>
+              <entry value="1" name="MSP_OFFBOARD_ENABLE">
+                  <description>Enable/Disable offboard control</description>
+              </entry>
            </enum>
       </enums>
 

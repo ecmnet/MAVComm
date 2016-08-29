@@ -12,4 +12,8 @@ public interface MSP_CMD {
      * Reboot the MSP companion
      */
     public final static int MSP_CMD_RESTART = 99;
+    /**
+     * Enable/Disable offboard control
+     */
+    public final static int MSP_CMD_OFFBOARD = 70;
 }
