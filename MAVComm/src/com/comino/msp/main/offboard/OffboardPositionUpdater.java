@@ -39,6 +39,7 @@ import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSPMathUtils;
 
@@ -53,15 +54,23 @@ public class OffboardPositionUpdater implements Runnable {
 
 	private float yaw = 0f;
 
-	private MSPLogger logger = null;
+	private MSPLogger logger;
+	private DataModel model;
 
 	public OffboardPositionUpdater(IMAVController control) {
 		this.control = control;
+		this.model   = control.getCurrentModel();
 		this.logger  = MSPLogger.getInstance();
 	}
 
 	public void start() {
 		isRunning = true;
+
+		this.x_pos = model.state.l_x;
+		this.y_pos = model.state.l_y;
+		this.z_pos = model.state.l_z;
+		this.yaw   = model.state.h;
+
 		new Thread(this).start();
 
 		try {

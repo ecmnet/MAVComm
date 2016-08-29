@@ -20,6 +20,7 @@
                   <param index="1">LocalNED.X (set to NAN to ignore)</param>
                   <param index="2">LocalNED.Y (set to NAN to ignore)</param>
                   <param index="3">LocalNED.Z (set to NAN to ignore)</param>
+                  <param index="4">Yaw (deg)  (set to NAN to ignore)</param>
               </entry>
             </enum>
             <enum name="MSP_OFFBOARD">

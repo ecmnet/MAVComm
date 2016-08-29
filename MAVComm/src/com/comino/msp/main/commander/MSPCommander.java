@@ -107,6 +107,8 @@ public class MSPCommander {
 				offboard.setNEDY(cmd.param2);
 			if(cmd.param3!=Float.NaN)
 				offboard.setNEDZ(cmd.param3);
+			if(cmd.param4!=Float.NaN)
+				offboard.setYaw(cmd.param4);
 		}
 	}
 
