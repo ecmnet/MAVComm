@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 
-package com.comino.msp.main.control;
+package com.comino.msp.main.commander;
 
 import java.io.IOException;
 
@@ -47,15 +47,17 @@ import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.offboard.OffboardPositionUpdater;
 import com.comino.msp.model.DataModel;
 
-public class MSPMainController {
+public class MSPCommander {
 
 	private IMAVMSPController        control = null;
 	private OffboardPositionUpdater offboard = null;
 	private DataModel                  model = null;
 
-	public MSPMainController(IMAVMSPController control) {
+	public MSPCommander(IMAVMSPController control) {
+
 		this.control = control;
 		this.model   = control.getCurrentModel();
+
 		registerCommands();
 
 		offboard = new OffboardPositionUpdater(control);
@@ -72,16 +74,20 @@ public class MSPMainController {
 				switch(cmd.command) {
 				case MSP_CMD.MSP_CMD_RESTART:
 					restartCompanion(cmd); break;
-//				case MSP_CMD.MSP_CMD_OFFBOARD:
-//					enableOffboardUpdater(cmd); break;
+					//				case MSP_CMD.MSP_CMD_OFFBOARD:
+					//					enableOffboardUpdater(cmd); break;
+				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
+					setOffboardPosition(cmd); break;
 				default:
-				MSPLogger.getInstance().writeLocalMsg("Unknown companion command "+cmd.command+" received");
+					MSPLogger.getInstance().writeLocalMsg("Unknown companion command "+cmd.command+" received");
 				}
 			}
 		});
 	}
 
 	private void restartCompanion(msg_msp_command cmd) {
+		MSPLogger.getInstance().writeLocalMsg("Companion rebooted",
+				MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
 		executeConsoleCommand("reboot");
 	}
 
@@ -93,15 +99,26 @@ public class MSPMainController {
 
 	}
 
+	private void setOffboardPosition(msg_msp_command cmd) {
+		if(offboard.isRunning()) {
+			if(cmd.param1!=Float.NaN)
+				offboard.setNEDX(cmd.param1);
+			if(cmd.param2!=Float.NaN)
+				offboard.setNEDY(cmd.param2);
+			if(cmd.param3!=Float.NaN)
+				offboard.setNEDZ(cmd.param3);
+		}
+	}
+
 
 	// -----------------------------------------------------------------------------------------------helper
 
 	private void executeConsoleCommand(String command) {
 		try {
-		   Runtime.getRuntime().exec(command);
+			Runtime.getRuntime().exec(command);
 		} catch (IOException e) {
 			MSPLogger.getInstance().writeLocalMsg("LINUX command '"+command+"' failed: "+e.getMessage(),
-					 MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+					MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
 		}
 	}
 

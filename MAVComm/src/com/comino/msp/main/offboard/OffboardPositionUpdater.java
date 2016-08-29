@@ -39,6 +39,7 @@ import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSPMathUtils;
 
 public class OffboardPositionUpdater implements Runnable {
@@ -66,7 +67,7 @@ public class OffboardPositionUpdater implements Runnable {
 		try {
 			Thread.sleep(50);
 		} catch (InterruptedException e) { }
-
+        control.getCurrentModel().sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, true);
 
 	}
 
@@ -127,7 +128,7 @@ public class OffboardPositionUpdater implements Runnable {
 				Thread.sleep(250);
 			} catch (InterruptedException e) { }
 		}
-
+	    control.getCurrentModel().sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
 		logger.writeLocalMsg("Offboard position updater stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 	}
 

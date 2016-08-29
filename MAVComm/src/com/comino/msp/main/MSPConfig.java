@@ -88,7 +88,7 @@ public class MSPConfig {
 
 	public MSPConfig refreshProperties() {
 		try {
-			InputStream propStream = new FileInputStream(fileName);
+			InputStream propStream = new FileInputStream("/home/up/"+fileName);
 			if(propStream!=null) {
 				prop.load(propStream);
 			    propStream.close();

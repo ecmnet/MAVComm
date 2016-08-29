@@ -44,7 +44,7 @@ import org.mavlink.messages.lquac.msg_msp_status;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.log.MSPLogger;
-import com.comino.msp.main.control.MSPMainController;
+import com.comino.msp.main.commander.MSPCommander;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.model.segment.Status;
 
@@ -55,24 +55,25 @@ public class StartUp implements Runnable {
 
 	private OperatingSystemMXBean osBean = null;
 	private MemoryMXBean mxBean = null;
-	private MSPMainController mspMainController;
+	private MSPCommander commander;
 
 	public StartUp(String[] args) {
 
 		config  = MSPConfig.getInstance("msp.properties");
-		System.out.println("MSPControlService version "+config.getVersion());
+		System.out.println("MSPService version "+config.getVersion());
 
 		if(args.length>0)
 			control = new MAVProxyController(true);
 		else
 			control = new MAVProxyController(false);
 
-		 osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
-		 mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
+		osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
+
 
 		MSPLogger.getInstance(control);
 
-		mspMainController = new MSPMainController(control);
+		commander = new MSPCommander(control);
 
 
 		// TODO 1.0: Start services if required
@@ -81,8 +82,8 @@ public class StartUp implements Runnable {
 
 		control.connect();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
-        Thread worker = new Thread(this);
-        worker.start();
+		Thread worker = new Thread(this);
+		worker.start();
 
 	}
 
@@ -103,7 +104,7 @@ public class StartUp implements Runnable {
 				Thread.sleep(2000);
 				if(!control.isConnected()) {
 					if(control.isConnected())
-					  control.close();
+						control.close();
 					control.connect();
 				}
 

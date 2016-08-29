@@ -13,6 +13,13 @@
               </entry>
               <entry value="70" name="MSP_CMD_OFFBOARD">
                   <description>Enable/Disable offboard control</description>
+                  <param index="1">enable/disable offboard</param>
+              </entry>
+              <entry value="71" name="MSP_CMD_OFFBOARD_SETLOCALPOS">
+                  <description>Set offboard position via MSP</description>
+                  <param index="1">LocalNED.X (set to NAN to ignore)</param>
+                  <param index="2">LocalNED.Y (set to NAN to ignore)</param>
+                  <param index="3">LocalNED.Z (set to NAN to ignore)</param>
               </entry>
             </enum>
             <enum name="MSP_OFFBOARD">
