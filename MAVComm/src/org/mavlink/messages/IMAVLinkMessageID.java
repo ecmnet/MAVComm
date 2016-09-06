@@ -128,6 +128,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_PARAM_SET = 23;
   public static int MAVLINK_MSG_ID_GPS_STATUS = 25;
   public static int MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT = 86;
+  public static int MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS = 93;
   public static int MAVLINK_MSG_ID_MANUAL_CONTROL = 69;
   public static int MAVLINK_MSG_ID_MESSAGE_INTERVAL = 244;
   public static int MAVLINK_MSG_ID_SCALED_PRESSURE = 29;
@@ -148,5 +149,4 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET = 139;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET = 89;
   public static int MAVLINK_MSG_ID_RESOURCE_REQUEST = 142;
-  public static int MAVLINK_MSG_ID_LANDING_MAP = 240;
 }

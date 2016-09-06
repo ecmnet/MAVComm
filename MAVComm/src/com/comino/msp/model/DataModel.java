@@ -40,6 +40,7 @@ import com.comino.msp.model.segment.Hud;
 import com.comino.msp.model.segment.Attitude;
 import com.comino.msp.model.segment.Battery;
 import com.comino.msp.model.segment.Debug;
+import com.comino.msp.model.segment.EstStatus;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.Imu;
 import com.comino.msp.model.segment.LogMessage;
@@ -81,6 +82,7 @@ public class DataModel extends Segment implements Serializable {
 	public   Debug		    debug = null;
 	public   LogMessage       msg = null;
 	public   Vision        vision = null;
+	public   EstStatus       est   = null;
 
 
 	public DataModel()  {
@@ -101,6 +103,7 @@ public class DataModel extends Segment implements Serializable {
 		this.debug          = new Debug();
 		this.msg            = new LogMessage();
 		this.vision         = new Vision();
+		this.est            = new EstStatus();
 
 
 	}
@@ -128,6 +131,7 @@ public class DataModel extends Segment implements Serializable {
 		this.tms            = m.tms;
 		this.msg            = m.msg.clone();
 		this.vision         = m.vision.clone();
+		this.est            = m.est.clone();
 	}
 
 
@@ -150,6 +154,7 @@ public class DataModel extends Segment implements Serializable {
 		this.tms = m.tms;
 		this.msg.set(m.msg);
 		this.vision.set(m.vision);
+		this.est.set(m.est);
 	}
 
 	public DataModel clone() {
@@ -174,5 +179,6 @@ public class DataModel extends Segment implements Serializable {
 		this.tms = 0;
 		this.msg.clear();
 		this.vision.clear();
+		this.est.clear();
 	}
 }

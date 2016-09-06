@@ -53,6 +53,7 @@ import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_distance_sensor;
+import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_extended_sys_state;
 import org.mavlink.messages.lquac.msg_global_position_int;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
@@ -388,6 +389,23 @@ public class MAVLinkToModelParser {
 
 				model.state.tms = ned.time_boot_ms*1000;
 
+			}
+		});
+
+		registerListener(msg_estimator_status.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_estimator_status est = (msg_estimator_status)o;
+                model.est.haglRatio         = est.hagl_ratio;
+                model.est.magRatio          = est.mag_ratio;
+                model.est.horizRatio        = est.pos_horiz_ratio;
+                model.est.vertRatio         = est.pos_vert_ratio;
+                model.est.posHorizAccuracy  = est.pos_horiz_accuracy;
+                model.est.posVertAccurracy  = est.pos_vert_accuracy;
+                model.est.flags             = est.flags;
+                model.est.tasRatio          = est.tas_ratio;
+                model.est.velRatio          = est.vel_ratio;
+                model.est.tms = est.time_usec * 1000;
 			}
 		});
 

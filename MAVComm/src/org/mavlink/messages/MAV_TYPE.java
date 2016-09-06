@@ -69,7 +69,7 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_OCTOROTOR = 14;
     /**
-     * Octorotor
+     * Tricopter
      */
     public final static int MAV_TYPE_TRICOPTER = 15;
     /**
@@ -77,7 +77,7 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_FLAPPING_WING = 16;
     /**
-     * Flapping wing
+     * Kite
      */
     public final static int MAV_TYPE_KITE = 17;
     /**

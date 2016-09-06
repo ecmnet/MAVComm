@@ -125,6 +125,7 @@ import org.mavlink.messages.lquac.msg_play_tune;
 import org.mavlink.messages.lquac.msg_param_set;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
+import org.mavlink.messages.lquac.msg_hil_actuator_controls;
 import org.mavlink.messages.lquac.msg_manual_control;
 import org.mavlink.messages.lquac.msg_message_interval;
 import org.mavlink.messages.lquac.msg_scaled_pressure;
@@ -145,7 +146,6 @@ import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
-import org.mavlink.messages.lquac.msg_landing_map;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_setup_signing;
@@ -266,6 +266,7 @@ import org.mavlink.messages.lquac.msg_play_tune;
 import org.mavlink.messages.lquac.msg_param_set;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
+import org.mavlink.messages.lquac.msg_hil_actuator_controls;
 import org.mavlink.messages.lquac.msg_manual_control;
 import org.mavlink.messages.lquac.msg_message_interval;
 import org.mavlink.messages.lquac.msg_scaled_pressure;
@@ -286,7 +287,6 @@ import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
-import org.mavlink.messages.lquac.msg_landing_map;
 /**
  * Class MAVLinkMessageFactory
  * Generate MAVLink message classes from byte array
@@ -776,6 +776,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_set_position_target_global_int(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS:
+      msg = new msg_hil_actuator_controls(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_MANUAL_CONTROL:
       msg = new msg_manual_control(sysId, componentId);
       msg.decode(dis);
@@ -854,10 +858,6 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_RESOURCE_REQUEST:
       msg = new msg_resource_request(sysId, componentId);
-      msg.decode(dis);
-      break;
-  case MAVLINK_MSG_ID_LANDING_MAP:
-      msg = new msg_landing_map(sysId, componentId);
       msg.decode(dis);
       break;
   default:
