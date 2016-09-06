@@ -421,9 +421,18 @@ public class MAVLinkToModelParser {
 				model.target_state.l_y = ned.y;
 				model.target_state.l_z = ned.z;
 
+				model.target_state.h   = MSPMathUtils.fromRad(ned.yaw);
+
 				model.target_state.l_vx = ned.vx;
 				model.target_state.l_vy = ned.vy;
 				model.target_state.l_vz = ned.vz;
+
+				model.target_state.vh  = MSPMathUtils.fromRad(ned.yaw_rate);
+
+				model.target_state.l_ax = ned.afx;
+				model.target_state.l_ay = ned.afy;
+				model.target_state.l_az = ned.afz;
+
 				model.target_state.c_frame = ned.coordinate_frame;
 
 				model.target_state.tms = ned.time_boot_ms*1000;
