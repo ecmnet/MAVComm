@@ -48,7 +48,7 @@ public class EstStatus extends Segment {
 	public float vertRatio  = 0;
 
 	public float posHorizAccuracy = 0;
-	public float posVertAccurracy = 0;
+	public float posVertAccuracy  = 0;
 
 	public int flags = 0;
 
@@ -61,7 +61,7 @@ public class EstStatus extends Segment {
 		this.vertRatio   = a.vertRatio;
 
 		this.posHorizAccuracy = a.posHorizAccuracy;
-		this.posVertAccurracy = a.posVertAccurracy;
+		this.posVertAccuracy = a.posVertAccuracy;
 
 		this.flags = a.flags;
 
@@ -85,7 +85,7 @@ public class EstStatus extends Segment {
 		velRatio = 0;
 
 		posHorizAccuracy = 0;
-		posVertAccurracy = 0;
+		posVertAccuracy = 0;
 		flags = 0;
 	}
 

@@ -401,10 +401,11 @@ public class MAVLinkToModelParser {
                 model.est.horizRatio        = est.pos_horiz_ratio;
                 model.est.vertRatio         = est.pos_vert_ratio;
                 model.est.posHorizAccuracy  = est.pos_horiz_accuracy;
-                model.est.posVertAccurracy  = est.pos_vert_accuracy;
+                model.est.posVertAccuracy   = est.pos_vert_accuracy;
                 model.est.flags             = est.flags;
                 model.est.tasRatio          = est.tas_ratio;
                 model.est.velRatio          = est.vel_ratio;
+
                 model.est.tms = est.time_usec * 1000;
 			}
 		});
@@ -423,6 +424,7 @@ public class MAVLinkToModelParser {
 				model.target_state.l_vx = ned.vx;
 				model.target_state.l_vy = ned.vy;
 				model.target_state.l_vz = ned.vz;
+				model.target_state.c_frame = ned.coordinate_frame;
 
 				model.target_state.tms = ned.time_boot_ms*1000;
 

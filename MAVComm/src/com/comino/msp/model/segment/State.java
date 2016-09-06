@@ -76,6 +76,8 @@ public class State extends Segment {
 	public float    g_vy	= 0;
 	public float    g_vz	= 0;
 
+	public int      c_frame = 0;
+
 
 	// helpers
 
@@ -120,6 +122,8 @@ public class State extends Segment {
 		t.g_vy	= g_vy;
 		t.g_vz	= g_vz;
 
+		t.c_frame = c_frame;
+
 
 		return t;
 	}
@@ -146,6 +150,8 @@ public class State extends Segment {
 		g_vx	= t.g_vx;
 		g_vy	= t.g_vy;
 		g_vz	= t.g_vz;
+
+		c_frame = t.c_frame;
 	}
 
 	public void clear() {
@@ -168,6 +174,8 @@ public class State extends Segment {
 		g_vx	= 0;
 		g_vy	= 0;
 		g_vz	= 0;
+
+		c_frame = 0;
 	}
 
 	public void print(String header) {
