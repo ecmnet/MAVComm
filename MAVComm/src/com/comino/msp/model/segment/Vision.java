@@ -42,17 +42,17 @@ public class Vision extends Segment {
 	public static final int MOCAP_VALID = 1;
 	public static final int MOCAP_COLLISION_WARNING = 2;
 
-	public float x = 0;
-	public float y = 0;
-	public float z = 0;
+	public float x = Float.NaN;
+	public float y = Float.NaN;
+	public float z = Float.NaN;
 
-	public float vx = 0;
-	public float vy = 0;
-	public float vz = 0;
+	public float vx = Float.NaN;
+	public float vy = Float.NaN;
+	public float vz = Float.NaN;
 
 	public int   flags = 0;
-	public float fps   = 0;
-	public float dh    = 0;
+	public float fps   = Float.NaN;
+	public float dh    = Float.NaN;
 	public int   qual  = 0;
 
 

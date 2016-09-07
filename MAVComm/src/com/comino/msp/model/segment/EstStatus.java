@@ -40,12 +40,12 @@ public class EstStatus extends Segment {
 
 	private static final long serialVersionUID = -8204904128449328395L;
 
-	public float haglRatio  = 0;
-	public float magRatio   = 0;
-	public float tasRatio   = 0;
-	public float velRatio   = 0;
-	public float horizRatio = 0;
-	public float vertRatio  = 0;
+	public float haglRatio  = Float.NaN;
+	public float magRatio   = Float.NaN;
+	public float tasRatio   = Float.NaN;
+	public float velRatio   = Float.NaN;
+	public float horizRatio = Float.NaN;
+	public float vertRatio  = Float.NaN;
 
 	public float posHorizAccuracy = 0;
 	public float posVertAccuracy  = 0;

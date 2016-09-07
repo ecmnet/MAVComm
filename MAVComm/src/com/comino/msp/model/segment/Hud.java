@@ -40,20 +40,20 @@ public class Hud extends Segment {
 
 	private static final long serialVersionUID = -1123989934184248219L;
 
-	public float aX     = 0;	// angleX
-	public float aY     = 0;	// angleY
+	public float aX     = Float.NaN;	// angleX
+	public float aY     = Float.NaN;	// angleY
 
-	public float h      = 0;	// heading (compass)
-	public float al     = 0;	// altitude above ground
-	public float ag     = 0;	// est.altitude above sealevel
-	public float at     = 0;    // altitde terrain
-	public float ar     = 0;    // altitde relative
-	public float bc     = 0;    // bottom clearance
-	public float ap     = 0;    // pressure altitude
+	public float h      = Float.NaN;	// heading (compass)
+	public float al     = Float.NaN;	// altitude above ground
+	public float ag     = Float.NaN;	// est.altitude above sealevel
+	public float at     = Float.NaN;    // altitde terrain
+	public float ar     = Float.NaN;    // altitde relative
+	public float bc     = Float.NaN;    // bottom clearance
+	public float ap     = Float.NaN;    // pressure altitude
 
-	public float s    	= 0;	// ground speed
-	public float vs     = 0;    // vertical speed
-	public float as     = 0;    // airspeed
+	public float s    	= Float.NaN;	// ground speed
+	public float vs     = Float.NaN;    // vertical speed
+	public float as     = Float.NaN;    // airspeed
 
 
 	public void set(Hud a) {

@@ -6,23 +6,23 @@ public class Attitude extends Segment {
 
 	private static final long serialVersionUID = -5331001446960382012L;
 
-	public float r        	 = 0;	// roll in degrees
-	public float p           = 0;	// pitch in degrees
-	public float y           = 0;	// yaw in degrees
-	public float t           = 0;
+	public float r        	 = Float.NaN;	// roll in degrees
+	public float p           = Float.NaN;	// pitch in degrees
+	public float y           = Float.NaN;	// yaw in degrees
+	public float t           = Float.NaN;
 
-	public float rr        	 = 0;	// rollrate in degrees/s
-	public float pr          = 0;	// pitchrate in degrees/s
-	public float yr          = 0;	// yawrate in degrees/s
+	public float rr        	 = Float.NaN;	// rollrate in degrees/s
+	public float pr          = Float.NaN;	// pitchrate in degrees/s
+	public float yr          = Float.NaN;	// yawrate in degrees/s
 
-	public float sr        	 = 0;	// setpoint roll in degrees
-	public float sp          = 0;	// setpoint pitch in degrees
-	public float sy          = 0;	// setpoint yaw in degrees
-	public float st          = 0;
+	public float sr        	 = Float.NaN;	// setpoint roll in degrees
+	public float sp          = Float.NaN;	// setpoint pitch in degrees
+	public float sy          = Float.NaN;	// setpoint yaw in degrees
+	public float st          = Float.NaN;
 
-	public float srr          = 0;	// setpoint rollrate in degrees/s
-	public float spr          = 0;	// setpoint pitchrate in degrees/s
-	public float syr          = 0;	// setpoint yawrate in degrees/s
+	public float srr          = Float.NaN;	// setpoint rollrate in degrees/s
+	public float spr          = Float.NaN;	// setpoint pitchrate in degrees/s
+	public float syr          = Float.NaN;	// setpoint yawrate in degrees/s
 
 
 	public void set(Attitude a) {

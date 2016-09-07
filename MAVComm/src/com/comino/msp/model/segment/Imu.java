@@ -39,17 +39,17 @@ public class Imu extends Segment {
 
 	private static final long serialVersionUID = -7271311099121759585L;
 
-	public float accx = 0;
-	public float accy = 0;
-	public float accz = 0;
+	public float accx = Float.NaN;;
+	public float accy = Float.NaN;;
+	public float accz = Float.NaN;;
 
-	public float gyrox = 0;
-	public float gyroy = 0;
-	public float gyroz = 0;
+	public float gyrox = Float.NaN;;
+	public float gyroy = Float.NaN;;
+	public float gyroz = Float.NaN;;
 
-	public float magx = 0;
-	public float magy = 0;
-	public float magz = 0;
+	public float magx = Float.NaN;;
+	public float magy = Float.NaN;;
+	public float magz = Float.NaN;;
 
 	public float abs_pressure = 0;
 

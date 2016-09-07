@@ -104,8 +104,8 @@ public class Status extends Segment {
 	private int     status     = 0;
 
 	public int      error1     = 0;
-	public float    load_p     = 0;
-	public float   drops_p     = 0;
+	public float    load_p     = Float.NaN;
+	public float   drops_p     = Float.NaN;
 	public int    imu_temp	   = 0;
 
 	public int		basemode   = 0;
@@ -114,7 +114,7 @@ public class Status extends Segment {
 	public int     px4_status  = 0;
 
 
-	public float	load_m	   = 0;	  	//MSP
+	public float	load_m	   = Float.NaN;	  	//MSP
 	public long     t_armed_ms = 0;
 	public long     t_boot_ms  = 0;
 

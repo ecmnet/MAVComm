@@ -40,12 +40,12 @@ public class Raw extends Segment {
 
 	private static final long serialVersionUID = -1123989934184248219L;
 
-	public float di     = 0;		// LIDAR distance
-	public float fX     = 0;		// Flow integrated X
-	public float fY     = 0;		// Flow integrated Y
+	public float di     = Float.NaN;		// LIDAR distance
+	public float fX     = Float.NaN;		// Flow integrated X
+	public float fY     = Float.NaN;		// Flow integrated Y
 	public float fq		= 0;
-	public float fd		= 0;		// Flow distance
-	public float dicov	= 0;		// LIDAR covariance
+	public float fd		= Float.NaN;		// Flow distance
+	public float dicov	= Float.NaN;		// LIDAR covariance
 
 
 

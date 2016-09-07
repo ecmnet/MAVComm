@@ -40,12 +40,12 @@ public class Vibration extends Segment {
 
 	private static final long serialVersionUID = -1177166201561030663L;
 
-	public float 	vibx = 0;
-	public float 	viby = 0;
-	public float 	vibz = 0;
-	public float    cli0 = 0;
-	public float    cli1 = 0;
-	public float    cli2 = 0;
+	public float 	vibx = Float.NaN;
+	public float 	viby = Float.NaN;
+	public float 	vibz = Float.NaN;
+	public float    cli0 = Float.NaN;
+	public float    cli1 = Float.NaN;
+	public float    cli2 = Float.NaN;
 
 
 	public void set(Vibration a) {

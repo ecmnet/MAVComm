@@ -51,30 +51,30 @@ public class State extends Segment {
 
 	// positioning actual
 
-	public float	l_x=0;			//  x-position in m (Roll)
-	public float    l_y=0;			//  y-position in m (Pitch)
-	public float    l_z=0;			//  z-position in m (Altitude)
+	public float	l_x=Float.NaN;		//  x-position in m (Roll)
+	public float    l_y=Float.NaN;			//  y-position in m (Pitch)
+	public float    l_z=Float.NaN;		//  z-position in m (Altitude)
 
-	public float    h=0;			// heading in radiant
+	public float    h=Float.NaN;			// heading in radiant
 
-	public float    l_vx=0;			// gative x speed in m/s
-	public float 	l_vy=0;			// gative y speed in m/s
-	public float	l_vz=0;			// gative z speed in m/s
+	public float    l_vx=Float.NaN;			// gative x speed in m/s
+	public float 	l_vy=Float.NaN;		// gative y speed in m/s
+	public float	l_vz=Float.NaN;		// gative z speed in m/s
 
-	public float	vh=0;			// gative heading speed in radiant/s
+	public float	vh=Float.NaN;			// gative heading speed in radiant/s
 
-	public float    l_ax=0;			// gative x speed in m/s^2
-	public float 	l_ay=0;			// gative y speed in m/s^2
-	public float	l_az=0;			// gative z speed in m/s^2
+	public float    l_ax=Float.NaN;		// gative x speed in m/s^2
+	public float 	l_ay=Float.NaN;			// gative y speed in m/s^2
+	public float	l_az=Float.NaN;		// gative z speed in m/s^2
 
-	public float	ah=0;			// gative heading speed in radiant/s^2
+	public float	ah=Float.NaN;			// gative heading speed in radiant/s^2
 
-	public float	g_lon	= 0;
-	public float    g_lat 	= 0;
-	public float    g_alt	= 0;
-	public float    g_vx	= 0;
-	public float    g_vy	= 0;
-	public float    g_vz	= 0;
+	public float	g_lon	= Float.NaN;
+	public float    g_lat 	= Float.NaN;
+	public float    g_alt	= Float.NaN;
+	public float    g_vx	= Float.NaN;
+	public float    g_vy	= Float.NaN;
+	public float    g_vz	= Float.NaN;
 
 	public int      c_frame = 0;
 
