@@ -106,7 +106,7 @@ public class Status extends Segment {
 	public int      error1     = 0;
 	public float    load_p     = Float.NaN;
 	public float   drops_p     = Float.NaN;
-	public int    imu_temp	   = 0;
+	public float   imu_temp	   = Float.NaN;
 
 	public int		basemode   = 0;
 	public int		custommode = 0;
@@ -115,8 +115,8 @@ public class Status extends Segment {
 
 
 	public float	load_m	   = Float.NaN;	  	//MSP
-	public long     t_armed_ms = 0;
-	public long     t_boot_ms  = 0;
+	public float    t_armed_ms = Float.NaN;
+	public float    t_boot_ms  = Float.NaN;
 
 
 	public void set(Status s) {

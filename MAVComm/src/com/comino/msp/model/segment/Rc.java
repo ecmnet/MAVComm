@@ -40,12 +40,12 @@ public class Rc extends Segment {
 
 	private static final long serialVersionUID = -1177166201561030663L;
 
-	public short  rssi = 0;
+	public float  rssi =  Float.NaN;
 
-	public short 	s0 = 0;
-	public short 	s1 = 0;
-	public short 	s2 = 0;
-	public short 	s3 = 0;
+	public float 	s0 = Float.NaN;
+	public float 	s1 = Float.NaN;
+	public float 	s2 = Float.NaN;
+	public float 	s3 = Float.NaN;
 
 
 	public void set(Rc a) {

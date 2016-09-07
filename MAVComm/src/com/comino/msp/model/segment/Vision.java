@@ -53,7 +53,7 @@ public class Vision extends Segment {
 	public int   flags = 0;
 	public float fps   = Float.NaN;
 	public float dh    = Float.NaN;
-	public int   qual  = 0;
+	public float qual  = Float.NaN;
 
 
 	public void set(Vision a) {

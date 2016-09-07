@@ -49,7 +49,7 @@ public class GPS extends Segment {
 
 	public int		flags		= 0;
 
-	public byte   	numsat 		= 0;
+	public float   	numsat 		= Float.NaN;
 	public float 	latitude 	= Float.NaN;
 	public float 	longitude 	= Float.NaN;
 	public short  	heading 	= 0;
