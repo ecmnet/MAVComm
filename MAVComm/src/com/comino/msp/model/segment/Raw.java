@@ -43,7 +43,7 @@ public class Raw extends Segment {
 	public float di     = Float.NaN;		// LIDAR distance
 	public float fX     = Float.NaN;		// Flow integrated X
 	public float fY     = Float.NaN;		// Flow integrated Y
-	public float fq		= 0;
+	public float fq		= Float.NaN;
 	public float fd		= Float.NaN;		// Flow distance
 	public float dicov	= Float.NaN;		// LIDAR covariance
 
