@@ -47,8 +47,8 @@ public class EstStatus extends Segment {
 	public float horizRatio = Float.NaN;
 	public float vertRatio  = Float.NaN;
 
-	public float posHorizAccuracy = 0;
-	public float posVertAccuracy  = 0;
+	public float posHorizAccuracy = Float.NaN;
+	public float posVertAccuracy  = Float.NaN;
 
 	public int flags = 0;
 
