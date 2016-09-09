@@ -51,8 +51,6 @@ public class Status extends Segment {
 	public static final int MSP_JOY_ATTACHED			    = 4;
 	public static final int MSP_OFFBOARD_UPDATER_STARTED    = 5;
 
-	// TODO: Replace with PX4_NAVSTATES
-
 	public static final int MSP_ARMED						= 8;
 	public static final int MSP_MODE_MANUAL			        = 9;
 	public static final int MSP_MODE_STABILIZED			    = 10;

@@ -71,8 +71,7 @@ public class StartUp implements Runnable {
 
 		commander = new MSPCommander(control);
 
-
-		// TODO 1.0: Start services if required
+		// Start services if required
 
 		control.start();
 

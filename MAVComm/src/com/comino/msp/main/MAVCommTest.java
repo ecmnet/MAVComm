@@ -78,7 +78,6 @@ public class MAVCommTest implements Runnable {
 				if(control.isConnected())
 				    System.out.println(control.getCurrentModel().sys.imu_temp);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
