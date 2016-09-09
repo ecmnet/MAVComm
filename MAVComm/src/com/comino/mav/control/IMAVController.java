@@ -34,14 +34,13 @@
 
 package com.comino.mav.control;
 
-import java.util.List;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPModeChangedListener;
+import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -71,7 +70,7 @@ public interface IMAVController {
 	public boolean sendMAVLinkMessage(MAVLinkMessage msg);
 	public boolean sendMSPLinkCmd(int command, float...params);
 
-	public void addModeChangeListener(IMSPModeChangedListener listener);
+	public void addStatusChangeListener(IMSPStatusChangedListener listener);
 	public void addMAVLinkListener(IMAVLinkListener listener);
 	public void addMAVMessageListener(IMAVMessageListener listener);
 

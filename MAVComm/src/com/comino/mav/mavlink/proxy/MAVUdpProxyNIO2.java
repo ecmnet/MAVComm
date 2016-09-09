@@ -42,10 +42,8 @@ import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;

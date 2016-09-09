@@ -34,7 +34,6 @@
 package com.comino.mav.comm.highspeedserial;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
@@ -44,7 +43,7 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPModeChangedListener;
+import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -209,8 +208,8 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 
 
 	@Override
-	public void addModeChangeListener(IMSPModeChangedListener listener) {
-		parser.addModeChangeListener(listener);
+	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
+		parser.addStatusChangeListener(listener);
 
 	}
 

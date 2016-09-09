@@ -35,17 +35,12 @@
 package com.comino.mav.control.impl;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
-import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
@@ -58,7 +53,7 @@ import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPModeChangedListener;
+import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -309,8 +304,8 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	@Override
-	public void addModeChangeListener(IMSPModeChangedListener listener) {
-		comm.addModeChangeListener(listener);
+	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
+		comm.addStatusChangeListener(listener);
 
 	}
 

@@ -34,19 +34,15 @@
 
 package com.comino.msp.main;
 
-import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
-import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.commander.MSPCommander;
-import com.comino.msp.main.control.listener.IMAVLinkListener;
-import com.comino.msp.model.segment.Status;
 
 public class StartUp implements Runnable {
 

@@ -39,12 +39,9 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.util.LinkedList;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;

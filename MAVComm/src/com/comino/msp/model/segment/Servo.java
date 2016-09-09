@@ -34,8 +34,6 @@
 
 package com.comino.msp.model.segment;
 
-import java.util.Arrays;
-
 import com.comino.msp.model.segment.generic.Segment;
 
 public class Servo extends Segment {

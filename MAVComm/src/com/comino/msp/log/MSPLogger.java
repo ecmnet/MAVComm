@@ -33,9 +33,6 @@
 
 package com.comino.msp.log;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mavlink.messages.MAV_SEVERITY;
 
 import com.comino.mav.control.IMAVController;

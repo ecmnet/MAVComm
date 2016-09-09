@@ -39,7 +39,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
@@ -50,7 +49,7 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPModeChangedListener;
+import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -137,8 +136,8 @@ public class MAVUdpCommIO implements IMAVComm {
 	}
 
 	@Override
-	public void addModeChangeListener(IMSPModeChangedListener listener) {
-		parser.addModeChangeListener(listener);
+	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
+		parser.addStatusChangeListener(listener);
 
 	}
 

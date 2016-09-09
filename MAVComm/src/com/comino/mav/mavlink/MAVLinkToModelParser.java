@@ -43,10 +43,8 @@ import java.util.Map;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_MODE_FLAG_DECODE_POSITION;
-import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MAV_STATE;
 import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
-import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_attitude;
 import org.mavlink.messages.lquac.msg_attitude_target;
@@ -63,7 +61,6 @@ import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_manual_control;
-
 import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_msp_vision;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
@@ -77,14 +74,12 @@ import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_vibration;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPModeChangedListener;
+import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
-import com.comino.msp.model.segment.Vision;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSPMathUtils;
 
@@ -103,7 +98,7 @@ public class MAVLinkToModelParser {
 	private List<IMAVLinkListener> mavListener 			 = null;
 	private List<IMAVMessageListener> msgListener        = null;
 
-	private List<IMSPModeChangedListener> modeListener = null;
+	private List<IMSPStatusChangedListener> modeListener = null;
 
 	private boolean isRunning = false;
 	private long    startUpAt = 0;
@@ -122,7 +117,7 @@ public class MAVLinkToModelParser {
 		this.link = link;
 		this.mavList   = new HashMap<Class<?>,MAVLinkMessage>();
 
-		this.modeListener = new ArrayList<IMSPModeChangedListener>();
+		this.modeListener = new ArrayList<IMSPStatusChangedListener>();
 		this.mavListener = new ArrayList<IMAVLinkListener>();
 		this.msgListener = new ArrayList<IMAVMessageListener>();
 
@@ -669,7 +664,7 @@ public class MAVLinkToModelParser {
 		isRunning = false;
 	}
 
-	public void addModeChangeListener(IMSPModeChangedListener listener) {
+	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
 		modeListener.add(listener);
 	}
 
@@ -727,8 +722,10 @@ public class MAVLinkToModelParser {
 					if((System.currentTimeMillis() - gpos_tms)>1000)
 						model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
 
-					if((System.currentTimeMillis() - mocap_tms)>1000)
+					if((System.currentTimeMillis() - mocap_tms)>1000) {
 					     model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
+					     mocap_tms = System.currentTimeMillis();
+					}
 
 
 					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&
@@ -762,7 +759,7 @@ public class MAVLinkToModelParser {
 	private synchronized void notifyStatusChange() {
 		if(!oldStatus.isEqual(model.sys) && (System.currentTimeMillis() - startUpAt)>2000) {
 
-			for(IMSPModeChangedListener listener : modeListener)
+			for(IMSPStatusChangedListener listener : modeListener)
 				listener.update(oldStatus, model.sys);
 
 			if(!oldStatus.isStatus(Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))

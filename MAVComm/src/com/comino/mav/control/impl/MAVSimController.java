@@ -35,18 +35,14 @@
 package com.comino.mav.control.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_SEVERITY;
 
 import com.comino.mav.control.IMAVController;
-import com.comino.mav.control.IMAVMSPController;
-import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPModeChangedListener;
+import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -58,7 +54,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 	DataModel model = null;
 	ArrayList<LogMessage>					msgList;
 	private List<IMAVMessageListener> msgListener        = null;
-	private ArrayList<IMSPModeChangedListener> modeListener;
+	private ArrayList<IMSPStatusChangedListener> modeListener;
 
 
 
@@ -68,7 +64,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 		collector = new ModelCollectorService(model);
 		msgList = new ArrayList<LogMessage>();
 		msgListener = new ArrayList<IMAVMessageListener>();
-		modeListener = new ArrayList<IMSPModeChangedListener>();
+		modeListener = new ArrayList<IMSPStatusChangedListener>();
 
 
 
@@ -114,7 +110,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 	}
 
 	@Override
-	public void addModeChangeListener(IMSPModeChangedListener listener) {
+	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
 		this.modeListener.add(listener);
 
 	}
@@ -183,7 +179,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, true);
 
 			if(!old.isEqual(model.sys)) {
-				for(IMSPModeChangedListener listener : modeListener) {
+				for(IMSPStatusChangedListener listener : modeListener) {
 					listener.update(old, model.sys);
 				}
 			}

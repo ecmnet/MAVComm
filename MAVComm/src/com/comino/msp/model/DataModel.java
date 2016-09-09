@@ -36,15 +36,14 @@ package com.comino.msp.model;
 
 import java.io.Serializable;
 
-import com.comino.msp.model.segment.Hud;
 import com.comino.msp.model.segment.Attitude;
 import com.comino.msp.model.segment.Battery;
 import com.comino.msp.model.segment.Debug;
 import com.comino.msp.model.segment.EstStatus;
 import com.comino.msp.model.segment.GPS;
+import com.comino.msp.model.segment.Hud;
 import com.comino.msp.model.segment.Imu;
 import com.comino.msp.model.segment.LogMessage;
-import com.comino.msp.model.segment.Vision;
 import com.comino.msp.model.segment.Raw;
 import com.comino.msp.model.segment.Rc;
 import com.comino.msp.model.segment.Servo;
@@ -52,6 +51,7 @@ import com.comino.msp.model.segment.State;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.model.segment.Telemetry;
 import com.comino.msp.model.segment.Vibration;
+import com.comino.msp.model.segment.Vision;
 import com.comino.msp.model.segment.generic.Segment;
 
 
