@@ -38,7 +38,7 @@ import java.io.IOException;
 
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_CMD;
-import org.mavlink.messages.MSP_OFFBOARD;
+import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -78,8 +78,6 @@ public class MSPCommander {
 					//					enableOffboardUpdater(cmd); break;
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
 					setOffboardPosition(cmd); break;
-				default:
-					MSPLogger.getInstance().writeLocalMsg("Unknown companion command "+cmd.command+" received");
 				}
 			}
 		});
@@ -92,7 +90,7 @@ public class MSPCommander {
 	}
 
 	private void enableOffboardUpdater(msg_msp_command cmd) {
-		if((int)(cmd.param1)==MSP_OFFBOARD.MSP_OFFBOARD_ENABLE && !offboard.isRunning())
+		if((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE && !offboard.isRunning())
 			offboard.start();
 		else
 			offboard.stop();

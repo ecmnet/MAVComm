@@ -18,6 +18,11 @@ public interface MSP_CMD {
      */
     public final static int MSP_CMD_OFFBOARD = 70;
     /**
+     * Enable/Disable offboard control
+     * PARAM 1 : enable/disable offboard
+     */
+    public final static int MSP_CMD_VISION = 71;
+    /**
      * Set offboard position via MSP
      * PARAM 1 : LocalNED.X (set to NAN to ignore)
      * PARAM 2 : LocalNED.Y (set to NAN to ignore)
