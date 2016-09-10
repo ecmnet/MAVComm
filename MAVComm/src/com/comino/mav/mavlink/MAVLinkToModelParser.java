@@ -94,7 +94,8 @@ public class MAVLinkToModelParser {
 
 	private IMAVComm link = null;
 
-	private HashMap<Class<?>,IMAVLinkListener> listeners = null;
+	private HashMap<Class<?>,List<IMAVLinkListener>> listeners = null;
+
 	private List<IMAVLinkListener> mavListener 			 = null;
 	private List<IMAVMessageListener> msgListener        = null;
 
@@ -121,7 +122,7 @@ public class MAVLinkToModelParser {
 		this.mavListener = new ArrayList<IMAVLinkListener>();
 		this.msgListener = new ArrayList<IMAVMessageListener>();
 
-		listeners = new HashMap<Class<?>,IMAVLinkListener>();
+		listeners = new HashMap<Class<?>,List<IMAVLinkListener>>();
 
 
 		registerListener(msg_msp_vision.class, new IMAVLinkListener() {
@@ -679,11 +680,17 @@ public class MAVLinkToModelParser {
 
 
 	private void registerListener(Class<?> clazz, IMAVLinkListener listener) {
-		listeners.put(clazz, listener);
+		List<IMAVLinkListener> listenerList = null;
+		if(!listeners.containsKey(clazz)) {
+			listenerList = new ArrayList<IMAVLinkListener>();
+		    listeners.put(clazz, listenerList);
+		} else
+			listenerList = listeners.get(clazz);
+		listenerList.add(listener);
 	}
 
 	private class MAVLinkParserWorker implements Runnable {
-		MAVLinkMessage msg = null;
+		MAVLinkMessage msg = null; List<IMAVLinkListener> listenerList = null;
 
 		public void run() {
 			startUpAt = System.currentTimeMillis();
@@ -704,9 +711,11 @@ public class MAVLinkToModelParser {
 						model.sys.tms = System.nanoTime()/1000;
 
 						mavList.put(msg.getClass(),msg);
-						IMAVLinkListener listener = listeners.get(msg.getClass());
-						if(listener!=null)
-							listener.received(msg);
+						listenerList = listeners.get(msg.getClass());
+						if(listenerList!=null) {
+							for(IMAVLinkListener listener : listenerList)
+							    listener.received(msg);
+						}
 
 						if(mavListener!=null) {
 							for(IMAVLinkListener mavlistener : mavListener)
