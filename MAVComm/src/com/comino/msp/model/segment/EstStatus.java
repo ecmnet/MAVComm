@@ -40,6 +40,14 @@ public class EstStatus extends Segment {
 
 	private static final long serialVersionUID = -8204904128449328395L;
 
+	public static final int    SENSOR_BARO = 0;
+	public static final int	   SENSOR_GPS = 1;
+	public static final int	   SENSOR_LIDAR = 2;
+	public static final int    SENSOR_FLOW = 3;
+	public static final int    SENSOR_SONAR = 4;
+	public static final int    SENSOR_VISION = 5;
+	public static final int    SENSOR_MOCAP = 6;
+
 	public float haglRatio  = Float.NaN;
 	public float magRatio   = Float.NaN;
 	public float tasRatio   = Float.NaN;
@@ -71,6 +79,13 @@ public class EstStatus extends Segment {
 		EstStatus at = new EstStatus();
 		at.set(this);
 		return at;
+	}
+
+	public boolean isFlagSet(int ...box) {
+		for(int b : box)
+		  if((flags & (1<<b))==0)
+            return false;
+		return true;
 	}
 
 	//--------------------------------------------------------------------------------------------------------
