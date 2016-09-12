@@ -161,11 +161,9 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_vfr_hud hud   = (msg_vfr_hud)o;
-				model.hud.h  = hud.heading;
 				model.hud.s  = hud.groundspeed;
 				model.hud.vs = hud.climb;
 				model.hud.as = hud.airspeed;
-				model.state.h  = hud.heading;
 			}
 		});
 
@@ -258,6 +256,8 @@ public class MAVLinkToModelParser {
 				model.attitude.r = MSPMathUtils.fromRad(att.roll);
 				model.attitude.p = MSPMathUtils.fromRad(att.pitch);
 				model.attitude.y = MSPMathUtils.fromRad(att.yaw);
+				model.hud.h      = model.attitude.y;
+				model.state.h    = model.attitude.y;
 
 				model.attitude.rr = MSPMathUtils.fromRad(att.rollspeed);
 				model.attitude.pr = MSPMathUtils.fromRad(att.pitchspeed);
