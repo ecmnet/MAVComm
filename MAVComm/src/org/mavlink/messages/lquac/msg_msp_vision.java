@@ -24,7 +24,7 @@ public class msg_msp_vision extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_VISION;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 45;
+    length = 49;
 }
 
   /**
@@ -68,6 +68,10 @@ public class msg_msp_vision extends MAVLinkMessage {
    */
   public long flags;
   /**
+   * Error counter
+   */
+  public long errors;
+  /**
    * Quality of estimation
    */
   public int quality;
@@ -85,13 +89,14 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   h = (float)dis.readFloat();
   fps = (float)dis.readFloat();
   flags = (int)dis.readInt()&0x00FFFFFFFF;
+  errors = (int)dis.readInt()&0x00FFFFFFFF;
   quality = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[8+45];
+  byte[] buffer = new byte[8+49];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFE);
   dos.writeByte(length & 0x00FF);
@@ -109,19 +114,20 @@ public byte[] encode() throws IOException {
   dos.writeFloat(h);
   dos.writeFloat(fps);
   dos.writeInt((int)(flags&0x00FFFFFFFF));
+  dos.writeInt((int)(errors&0x00FFFFFFFF));
   dos.writeByte(quality&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 45);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 49);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[51] = crcl;
-  buffer[52] = crch;
+  buffer[55] = crcl;
+  buffer[56] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h="+h+  "  fps="+fps+  "  flags="+flags+  "  quality="+quality;}
+return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h="+h+  "  fps="+fps+  "  flags="+flags+  "  errors="+errors+  "  quality="+quality;}
 }

@@ -55,6 +55,8 @@ public class Vision extends Segment {
 	public float dh    = Float.NaN;
 	public float qual  = Float.NaN;
 
+	public int   errors = 0;
+
 
 	public void set(Vision a) {
 		x  = a.x;
@@ -64,6 +66,7 @@ public class Vision extends Segment {
 		vx = a.vx;
 		vy = a.vy;
 		vz = a.vz;
+		errors = a.errors;
 
 		dh = a.dh;
 		qual = a.qual;
@@ -82,6 +85,8 @@ public class Vision extends Segment {
 		a.vx = vx;
 		a.vy = vy;
 		a.vz = vz;
+
+		a.errors = errors;
 
 		a.dh = dh;
 		a.qual = qual;

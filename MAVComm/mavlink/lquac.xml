@@ -75,6 +75,7 @@
                <field type="float"         name="fps">FPS of mocap system</field>
                <field type="uint64_t"      name="tms">Timestamp</field>
                <field type="uint32_t"      name="flags">Info flags</field>
+               <field type="uint32_t"      name="errors">Error counter</field>
            </message>
       </messages>
 </mavlink>

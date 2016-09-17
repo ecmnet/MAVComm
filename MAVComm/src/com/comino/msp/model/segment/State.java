@@ -57,15 +57,16 @@ public class State extends Segment {
 
 	public float    h=Float.NaN;		// heading in radiant
 
-	public float    l_vx=Float.NaN;		// gative x speed in m/s
-	public float 	l_vy=Float.NaN;		// gative y speed in m/s
-	public float	l_vz=Float.NaN;		// gative z speed in m/s
+	public float    l_vx=Float.NaN;		//  x speed in m/s
+	public float 	l_vy=Float.NaN;		//  y speed in m/s
+	public float	l_vz=Float.NaN;		//  z speed in m/s
 
-	public float	vh=Float.NaN;		// gative heading speed in radiant/s
+	public float	vh=Float.NaN;		//  heading speed in radiant/s
+	public float	v=Float.NaN;		//  ground speed in m/s
 
-	public float    l_ax=Float.NaN;		// gative x speed in m/s^2
-	public float 	l_ay=Float.NaN;			// gative y speed in m/s^2
-	public float	l_az=Float.NaN;		// gative z speed in m/s^2
+	public float    l_ax=Float.NaN;		//  x acceleration in m/s^2
+	public float 	l_ay=Float.NaN;		//  y acceleration in m/s^2
+	public float	l_az=Float.NaN;		//  z acceleration in m/s^2
 
 	public float	ah=Float.NaN;		// gative heading speed in radiant/s^2
 
@@ -103,7 +104,8 @@ public class State extends Segment {
 		t.l_x		= l_x;
 		t.l_y		= l_y;
 		t.l_z		= l_z;
-		t.h		= h;
+		t.h		    = h;
+		t.v         = v;
 
 		t.l_vx	= l_vx;
 		t.l_vy	= l_vy;
@@ -134,6 +136,8 @@ public class State extends Segment {
 		l_y		= t.l_y;
 		l_z		= t.l_z;
 		h		= t.h;
+		v       = t.v;
+
 		l_vx	= t.l_vx;
 		l_vy	= t.l_vy;
 		l_vz	= t.l_vz;
@@ -174,6 +178,8 @@ public class State extends Segment {
 		g_vx	= 0;
 		g_vy	= 0;
 		g_vz	= 0;
+
+		v       = 0;
 
 		c_frame = 0;
 	}

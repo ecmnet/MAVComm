@@ -72,6 +72,7 @@ import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_system_time;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_vibration;
+import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -124,7 +125,6 @@ public class MAVLinkToModelParser {
 
 		listeners = new HashMap<Class<?>,List<IMAVLinkListener>>();
 
-
 		registerListener(msg_msp_vision.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
@@ -139,6 +139,7 @@ public class MAVLinkToModelParser {
 
 				model.vision.dh= mocap.h;
 				model.vision.qual= mocap.quality;
+				model.vision.errors = (int)mocap.errors;
 
 				model.vision.flags= (int)mocap.flags;
 				model.vision.fps= mocap.fps;
@@ -253,15 +254,15 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_attitude att = (msg_attitude)o;
 
-				model.attitude.r = MSPMathUtils.fromRad(att.roll);
-				model.attitude.p = MSPMathUtils.fromRad(att.pitch);
-				model.attitude.y = MSPMathUtils.fromRad(att.yaw);
-				model.hud.h      = model.attitude.y;
-				model.state.h    = model.attitude.y;
+				model.attitude.r = att.roll;
+				model.attitude.p = att.pitch;
+				model.attitude.y = att.yaw;
+				model.hud.h      = MSPMathUtils.fromRad(model.attitude.y);
+				model.state.h    = model.hud.h;
 
-				model.attitude.rr = MSPMathUtils.fromRad(att.rollspeed);
-				model.attitude.pr = MSPMathUtils.fromRad(att.pitchspeed);
-				model.attitude.yr = MSPMathUtils.fromRad(att.yawspeed);
+				model.attitude.rr = att.rollspeed;
+				model.attitude.pr = att.pitchspeed;
+				model.attitude.yr = att.yawspeed;
 
 				model.attitude.tms  = att.time_boot_ms*1000;
 
@@ -283,14 +284,14 @@ public class MAVLinkToModelParser {
 
 				MSPMathUtils.eulerAnglesByQuaternion(sp,att.q);
 
-				model.attitude.sr = MSPMathUtils.fromRad(sp[0]);
-				model.attitude.sp = MSPMathUtils.fromRad(sp[1]);
-				model.attitude.sy = MSPMathUtils.fromRad(sp[2]);
+				model.attitude.sr = sp[0];
+				model.attitude.sp = sp[1];
+				model.attitude.sy = sp[2];
 				model.attitude.st = att.thrust;
 
-				model.attitude.srr = MSPMathUtils.fromRad(att.body_roll_rate);
-				model.attitude.spr = MSPMathUtils.fromRad(att.body_pitch_rate);
-				model.attitude.syr = MSPMathUtils.fromRad(att.body_yaw_rate);
+				model.attitude.srr = att.body_roll_rate;
+				model.attitude.spr = att.body_pitch_rate;
+				model.attitude.syr = att.body_yaw_rate;
 
 				//System.out.println(att.toString());
 			}
@@ -364,6 +365,8 @@ public class MAVLinkToModelParser {
 				model.state.l_vy = ned.vy;
 				model.state.l_vz = ned.vz;
 
+				model.state.v = (float)Math.sqrt( ned.vx* ned.vx +  ned.vy* ned.vy);
+
 				model.state.tms = ned.time_boot_ms*1000;
 
 			}
@@ -381,6 +384,8 @@ public class MAVLinkToModelParser {
 				model.state.l_vx = ned.vx;
 				model.state.l_vy = ned.vy;
 				model.state.l_vz = ned.vz;
+
+				model.state.v = (float)Math.sqrt( ned.vx* ned.vx +  ned.vy* ned.vy);
 
 				model.state.tms = ned.time_boot_ms*1000;
 

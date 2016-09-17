@@ -6,23 +6,23 @@ public class Attitude extends Segment {
 
 	private static final long serialVersionUID = -5331001446960382012L;
 
-	public float r        	 = Float.NaN;	// roll in degrees
-	public float p           = Float.NaN;	// pitch in degrees
-	public float y           = Float.NaN;	// yaw in degrees
+	public float r        	 = Float.NaN;	// roll in rad
+	public float p           = Float.NaN;	// pitch in rad
+	public float y           = Float.NaN;	// yaw in rad
 	public float t           = Float.NaN;
 
-	public float rr        	 = Float.NaN;	// rollrate in degrees/s
-	public float pr          = Float.NaN;	// pitchrate in degrees/s
-	public float yr          = Float.NaN;	// yawrate in degrees/s
+	public float rr        	 = Float.NaN;	// rollrate in rad/s
+	public float pr          = Float.NaN;	// pitchrate in rad/s
+	public float yr          = Float.NaN;	// yawrate in rad/s
 
-	public float sr        	 = Float.NaN;	// setpoint roll in degrees
-	public float sp          = Float.NaN;	// setpoint pitch in degrees
-	public float sy          = Float.NaN;	// setpoint yaw in degrees
+	public float sr        	 = Float.NaN;	// setpoint roll in rad
+	public float sp          = Float.NaN;	// setpoint pitch in rad
+	public float sy          = Float.NaN;	// setpoint yaw in rad
 	public float st          = Float.NaN;
 
-	public float srr          = Float.NaN;	// setpoint rollrate in degrees/s
-	public float spr          = Float.NaN;	// setpoint pitchrate in degrees/s
-	public float syr          = Float.NaN;	// setpoint yawrate in degrees/s
+	public float srr          = Float.NaN;	// setpoint rollrate in rad/s
+	public float spr          = Float.NaN;	// setpoint pitchrate in rad/s
+	public float syr          = Float.NaN;	// setpoint yawrate in rad/s
 
 
 	public void set(Attitude a) {
