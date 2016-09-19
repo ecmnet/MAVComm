@@ -741,7 +741,7 @@ public class MAVLinkToModelParser {
 					}
 
 
-					if((System.nanoTime()/1000) > (model.sys.tms+5000000) &&
+					if((System.nanoTime()/1000) > (model.sys.tms+1000000) &&
 							model.sys.isStatus(Status.MSP_CONNECTED)) {
 
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
