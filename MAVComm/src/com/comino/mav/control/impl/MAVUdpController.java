@@ -34,6 +34,8 @@
 
 package com.comino.mav.control.impl;
 
+import org.mavlink.messages.lquac.msg_system_time;
+
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 

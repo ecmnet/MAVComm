@@ -34,6 +34,7 @@
 
 package com.comino.mav.mavlink;
 
+import java.io.IOException;
 import java.nio.channels.ByteChannel;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,6 +71,7 @@ import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_statustext;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_system_time;
+import org.mavlink.messages.lquac.msg_timesync;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_vibration;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
@@ -585,6 +587,33 @@ public class MAVLinkToModelParser {
 
 		});
 
+		registerListener(msg_system_time.class, new IMAVLinkListener() {
+
+			@Override
+			public void received(Object o) {
+
+				// TODO: Time sync
+
+//				msg_system_time time = (msg_system_time)o;
+//				msg_timesync sync = new msg_timesync(1,1);
+//				sync.tc1 = 2*(System.currentTimeMillis()*1000000L - time.time_unix_usec*1000);
+//				sync.ts1 = 0L;
+//				try {
+//					link.write(sync);
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//
+//				if(time.time_unix_usec/1000000 != System.currentTimeMillis()/1000)
+//					System.out.println("PX4="+time.time_unix_usec/1000000L+
+//					" UP="+(System.currentTimeMillis()/1000L)+" DIFF="+
+//					(time.time_unix_usec/1000000L - System.currentTimeMillis()/1000L));
+//				else
+//					System.out.println("TIME ok");
+			}
+
+		});
+
 
 		registerListener(msg_sys_status.class, new IMAVLinkListener() {
 			@Override
@@ -753,7 +782,6 @@ public class MAVLinkToModelParser {
 						model.sys.tms = System.nanoTime()/1000;
 						Thread.sleep(50);
 					}
-
 
 					if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
 							model.sys.isStatus(Status.MSP_READY)) {

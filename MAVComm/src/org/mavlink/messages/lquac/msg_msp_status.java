@@ -24,13 +24,17 @@ public class msg_msp_status extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 44;
+    length = 52;
 }
 
   /**
-   * MAVComm version running
+   * Boot time ms
    */
   public long uptime_ms;
+  /**
+   * Unix time us
+   */
+  public long unix_time_us;
   /**
    * AMA0 communication errors
    */
@@ -92,6 +96,7 @@ public class msg_msp_status extends MAVLinkMessage {
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
   uptime_ms = (long)dis.readLong();
+  unix_time_us = (long)dis.readLong();
   com_error = (int)dis.readInt()&0x00FFFFFFFF;
   status = (int)dis.readInt()&0x00FFFFFFFF;
   load = (int)dis.readUnsignedByte()&0x00FF;
@@ -107,7 +112,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[8+44];
+  byte[] buffer = new byte[8+52];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFE);
   dos.writeByte(length & 0x00FF);
@@ -116,6 +121,7 @@ public byte[] encode() throws IOException {
   dos.writeByte(componentId & 0x00FF);
   dos.writeByte(messageType & 0x00FF);
   dos.writeLong(uptime_ms);
+  dos.writeLong(unix_time_us);
   dos.writeInt((int)(com_error&0x00FFFFFFFF));
   dos.writeInt((int)(status&0x00FFFFFFFF));
   dos.writeByte(load&0x00FF);
@@ -129,15 +135,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 44);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 52);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[50] = crcl;
-  buffer[51] = crch;
+  buffer[58] = crcl;
+  buffer[59] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms+  "  com_error="+com_error+  "  status="+status+  "  load="+load+  "  memory="+memory+  "  version="+getVersion()+  "  arch="+getArch();}
+return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms+  "  unix_time_us="+unix_time_us+  "  com_error="+com_error+  "  status="+status+  "  load="+load+  "  memory="+memory+  "  version="+getVersion()+  "  arch="+getArch();}
 }

@@ -39,6 +39,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
@@ -109,10 +110,10 @@ public class MAVUdpCommNIO implements IMAVComm {
 				msg.isValid = true;
 				write(msg);
 
-				msg_system_time time = new msg_system_time(255,0);
-				time.time_unix_usec = System.currentTimeMillis()/1000L;
-				time.isValid = true;
-				write(time);
+//				msg_system_time time = new msg_system_time(1,1);
+//				time.time_unix_usec = Instant.now().toEpochMilli()*1000L;
+//				time.isValid = true;
+//				write(time);
 
 				parser.start(channel);
 				return true;

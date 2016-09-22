@@ -42,6 +42,8 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_statustext;
+import org.mavlink.messages.lquac.msg_system_time;
+import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
@@ -107,6 +109,7 @@ public class MAVProxyController implements IMAVMSPController {
 			proxy = new MAVUdpProxyNIO("172.168.178.2",14550,"172.168.178.1",14555);
 			peerAddress = "172.168.178.2";
 			System.out.println("Proxy Controller loaded ");
+
 		}
 		comm.addMAVLinkListener(proxy);
 	}
@@ -224,7 +227,6 @@ public class MAVProxyController implements IMAVMSPController {
 	}
 
 
-
 	private class MAVLinkProxyWorker implements Runnable {
 
 		public void run() {
@@ -286,13 +288,16 @@ public class MAVProxyController implements IMAVMSPController {
 		while(true) {
 			try {
 				Thread.sleep(500);
-				if(!control.isConnected())
+				if(!control.isConnected()) {
 					control.connect();
+
 
 				// Example to send MAVLinkMessages from MSP
 				//		           msg_msp_status sta = new msg_msp_status();
 				//		           sta.load = 50;
 				//		           control.proxy.write(sta);
+
+				}
 
 			} catch (InterruptedException e) {
 				e.printStackTrace();
