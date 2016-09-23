@@ -89,6 +89,8 @@ import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
 
+	private static int TIME_SYNC_CYCLE_MS 				= 100;
+
 
 	private MAVLinkStream stream;
 	private DataModel model;
@@ -793,7 +795,8 @@ public class MAVLinkToModelParser {
 						Thread.sleep(50);
 					}
 
-					if((System.currentTimeMillis() - time_offset_tms) > 100  && link.isSerial()) {
+					if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
+							&& link.isSerial()) {
 						time_offset_tms = System.currentTimeMillis();
 						msg_timesync sync_s = new msg_timesync(1,1);
 						sync_s.tc1 = 0;
