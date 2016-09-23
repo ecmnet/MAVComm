@@ -38,6 +38,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
 import org.mavlink.messages.lquac.msg_msp_status;
+import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
@@ -103,15 +104,10 @@ public class StartUp implements Runnable {
 					control.connect();
 				}
 
-				msg_msp_status msg = new msg_msp_status(1,2);
-				msg.load = (int)(osBean.getSystemLoadAverage()*100);
-				msg.memory = (int)(mxBean.getHeapMemoryUsage().getUsed() * 100 /mxBean.getHeapMemoryUsage().getMax());
-				msg.com_error = control.getErrorCount();
-				msg.uptime_ms = System.currentTimeMillis() - tms;
-				msg.status = control.getCurrentModel().sys.getStatus();
-				msg.setVersion(config.getVersion());
-				msg.setArch(osBean.getArch());
-				control.sendMAVLinkMessage(msg);
+				msg_timesync sync = new msg_timesync(1,1);
+				sync.tc1 = 0;
+				sync.ts1 = 0L;
+				control.sendMAVLinkMessage(sync);
 
 			} catch (Exception e) {
 				control.close();

@@ -65,6 +65,8 @@ public interface IMAVComm {
 
 	public boolean isConnected();
 
+	public boolean isSerial();
+
 
 	public void writeMessage(LogMessage m);
 

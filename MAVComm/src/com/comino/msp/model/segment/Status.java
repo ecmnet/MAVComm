@@ -116,6 +116,8 @@ public class Status extends Segment {
 	public float    t_armed_ms = Float.NaN;
 	public float    t_boot_ms  = Float.NaN;
 
+	public long     t_offset_ms = 0;
+
 
 	public void set(Status s) {
 		sensors  = s.sensors;
@@ -131,6 +133,8 @@ public class Status extends Segment {
 
 		t_armed_ms = s.t_armed_ms;
 		t_boot_ms  = s.t_boot_ms;
+
+		t_offset_ms = s.t_offset_ms;
 	}
 
 
@@ -138,6 +142,10 @@ public class Status extends Segment {
 		Status f = new Status();
 		f.set(this);
 		return f;
+	}
+
+	public long getCurrentSyncTimeMS() {
+		return System.currentTimeMillis() + t_offset_ms;
 	}
 
 	public void  setSensor(int box, boolean val) {

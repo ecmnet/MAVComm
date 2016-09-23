@@ -278,4 +278,9 @@ public class MAVSerialComm implements IMAVComm {
 
 	}
 
+	@Override
+	public boolean isSerial() {
+		return true;
+	}
+
 }

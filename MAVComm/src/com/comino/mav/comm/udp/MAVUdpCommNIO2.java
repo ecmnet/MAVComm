@@ -217,6 +217,11 @@ public class MAVUdpCommNIO2 implements IMAVComm {
 
 	}
 
+	@Override
+	public boolean isSerial() {
+		return false;
+	}
+
 	public boolean isConnected() {
 		return isConnected;
 	}

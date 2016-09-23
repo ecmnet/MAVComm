@@ -111,6 +111,9 @@ public class MAVLinkToModelParser {
 	private long    gpos_tms = 0;
 	private long    mocap_tms = 0;
 
+	private long    time_offset_ns   = 0;
+	private long    time_offset_tms  = 0;
+
 	private LogMessage lastMessage = null;
 
 	private Status oldStatus = new Status();
@@ -398,17 +401,17 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_estimator_status est = (msg_estimator_status)o;
-                model.est.haglRatio         = est.hagl_ratio;
-                model.est.magRatio          = est.mag_ratio;
-                model.est.horizRatio        = est.pos_horiz_ratio;
-                model.est.vertRatio         = est.pos_vert_ratio;
-                model.est.posHorizAccuracy  = est.pos_horiz_accuracy;
-                model.est.posVertAccuracy   = est.pos_vert_accuracy;
-                model.est.flags             = est.flags;
-                model.est.tasRatio          = est.tas_ratio;
-                model.est.velRatio          = est.vel_ratio;
+				model.est.haglRatio         = est.hagl_ratio;
+				model.est.magRatio          = est.mag_ratio;
+				model.est.horizRatio        = est.pos_horiz_ratio;
+				model.est.vertRatio         = est.pos_vert_ratio;
+				model.est.posHorizAccuracy  = est.pos_horiz_accuracy;
+				model.est.posVertAccuracy   = est.pos_vert_accuracy;
+				model.est.flags             = est.flags;
+				model.est.tasRatio          = est.tas_ratio;
+				model.est.velRatio          = est.vel_ratio;
 
-                model.est.tms = est.time_usec * 1000;
+				model.est.tms = est.time_usec * 1000;
 			}
 		});
 
@@ -521,7 +524,7 @@ public class MAVLinkToModelParser {
 				rssi_old = (short)rc.rssi;
 
 				model.sys.setStatus(Status.MSP_RC_ATTACHED, (model.rc.rssi>0));
-//				model.sys.setStatus(Status.MSP_RC_ATTACHED, (true));
+				//				model.sys.setStatus(Status.MSP_RC_ATTACHED, (true));
 
 				model.rc.s0 = rc.chan1_raw < 65534 ? (short)rc.chan1_raw : 1500;
 				model.rc.s1 = rc.chan2_raw < 65534 ? (short)rc.chan2_raw : 1500;
@@ -587,31 +590,38 @@ public class MAVLinkToModelParser {
 
 		});
 
-		registerListener(msg_system_time.class, new IMAVLinkListener() {
+		registerListener(msg_timesync.class, new IMAVLinkListener() {
 
 			@Override
 			public void received(Object o) {
+				try {
 
-				// TODO: Time sync
+					if(!link.isSerial())
+						return;
 
-//				msg_system_time time = (msg_system_time)o;
-//				msg_timesync sync = new msg_timesync(1,1);
-//				sync.tc1 = 2*(System.currentTimeMillis()*1000000L - time.time_unix_usec*1000);
-//				sync.ts1 = 0L;
-//				try {
-//					link.write(sync);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//
-//				if(time.time_unix_usec/1000000 != System.currentTimeMillis()/1000)
-//					System.out.println("PX4="+time.time_unix_usec/1000000L+
-//					" UP="+(System.currentTimeMillis()/1000L)+" DIFF="+
-//					(time.time_unix_usec/1000000L - System.currentTimeMillis()/1000L));
-//				else
-//					System.out.println("TIME ok");
+					long now_ns = System.nanoTime();
+					msg_timesync sync = (msg_timesync)o;
+					if(sync.tc1==0) {
+						msg_timesync sync_s = new msg_timesync(1,1);
+						sync_s.tc1 = now_ns;
+						sync_s.ts1 = sync.ts1;
+						link.write(sync_s);
+						return;
+					} else if (sync.tc1 > 0) {
+						long offset_ns = (sync.ts1 + now_ns - sync.tc1 * 2) / 2;
+						long dt = time_offset_ns - offset_ns;
+
+						if (Math.abs(dt) > 10000000) {
+							time_offset_ns = offset_ns;
+							System.out.println("[sys]  Clock skew detected: "+dt);
+						} else
+							time_offset_ns = (long)((0.6 * offset_ns) + 0.4 * time_offset_ns);
+						model.sys.t_offset_ms = time_offset_ns / 1000000;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-
 		});
 
 
@@ -717,7 +727,7 @@ public class MAVLinkToModelParser {
 		List<IMAVLinkListener> listenerList = null;
 		if(!listeners.containsKey(clazz)) {
 			listenerList = new ArrayList<IMAVLinkListener>();
-		    listeners.put(clazz, listenerList);
+			listeners.put(clazz, listenerList);
 		} else
 			listenerList = listeners.get(clazz);
 		listenerList.add(listener);
@@ -748,7 +758,7 @@ public class MAVLinkToModelParser {
 						listenerList = listeners.get(msg.getClass());
 						if(listenerList!=null) {
 							for(IMAVLinkListener listener : listenerList)
-							    listener.received(msg);
+								listener.received(msg);
 						}
 
 						if(mavListener!=null) {
@@ -765,8 +775,8 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
 
 					if((System.currentTimeMillis() - mocap_tms)>1000) {
-					     model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
-					     mocap_tms = System.currentTimeMillis();
+						model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
+						mocap_tms = System.currentTimeMillis();
 					}
 
 
@@ -781,6 +791,14 @@ public class MAVLinkToModelParser {
 						link.close(); link.open();
 						model.sys.tms = System.nanoTime()/1000;
 						Thread.sleep(50);
+					}
+
+					if((System.currentTimeMillis() - time_offset_tms) > 100  && link.isSerial()) {
+						time_offset_tms = System.currentTimeMillis();
+						msg_timesync sync_s = new msg_timesync(1,1);
+						sync_s.tc1 = 0;
+						sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
+						link.write(sync_s);
 					}
 
 					if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&

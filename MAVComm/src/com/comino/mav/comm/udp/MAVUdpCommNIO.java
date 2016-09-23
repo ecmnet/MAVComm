@@ -160,6 +160,10 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 	}
 
+	@Override
+	public boolean isSerial() {
+		return false;
+	}
 
 	public boolean isConnected() {
 		return parser.isConnected();

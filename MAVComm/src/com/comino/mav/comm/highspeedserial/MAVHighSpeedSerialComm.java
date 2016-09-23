@@ -100,6 +100,11 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 	}
 
 	@Override
+	public boolean isSerial() {
+		return true;
+	}
+
+	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return parser.getMavLinkMessageMap();
 	}

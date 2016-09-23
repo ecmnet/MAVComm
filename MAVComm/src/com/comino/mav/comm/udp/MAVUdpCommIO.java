@@ -124,6 +124,11 @@ public class MAVUdpCommIO implements IMAVComm {
 		return null;
 	}
 
+	@Override
+	public boolean isSerial() {
+		return false;
+	}
+
 	public void write(MAVLinkMessage msg) throws IOException {
 		ByteBuffer buf = ByteBuffer.wrap(msg.encode());
 		channel.write(buf);
