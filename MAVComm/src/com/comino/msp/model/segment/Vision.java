@@ -46,6 +46,10 @@ public class Vision extends Segment {
 	public float y = Float.NaN;
 	public float z = Float.NaN;
 
+	public float ro = Float.NaN;
+	public float pi = Float.NaN;
+	public float ya = Float.NaN;
+
 	public float vx = Float.NaN;
 	public float vy = Float.NaN;
 	public float vz = Float.NaN;
@@ -62,6 +66,10 @@ public class Vision extends Segment {
 		x  = a.x;
 		y  = a.y;
 		z  = a.z;
+
+		ro = a.ro;
+		pi = a.pi;
+		ya = a.ya;
 
 		vx = a.vx;
 		vy = a.vy;
@@ -82,6 +90,10 @@ public class Vision extends Segment {
 		a.y  = y;
 		a.z  = z;
 
+		a.ro = ro;
+		a.pi = pi;
+		a.ya = ya;
+
 		a.vx = vx;
 		a.vy = vy;
 		a.vz = vz;
@@ -101,6 +113,10 @@ public class Vision extends Segment {
 		x  = 0;
 		y  = 0;
 		z  = 0;
+
+		ro = 0;
+		pi = 0;
+		ya = 0;
 
 		vx = 0;
 		vy = 0;
