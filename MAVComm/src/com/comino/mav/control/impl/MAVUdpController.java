@@ -63,7 +63,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 
 	@Override
 	public boolean close() {
-		this.connect = true;
+		this.connect = false;
 		return true;
 	}
 
@@ -77,20 +77,20 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 	public void run() {
 		while(connect) {
 			try {
-				Thread.sleep(500);
+				Thread.sleep(200);
 			} catch (InterruptedException e) { }
 
 			if(!comm.isConnected()) {
 				comm.close();
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) { }
 				comm.open();
 				System.out.println("Try to connect....");
 			}
 		}
-
 		collector.stop();
 		comm.close();
-
-
 	}
 
 

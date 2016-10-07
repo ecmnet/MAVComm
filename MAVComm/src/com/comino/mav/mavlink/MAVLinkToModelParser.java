@@ -687,7 +687,6 @@ public class MAVLinkToModelParser {
 		isRunning = true;
 		stream = new MAVLinkStream(channel);
 		Thread s = new Thread(new MAVLinkParserWorker());
-		s.setPriority(Thread.MIN_PRIORITY);
 		s.start();
 	}
 

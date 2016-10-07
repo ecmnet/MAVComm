@@ -120,6 +120,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 			} catch(Exception e) {
 				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
 				close();
+				parser.stop();
 				isConnected = false;
 			}
 
@@ -183,7 +184,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 		} catch(IOException e) {
 
 		}
-		LockSupport.parkNanos(1000000000);
+	//	LockSupport.parkNanos(1000000000);
 	}
 
 
