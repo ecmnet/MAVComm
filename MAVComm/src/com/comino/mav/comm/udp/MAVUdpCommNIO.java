@@ -97,7 +97,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 		}
 
 			try {
-
+				System.out.println("Try to open UDP channel....");
 				channel = DatagramChannel.open();
 
 				channel.bind(bindPort);
@@ -115,12 +115,13 @@ public class MAVUdpCommNIO implements IMAVComm {
 //				time.isValid = true;
 //				write(time);
 
+				LockSupport.parkNanos(10000000);
+
 				parser.start(channel);
 				return true;
 			} catch(Exception e) {
 				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
 				close();
-				parser.stop();
 				isConnected = false;
 			}
 

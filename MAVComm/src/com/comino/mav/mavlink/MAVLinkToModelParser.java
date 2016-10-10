@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -740,6 +741,11 @@ public class MAVLinkToModelParser {
 		public void run() {
 			startUpAt = System.currentTimeMillis();
 			model.sys.tms = System.nanoTime()/1000;
+
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e1) {
+			}
 
 			while (isRunning) {
 				try {

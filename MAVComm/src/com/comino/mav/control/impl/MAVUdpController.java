@@ -77,7 +77,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 	public void run() {
 		while(connect) {
 			try {
-				Thread.sleep(200);
+				Thread.sleep(500);
 			} catch (InterruptedException e) { }
 
 			if(!comm.isConnected()) {
@@ -86,7 +86,6 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 					Thread.sleep(100);
 				} catch (InterruptedException e) { }
 				comm.open();
-				System.out.println("Try to connect....");
 			}
 		}
 		collector.stop();
