@@ -32,6 +32,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_LOG_REQUEST_LIST = 117;
   public static int MAVLINK_MSG_ID_LOG_REQUEST_DATA = 119;
   public static int MAVLINK_MSG_ID_LOG_ERASE = 121;
+  public static int MAVLINK_MSG_ID_HIGH_LATENCY = 234;
   public static int MAVLINK_MSG_ID_DISTANCE_SENSOR = 132;
   public static int MAVLINK_MSG_ID_BUTTON_CHANGE = 257;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV = 64;

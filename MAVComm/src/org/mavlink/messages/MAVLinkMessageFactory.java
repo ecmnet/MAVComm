@@ -31,6 +31,7 @@ import org.mavlink.messages.lquac.msg_hil_gps;
 import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
 import org.mavlink.messages.lquac.msg_log_erase;
+import org.mavlink.messages.lquac.msg_high_latency;
 import org.mavlink.messages.lquac.msg_distance_sensor;
 import org.mavlink.messages.lquac.msg_button_change;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
@@ -170,6 +171,7 @@ import org.mavlink.messages.lquac.msg_hil_gps;
 import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
 import org.mavlink.messages.lquac.msg_log_erase;
+import org.mavlink.messages.lquac.msg_high_latency;
 import org.mavlink.messages.lquac.msg_distance_sensor;
 import org.mavlink.messages.lquac.msg_button_change;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
@@ -390,6 +392,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_LOG_ERASE:
       msg = new msg_log_erase(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_HIGH_LATENCY:
+      msg = new msg_high_latency(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_DISTANCE_SENSOR:

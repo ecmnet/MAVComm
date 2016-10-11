@@ -49,6 +49,7 @@ import org.mavlink.messages.MAV_STATE;
 import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_attitude;
+import org.mavlink.messages.lquac.msg_attitude_quaternion;
 import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_autopilot_version;
 import org.mavlink.messages.lquac.msg_battery_status;
@@ -281,6 +282,18 @@ public class MAVLinkToModelParser {
 				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 
 				//System.out.println(att.toString());
+			}
+		});
+
+		registerListener(msg_attitude_quaternion.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_attitude_quaternion att = (msg_attitude_quaternion)o;
+
+				model.attitude.q1 = att.q1;
+				model.attitude.q2 = att.q2;
+				model.attitude.q3 = att.q3;
+				model.attitude.q4 = att.q4;
 			}
 		});
 

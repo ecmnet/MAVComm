@@ -61,7 +61,7 @@ public class msg_gps_raw_int extends MAVLinkMessage {
    */
   public int cog;
   /**
-   * 0-1: no fix, 2: 2D fix, 3: 3D fix, 4: DGPS, 5: RTK. Some applications will not use the value of this field unless it is at least two, so always correctly fill in the fix.
+   * See the GPS_FIX_TYPE enum.
    */
   public int fix_type;
   /**

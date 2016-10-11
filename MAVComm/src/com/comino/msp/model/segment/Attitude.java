@@ -11,6 +11,11 @@ public class Attitude extends Segment {
 	public float y           = Float.NaN;	// yaw in rad
 	public float t           = Float.NaN;
 
+	public float q1        	 = Float.NaN;	// Quaternion Q1
+	public float q2        	 = Float.NaN;	// Quaternion Q2
+	public float q3        	 = Float.NaN;	// Quaternion Q3
+	public float q4        	 = Float.NaN;	// Quaternion Q4
+
 	public float rr        	 = Float.NaN;	// rollrate in rad/s
 	public float pr          = Float.NaN;	// pitchrate in rad/s
 	public float yr          = Float.NaN;	// yawrate in rad/s
@@ -31,6 +36,10 @@ public class Attitude extends Segment {
 		p   = a.p;
 		y   = a.y;
 		t   = a.t;
+		q1  = a.q1;
+		q2  = a.q2;
+		q3  = a.q3;
+		q4  = a.q4;
 		rr 	= a.rr;
 		pr  = a.pr;
 		yr  = a.yr;
@@ -54,6 +63,10 @@ public class Attitude extends Segment {
 		p   = 0;
 		y   = 0;
 		t   = 0;
+		q1  = 0;
+		q2  = 0;
+		q3  = 0;
+		q4  = 0;
 		rr 	= 0;
 		pr  = 0;
 		yr  = 0;
