@@ -117,6 +117,7 @@ public class Status extends Segment {
 	public float    t_boot_ms  = Float.NaN;
 
 	public long     t_offset_ms = 0;
+	public String   version    = "";
 
 
 	public void set(Status s) {

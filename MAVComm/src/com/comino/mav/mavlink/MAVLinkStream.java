@@ -53,7 +53,7 @@ public class MAVLinkStream {
 
 	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
-	byte[] buf = new byte[2000];
+	static byte[] buf = new byte[8192];
 
 	private MAVLinkReader reader;
 

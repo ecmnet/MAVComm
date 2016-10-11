@@ -34,8 +34,6 @@
 
 package com.comino.mav.control.impl;
 
-import org.mavlink.messages.lquac.msg_system_time;
-
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 
@@ -85,7 +83,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) { }
-				comm.open();
+				comm.open()	;
 			}
 		}
 		collector.stop();

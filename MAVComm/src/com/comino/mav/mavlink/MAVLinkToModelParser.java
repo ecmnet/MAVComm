@@ -50,6 +50,7 @@ import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_attitude;
 import org.mavlink.messages.lquac.msg_attitude_target;
+import org.mavlink.messages.lquac.msg_autopilot_version;
 import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_distance_sensor;
@@ -627,6 +628,17 @@ public class MAVLinkToModelParser {
 			}
 		});
 
+		registerListener(msg_autopilot_version.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_autopilot_version version = (msg_autopilot_version)o;
+				model.sys.version = String.format("%d.%d.%d",
+						(version.flight_sw_version >> (8*3)) & 0xFF,
+						(version.flight_sw_version >> (8*2)) & 0xFF,
+		                (version.flight_sw_version >> (8*1)) & 0xFF);
+			}
+		});
+
 
 		registerListener(msg_sys_status.class, new IMAVLinkListener() {
 			@Override
@@ -794,7 +806,6 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_READY, false);
 						notifyStatusChange();
 
-						writeMessage(new LogMessage("Connection lost",2));
 						link.close(); link.open();
 						model.sys.tms = System.nanoTime()/1000;
 						Thread.sleep(50);
