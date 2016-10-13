@@ -177,6 +177,10 @@ public class Status extends Segment {
 		return true;
 	}
 
+	public boolean isStatusChanges(Status old, int ...box) {
+		return !old.isStatus(box) && isStatus(box);
+	}
+
 
 	public String getSensorString() {
 		String text=" ";
