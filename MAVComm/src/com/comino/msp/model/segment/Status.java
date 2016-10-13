@@ -177,7 +177,7 @@ public class Status extends Segment {
 		return true;
 	}
 
-	public boolean isStatusChanges(Status old, int ...box) {
+	public boolean isStatusChanged(Status old, int ...box) {
 		return !old.isStatus(box) && isStatus(box);
 	}
 
