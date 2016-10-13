@@ -98,12 +98,10 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 					channel.configureBlocking(false);
 
 				} catch (IOException e) {
-					e.printStackTrace();
+					continue;
 				}
 				channel.connect(peerPort);
 				in = new MAVLinkStream(channel);
-				System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
-
 				return true;
 			} catch(Exception e) {
 				System.err.println(e.getMessage());
