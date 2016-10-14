@@ -37,6 +37,7 @@ package com.comino.msp.main;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
+import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_timesync;
 
@@ -75,8 +76,6 @@ public class StartUp implements Runnable {
 		// Start services if required
 
 		control.start();
-
-		control.connect();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
 		Thread worker = new Thread(this);
 		worker.start();

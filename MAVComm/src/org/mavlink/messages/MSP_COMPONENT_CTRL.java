@@ -5,15 +5,19 @@
 package org.mavlink.messages;
 /**
  * Interface MSP_COMPONENT_CTRL
- * MSP Offboard control
+ * Component control
  **/
 public interface MSP_COMPONENT_CTRL {
     /**
-     * Reboot the MSP companion
+     * Disable component
      */
     public final static int DISABLE = 0;
     /**
-     * Enable/Disable offboard control
+     * Enable component
      */
     public final static int ENABLE = 1;
+    /**
+     * reset component
+     */
+    public final static int RESET = 2;
 }

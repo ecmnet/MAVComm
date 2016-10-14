@@ -853,7 +853,7 @@ public class MAVLinkToModelParser {
 			for(IMSPStatusChangedListener listener : modeListener)
 				listener.update(oldStatus, model.sys);
 
-			if(!oldStatus.isStatus(Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))
+			if(model.sys.isStatusChanged(oldStatus,Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
 
 			oldStatus.set(model.sys);

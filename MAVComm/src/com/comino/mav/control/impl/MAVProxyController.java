@@ -39,6 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_statustext;
@@ -184,6 +185,7 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public boolean connect() {
 		commError=0;
+		sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
 		return proxy.open();
 	}
 

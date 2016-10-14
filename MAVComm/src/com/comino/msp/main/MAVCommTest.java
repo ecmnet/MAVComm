@@ -33,6 +33,9 @@
 
 package com.comino.msp.main;
 
+import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.lquac.msg_autopilot_version;
+
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
 import com.comino.msp.log.MSPLogger;
@@ -74,12 +77,14 @@ public class MAVCommTest implements Runnable {
 	public void run() {
 		while(true) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(1000);
 				if(control.isConnected())
-				    System.out.println(control.getCurrentModel().sys.imu_temp);
+				    System.out.println(control.getCurrentModel().sys.version);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+
+
 		}
 
 	}
