@@ -28,12 +28,15 @@
               </entry>
             </enum>
             <enum name="MSP_COMPONENT_CTRL">
-              <description>MSP Offboard control</description>
+              <description>Component control</description>
               <entry value="0" name="DISABLE">
-                  <description>Reboot the MSP companion</description>
+                  <description>Disable component</description>
               </entry>
               <entry value="1" name="ENABLE">
-                  <description>Enable/Disable offboard control</description>
+                  <description>Enable component</description>
+              </entry>
+              <entry value="2" name="RESET">
+                  <description>reset component</description>
               </entry>
            </enum>
       </enums>
