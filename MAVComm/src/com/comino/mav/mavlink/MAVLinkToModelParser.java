@@ -154,8 +154,10 @@ public class MAVLinkToModelParser {
 				model.vision.flags= (int)mocap.flags;
 				model.vision.fps= mocap.fps;
 				model.vision.tms= System.nanoTime()/1000;
-				mocap_tms = System.currentTimeMillis();
-				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true);
+				if(model.vision.errors < 5) {
+					mocap_tms = System.currentTimeMillis();
+					model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true );
+				}
 			}
 		});
 
@@ -648,7 +650,7 @@ public class MAVLinkToModelParser {
 				model.sys.version = String.format("%d.%d.%d",
 						(version.flight_sw_version >> (8*3)) & 0xFF,
 						(version.flight_sw_version >> (8*2)) & 0xFF,
-		                (version.flight_sw_version >> (8*1)) & 0xFF);
+						(version.flight_sw_version >> (8*1)) & 0xFF);
 			}
 		});
 
