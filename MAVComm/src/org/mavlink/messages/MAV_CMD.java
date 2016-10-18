@@ -1038,4 +1038,26 @@ public interface MAV_CMD {
      * PARAM 7 : User defined
      */
     public final static int MAV_CMD_USER_5 = 31014;
+    /**
+     * Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)
+     * PARAM 1 : Format: 0: ULog
+     * PARAM 2 : Reserved (set to 0)
+     * PARAM 3 : Reserved (set to 0)
+     * PARAM 4 : Reserved (set to 0)
+     * PARAM 5 : Reserved (set to 0)
+     * PARAM 6 : Reserved (set to 0)
+     * PARAM 7 : Reserved (set to 0)
+     */
+    public final static int MAV_CMD_LOGGING_START = 2510;
+    /**
+     * Request to stop streaming log data over MAVLink
+     * PARAM 1 : Reserved (set to 0)
+     * PARAM 2 : Reserved (set to 0)
+     * PARAM 3 : Reserved (set to 0)
+     * PARAM 4 : Reserved (set to 0)
+     * PARAM 5 : Reserved (set to 0)
+     * PARAM 6 : Reserved (set to 0)
+     * PARAM 7 : Reserved (set to 0)
+     */
+    public final static int MAV_CMD_LOGGING_STOP = 2511;
 }

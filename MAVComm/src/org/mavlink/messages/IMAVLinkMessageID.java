@@ -41,6 +41,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_MISSION_REQUEST = 40;
   public static int MAVLINK_MSG_ID_GLOBAL_POSITION_INT = 33;
   public static int MAVLINK_MSG_ID_AUTOPILOT_VERSION = 148;
+  public static int MAVLINK_MSG_ID_LOGGING_DATA = 266;
   public static int MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE = 104;
   public static int MAVLINK_MSG_ID_AUTH_KEY = 7;
   public static int MAVLINK_MSG_ID_HIL_CONTROLS = 91;
@@ -90,6 +91,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_ESTIMATOR_STATUS = 230;
   public static int MAVLINK_MSG_ID_ATTITUDE = 30;
   public static int MAVLINK_MSG_ID_SERIAL_CONTROL = 126;
+  public static int MAVLINK_MSG_ID_LOGGING_DATA_ACKED = 267;
   public static int MAVLINK_MSG_ID_PARAM_VALUE = 22;
   public static int MAVLINK_MSG_ID_SIM_STATE = 108;
   public static int MAVLINK_MSG_ID_SET_ATTITUDE_TARGET = 82;
@@ -112,6 +114,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV = 63;
   public static int MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE = 103;
   public static int MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE = 70;
+  public static int MAVLINK_MSG_ID_LOGGING_ACK = 268;
   public static int MAVLINK_MSG_ID_VFR_HUD = 74;
   public static int MAVLINK_MSG_ID_OPTICAL_FLOW_RAD = 106;
   public static int MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED = 84;
