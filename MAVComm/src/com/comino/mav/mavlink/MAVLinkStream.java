@@ -61,7 +61,7 @@ public class MAVLinkStream {
 	public MAVLinkStream(ByteChannel channel) {
 		this.channel = channel;
 		this.rxBuffer.flip();
-		this.reader = new MAVLinkReader(IMAVLinkMessage.MAVPROT_PACKET_START_V10);
+		this.reader = new MAVLinkReader(IMAVLinkMessage.MAVPROT_PACKET_START_V20);
 	}
 
 
@@ -85,7 +85,7 @@ public class MAVLinkStream {
 				try {
 
 					rxBuffer.compact();
-					LockSupport.parkNanos(1000000);
+					LockSupport.parkNanos(5000000);
 					n = channel.read(rxBuffer);
 
 				} catch (Exception ioe) {

@@ -14,7 +14,7 @@
  * Who       yyyy/mm/dd   Action
  * --------  ----------   ------
  * ghelle	13 aout 2012		Create
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -24,7 +24,7 @@ package org.mavlink;
 
 /**
  * Some constants for MAVLink
- * 
+ *
  * @author ghelle
  * @version $Rev: 20 $
  */
@@ -41,6 +41,16 @@ public interface IMAVLinkMessage {
     public final static String STRING_MAVPROT_PACKET_START_V10 = "0xFE";
 
     /**
+    * Packet start in MAVLink V2.0
+    */
+   public final static int MAVPROT_PACKET_START_V20 = (byte) 253;
+
+    /**
+     * Packet start in MAVLink V2.0 (String)
+     */
+    public final static String STRING_MAVPROT_PACKET_START_V20 = "0xFD";
+
+    /**
      * Packet start in MAVLink V0.9
      */
     public final static byte MAVPROT_PACKET_START_V09 = (byte) 0x55;
@@ -53,7 +63,7 @@ public interface IMAVLinkMessage {
     /**
      * Len to add to payload for CRC computing
      */
-    public final static int CRC_LEN = 5;
+    public final static int CRC_LEN = 9;
 
     /**
      * Use to initialize CRC before computing
