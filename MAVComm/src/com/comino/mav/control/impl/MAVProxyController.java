@@ -240,7 +240,8 @@ public class MAVProxyController implements IMAVMSPController {
 				try {
 					Thread.yield();
 
-					msg = proxy.getInputStream().read();
+					if(proxy.getInputStream()!=null)
+					    msg = proxy.getInputStream().read();
 
 					if(msg!=null) {
 

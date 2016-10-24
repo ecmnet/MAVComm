@@ -97,7 +97,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 		}
 
 			try {
-				System.out.println("Try to open UDP channel....");
+				System.out.println("Try to open UDP channel V2....");
 				channel = DatagramChannel.open();
 
 				channel.bind(bindPort);

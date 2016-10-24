@@ -39,11 +39,8 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.IMAVLinkMessage;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 
@@ -87,10 +84,10 @@ public class MAVLinkStream {
 			} catch (BufferUnderflowException e) {
 				// Try to refill buffer
 				try {
-					protocol = reader.getProtocol();
 					rxBuffer.compact();
-					LockSupport.parkNanos(1000000);
-					n = channel.read(rxBuffer);
+					LockSupport.parkNanos(7500000);
+					if(channel!=null)
+					   n = channel.read(rxBuffer);
 
 				} catch (Exception ioe) {
 					throw new IOException(ioe.getMessage());

@@ -154,6 +154,9 @@ public class MAVSerialComm implements IMAVComm {
 
 	private boolean open(String portName, int baudRate, int dataBits, int stopBits, int parity) {
 
+		if(serialPort.isOpened())
+			return true;
+
 		try {
 			serialPort.openPort();
 			serialPort.setParams(baudRate, dataBits, stopBits, parity);

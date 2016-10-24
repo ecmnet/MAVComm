@@ -138,7 +138,7 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 	//	}
 
 
-	public synchronized  void write(MAVLinkMessage msg) {
+	public  void write(MAVLinkMessage msg) {
 		try {
 
 			if(isConnected) {

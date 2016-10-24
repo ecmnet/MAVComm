@@ -65,6 +65,7 @@ public class SerialPortChannel implements ByteChannel {
                 return 0;
             }
         } catch (SerialPortException e) {
+        	System.err.println(e.getMessage());
             throw new IOException(e);
         }
     }
@@ -76,6 +77,7 @@ public class SerialPortChannel implements ByteChannel {
             buffer.get(b);
             return serialPort.writeBytes(b) ? b.length : 0;
         } catch (SerialPortException e) {
+        	System.err.println(e.getMessage());
             throw new IOException(e);
         }
     }

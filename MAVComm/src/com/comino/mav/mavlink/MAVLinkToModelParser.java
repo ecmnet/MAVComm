@@ -720,10 +720,12 @@ public class MAVLinkToModelParser {
 	}
 
 	public void start(ByteChannel channel) {
-		isRunning = true;
-		stream = new MAVLinkStream(channel);
-		Thread s = new Thread(new MAVLinkParserWorker());
-		s.start();
+		if(!isRunning) {
+			isRunning = true;
+			stream = new MAVLinkStream(channel);
+			Thread s = new Thread(new MAVLinkParserWorker());
+			s.start();
+		}
 	}
 
 	public boolean isConnected() {
@@ -828,8 +830,7 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
 						model.sys.setStatus(Status.MSP_READY, false);
 						notifyStatusChange();
-
-						link.close(); link.open();
+     					link.close(); link.open();
 						model.sys.tms = System.nanoTime()/1000;
 						Thread.sleep(50);
 					}

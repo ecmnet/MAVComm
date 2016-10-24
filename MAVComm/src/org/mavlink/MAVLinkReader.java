@@ -81,12 +81,16 @@ public class MAVLinkReader {
 	 */
 	private DataInputStream dis = null;
 
-	public final static int RECEIVED_OFFSET = 0;
+	public final static int RECEIVED_OFFSET = 25;
 
 	/**
 	 * Last sequence number received
 	 */
 	private final int[] lastSequence = new int[256];
+
+	private final byte[] bytes = new byte[2048];
+
+	private int offset = 0;
 
 	/**
 	 * MAVLink messages received
@@ -119,7 +123,6 @@ public class MAVLinkReader {
 	 *            Start byte for MAVLink version
 	 */
 	public MAVLinkReader() {
-		System.out.println("MAVLinkReader 2.0 initialized");
 		this.dis = null;
 		for (int i = 0; i < lastSequence.length; i++) {
 			lastSequence[i] = -1;
@@ -151,20 +154,45 @@ public class MAVLinkReader {
 	 * @return MAVLink message or null
 	 * @throws IOException
 	 */
-	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
-		MAVLinkMessage msg = null;
+//	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
+//		MAVLinkMessage msg = null;
+//		if (packets.isEmpty() || len > 0) {
+//			dis = new DataInputStream(new ByteArrayInputStream(buffer, 0, len));
+//			while (dis.available() > 0 ) {
+//				readMavLinkMessageFromBuffer(dis.readByte() & 0xFF);
+//			}
+//		}
+//
+//		if (!packets.isEmpty()) {
+//			msg = (MAVLinkMessage) packets.firstElement();
+//			packets.removeElementAt(0);
+//		}
+//		return msg;
+//	}
 
-		dis = new DataInputStream(new ByteArrayInputStream(buffer, 0, len));
-		while (dis.available() > 0 ) {
-			readMavLinkMessageFromBuffer(dis.readByte() & 0xFF);
-		}
-
-		if (!packets.isEmpty()) {
-			msg = (MAVLinkMessage) packets.firstElement();
-			packets.removeElementAt(0);
-		}
-		return msg;
-	}
+			 public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
+			        MAVLinkMessage msg = null;
+			        if (packets.isEmpty() || len > 0) {
+			            for (int i = offset; i < len + offset; i++) {
+			                bytes[i] = buffer[i - offset];
+			            }
+			            dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
+			            while (dis.available() > lengthToRead+RECEIVED_OFFSET ) {
+			    			readMavLinkMessageFromBuffer(dis.readByte() & 0xFF);
+			    		}
+			            offset = dis.available();
+			            for (int j = 0; j < offset; j++) {
+			                bytes[j] = dis.readByte();
+			            }
+			            dis.close();
+			            dis = null;
+			        }
+			        if (!packets.isEmpty()) {
+			            msg = (MAVLinkMessage) packets.firstElement();
+			            packets.removeElementAt(0);
+			        }
+			        return msg;
+			    }
 
 	protected boolean readMavLinkMessageFromBuffer(int c) {
 		try {
@@ -241,10 +269,16 @@ public class MAVLinkReader {
 				state = t_parser_state.MAVLINK_PARSE_STATE_GOT_MSGID3;
 				break;
 			case MAVLINK_PARSE_STATE_GOT_MSGID3:
+				if(lengthToRead == rxmsg.len || lengthToRead >= rxmsg.rawData.length) {
+					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
+					return false;
+				}
+
 				rxmsg.rawData[lengthToRead++] = (byte)c;
 				rxmsg.crc = MAVLinkCRC.crc_accumulate((byte)c, rxmsg.crc);
 				if(lengthToRead == rxmsg.len)
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_PAYLOAD;
+
 				break;
 			case MAVLINK_PARSE_STATE_GOT_PAYLOAD:
 				if (IMAVLinkCRC.MAVLINK_EXTRA_CRC)
