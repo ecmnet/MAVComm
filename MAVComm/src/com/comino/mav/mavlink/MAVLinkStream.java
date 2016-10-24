@@ -89,7 +89,7 @@ public class MAVLinkStream {
 				try {
 					protocol = reader.getProtocol();
 					rxBuffer.compact();
-					LockSupport.parkNanos(750000);
+					LockSupport.parkNanos(1000000);
 					n = channel.read(rxBuffer);
 
 				} catch (Exception ioe) {

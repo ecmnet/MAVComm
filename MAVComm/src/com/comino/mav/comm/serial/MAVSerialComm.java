@@ -110,8 +110,15 @@ public class MAVSerialComm implements IMAVComm {
 	public boolean open() {
 		while(!open(port ,BAUDRATE,8,1,0)) {
 			try {
+				if(serialPort.isOpened()) {
+					try {
+						serialPort.closePort();
+					} catch (SerialPortException e) {
+
+					}
+				}
 				Thread.sleep(1000);
-			} catch (InterruptedException e) {	}
+			} catch (Exception e) {	}
 		}
 		System.out.println("Serial port opened: "+port);
 		return true;
