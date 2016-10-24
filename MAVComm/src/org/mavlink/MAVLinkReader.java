@@ -132,6 +132,14 @@ public class MAVLinkReader {
 		return packets.size();
 	}
 
+
+	/**
+	 * @return the protocol start tag
+	 */
+	public int getProtocol() {
+		return protocol;
+	}
+
 	/**
 	 * Return next message. Use it without stream in input.
 	 *
@@ -144,6 +152,7 @@ public class MAVLinkReader {
 	 */
 	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
 		MAVLinkMessage msg = null;
+
 		dis = new DataInputStream(new ByteArrayInputStream(buffer, 0, len));
 		while (dis.available() > 0 ) {
 			readMavLinkMessageFromBuffer(dis.readByte() & 0xFF);
@@ -263,7 +272,7 @@ public class MAVLinkReader {
 				state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
-					packets.addElement(msg); System.out.println(packets.size()+":"+msg);
+					packets.addElement(msg); //System.out.println(packets.size()+":"+msg);
 				}
 				break;
 

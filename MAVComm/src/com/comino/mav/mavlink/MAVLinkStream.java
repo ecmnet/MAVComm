@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.IMAVLinkMessage;
@@ -50,18 +52,22 @@ public class MAVLinkStream {
 
 	private final ByteChannel channel;
 
-
 	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
 	static byte[] buf = new byte[8192];
 
 	private MAVLinkReader reader;
+	private int protocol;
 
 
 	public MAVLinkStream(ByteChannel channel) {
 		this.channel = channel;
 		this.rxBuffer.flip();
 		this.reader = new MAVLinkReader();
+	}
+
+	public int getProtocol() {
+		return protocol;
 	}
 
 
@@ -73,8 +79,6 @@ public class MAVLinkStream {
 	 */
 	public MAVLinkMessage read() throws IOException, EOFException {
 
-
-
 		int n = 1;
 		while (true) {
 			try {
@@ -83,9 +87,9 @@ public class MAVLinkStream {
 			} catch (BufferUnderflowException e) {
 				// Try to refill buffer
 				try {
-
+					protocol = reader.getProtocol();
 					rxBuffer.compact();
-					LockSupport.parkNanos(5000000);
+					LockSupport.parkNanos(750000);
 					n = channel.read(rxBuffer);
 
 				} catch (Exception ioe) {

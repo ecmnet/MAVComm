@@ -36,29 +36,14 @@ public interface IMAVLinkMessage {
     public final static byte MAVPROT_PACKET_START_V10 = (byte) 0xFE;
 
     /**
-     * Packet start in MAVLink V1.0 (String)
-     */
-    public final static String STRING_MAVPROT_PACKET_START_V10 = "0xFE";
-
-    /**
     * Packet start in MAVLink V2.0
     */
     public final static int MAVPROT_PACKET_START_V20 = (byte) 253;
 
     /**
-     * Packet start in MAVLink V2.0 (String)
-     */
-    public final static String STRING_MAVPROT_PACKET_START_V20 = "0xFD";
-
-    /**
      * Packet start in MAVLink V0.9
      */
     public final static byte MAVPROT_PACKET_START_V09 = (byte) 0x55;
-
-    /**
-     * Packet start in MAVLink V0.9 (String)
-     */
-    public final static String STRING_MAVPROT_PACKET_START_V09 = "0x55";
 
     /**
      * Len to add to payload for CRC computing
@@ -74,5 +59,7 @@ public interface IMAVLinkMessage {
      * Use to validate CRC
      */
     public final static int X25_VALIDATE_CRC = 0x0000f0b8;
+
+	public static final String STRING_MAVPROT_PACKET_START_V20 = "0xFD";
 
 }

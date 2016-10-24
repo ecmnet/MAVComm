@@ -84,7 +84,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
 public byte[] encode() throws IOException {
   byte[] buffer = new byte[8+28];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
-  dos.writeByte((byte)0xFE);
+  dos.writeByte((byte)0xFD);
   dos.writeByte(length & 0x00FF);
   dos.writeByte(sequence & 0x00FF);
   dos.writeByte(sysId & 0x00FF);

@@ -263,13 +263,7 @@ public class MAVLinkGenerator {
                 sbWrite = new StringBuffer();
                 fieldWrite = new StringBuffer();
                 if (forEmbeddedJava) {
-                    //Issue 1 by BoxMonster44 : use correct packet start for mavlink 0.9
-                    if (useExtraByte) {
-                        sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V10 + ");\n");
-                    }
-                    else {
-                        sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V09 + ");\n");
-                    }
+                	sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V20 + ");\n");
                     sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(sequence & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(sysId & 0x00FF);\n");
@@ -277,13 +271,7 @@ public class MAVLinkGenerator {
                     sbWrite.append("  dos.writeByte(messageType & 0x00FF);\n");
                 }
                 else {
-                    //Issue 1 by BoxMonster44 : use correct packet start for mavlink 0.9
-                    if (useExtraByte) {
-                        sbWrite.append("  dos.put((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V10 + ");\n");
-                    }
-                    else {
-                        sbWrite.append("  dos.put((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V09 + ");\n");
-                    }
+                	sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V20 + ");\n");
                     sbWrite.append("  dos.put((byte)(length & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(sequence & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(sysId & 0x00FF));\n");
