@@ -68,7 +68,8 @@ public class MAVLinkReader {
 		MAVLINK_FRAMING_INCOMPLETE,
 		MAVLINK_FRAMING_OK,
 		MAVLINK_FRAMING_BAD_CRC,
-		MAVLINK_FRAMING_BAD_SIGNATURE
+		MAVLINK_FRAMING_BAD_SIGNATURE,
+		MAVLINK_FRAMING_BAD_SEQUENCE,
 	};
 
 	private t_parser_state state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
@@ -270,8 +271,10 @@ public class MAVLinkReader {
 				state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
-					System.out.println(" "+rxmsg.sequence+":"+msg);
-					packets.add(msg);
+					if(checkSequence(rxmsg.sysId,rxmsg.sequence))
+					  packets.add(msg);
+					else
+					  rxmsg.msg_received =mavlink_framing_t.MAVLINK_FRAMING_BAD_SEQUENCE;
 				}
 				break;
 
@@ -285,7 +288,10 @@ public class MAVLinkReader {
 					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 					if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 						MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
-						packets.add(msg);
+						if(checkSequence(rxmsg.sysId,rxmsg.sequence))
+							  packets.add(msg);
+							else
+							  rxmsg.msg_received =mavlink_framing_t.MAVLINK_FRAMING_BAD_SEQUENCE;
 					}
 				}
 				break;
@@ -315,14 +321,14 @@ public class MAVLinkReader {
 		}
 		else if (lastSequence[sysId] < sequence) {
 			if (sequence - lastSequence[sysId] == 1) {
-				// No message lost
+				lastSequence[sysId] = sequence;
 				check = true;
 			}
 		}
 		else
 			// We have reached the max number (255) and restart to 0
 			if (sequence + 256 - lastSequence[sysId] == 1) {
-				// No message lost
+				lastSequence[sysId] = sequence;
 				check = true;
 			}
 		return check;

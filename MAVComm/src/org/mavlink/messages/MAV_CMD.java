@@ -825,6 +825,39 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_VIDEO_STOP_CAPTURE = 2501;
     /**
+     * Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)
+     * PARAM 1 : Format: 0: ULog
+     * PARAM 2 : Reserved (set to 0)
+     * PARAM 3 : Reserved (set to 0)
+     * PARAM 4 : Reserved (set to 0)
+     * PARAM 5 : Reserved (set to 0)
+     * PARAM 6 : Reserved (set to 0)
+     * PARAM 7 : Reserved (set to 0)
+     */
+    public final static int MAV_CMD_LOGGING_START = 2510;
+    /**
+     * Request to stop streaming log data over MAVLink
+     * PARAM 1 : Reserved (set to 0)
+     * PARAM 2 : Reserved (set to 0)
+     * PARAM 3 : Reserved (set to 0)
+     * PARAM 4 : Reserved (set to 0)
+     * PARAM 5 : Reserved (set to 0)
+     * PARAM 6 : Reserved (set to 0)
+     * PARAM 7 : Reserved (set to 0)
+     */
+    public final static int MAV_CMD_LOGGING_STOP = 2511;
+    /**
+     * 
+     * PARAM 1 : Landing gear ID (default: 0, -1 for all)
+     * PARAM 2 : Landing gear position (Down: 0, Up: 1, NAN for no change)
+     * PARAM 3 : Reserved, set to NAN
+     * PARAM 4 : Reserved, set to NAN
+     * PARAM 5 : Reserved, set to NAN
+     * PARAM 6 : Reserved, set to NAN
+     * PARAM 7 : Reserved, set to NAN
+     */
+    public final static int MAV_CMD_AIRFRAME_CONFIGURATION = 2520;
+    /**
      * Create a panorama at the current position
      * PARAM 1 : Viewing angle horizontal of the panorama (in degrees, +- 0.5 the total angle)
      * PARAM 2 : Viewing angle vertical of panorama (in degrees)
@@ -1038,26 +1071,4 @@ public interface MAV_CMD {
      * PARAM 7 : User defined
      */
     public final static int MAV_CMD_USER_5 = 31014;
-    /**
-     * Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)
-     * PARAM 1 : Format: 0: ULog
-     * PARAM 2 : Reserved (set to 0)
-     * PARAM 3 : Reserved (set to 0)
-     * PARAM 4 : Reserved (set to 0)
-     * PARAM 5 : Reserved (set to 0)
-     * PARAM 6 : Reserved (set to 0)
-     * PARAM 7 : Reserved (set to 0)
-     */
-    public final static int MAV_CMD_LOGGING_START = 2510;
-    /**
-     * Request to stop streaming log data over MAVLink
-     * PARAM 1 : Reserved (set to 0)
-     * PARAM 2 : Reserved (set to 0)
-     * PARAM 3 : Reserved (set to 0)
-     * PARAM 4 : Reserved (set to 0)
-     * PARAM 5 : Reserved (set to 0)
-     * PARAM 6 : Reserved (set to 0)
-     * PARAM 7 : Reserved (set to 0)
-     */
-    public final static int MAV_CMD_LOGGING_STOP = 2511;
 }

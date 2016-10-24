@@ -3,7 +3,6 @@
 <mavlink>
 
       <include>common.xml</include>
-      <include>ulog_stream.xml</include>
       <version>3</version>
 
       <enums>
