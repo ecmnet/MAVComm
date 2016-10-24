@@ -103,14 +103,18 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[8+229];
+  byte[] buffer = new byte[12+229];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(length & 0x00FF);
+  dos.writeByte(incompat & 0x00FF);
+  dos.writeByte(compat & 0x00FF);
   dos.writeByte(sequence & 0x00FF);
   dos.writeByte(sysId & 0x00FF);
   dos.writeByte(componentId & 0x00FF);
   dos.writeByte(messageType & 0x00FF);
+  dos.writeByte((messageType >> 8) & 0x00FF);
+  dos.writeByte((messageType >> 16) & 0x00FF);
   dos.writeLong(time_utc);
   dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
   dos.writeFloat(x);
@@ -133,8 +137,8 @@ public byte[] encode() throws IOException {
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[235] = crcl;
-  buffer[236] = crch;
+  buffer[239] = crcl;
+  buffer[240] = crch;
   dos.close();
   return buffer;
 }

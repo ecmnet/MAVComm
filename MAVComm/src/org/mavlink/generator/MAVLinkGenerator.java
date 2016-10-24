@@ -264,19 +264,27 @@ public class MAVLinkGenerator {
                 fieldWrite = new StringBuffer();
                 if (forEmbeddedJava) {
                 	sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V20 + ");\n");
-                    sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
+                	sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
+                	sbWrite.append("  dos.writeByte(incompat & 0x00FF);\n");
+                	sbWrite.append("  dos.writeByte(compat & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(sequence & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(sysId & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(componentId & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(messageType & 0x00FF);\n");
+                    sbWrite.append("  dos.writeByte((messageType >> 8) & 0x00FF);\n");
+                    sbWrite.append("  dos.writeByte((messageType >> 16) & 0x00FF);\n");
                 }
                 else {
                 	sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V20 + ");\n");
-                    sbWrite.append("  dos.put((byte)(length & 0x00FF));\n");
+                	sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
+                	sbWrite.append("  dos.writeByte(incompat & 0x00FF);\n");
+                	sbWrite.append("  dos.writeByte(compat & 0x00FF);\n");
                     sbWrite.append("  dos.put((byte)(sequence & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(sysId & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(componentId & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(messageType & 0x00FF));\n");
+                    sbWrite.append("  dos.writeByte((messageType >> 8) & 0x00FF);\n");
+                    sbWrite.append("  dos.writeByte((messageType >> 16) & 0x00FF);\n");
                 }
                 // Write Header
                 writer.print("/**\n * Generated class : " + className + "\n * DO NOT MODIFY!\n **/\n");
@@ -375,7 +383,7 @@ public class MAVLinkGenerator {
                 writer.print(" * Encode message with raw data and other informations\n");
                 writer.print(" */\n");
                 writer.print("public byte[] encode() throws IOException {\n");
-                writer.print("  byte[] buffer = new byte[8+" + fieldLen + "];\n");
+                writer.print("  byte[] buffer = new byte[12+" + fieldLen + "];\n");
                 if (forEmbeddedJava) {
                     if (isLittleEndian) {
                         writer.print("   LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());\n");
@@ -413,8 +421,8 @@ public class MAVLinkGenerator {
                 }
                 writer.print("  byte crcl = (byte) (crc & 0x00FF);\n");
                 writer.print("  byte crch = (byte) ((crc >> 8) & 0x00FF);\n");
-                writer.print("  buffer[" + (fieldLen + 6) + "] = crcl;\n");
-                writer.print("  buffer[" + (fieldLen + 7) + "] = crch;\n");
+                writer.print("  buffer[" + (fieldLen + 10) + "] = crcl;\n");
+                writer.print("  buffer[" + (fieldLen + 11) + "] = crch;\n");
                 if (forEmbeddedJava) {
                     if (isLittleEndian) {
                         writer.print("  dos.close();\n");

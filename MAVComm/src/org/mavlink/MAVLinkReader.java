@@ -119,6 +119,7 @@ public class MAVLinkReader {
 	 *            Start byte for MAVLink version
 	 */
 	public MAVLinkReader() {
+		System.out.println("MAVLinkReader 2.0 initialized");
 		this.dis = null;
 		for (int i = 0; i < lastSequence.length; i++) {
 			lastSequence[i] = -1;

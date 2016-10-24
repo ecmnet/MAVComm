@@ -256,7 +256,15 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_command_ack ack = (msg_command_ack)o;
-				// handle acknowledgement via Listener
+				switch(ack.result) {
+				case 1:
+					System.err.println("Command "+ack.command+" failed"); break;
+				case 2:
+					System.err.println("Command "+ack.command+" is denied"); break;
+				case 3:
+					System.err.println("Command "+ack.command+" is unsupported"); break;
+				default:
+				}
 			}
 
 		});
