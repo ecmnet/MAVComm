@@ -55,7 +55,7 @@ public class MAVCommTest implements Runnable {
 
 
 		if(args.length>0)
-			control = new MAVUdpController(peerAddress,14556,14550, true);
+			control = new MAVUdpController(peerAddress,14555,14550, true);
 		else
 		  System.exit(-1);
 
