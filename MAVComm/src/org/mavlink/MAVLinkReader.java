@@ -177,7 +177,7 @@ public class MAVLinkReader {
 			                bytes[i] = buffer[i - offset];
 			            }
 			            dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
-			            while (dis.available() > lengthToRead+RECEIVED_OFFSET ) {
+			            while (dis.available() > lengthToRead+10 ) {
 			    			readMavLinkMessageFromBuffer(dis.readByte() & 0xFF);
 			    		}
 			            offset = dis.available();
