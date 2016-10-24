@@ -61,7 +61,7 @@ public class MAVLinkStream {
 	public MAVLinkStream(ByteChannel channel) {
 		this.channel = channel;
 		this.rxBuffer.flip();
-		this.reader = new MAVLinkReader(IMAVLinkMessage.MAVPROT_PACKET_START_V20);
+		this.reader = new MAVLinkReader();
 	}
 
 

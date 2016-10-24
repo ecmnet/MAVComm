@@ -43,7 +43,7 @@ public interface IMAVLinkMessage {
     /**
     * Packet start in MAVLink V2.0
     */
-   public final static int MAVPROT_PACKET_START_V20 = (byte) 253;
+    public final static int MAVPROT_PACKET_START_V20 = (byte) 253;
 
     /**
      * Packet start in MAVLink V2.0 (String)
