@@ -47,7 +47,7 @@ public class MAVLinkReader {
     /**
      * Last sequence number received
      */
-    private final int[] lastSequence = new int[256];
+    private final int[] lastPacket = new int[256];
 
     /**
      * Read MAVLink V1.0 packets by default;
@@ -115,8 +115,8 @@ public class MAVLinkReader {
     public MAVLinkReader(DataInputStream dis, byte start) {
         this.dis = dis;
         this.start = start;
-        for (int i = 0; i < lastSequence.length; i++) {
-            lastSequence[i] = -1;
+        for (int i = 0; i < lastPacket.length; i++) {
+        	lastPacket[i] = -1;
         }
     }
 
@@ -129,8 +129,8 @@ public class MAVLinkReader {
     public MAVLinkReader(byte start) {
         this.dis = null;
         this.start = start;
-        for (int i = 0; i < lastSequence.length; i++) {
-            lastSequence[i] = -1;
+        for (int i = 0; i < lastPacket.length; i++) {
+        	lastPacket[i] = -1;
         }
     }
 
@@ -371,9 +371,9 @@ public class MAVLinkReader {
             msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
             if (msg != null) {
                 msg.packet = packet;
-                if (!checkSequence(sysId, packet)) {
+                if (!checkPacket(sysId, packet)) {
                     badSequence += 1;
-                    //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastSequence[sysId] +
+                    //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastPacket[sysId] +
                     //                   " Current sequence : " + sequence + " Id=" + msgId + " nbReceived=" + nbReceived);
                 }
                 packets.addElement(msg);
@@ -394,7 +394,7 @@ public class MAVLinkReader {
             validData = false;
         }
         // restart buffer
-        lastSequence[sysId] = packet;
+        lastPacket[sysId] = packet;
         nbReceived = 0;
 
         return validData;
@@ -407,22 +407,22 @@ public class MAVLinkReader {
      *            current sequence
      * @return true if we don't lost messages
      */
-    protected boolean checkSequence(int sysId, int sequence) {
+    protected boolean checkPacket(int sysId, int packet) {
         boolean check = false;
-        if (lastSequence[sysId] == -1) {
+        if (lastPacket[sysId] == -1) {
             // it is the first message read
-            lastSequence[sysId] = sequence;
+            lastPacket[sysId] = packet;
             check = true;
         }
-        else if (lastSequence[sysId] < sequence) {
-            if (sequence - lastSequence[sysId] == 1) {
+        else if (lastPacket[sysId] < packet) {
+            if (packet - lastPacket[sysId] == 1) {
                 // No message lost
                 check = true;
             }
         }
         else
         // We have reached the max number (255) and restart to 0
-        if (sequence + 256 - lastSequence[sysId] == 1) {
+        if (packet + 256 - lastPacket[sysId] == 1) {
             // No message lost
             check = true;
         }
