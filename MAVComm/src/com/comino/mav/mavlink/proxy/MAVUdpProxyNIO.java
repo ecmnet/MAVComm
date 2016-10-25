@@ -156,7 +156,7 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 
 
 		} catch (Exception e) {
-		//	try { Thread.sleep(150); } catch(Exception k) { }
+		//	try { Thread.sleep(150); } catch(Exception k) {
 			buffer.clear();
 			close();
 			isConnected = false;

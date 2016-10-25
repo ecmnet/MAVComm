@@ -37,6 +37,7 @@ package com.comino.mav.control.impl;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
@@ -246,7 +247,6 @@ public class MAVProxyController implements IMAVMSPController {
 					if(msg!=null) {
 
 						IMAVLinkListener listener = listeners.get(msg.getClass());
-
 						if(listener!=null)
 							listener.received(msg);
 						else

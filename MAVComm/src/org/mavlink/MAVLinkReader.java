@@ -26,6 +26,7 @@ package org.mavlink;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Vector;
@@ -88,7 +89,7 @@ public class MAVLinkReader {
 	 */
 	private final int[] lastSequence = new int[256];
 
-	private final byte[] bytes = new byte[2048];
+	private final byte[] bytes = new byte[8192];
 
 	private int offset = 0;
 
@@ -154,66 +155,70 @@ public class MAVLinkReader {
 	 * @return MAVLink message or null
 	 * @throws IOException
 	 */
-		public synchronized MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
-			MAVLinkMessage msg = null;
-			if (len > 0) {
-				dis = new DataInputStream(new ByteArrayInputStream(buffer, 0, len));
-				while (dis.available() > 0 ) {
-					readMavLinkMessageFromBuffer(dis.readByte() & 0xFF);
-				}
-			}
 
-			if (!packets.isEmpty()) {
-				msg = (MAVLinkMessage) packets.firstElement();
-				packets.removeElementAt(0);
+	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
+		MAVLinkMessage msg = null;
 
+		if (len > 0) {
+			for(int i=0;i<len;i++) {
+				readMavLinkMessageFromBuffer(buffer[i] & 0x00FF);
 			}
-			return msg;
 		}
 
-//	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
-//		MAVLinkMessage msg = null;
-//		if (len > 0) {
-//			for (int i = offset; i < len + offset; i++) {
-//				bytes[i] = buffer[i - offset];
-//			}
-//			dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
-//			while (packets.isEmpty() && dis.available() > 280 ) {
-//				readMavLinkMessageFromBuffer(dis.readByte() & 0xFF);
-//			}
-//			offset = dis.available();
-//			for (int j = 0; j < offset; j++) {
-//				bytes[j] = dis.readByte();
-//			}
-//			dis.close();
-//			dis = null;
-//		}
-//		if (!packets.isEmpty()) {
-//			msg = (MAVLinkMessage) packets.firstElement();
-//			packets.removeElementAt(0);
-//		}
-//		return msg;
-//	}
+		if (!packets.isEmpty()) {
+			msg = (MAVLinkMessage) packets.firstElement();
+			packets.removeElementAt(0);
+		}
+		return msg;
+	}
 
-	protected boolean readMavLinkMessageFromBuffer(int c) {
+	//	  public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
+	//	        MAVLinkMessage msg = null;
+	//	        if (packets.isEmpty() || len > 0) {
+	//	            for (int i = offset; i < len + offset; i++) {
+	//	                bytes[i] = buffer[i - offset];
+	//	            }
+	//	            dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
+	//	            while (dis.available() > (rxmsg.len + 10)) {
+	//	            	readMavLinkMessageFromBuffer(dis.readByte() & 0x00FF);
+	//	            }
+	//	            offset = dis.available();
+	//	            for (int j = 0; j < offset; j++) {
+	//	                bytes[j] = dis.readByte();
+	//	            }
+	//	            dis.close();
+	//	            dis = null;
+	//	        }
+	//	        if (!packets.isEmpty()) {
+	//	            msg = (MAVLinkMessage) packets.firstElement();
+	//	            packets.removeElementAt(0);
+	//	        }
+	//	        return msg;
+	//	    }
+
+
+
+
+
+	protected  boolean readMavLinkMessageFromBuffer(int c) {
 		try {
 
 			switch(state) {
 			case MAVLINK_PARSE_STATE_IDLE:
-				rxmsg.clear();
 				if((byte)c==IMAVLinkMessage.MAVPROT_PACKET_START_V20) {
-					lengthToRead = 0;
+					rxmsg.clear();
 					rxmsg.start = IMAVLinkMessage.MAVPROT_PACKET_START_V20;
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_STX;
 				}
 				if((byte)c==IMAVLinkMessage.MAVPROT_PACKET_START_V10) {
-					lengthToRead = 0;
+					rxmsg.clear();
 					rxmsg.start = IMAVLinkMessage.MAVPROT_PACKET_START_V10;
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_STX;
+					return true;
 				}
 				break;
 			case MAVLINK_PARSE_STATE_GOT_STX:
-				rxmsg.len=c;
+				rxmsg.len=c; lengthToRead=0;
 				rxmsg.crc = MAVLinkCRC.crc_accumulate((byte)c, rxmsg.crc);
 				if(rxmsg.start==IMAVLinkMessage.MAVPROT_PACKET_START_V10)
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_COMPAT_FLAGS;
@@ -264,20 +269,19 @@ public class MAVLinkReader {
 				state = t_parser_state.MAVLINK_PARSE_STATE_GOT_MSGID3;
 				break;
 			case MAVLINK_PARSE_STATE_GOT_MSGID3:
-				if(lengthToRead == rxmsg.len || lengthToRead >= rxmsg.rawData.length) {
-					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
-					return false;
-				}
-
 				rxmsg.rawData[lengthToRead++] = (byte)c;
 				rxmsg.crc = MAVLinkCRC.crc_accumulate((byte)c, rxmsg.crc);
-				if(lengthToRead == rxmsg.len)
+				if(lengthToRead >= rxmsg.len)
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_PAYLOAD;
-
 				break;
 			case MAVLINK_PARSE_STATE_GOT_PAYLOAD:
-				if (IMAVLinkCRC.MAVLINK_EXTRA_CRC)
-					rxmsg.crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[rxmsg.msgId], rxmsg.crc);
+				try {
+					if (IMAVLinkCRC.MAVLINK_EXTRA_CRC)
+						rxmsg.crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[rxmsg.msgId], rxmsg.crc);
+				} catch(Exception e) {
+					System.out.println("CRC: "+rxmsg.toString());
+					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
+				}
 
 				if(c!=(rxmsg.crc & 0x00FF))
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
@@ -302,12 +306,14 @@ public class MAVLinkReader {
 				state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
-					packets.addElement(msg); System.out.println(packets.size()+":"+msg);
+					if(msg!=null) {
+						packets.addElement(msg);
+						//System.out.println(rxmsg.sequence+":"+msg);
+					}
 				}
 				break;
 
 			case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
-				System.out.print("SIG");
 				rxmsg.signature[MAVLINK_SIGNATURE_BLOCK_LEN-rxmsg.signature_wait] = (byte)c;
 				rxmsg.signature_wait--;
 				if ( rxmsg.signature_wait == 0) {
@@ -316,14 +322,18 @@ public class MAVLinkReader {
 					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 					if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 						MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
-						packets.addElement(msg);
+						if(msg!=null) {
+							packets.addElement(msg);
+							//							System.out.println(rxmsg.sequence+":"+msg);
+						}
 					}
 				}
 				break;
 			default: break;
 			}
 			return true;
-		} catch(IOException io) {
+		} catch(Exception io) {
+			io.printStackTrace();
 			state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 			return false;
 		}
@@ -371,11 +381,11 @@ public class MAVLinkReader {
 		public int componentId;
 		public int msgId;
 		public int crc = MAVLinkCRC.crc_init();;
-		public byte[] rawData = new byte[255];
+		public byte[] rawData = new byte[256];
 		public byte[] signature = new byte[MAVLINK_SIGNATURE_BLOCK_LEN];
 
 		public mavlink_framing_t msg_received;
-		public int signature_wait;
+		public int signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
 
 		public void clear() {
 			start = 0;
@@ -386,9 +396,14 @@ public class MAVLinkReader {
 			sysId=0;
 			componentId=0;
 			msgId=0;
+			signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
 			crc= MAVLinkCRC.crc_init();
 			Arrays.fill(rawData, (byte)0x00);
 			Arrays.fill(signature, (byte)0x00);
+		}
+
+		public String toString() {
+			return "STX="+start+" LEN="+len+" SEQ="+sequence+" SYS="+sysId+" MSG="+msgId;
 		}
 
 	}
