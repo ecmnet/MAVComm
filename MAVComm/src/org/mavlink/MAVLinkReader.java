@@ -5,6 +5,7 @@ package org.mavlink;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Vector;
 
 import org.mavlink.messages.MAVLinkMessage;
@@ -490,15 +491,10 @@ public class MAVLinkReader {
             crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[msgId], crc);
         }
 
-        System.out.println(sequence+"\t"+lengthToRead+"\t"+bytesToHex(receivedBuffer,lengthToRead+12));
-
-
         byte crcl = (byte) (crc & 0x00FF);
         byte crch = (byte) ((crc >> 8) & 0x00FF);
         if ((crcl == crcLow) && (crch == crcHigh)) {
             msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
-            if(msgId==83)
-            	System.err.println(msg);
             if (msg != null) {
                 msg.sequence = sequence;
                 if (!checkSequence(sysId, sequence)) {
@@ -506,11 +502,10 @@ public class MAVLinkReader {
                     //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastSequence[sysId] +
                     //                   " Current sequence : " + sequence + " Id=" + msgId + " nbReceived=" + nbReceived);
                 }
-                System.out.println(sequence+"\t"+msg);
                 packets.addElement(msg);
                 nbMessagesReceived++;
                 // if (debug)
-                // System.out.println("MESSAGE = " + msg);
+                 System.out.println("MESSAGE = " + msg);
             }
             else {
                 System.err.println("ERROR creating message  Id=" + msgId);
@@ -570,8 +565,9 @@ public class MAVLinkReader {
      * @return Payload bytes
      * @throws IOException
      */
+    private static byte[] buffer = new byte[255];
     protected byte[] readRawData(int nb) throws IOException {
-        byte[] buffer = new byte[nb];
+        Arrays.fill(buffer,(byte)0);
         int index = 0;
         /*
          * while (dis.available() < nb) { ; }

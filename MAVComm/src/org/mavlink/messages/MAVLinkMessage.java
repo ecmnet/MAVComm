@@ -121,4 +121,11 @@ public abstract class MAVLinkMessage extends MAVLinkMessageCoder implements IMAV
         return false;
     }
 
+    private int trim_payload(byte[] payload, int length) {
+    	while (length > 1 && payload[length-1] == 0) {
+    		length--;
+    	}
+    	return length;
+    }
+
 }
