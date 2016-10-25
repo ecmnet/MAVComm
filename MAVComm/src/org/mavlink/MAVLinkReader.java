@@ -21,7 +21,7 @@ public class MAVLinkReader {
      */
     private DataInputStream dis = null;
 
-    public final static int RECEIVED_OFFSET = 25;
+    public final static int RECEIVED_OFFSET = 12;
 
     /**
        *
@@ -490,12 +490,15 @@ public class MAVLinkReader {
             crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[msgId], crc);
         }
 
-        System.out.println(bytesToHex(receivedBuffer,lengthToRead+11));
+        System.out.println(sequence+"\t"+lengthToRead+"\t"+bytesToHex(receivedBuffer,lengthToRead+12));
+
 
         byte crcl = (byte) (crc & 0x00FF);
         byte crch = (byte) ((crc >> 8) & 0x00FF);
         if ((crcl == crcLow) && (crch == crcHigh)) {
             msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
+            if(msgId==83)
+            	System.err.println(msg);
             if (msg != null) {
                 msg.sequence = sequence;
                 if (!checkSequence(sysId, sequence)) {
@@ -515,8 +518,10 @@ public class MAVLinkReader {
             }
         }
         else {
+        	 if(msgId==83)
+             	System.err.println(msgId);
             badCRC += 1;
-            System.err.println(sequence+"\tERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
+            System.err.println(totalBytesReceived+"\tERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
                                Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow & 0x00FF) +
                               " Id=" + msgId + " s=" + sequence);
             validData = false;
