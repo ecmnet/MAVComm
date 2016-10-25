@@ -21,7 +21,7 @@ public class MAVLinkReader {
      */
     private DataInputStream dis = null;
 
-    public final static int RECEIVED_OFFSET = 10;
+    public final static int RECEIVED_OFFSET = 25;
 
     /**
        *
@@ -174,7 +174,7 @@ public class MAVLinkReader {
                 bytes[i] = buffer[i - offset];
             }
             dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
-            while (dis.available() > (lengthToRead + 9)) {
+            while (dis.available() > (lengthToRead + 10)) {
                 readNextMessageWithoutBlocking();
             }
             offset = dis.available();
@@ -390,7 +390,6 @@ public class MAVLinkReader {
                 }
                 else {
                     lostBytes++;
-                    //System.err.println("LOST bytes : " + lostBytes++);
                     nbReceived = 0;
                     return validData;
                 }
@@ -412,6 +411,7 @@ public class MAVLinkReader {
                 lengthReceived = false;
                 lengthToRead = 0;
                 // restart buffer
+                lostBytes=0;
                 nbReceived = 0;
             }
         }
@@ -490,6 +490,8 @@ public class MAVLinkReader {
             crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[msgId], crc);
         }
 
+        System.out.println(bytesToHex(receivedBuffer,lengthToRead+11));
+
         byte crcl = (byte) (crc & 0x00FF);
         byte crch = (byte) ((crc >> 8) & 0x00FF);
         if ((crcl == crcLow) && (crch == crcHigh)) {
@@ -501,7 +503,7 @@ public class MAVLinkReader {
                     //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastSequence[sysId] +
                     //                   " Current sequence : " + sequence + " Id=" + msgId + " nbReceived=" + nbReceived);
                 }
-                System.out.println(msg);
+                System.out.println(sequence+"\t"+msg);
                 packets.addElement(msg);
                 nbMessagesReceived++;
                 // if (debug)
@@ -514,9 +516,9 @@ public class MAVLinkReader {
         }
         else {
             badCRC += 1;
-            System.err.println("ERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
+            System.err.println(sequence+"\tERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
                                Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow & 0x00FF) +
-                              " Id=" + msgId + " nbReceived=" + nbReceived);
+                              " Id=" + msgId + " s=" + sequence);
             validData = false;
         }
         // restart buffer
@@ -575,6 +577,17 @@ public class MAVLinkReader {
             buffer[index++] = receivedBuffer[nbReceived++];
         }
         return buffer;
+    }
+
+    final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+    public static String bytesToHex(byte[] bytes, int len) {
+        char[] hexChars = new char[len * 2];
+        for ( int j = 0; j <len; j++ ) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = hexArray[v >>> 4];
+            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        }
+        return new String(hexChars);
     }
 
 }
