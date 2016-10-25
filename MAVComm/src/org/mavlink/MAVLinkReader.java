@@ -141,22 +141,6 @@ public class MAVLinkReader {
         return packets.size();
     }
 
-    /**
-     * Return next message. If bytes available, try to read it.
-     *
-     * @return MAVLink message or null
-     */
-//    public MAVLinkMessage getNextMessage() throws IOException {
-//        MAVLinkMessage msg = null;
-//        if (packets.isEmpty()) {
-//            readNextMessage();
-//        }
-//        if (!packets.isEmpty()) {
-//            msg = (MAVLinkMessage) packets.firstElement();
-//            packets.removeElementAt(0);
-//        }
-//        return msg;
-//    }
 
     /**
      * Return next message. Use it without stream in input.
@@ -209,117 +193,6 @@ public class MAVLinkReader {
         return msg;
     }
 
-    /**
-     * Try to read next message Can be blocked on read
-     *
-     * @return true if data are valid
-     */
-//    protected boolean readNextMessage() throws IOException {
-//        boolean validData = false;
-//        int length;
-//        int sequence;
-//        int sysId;
-//        int componentId;
-//        int msgId;
-//        byte crcLow;
-//        byte crcHigh;
-//        byte[] rawData = null;
-//        MAVLinkMessage msg = null;
-//
-//        // we are allowed to block in this version of the function, take advantage
-//        // of that ASAP
-//        // otherwise getNextMessage will burn 100% of the CPU spinning...
-//
-//
-//        receivedBuffer[nbReceived] = dis.readByte();
-//        totalBytesReceived++;
-//        if (receivedBuffer[nbReceived++] == start) {
-//            validData = true;
-//
-//            length = receivedBuffer[nbReceived++] = dis.readByte();
-//            length &= 0X00FF;
-//            totalBytesReceived++;
-//
-//            sequence = receivedBuffer[nbReceived++] = dis.readByte();
-//            sequence &= 0X00FF;
-//            totalBytesReceived++;
-//
-//            sysId = receivedBuffer[nbReceived++] = dis.readByte();
-//            sysId &= 0X00FF;
-//            totalBytesReceived++;
-//
-//            componentId = receivedBuffer[nbReceived++] = dis.readByte();
-//            componentId &= 0X00FF;
-//            totalBytesReceived++;
-//
-//            msgId = receivedBuffer[nbReceived++] = dis.readByte();
-//            msgId &= 0X00FF;
-//            totalBytesReceived++;
-//
-//            rawData = readRawData(length);
-//
-//            crcLow = receivedBuffer[nbReceived++] = dis.readByte();
-//            totalBytesReceived++;
-//            crcHigh = receivedBuffer[nbReceived++] = dis.readByte();
-//            totalBytesReceived++;
-//            int crc = MAVLinkCRC.crc_calculate_decode(receivedBuffer, length);
-//            if (IMAVLinkCRC.MAVLINK_EXTRA_CRC) {
-//                // CRC-EXTRA for Mavlink 1.0
-//                crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[msgId], crc);
-//            }
-//
-//            byte crcl = (byte) (crc & 0x00FF);
-//            byte crch = (byte) ((crc >> 8) & 0x00FF);
-//            if ((crcl == crcLow) && (crch == crcHigh)) {
-//                msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
-//                if (msg != null) {
-//                    msg.sequence = sequence;
-//                    if (!checkSequence(sysId, sequence)) {
-//                        badSequence += 1;
-//                        /*
-//                         * System.err.println("SEQUENCE error, packets lost! Last sequence : "
-//                         * + lastSequence[sysId] + " Current sequence : " + sequence +
-//                         * " Id=" + msgId + " nbReceived=" + nbReceived);
-//                         */
-//                    }
-//                    packets.addElement(msg);
-//                    nbMessagesReceived++;
-//                    // if (debug)
-//                    // System.out.println("MESSAGE = " + msg);
-//                }
-//                else {
-//                    System.err.println("ERROR creating message  Id=" + msgId);
-//                    validData = false;
-//                }
-//
-//                // Mark this sequence # as current
-//                lastSequence[sysId] = sequence;
-//            }
-//            else {
-//                badCRC += 1;
-//                // stdout very slow on android
-//                /*
-//                 * System.err.println("ERROR mavlink CRC16-CCITT compute= " +
-//                 * Integer.toHexString(crc) + "  expected : " +
-//                 * Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow &
-//                 * 0x00FF) + " Id=" + msgId + " nbReceived=" + nbReceived);
-//                 */
-//                validData = false;
-//            }
-//            // restart buffer
-//            nbReceived = 0;
-//        }
-//        else {
-//            validData = false;
-//            // Don't spam the log while syncing, client can get lostBytes if curious
-//            lostBytes++;
-//            // System.err.println("LOST bytes : " + lostBytes);
-//            // restart buffer
-//            nbReceived = 0;
-//        }
-//
-//        return validData;
-//    }
 
     /**
      * @return The lostBytes
@@ -417,6 +290,7 @@ public class MAVLinkReader {
             }
         }
         catch (Exception e) {
+        	e.printStackTrace();
             nbReceived = 0;
             validData = false;
         }
@@ -493,7 +367,7 @@ public class MAVLinkReader {
 
         byte crcl = (byte) (crc & 0x00FF);
         byte crch = (byte) ((crc >> 8) & 0x00FF);
-        if ((crcl == crcLow) && (crch == crcHigh)) {
+        if ((crcl == crcLow) && (crch == crcHigh) ) {
             msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
             if (msg != null) {
                 msg.packet = packet;
@@ -513,8 +387,6 @@ public class MAVLinkReader {
             }
         }
         else {
-        	 if(msgId==83)
-             	System.err.println(msgId);
             badCRC += 1;
             System.err.println(totalBytesReceived+"\tERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
                                Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow & 0x00FF) +

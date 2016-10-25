@@ -49,9 +49,9 @@ public class MAVLinkStream {
 
 	private final ByteChannel channel;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(256);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(2048);
 
-	static byte[] buf = new byte[256];
+	static byte[] buf = new byte[2048];
 
 	private MAVLinkReader reader;
 	private int protocol;
@@ -87,7 +87,7 @@ public class MAVLinkStream {
 			} catch (BufferUnderflowException e) {
 				// Try to refill buffer
 				try {
-				    LockSupport.parkNanos(500000);
+				    LockSupport.parkNanos(200000);
 					rxBuffer.compact();
 					n = channel.read(rxBuffer);
 					rxBuffer.flip();
