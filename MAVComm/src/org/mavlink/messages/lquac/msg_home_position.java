@@ -94,7 +94,7 @@ public byte[] encode() throws IOException {
   dos.writeByte(length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
-  dos.writeByte(sequence & 0x00FF);
+  dos.writeByte(packet & 0x00FF);
   dos.writeByte(sysId & 0x00FF);
   dos.writeByte(componentId & 0x00FF);
   dos.writeByte(messageType & 0x00FF);

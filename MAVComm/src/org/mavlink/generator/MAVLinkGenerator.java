@@ -267,7 +267,7 @@ public class MAVLinkGenerator {
                 	sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(incompat & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(compat & 0x00FF);\n");
-                    sbWrite.append("  dos.writeByte(sequence & 0x00FF);\n");
+                    sbWrite.append("  dos.writeByte(packet & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(sysId & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(componentId & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(messageType & 0x00FF);\n");
@@ -279,7 +279,7 @@ public class MAVLinkGenerator {
                 	sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(incompat & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(compat & 0x00FF);\n");
-                    sbWrite.append("  dos.put((byte)(sequence & 0x00FF));\n");
+                    sbWrite.append("  dos.put((byte)(seq   & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(sysId & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(componentId & 0x00FF));\n");
                     sbWrite.append("  dos.put((byte)(messageType & 0x00FF));\n");

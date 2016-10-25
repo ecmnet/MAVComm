@@ -27,7 +27,7 @@ public class MAVLinkReader {
     /**
        *
        */
-    public final static int RECEIVED_BUFFER_SIZE = 1024;
+    public final static int RECEIVED_BUFFER_SIZE = 280;
 
     /**
        *
@@ -437,7 +437,7 @@ public class MAVLinkReader {
         int incompat;
         int compat;
         int tmp;
-        int sequence;
+        int packet;
         int sysId;
         int componentId;
         int msgId;
@@ -454,8 +454,8 @@ public class MAVLinkReader {
         compat &= 0X00FF;
         totalBytesReceived++;
 
-        sequence = receivedBuffer[nbReceived++] = dis.readByte();
-        sequence &= 0X00FF;
+        packet = receivedBuffer[nbReceived++] = dis.readByte();
+        packet &= 0X00FF;
         totalBytesReceived++;
 
         sysId = receivedBuffer[nbReceived++] = dis.readByte();
@@ -496,8 +496,8 @@ public class MAVLinkReader {
         if ((crcl == crcLow) && (crch == crcHigh)) {
             msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
             if (msg != null) {
-                msg.sequence = sequence;
-                if (!checkSequence(sysId, sequence)) {
+                msg.packet = packet;
+                if (!checkSequence(sysId, packet)) {
                     badSequence += 1;
                     //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastSequence[sysId] +
                     //                   " Current sequence : " + sequence + " Id=" + msgId + " nbReceived=" + nbReceived);
@@ -505,7 +505,7 @@ public class MAVLinkReader {
                 packets.addElement(msg);
                 nbMessagesReceived++;
                 // if (debug)
-                 System.out.println("MESSAGE = " + msg);
+                // System.out.println("MESSAGE = " + msg);
             }
             else {
                 System.err.println("ERROR creating message  Id=" + msgId);
@@ -518,11 +518,11 @@ public class MAVLinkReader {
             badCRC += 1;
             System.err.println(totalBytesReceived+"\tERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
                                Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow & 0x00FF) +
-                              " Id=" + msgId + " s=" + sequence);
+                              " Id=" + msgId + " s=" + packet);
             validData = false;
         }
         // restart buffer
-        lastSequence[sysId] = sequence;
+        lastSequence[sysId] = packet;
         nbReceived = 0;
 
         return validData;

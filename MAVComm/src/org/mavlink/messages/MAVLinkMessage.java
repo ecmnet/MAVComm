@@ -74,7 +74,7 @@ public abstract class MAVLinkMessage extends MAVLinkMessageCoder implements IMAV
     /**
      * Message sequence
      */
-    public int sequence = -1;
+    public int packet   = -1;
 
     /**
      * Indicates the type of message (24 bit)
