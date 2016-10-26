@@ -388,9 +388,7 @@ public class MAVLinkReader {
         }
         else {
             badCRC += 1;
-            System.err.println(totalBytesReceived+"\tERROR mavlink CRC16-CCITT compute= " + Integer.toHexString(crc) + "  expected : " +
-                               Integer.toHexString(crcHigh & 0x00FF) + Integer.toHexString(crcLow & 0x00FF) +
-                              " Id=" + msgId + " s=" + packet);
+//            System.err.println("CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
             validData = false;
         }
         // restart buffer
@@ -437,7 +435,7 @@ public class MAVLinkReader {
      * @return Payload bytes
      * @throws IOException
      */
-    private static byte[] buffer = new byte[255];
+    private byte[] buffer = new byte[255];
     protected byte[] readRawData(int nb) throws IOException {
         Arrays.fill(buffer,(byte)0);
         int index = 0;

@@ -14,7 +14,7 @@
  * Who       yyyy/mm/dd   Action
  * --------  ----------   ------
  * ghelle   31 mars 2012        Create
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -173,6 +173,7 @@ public class MAVLinkHandler extends DefaultHandler implements IMAVLinkTag {
                 throw new SAXException(e);
             }
         }
+
         else if (qName.equalsIgnoreCase(VERSION_TAG)) {
             inVersion = true;
             buffer = new StringBuffer();

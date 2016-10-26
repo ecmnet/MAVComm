@@ -14,7 +14,7 @@
  * Who       yyyy/mm/dd   Action
  * --------  ----------   ------
  * ghelle	31 mars 2012		Create
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -51,6 +51,8 @@ public interface IMAVLinkTag {
     public final static String MESSAGE_TAG = "message";
 
     public final static String FIELD_TAG = "field";
+
+    public final static String EXTENSION_TAG = "extensions";
 
     public final static String ID_ATTR = "id";
 

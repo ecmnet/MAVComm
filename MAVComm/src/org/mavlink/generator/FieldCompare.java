@@ -14,7 +14,7 @@
  * Who       yyyy/mm/dd   Action
  * --------  ----------   ------
  * ghelle	7 sept. 2012		Create
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -34,6 +34,7 @@ import java.util.Comparator;
 public class FieldCompare implements Comparator<MAVLinkField> {
 
     public int compare(MAVLinkField field2, MAVLinkField field1) {
+
         //Sort on type size
         if (field1.getType().getTypeSize() > field2.getType().getTypeSize()) {
             return 1;

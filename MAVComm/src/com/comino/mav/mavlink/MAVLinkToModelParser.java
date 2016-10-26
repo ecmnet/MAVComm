@@ -704,6 +704,9 @@ public class MAVLinkToModelParser {
 
 		System.out.println("MAVLink parser: "+listeners.size()+" MAVLink messagetypes registered");
 
+		startUpAt = System.currentTimeMillis();
+		model.sys.tms = System.nanoTime()/1000;
+
 	}
 
 	public void addMAVLinkListener(IMAVLinkListener listener) {
@@ -718,6 +721,7 @@ public class MAVLinkToModelParser {
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
 		return mavList;
 	}
+
 
 	public void start(ByteChannel channel) {
 		if(!isRunning) {
@@ -772,12 +776,69 @@ public class MAVLinkToModelParser {
 		listenerList.add(listener);
 	}
 
+	public void parseMessage(MAVLinkMessage msg) throws IOException {
+		List<IMAVLinkListener> listenerList = null;
+
+		if(msg!=null) {
+			model.sys.setStatus(Status.MSP_CONNECTED,true);
+			model.sys.tms = System.nanoTime()/1000;
+
+			mavList.put(msg.getClass(),msg);
+			listenerList = listeners.get(msg.getClass());
+			if(listenerList!=null) {
+				for(IMAVLinkListener listener : listenerList)
+					listener.received(msg);
+			}
+
+			if(mavListener!=null) {
+				for(IMAVLinkListener mavlistener : mavListener)
+					mavlistener.received(msg);
+			}
+
+			if(model.sys.isStatus(Status.MSP_ARMED))
+				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+		}
+
+		// if no global position was published within the last second:
+		if((System.currentTimeMillis() - gpos_tms)>1000)
+			model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
+
+		if((System.currentTimeMillis() - mocap_tms)>1000) {
+			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
+			mocap_tms = System.currentTimeMillis();
+		}
+
+
+		if((System.nanoTime()/1000) > (model.sys.tms+1000000) &&
+				model.sys.isStatus(Status.MSP_CONNECTED)) {
+
+			model.sys.setStatus(Status.MSP_CONNECTED, false);
+			model.sys.setStatus(Status.MSP_READY, false);
+			notifyStatusChange();
+			link.close(); link.open();
+			model.sys.tms = System.nanoTime()/1000;
+		}
+
+		if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
+				&& link.isSerial()) {
+			time_offset_tms = System.currentTimeMillis();
+			msg_timesync sync_s = new msg_timesync(1,1);
+			sync_s.tc1 = 0;
+			sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
+			link.write(sync_s);
+		}
+
+		if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
+				model.sys.isStatus(Status.MSP_READY)) {
+			model.sys.setStatus(Status.MSP_READY, false);
+			notifyStatusChange();
+		}
+	}
+
 	private class MAVLinkParserWorker implements Runnable {
 		MAVLinkMessage msg = null; List<IMAVLinkListener> listenerList = null;
 
 		public void run() {
-			startUpAt = System.currentTimeMillis();
-			model.sys.tms = System.nanoTime()/1000;
 
 			try {
 				Thread.sleep(20);
@@ -830,7 +891,7 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_CONNECTED, false);
 						model.sys.setStatus(Status.MSP_READY, false);
 						notifyStatusChange();
-     					link.close(); link.open();
+						link.close(); link.open();
 						model.sys.tms = System.nanoTime()/1000;
 						Thread.sleep(50);
 					}

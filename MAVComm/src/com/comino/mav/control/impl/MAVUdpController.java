@@ -35,6 +35,7 @@
 package com.comino.mav.control.impl;
 
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
+import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 
 
@@ -48,7 +49,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		this.isSITL = isSITL;
 		this.peerAddress = peerAddress;
 		System.out.println("UDP Controller loaded ("+peerAddress+":"+peerPort+")");
-		comm = MAVUdpCommNIO.getInstance(model, peerAddress,peerPort, bindPort);
+		comm = MAVUdpCommNIO2.getInstance(model, peerAddress,peerPort, bindPort);
 
 	}
 

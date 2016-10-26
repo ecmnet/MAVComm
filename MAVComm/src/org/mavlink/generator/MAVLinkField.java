@@ -14,7 +14,7 @@
  * Who       yyyy/mm/dd   Action
  * --------  ----------   ------
  * ghelle	30 mars 2012		Create
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -45,6 +45,8 @@ public class MAVLinkField {
      */
     private String description;
 
+    private boolean extension=false;
+
     /**
      * MAVLink Field constructor
      * @param type
@@ -53,6 +55,14 @@ public class MAVLinkField {
     public MAVLinkField(MAVLinkDataType type, String name) {
         this.type = type;
         this.name = name;
+    }
+
+    public void setFieldIsExtensionFlag() {
+    	this.extension = false;
+    }
+
+    public boolean isExtension() {
+    	return this.extension;
     }
 
     /**
@@ -82,6 +92,8 @@ public class MAVLinkField {
     public void setName(String name) {
         this.name = name;
     }
+
+
 
     /**
      * @return The description
