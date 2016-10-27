@@ -57,7 +57,7 @@ public class MAVLinkReader {
     /**
      * MAVLink messages received
      */
-    private final Vector packets = new Vector();
+    private final Vector<MAVLinkMessage> packets = new Vector<MAVLinkMessage>();
 
     /**
      * True if we are reading a message
@@ -125,6 +125,7 @@ public class MAVLinkReader {
         for (int i = 0; i < lastPacket.length; i++) {
         	lastPacket[i] = -1;
         }
+        System.out.println("MAVLinkReader "+id+" started");
     }
 
     /**

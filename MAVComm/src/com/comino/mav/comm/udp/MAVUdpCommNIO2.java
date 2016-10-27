@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
+import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_system_time;
@@ -111,7 +112,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 		try {
 			isConnected = true;
-			System.out.println("Try to open UDP channel V2....");
+			System.out.println("Try to open UDP channel....");
 			channel = DatagramChannel.open();
 			channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
@@ -150,7 +151,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 			while(isConnected) {
 
-				if(selector.select(1500)==0)
+				if(selector.select(500)==0)
 					throw new IOException("Timeout");
 
 				Iterator<?> selectedKeys = selector.selectedKeys().iterator();

@@ -116,6 +116,7 @@ public class MAVLinkReader2 {
 		for (int i = 0; i < lastPacket.length; i++) {
 			lastPacket[i] = -1;
 		}
+		System.out.println("MAVLinkReader2 "+id+" started");
 	}
 
 	/**

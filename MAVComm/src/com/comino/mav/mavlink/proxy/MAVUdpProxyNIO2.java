@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
+import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_heartbeat;

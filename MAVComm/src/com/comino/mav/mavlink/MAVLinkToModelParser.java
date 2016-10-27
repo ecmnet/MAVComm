@@ -702,7 +702,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		System.out.println("MAVLink parser: "+listeners.size()+" MAVLink messagetypes registered");
+		System.out.println("MAVMSP parser: "+listeners.size()+" MAVLink messagetypes registered");
 
 		startUpAt = System.currentTimeMillis();
 		model.sys.tms = System.nanoTime()/1000;
