@@ -371,7 +371,6 @@ public class MAVLinkReader {
                 }
                 packets.addElement(msg);
                 nbMessagesReceived++;
-                // if (debug)
             }
             else {
                 System.err.println("ERROR creating message  Id=" + msgId);
@@ -380,7 +379,7 @@ public class MAVLinkReader {
         }
         else {
             badCRC += 1;
-          //  System.err.println("CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
+           //  System.err.println("CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
             validData = false;
         }
         // restart buffer

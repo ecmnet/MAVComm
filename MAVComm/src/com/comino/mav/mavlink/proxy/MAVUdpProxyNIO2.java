@@ -67,7 +67,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	private HashMap<Class<?>,IMAVLinkListener> listeners = null;
 
-
 	private MAVLinkReader reader;
 
 	private Selector selector;
@@ -75,7 +74,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	private List<ByteBuffer> queue = null;
 
 	private IMAVComm comm;
-
 
 	private boolean 			isConnected = false;
 
@@ -201,7 +199,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 										listener.received(msg);
 									else {
 										if(comm.isConnected()) {
-											System.out.println("MSG="+msg+" sent to vehicle");
 											comm.write(msg);
 										}
 									}
@@ -219,7 +216,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	public  void write(MAVLinkMessage msg) throws IOException {
 		if(msg!=null && channel!=null && channel.isOpen()) {
-			//queue.add(ByteBuffer.wrap(msg.encode()));
 			channel.write(ByteBuffer.wrap(msg.encode()));
 		}
 

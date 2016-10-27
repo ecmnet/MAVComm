@@ -34,11 +34,6 @@
 
 package com.comino.msp.main;
 
-import java.lang.management.MemoryMXBean;
-import java.lang.management.OperatingSystemMXBean;
-
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -49,12 +44,10 @@ import com.comino.msp.main.commander.MSPCommander;
 
 public class StartUp implements Runnable {
 
-	IMAVMSPController    control = null;
-	MSPConfig	          config  = null;
+	private IMAVMSPController    control = null;
+	private MSPConfig	          config = null;
 
-	private OperatingSystemMXBean osBean = null;
-	private MemoryMXBean mxBean = null;
-	private MSPCommander commander;
+	private MSPCommander commander = null;;
 
 	public StartUp(String[] args) {
 
@@ -65,10 +58,6 @@ public class StartUp implements Runnable {
 			control = new MAVProxyController2(true);
 		else
 			control = new MAVProxyController(false);
-
-		osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
-		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
-
 
 		MSPLogger.getInstance(control);
 
