@@ -51,6 +51,7 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
 import com.comino.mav.comm.serial.MAVSerialComm;
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
+import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO;
@@ -96,7 +97,8 @@ public class MAVProxyController implements IMAVMSPController {
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 		if(sitl) {
-			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14556, 14550);
+			comm = MAVUdpCommNIO2.getInstance(model, "127.0.0.1",14556, 14550);
+			comm.open();
 			proxy = new MAVUdpProxyNIO("127.0.0.1",14650,"0.0.0.0",14656);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller loaded (SITL) ");
@@ -239,8 +241,8 @@ public class MAVProxyController implements IMAVMSPController {
 
 			while (isRunning) {
 				try {
-					Thread.yield();
 
+					Thread.yield();
 					if(proxy.getInputStream()!=null)
 					    msg = proxy.getInputStream().read();
 

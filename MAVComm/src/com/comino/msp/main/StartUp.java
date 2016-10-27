@@ -43,6 +43,7 @@ import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
+import com.comino.mav.control.impl.MAVProxyController2;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.commander.MSPCommander;
 
@@ -61,7 +62,7 @@ public class StartUp implements Runnable {
 		System.out.println("MSPService version "+config.getVersion());
 
 		if(args.length>0)
-			control = new MAVProxyController(true);
+			control = new MAVProxyController2(true);
 		else
 			control = new MAVProxyController(false);
 
@@ -96,14 +97,14 @@ public class StartUp implements Runnable {
 		long tms = System.currentTimeMillis();
 		while(true) {
 			try {
-				Thread.sleep(2000);
+				Thread.sleep(500);
 				if(!control.isConnected()) {
 					if(control.isConnected())
 						control.close();
 					control.connect();
 				}
 
-				msg_timesync sync = new msg_timesync(1,1);
+				msg_timesync sync = new msg_timesync(1,2);
 				sync.tc1 = 0;
 				sync.ts1 = 0L;
 				control.sendMAVLinkMessage(sync);

@@ -41,114 +41,98 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
+import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.lquac.msg_heartbeat;
 
+import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.model.segment.Status;
 
 
-public class MAVUdpProxyNIO2 implements IMAVLinkListener  {
+public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	private SocketAddress 			bindPort = null;
 	private SocketAddress 			peerPort;
 	private DatagramChannel 		channel = null;
 
-	private ByteBuffer 				buffer = null;
-	private MAVLinkStream			in	   = null;
+	private HashMap<Class<?>,IMAVLinkListener> listeners = null;
+
+
+	private MAVLinkReader reader;
+
+	private Selector selector;
+
+	private List<ByteBuffer> queue = null;
+
+	private IMAVComm comm;
 
 
 	private boolean 			isConnected = false;
-	private Selector selector;
 
 
-	public MAVUdpProxyNIO2(String peerAddress, int pPort, String bindAddress, int bPort) {
-		buffer = ByteBuffer.allocate(8192);
+	//	public MAVUdpProxy() {
+	//		this("172.168.178.2",14550,"172.168.178.1",14555);
+	//	}
+
+
+	public MAVUdpProxyNIO2(String peerAddress, int pPort, String bindAddress, int bPort, IMAVComm comm) {
+
 		peerPort = new InetSocketAddress(peerAddress, pPort);
 		bindPort = new InetSocketAddress(bindAddress, bPort);
+		reader = new MAVLinkReader(1);
+
+		this.comm = comm;
+		this.queue = new ArrayList<ByteBuffer>();
+
+		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 		System.out.println("Proxy: BindPort="+bPort+" PeerPort="+pPort);
+
 	}
 
 	public boolean open() {
-
 
 		if(channel!=null && channel.isConnected()) {
 			isConnected = true;
 			return true;
 		}
+		while(!isConnected) {
+			try {
 
-		try {
-			isConnected = true;
-			selector = Selector.open();
-			channel = DatagramChannel.open();
-			channel.socket().bind(bindPort);
-			channel.configureBlocking(false);
-			channel.connect(peerPort);
-			SelectionKey key = channel.register(selector, SelectionKey.OP_WRITE);
+				isConnected = true;
+				//			System.out.println("Connect to UDP channel");
+				try {
+					channel = DatagramChannel.open();
+					channel.socket().bind(bindPort);
+					channel.socket().setTrafficClass(0x10);
+					channel.configureBlocking(false);
 
-			while(true) {
-
-				  int readyChannels = selector.select();
-				  if(readyChannels == 0) continue;
-
-				  Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
-
-				  while(keyIterator.hasNext()) {
-
-				    SelectionKey k = keyIterator.next();
-
-				    if(k.isAcceptable()) {
-				    	System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
-
-				    } else if (k.isConnectable()) {
-				    	System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
-
-				    } else if (k.isReadable()) {
-				        // a channel is ready for reading
-
-				    } else if (k.isWritable()) {
-				        // a channel is ready for writing
-				    }
-				    keyIterator.remove();
-				  }
+				} catch (IOException e) {
+					continue;
 				}
+				channel.connect(peerPort);
+				selector = Selector.open();
 
+				new Thread(this).start();
 
+				return true;
+			} catch(Exception e) {
+				close();
+				isConnected = false;
 
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-			close();
-			isConnected = false;
+			}
 		}
-
-
-  return true;
-
-//		while(!isConnected) {
-//			try {
-//				isConnected = true;
-//				//			System.out.println("Connect to UDP channel");
-//				try {
-//					channel = DatagramChannel.open();
-//					channel.socket().bind(bindPort);
-//					channel.configureBlocking(true);
-//				} catch (IOException e) {
-//					e.printStackTrace();
-//				}
-//				channel.connect(peerPort);
-//				in = new MAVLinkStream(channel);
-//				System.out.println("MAVProxy connected to "+peerPort.toString()+" Blocking="+channel.isBlocking());
-//				return true;
-//			} catch(Exception e) {
-//				System.out.println(e.getMessage());
-//				close();
-//				isConnected = false;
-//
-//			}
-//		}
-//		return false;
+		return false;
 	}
 
 	public boolean isConnected() {
@@ -158,57 +142,97 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener  {
 
 	public void close() {
 		isConnected = false;
+
 		try {
+			selector.close();
 			if (channel != null) {
+				channel.disconnect();
 				channel.close();
 			}
-		} catch(IOException e) {
+		} catch(Exception e) {
 
 		}
 	}
 
-	public MAVLinkStream getInputStream() {
-		return in;
+	public void registerListener(Class<?> clazz, IMAVLinkListener listener) {
+		listeners.put(clazz, listener);
 	}
 
+	@Override
+	public void run() {
 
-	public void write(MAVLinkMessage msg) {
+		ByteBuffer rxBuffer = ByteBuffer.allocate(8192);
+
+		SelectionKey key = null;
+		MAVLinkMessage msg = null;
+
 		try {
+			channel.register(selector, SelectionKey.OP_READ );
 
-			if(isConnected) {
-
-				if(!channel.isConnected())
-					throw new IOException("Channel not bound");
-
-				buffer.put(msg.encode());
-				buffer.flip();
-				channel.write(buffer);
-				buffer.compact();
+			if(comm.isConnected()) {
+				msg_heartbeat hb = new msg_heartbeat(255,1);
+				hb.isValid = true;
+				comm.write(hb);
 			}
 
+			while(isConnected) {
 
-		} catch (IOException e) {
-			try { Thread.sleep(150); } catch(Exception k) { }
-			buffer.clear();
+				if(selector.select()==0)
+					continue;
+
+				Iterator<?> selectedKeys = selector.selectedKeys().iterator();
+
+				while (selectedKeys.hasNext()) {
+					key = (SelectionKey) selectedKeys.next();
+					selectedKeys.remove();
+
+					if (!key.isValid()) {
+						continue;
+					}
+
+					if (key.isReadable()) {
+						try {
+							if(channel.isConnected() && channel.receive(rxBuffer)!=null) {
+								msg = reader.getNextMessage(rxBuffer.array(), rxBuffer.position());
+								rxBuffer.clear();
+								if(msg!=null) {
+									IMAVLinkListener listener = listeners.get(msg.getClass());
+									if(listener!=null)
+										listener.received(msg);
+									else {
+										if(comm.isConnected()) {
+											System.out.println("MSG="+msg+" sent to vehicle");
+											comm.write(msg);
+										}
+									}
+								}
+							}
+						} catch(Exception io) { }
+					}
+				}
+			}
+		} catch(Exception e) {
 			close();
 			isConnected = false;
 		}
 	}
 
+	public  void write(MAVLinkMessage msg) throws IOException {
+		if(msg!=null && channel!=null && channel.isOpen()) {
+			//queue.add(ByteBuffer.wrap(msg.encode()));
+			channel.write(ByteBuffer.wrap(msg.encode()));
+		}
 
-	@Override
-	public void received(Object o) {
-		write((MAVLinkMessage) o);
 	}
 
 
+	@Override
+	public void received(Object o) {
+		try {
+			write((MAVLinkMessage) o);
+		} catch (IOException e) {
 
-
-
-
-
-
-
-
+		}
+	}
 
 }

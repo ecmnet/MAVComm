@@ -56,6 +56,7 @@ import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO;
+import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO2;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -78,10 +79,9 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	protected IMAVComm comm = null;
 
-	protected HashMap<Class<?>,IMAVLinkListener> listeners = null;
 
 	protected   DataModel model = null;
-	protected   MAVUdpProxyNIO proxy = null;
+	protected   MAVUdpProxyNIO2 proxy = null;
 
 	protected  int commError=0;
 
@@ -95,11 +95,10 @@ public class MAVProxyController2 implements IMAVMSPController {
 	public MAVProxyController2(boolean sitl) {
 		controller = this;
 		model = new DataModel();
-		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 		if(sitl) {
 			comm = MAVUdpCommNIO2.getInstance(model, "127.0.0.1",14556, 14550);
-			proxy = new MAVUdpProxyNIO("127.0.0.1",14650,"0.0.0.0",14656);
+			proxy = new MAVUdpProxyNIO2("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller loaded (SITL) ");
 		}
@@ -109,18 +108,18 @@ public class MAVProxyController2 implements IMAVMSPController {
 			    comm = MAVSerialComm2.getInstance(model);
 			else
 				comm = MAVHighSpeedSerialComm.getInstance(model);
-			comm.open();
-			proxy = new MAVUdpProxyNIO("172.168.178.2",14550,"172.168.178.1",14555);
+			proxy = new MAVUdpProxyNIO2("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
 			System.out.println("Proxy Controller loaded ");
 
 		}
 		comm.addMAVLinkListener(proxy);
+		comm.open();
+
 	}
 
 	@Override
 	public boolean sendMAVLinkMessage(MAVLinkMessage msg) {
-
 
 		try {
 			if(msg.componentId==2) {
@@ -178,7 +177,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 	}
 
 	public void registerListener(Class<?> clazz, IMAVLinkListener listener) {
-		listeners.put(clazz, listener);
+		proxy.registerListener(clazz, listener);
 	}
 
 	public boolean isConnected() {
@@ -187,17 +186,16 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public boolean connect() {
-		commError=0;
-		sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
-		return proxy.open();
+		proxy.close();proxy.open();
+		if(comm.isConnected())
+		  sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+		return true;
 	}
 
 
 	public boolean start() {
 		commError=0;
 		isRunning = true;
-		Thread worker = new Thread(new MAVLinkProxyWorker());
-		worker.start();
 		return true;
 	}
 
@@ -229,37 +227,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 	@Override
 	public boolean isSimulation() {
 		return true;
-	}
-
-
-	private class MAVLinkProxyWorker implements Runnable {
-
-		public void run() {
-
-			System.out.println("Starting proxy thread..");
-			MAVLinkMessage msg = null;
-
-			while (isRunning) {
-				try {
-					Thread.yield();
-
-					if(proxy.getInputStream()!=null)
-					    msg = proxy.getInputStream().read();
-
-					if(msg!=null) {
-
-						IMAVLinkListener listener = listeners.get(msg.getClass());
-						if(listener!=null)
-							listener.received(msg);
-						else
-							comm.write(msg);
-					}
-
-				} catch (Exception e) {
-					commError++;
-				}
-			}
-		}
 	}
 
 
@@ -343,8 +310,10 @@ public class MAVProxyController2 implements IMAVMSPController {
 		msg.setText(m.msg);
 		msg.componentId = 1;
 		msg.severity =m.severity;
-		proxy.write(msg);
-
+		try {
+			proxy.write(msg);
+		} catch (IOException e) {
+		}
 	}
 
 

@@ -103,7 +103,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
-		this.reader = new MAVLinkReader();
+		this.reader = new MAVLinkReader(3);
 
 	}
 

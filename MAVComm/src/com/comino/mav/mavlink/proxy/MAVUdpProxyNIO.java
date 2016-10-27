@@ -42,6 +42,7 @@ import java.nio.channels.DatagramChannel;
 import java.util.LinkedList;
 
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -102,6 +103,11 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 				}
 				channel.connect(peerPort);
 				in = new MAVLinkStream(channel);
+
+				msg_heartbeat hb = new msg_heartbeat(255,0);
+				hb.isValid = true;
+
+
 				return true;
 			} catch(Exception e) {
 				System.err.println(e.getMessage());
@@ -166,6 +172,7 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 
 	@Override
 	public void received(Object o) {
+
 		write((MAVLinkMessage) o);
 	}
 

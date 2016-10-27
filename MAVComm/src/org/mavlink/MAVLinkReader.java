@@ -81,28 +81,20 @@ public class MAVLinkReader {
 
     private long totalBytesReceived = 0;
 
-    private final byte[] bytes = new byte[5500];
+    private final byte[] bytes = new byte[8192];
 
-    private int offset = 0;;
+    private int offset = 0;
+
+	private int id;;
 
     /**
      * Constructor with MAVLink 1.0 by default and without stream. Must be used whith byte array read methods.
      */
-    public MAVLinkReader() {
+    public MAVLinkReader(int id) {
         // Issue 1 by BoxMonster44 : use correct packet start
-        this((IMAVLinkCRC.MAVLINK_EXTRA_CRC ? IMAVLinkMessage.MAVPROT_PACKET_START_V20 : IMAVLinkMessage.MAVPROT_PACKET_START_V09));
+        this((IMAVLinkCRC.MAVLINK_EXTRA_CRC ? IMAVLinkMessage.MAVPROT_PACKET_START_V20 : IMAVLinkMessage.MAVPROT_PACKET_START_V09),id);
     }
 
-    /**
-     * Constructor with MAVLink 1.0 by default
-     *
-     * @param dis
-     *            Data input stream
-     */
-    public MAVLinkReader(DataInputStream dis) {
-        // Issue 1 by BoxMonster44 : use correct packet start
-        this(dis, (IMAVLinkCRC.MAVLINK_EXTRA_CRC ? IMAVLinkMessage.MAVPROT_PACKET_START_V10 : IMAVLinkMessage.MAVPROT_PACKET_START_V09));
-    }
 
     /**
      * Constructor
@@ -126,7 +118,8 @@ public class MAVLinkReader {
      * @param start
      *            Start byte for MAVLink version
      */
-    public MAVLinkReader(byte start) {
+    public MAVLinkReader(byte start, int id) {
+    	this.id = id;
         this.dis = null;
         this.start = start;
         for (int i = 0; i < lastPacket.length; i++) {
@@ -362,7 +355,9 @@ public class MAVLinkReader {
         int crc = MAVLinkCRC.crc_calculate_decode(receivedBuffer, lengthToRead);
         if (IMAVLinkCRC.MAVLINK_EXTRA_CRC) {
             // CRC-EXTRA for Mavlink 1.0
+        	try {
             crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[msgId], crc);
+        	} catch(Exception e) { }
         }
 
         byte crcl = (byte) (crc & 0x00FF);
@@ -373,13 +368,10 @@ public class MAVLinkReader {
                 msg.packet = packet;
                 if (!checkPacket(sysId, packet)) {
                     badSequence += 1;
-                    //System.err.println("SEQUENCE error, packets lost! Last sequence : " + lastPacket[sysId] +
-                    //                   " Current sequence : " + sequence + " Id=" + msgId + " nbReceived=" + nbReceived);
                 }
                 packets.addElement(msg);
                 nbMessagesReceived++;
                 // if (debug)
-                // System.out.println("MESSAGE = " + msg);
             }
             else {
                 System.err.println("ERROR creating message  Id=" + msgId);
@@ -388,7 +380,7 @@ public class MAVLinkReader {
         }
         else {
             badCRC += 1;
-//            System.err.println("CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
+          //  System.err.println("CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
             validData = false;
         }
         // restart buffer

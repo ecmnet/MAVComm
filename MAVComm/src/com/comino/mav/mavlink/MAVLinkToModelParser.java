@@ -859,6 +859,11 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_CONNECTED,true);
 						model.sys.tms = System.nanoTime()/1000;
 
+						if(mavListener!=null) {
+							for(IMAVLinkListener mavlistener : mavListener)
+								mavlistener.received(msg);
+						}
+
 						mavList.put(msg.getClass(),msg);
 						listenerList = listeners.get(msg.getClass());
 						if(listenerList!=null) {
@@ -866,10 +871,6 @@ public class MAVLinkToModelParser {
 								listener.received(msg);
 						}
 
-						if(mavListener!=null) {
-							for(IMAVLinkListener mavlistener : mavListener)
-								mavlistener.received(msg);
-						}
 
 						if(model.sys.isStatus(Status.MSP_ARMED))
 							model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
