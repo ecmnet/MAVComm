@@ -85,7 +85,7 @@ public class MAVUdpCommNIO implements IMAVComm {
 		peerPort = new InetSocketAddress(peerAddress,pPort);
 		bindPort = new InetSocketAddress(bPort);
 
-		System.out.println("Vehicle: BindPort="+bPort+" PeerPort="+pPort);
+		System.out.println("Vehicle (NIO): BindPort="+bPort+" PeerPort="+pPort);
 
 	}
 

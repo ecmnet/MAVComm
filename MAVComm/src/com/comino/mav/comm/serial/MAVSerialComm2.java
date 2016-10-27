@@ -130,7 +130,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 		} catch (SerialPortException e) {
 			e.printStackTrace();
 		}
-		System.out.println("Serial port opened: "+port);
+		System.out.println("Serial (2) port opened: "+port);
 		return true;
 	}
 

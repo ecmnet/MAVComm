@@ -76,7 +76,7 @@ public class MAVUdpProxyNIO implements IMAVLinkListener  {
 		this.queue = new LinkedList<MAVLinkMessage>();
 
 
-		System.out.println("Proxy: BindPort="+bPort+" PeerPort="+pPort);
+		System.out.println("Proxy (NIO): BindPort="+bPort+" PeerPort="+pPort);
 
 	}
 

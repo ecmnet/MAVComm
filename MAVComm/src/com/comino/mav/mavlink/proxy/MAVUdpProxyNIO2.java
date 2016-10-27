@@ -94,7 +94,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
-		System.out.println("Proxy: BindPort="+bPort+" PeerPort="+pPort);
+		System.out.println("Proxy (NIO2): BindPort="+bPort+" PeerPort="+pPort);
 
 	}
 

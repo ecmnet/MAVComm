@@ -79,8 +79,6 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	private boolean					isConnected = false;
 
-	private List<ByteBuffer> queue = null;
-
 	private MAVLinkReader reader;
 
 	private Selector selector;
@@ -99,8 +97,6 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 		this.peerPort = new InetSocketAddress(peerAddress,pPort);
 		this.bindPort = new InetSocketAddress(bPort);
 		this.reader = new MAVLinkReader(2);
-
-		this.queue = new ArrayList<ByteBuffer>();
 
 		System.out.println("Vehicle (NIO2): BindPort="+bPort+" PeerPort="+pPort);
 
