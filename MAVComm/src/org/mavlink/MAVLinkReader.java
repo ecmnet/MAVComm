@@ -23,7 +23,7 @@ public class MAVLinkReader {
 	 */
 	private DataInputStream dis = null;
 
-	public final static int RECEIVED_OFFSET = 12;
+	public final static int RECEIVED_OFFSET = 10;
 
 	/**
 	 *
@@ -250,7 +250,7 @@ public class MAVLinkReader {
 					lengthToRead &= 0X00FF;
 					lengthReceived = true;
 
-					if (dis.available() < RECEIVED_OFFSET + lengthToRead-2)
+					if (dis.available() < RECEIVED_OFFSET + lengthToRead)
 						return validData;
 					validData = readEndMessage();
 					messageInProgress = false;
@@ -275,7 +275,7 @@ public class MAVLinkReader {
 					lengthToRead &= 0X00FF;
 					lengthReceived = true;
 				}
-				if (dis.available() < RECEIVED_OFFSET + lengthToRead -2)
+				if (dis.available() < RECEIVED_OFFSET + lengthToRead)
 					return validData;
 				validData = readEndMessage();
 				messageInProgress = false;
