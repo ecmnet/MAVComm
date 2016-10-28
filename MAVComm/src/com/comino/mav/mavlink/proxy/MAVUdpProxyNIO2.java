@@ -112,7 +112,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 				try {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
-					channel.socket().setTrafficClass(0x10);
 					channel.configureBlocking(false);
 
 				} catch (IOException e) {
@@ -159,14 +158,13 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	@Override
 	public void run() {
 
-		ByteBuffer rxBuffer = ByteBuffer.allocate(8192);
+		ByteBuffer rxBuffer = ByteBuffer.allocate(4096);
 
 		SelectionKey key = null;
 		MAVLinkMessage msg = null;
 
 		try {
 			channel.register(selector, SelectionKey.OP_READ );
-			reader.reset();
 
 			if(comm.isConnected()) {
 				msg_heartbeat hb = new msg_heartbeat(255,1);

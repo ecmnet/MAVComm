@@ -63,7 +63,7 @@ import jssc.SerialPortException;
 import jssc.SerialPortList;
 
 
-public class MAVSerialComm3 implements IMAVComm, SerialPortEventListener {
+public class MAVSerialComm3 implements IMAVComm, Runnable {
 
 	//	private static final int BAUDRATE  = 57600;
 	private static final int BAUDRATE  = 921600;
@@ -126,13 +126,8 @@ public class MAVSerialComm3 implements IMAVComm, SerialPortEventListener {
 				Thread.sleep(1000);
 			} catch (Exception e) {	}
 		}
-		int eventMask = SerialPort.MASK_RXCHAR;
-		try {
-			serialPort.addEventListener(this, eventMask);
-		} catch (SerialPortException e) {
-			e.printStackTrace();
-		}
-		System.out.println("Serial (2) port opened: "+port);
+
+		System.out.println("Serial (3) port opened: "+port);
 		return true;
 	}
 
@@ -182,7 +177,7 @@ public class MAVSerialComm3 implements IMAVComm, SerialPortEventListener {
 			//System.err.println(e2.getMessage());
 			return false;
 		}
-
+        new Thread(this).start();
 		System.out.println("Connected to "+serialPort.getPortName());
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
 		return true;
@@ -190,24 +185,19 @@ public class MAVSerialComm3 implements IMAVComm, SerialPortEventListener {
 	}
 
 	@Override
-	public void serialEvent(SerialPortEvent serialEvent) {
+	public void run() {
 		MAVLinkMessage msg = null;
-		switch (serialEvent.getEventType()) {
-		case SerialPortEvent.RXCHAR:
-			int bytesCount = serialEvent.getEventValue();
+		while(serialPort.isOpened()) {
 			try {
-				if (isConnected() && bytesCount > 280) {
-					msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
-					if(msg!=null)
-						parser.parseMessage(msg);
-				}
-			} catch (Exception e) {
-				System.err.println(e.getMessage());
-				close();
+			 int bytesCount = serialPort.getInputBufferBytesCount();
+			 msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
+				if(msg!=null)
+					parser.parseMessage(msg);
+			 LockSupport.parkNanos(100000);
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
-			break;
 		}
-
 	}
 
 	/* (non-Javadoc)
@@ -328,6 +318,7 @@ public class MAVSerialComm3 implements IMAVComm, SerialPortEventListener {
 
 
 	}
+
 
 
 }

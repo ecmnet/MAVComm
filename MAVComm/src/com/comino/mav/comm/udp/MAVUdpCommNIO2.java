@@ -138,7 +138,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	@Override
 	public void run() {
-		ByteBuffer rxBuffer = ByteBuffer.allocate(16384);
+		ByteBuffer rxBuffer = ByteBuffer.allocate(4096);
 		SelectionKey key = null;
 		try {
 			channel.register(selector, SelectionKey.OP_READ);

@@ -131,7 +131,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 				Thread.sleep(1000);
 			} catch (Exception e) {	}
 		}
-		int eventMask = SerialPort.MASK_RXCHAR | SerialPort.MASK_TXEMPTY;
+		int eventMask = SerialPort.MASK_RXCHAR;
 		try {
 			serialPort.addEventListener(this, eventMask);
 		} catch (SerialPortException e) {
@@ -200,8 +200,8 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 		try {
 			switch (serialEvent.getEventType()) {
 			case SerialPortEvent.RXCHAR:
-				int bytesCount = serialEvent.getEventValue();
-				if (bytesCount > 0) {
+				int bytesCount = serialPort.getInputBufferBytesCount();
+				if (bytesCount > 12) {
 					msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
 					if(msg!=null) {
 						parser.parseMessage(msg);
