@@ -201,11 +201,9 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 			switch (serialEvent.getEventType()) {
 			case SerialPortEvent.RXCHAR:
 				int bytesCount = serialPort.getInputBufferBytesCount();
-				if (bytesCount > 12) {
-					msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
-					if(msg!=null) {
-						parser.parseMessage(msg);
-					}
+				msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
+				if(msg!=null) {
+					parser.parseMessage(msg);
 				}
 				break;
 			}

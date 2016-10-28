@@ -34,6 +34,8 @@
 
 package com.comino.mav.control.impl;
 
+import org.mavlink.messages.MAV_CMD;
+
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;

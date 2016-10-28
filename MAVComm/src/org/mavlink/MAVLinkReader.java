@@ -82,7 +82,7 @@ public class MAVLinkReader {
 
 	private long totalBytesReceived = 0;
 
-	private final byte[] bytes = new byte[4096];
+	private final byte[] bytes = new byte[8192];
 
 	private int offset = MAX_TM_SIZE;
 

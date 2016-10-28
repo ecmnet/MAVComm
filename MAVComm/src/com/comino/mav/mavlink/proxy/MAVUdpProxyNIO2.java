@@ -41,25 +41,17 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
-import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.mavlink.MAVLinkStream;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
-import com.comino.msp.model.segment.Status;
 
 
 public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
@@ -112,6 +104,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 				try {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
+					channel.socket().setTrafficClass(0x10);
 					channel.configureBlocking(false);
 
 				} catch (IOException e) {
@@ -171,6 +164,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 				hb.isValid = true;
 				comm.write(hb);
 			}
+
 
 			while(isConnected) {
 

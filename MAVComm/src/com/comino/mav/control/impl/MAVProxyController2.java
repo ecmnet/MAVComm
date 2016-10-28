@@ -51,6 +51,7 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
 import com.comino.mav.comm.serial.MAVSerialComm;
 import com.comino.mav.comm.serial.MAVSerialComm2;
+import com.comino.mav.comm.serial.MAVSerialComm3;
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
@@ -105,7 +106,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm2.getInstance(model);
+			    comm = MAVSerialComm3.getInstance(model);
 			else
 				comm = MAVHighSpeedSerialComm.getInstance(model);
 			proxy = new MAVUdpProxyNIO2("172.168.178.2",14550,"172.168.178.1",14555,comm);
@@ -114,7 +115,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 		}
 		comm.addMAVLinkListener(proxy);
-		comm.open();
 
 	}
 
@@ -122,12 +122,11 @@ public class MAVProxyController2 implements IMAVMSPController {
 	public boolean sendMAVLinkMessage(MAVLinkMessage msg) {
 
 		try {
-			if(msg.componentId==2) {
+			if(msg.sysId==2) {
 				proxy.write(msg);
 			} else {
 				if(controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
 					comm.write(msg);
-					MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
 				} else {
 					System.out.println("Command rejected. No connection.");
 					return false;
@@ -185,9 +184,9 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public boolean connect() {
-		proxy.close();proxy.open();
+		proxy.close();proxy.open(); comm.open();
 		if(comm.isConnected())
-			  sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
 		return true;
 	}
 
