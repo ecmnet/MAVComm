@@ -187,7 +187,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 	public boolean connect() {
 		proxy.close();proxy.open();
 		if(comm.isConnected())
-		  sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+			  sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
 		return true;
 	}
 

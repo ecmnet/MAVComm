@@ -82,11 +82,11 @@ public class MAVLinkReader {
 
 	private long totalBytesReceived = 0;
 
-	private final byte[] bytes = new byte[4096];
+	private final byte[] bytes = new byte[16384];
 
 	private int offset = MAX_TM_SIZE;
 
-	private int id;;
+	private int id;
 
 	/**
 	 * Constructor with MAVLink 1.0 by default and without stream. Must be used whith byte array read methods.
@@ -137,27 +137,23 @@ public class MAVLinkReader {
 	}
 
 
-	/**
-	 * Return next message. Use it without stream in input.
-	 *
-	 * @param buffer
-	 *            Contains bytes to build next message
-	 * @param len
-	 *            Number of byte to use in buffer
-	 * @return MAVLink message or null
-	 * @throws IOException
-	 */
+
+
+
+
 	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
 		MAVLinkMessage msg = null;
 
-		if (packets.isEmpty() && len > 0) {
+		if (packets.isEmpty() ) {
 			for (int i = offset; i < len + offset; i++) {
 				bytes[i] = buffer[i - offset];
 			}
 
 			dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
-			while (dis.available() > 280)
+
+			while (dis.available() >  lengthToRead+RECEIVED_OFFSET)
 				readNextMessageWithoutBlocking();
+
 			offset = dis.available();
 			for (int j = 0; j < offset; j++) {
 				bytes[j] = dis.readByte();
@@ -254,7 +250,7 @@ public class MAVLinkReader {
 					lengthToRead &= 0X00FF;
 					lengthReceived = true;
 
-					if (dis.available() < RECEIVED_OFFSET + lengthToRead)
+					if (dis.available() < RECEIVED_OFFSET + lengthToRead-2)
 						return validData;
 					validData = readEndMessage();
 					messageInProgress = false;
@@ -279,7 +275,7 @@ public class MAVLinkReader {
 					lengthToRead &= 0X00FF;
 					lengthReceived = true;
 				}
-				if (dis.available() < RECEIVED_OFFSET + lengthToRead)
+				if (dis.available() < RECEIVED_OFFSET + lengthToRead -2)
 					return validData;
 				validData = readEndMessage();
 				messageInProgress = false;
@@ -375,6 +371,7 @@ public class MAVLinkReader {
 				msg.packet = packet;
 				if (!checkPacket(sysId, packet)) {
 					badSequence += 1;
+				 System.err.println(id+" SEQ: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
 				}
 				packets.addElement(msg);
 				nbMessagesReceived++;
@@ -387,7 +384,7 @@ public class MAVLinkReader {
 		}
 		else {
 			badCRC += 1;
-			//  System.err.println("CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
+			//  System.err.println(id+" CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
 			validData = false;
 		}
 		// restart buffer

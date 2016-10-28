@@ -52,6 +52,8 @@ import org.mavlink.MAVLinkReader;
 import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.lquac.msg_command_ack;
+import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
@@ -72,8 +74,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	private Selector selector;
 
-	private List<ByteBuffer> queue = null;
-
 	private IMAVComm comm;
 
 	private boolean 			isConnected = false;
@@ -91,7 +91,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 		reader = new MAVLinkReader(1);
 
 		this.comm = comm;
-		this.queue = new ArrayList<ByteBuffer>();
 
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
@@ -160,7 +159,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	@Override
 	public void run() {
 
-		ByteBuffer rxBuffer = ByteBuffer.allocate(1024);
+		ByteBuffer rxBuffer = ByteBuffer.allocate(8192);
 
 		SelectionKey key = null;
 		MAVLinkMessage msg = null;
