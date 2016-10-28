@@ -35,8 +35,6 @@
 package com.comino.mav.comm.serial;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
@@ -65,33 +63,31 @@ import jssc.SerialPortException;
 import jssc.SerialPortList;
 
 
-public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
+public class MAVSerialComm3 implements IMAVComm, SerialPortEventListener {
 
 	//	private static final int BAUDRATE  = 57600;
 	private static final int BAUDRATE  = 921600;
 
 
 	private SerialPort 			serialPort;
-	private String	            port;
+	private String	        port;
 
-	private DataModel 		    model = null;
-
+	private DataModel 			model = null;
 
 	private MAVLinkToModelParser parser = null;
-	private MAVLinkReader reader;
+	private MAVLinkReader2 reader;
 
 	private static IMAVComm com = null;
 
 
 	public static IMAVComm getInstance(DataModel model) {
 		if(com==null)
-			com = new MAVSerialComm2(model);
+			com = new MAVSerialComm3(model);
 		return com;
 	}
 
-	private MAVSerialComm2(DataModel model) {
+	private MAVSerialComm3(DataModel model) {
 		this.model = model; int i=0;
-
 		System.out.println("Searching ports... ");
 		String[] list = SerialPortList.getPortNames();
 
@@ -109,7 +105,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
-		this.reader = new MAVLinkReader(3);
+		this.reader = new MAVLinkReader2(3);
 
 	}
 
@@ -200,19 +196,16 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 		case SerialPortEvent.RXCHAR:
 			int bytesCount = serialEvent.getEventValue();
 			try {
-				if (bytesCount > 0) {
+				if (isConnected() && bytesCount > 280) {
 					msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
 					if(msg!=null)
 						parser.parseMessage(msg);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				System.err.println(e.getMessage());
 				close();
 			}
 			break;
-		 case SerialPortEvent.TXEMPTY:
-
-			 break;
 		}
 
 	}
@@ -268,7 +261,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm2(new DataModel());
+		IMAVComm comm = new MAVSerialComm3(new DataModel());
 		comm.open();
 
 

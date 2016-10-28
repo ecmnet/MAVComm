@@ -160,13 +160,14 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	@Override
 	public void run() {
 
-		ByteBuffer rxBuffer = ByteBuffer.allocate(8192);
+		ByteBuffer rxBuffer = ByteBuffer.allocate(1024);
 
 		SelectionKey key = null;
 		MAVLinkMessage msg = null;
 
 		try {
 			channel.register(selector, SelectionKey.OP_READ );
+			reader.reset();
 
 			if(comm.isConnected()) {
 				msg_heartbeat hb = new msg_heartbeat(255,1);
@@ -216,7 +217,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	}
 
 	public  void write(MAVLinkMessage msg) throws IOException {
-		if(msg!=null && channel!=null && channel.isOpen()) {
+		if(msg!=null && channel!=null && channel.isConnected()) {
 			channel.write(ByteBuffer.wrap(msg.encode()));
 		}
 

@@ -146,7 +146,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 	@Override
 	public boolean sendMAVLinkCmd(int command, float...params) {
 
-
 		msg_command_long cmd = new msg_command_long(255,1);
 		cmd.target_system = 1;
 		cmd.target_component = 1;

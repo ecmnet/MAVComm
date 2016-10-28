@@ -819,14 +819,14 @@ public class MAVLinkToModelParser {
 			model.sys.tms = System.nanoTime()/1000;
 		}
 
-		if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
-				&& link.isSerial()) {
-			time_offset_tms = System.currentTimeMillis();
-			msg_timesync sync_s = new msg_timesync(1,1);
-			sync_s.tc1 = 0;
-			sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
-			link.write(sync_s);
-		}
+//		if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
+//				&& link.isSerial()) {
+//			time_offset_tms = System.currentTimeMillis();
+//			msg_timesync sync_s = new msg_timesync(1,1);
+//			sync_s.tc1 = 0;
+//			sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
+//			link.write(sync_s);
+//		}
 
 		if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
 				model.sys.isStatus(Status.MSP_READY)) {
@@ -897,14 +897,14 @@ public class MAVLinkToModelParser {
 						Thread.sleep(50);
 					}
 
-					if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
-							&& link.isSerial()) {
-						time_offset_tms = System.currentTimeMillis();
-						msg_timesync sync_s = new msg_timesync(1,1);
-						sync_s.tc1 = 0;
-						sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
-						link.write(sync_s);
-					}
+//					if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
+//							&& link.isSerial()) {
+//						time_offset_tms = System.currentTimeMillis();
+//						msg_timesync sync_s = new msg_timesync(1,1);
+//						sync_s.tc1 = 0;
+//						sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
+//						link.write(sync_s);
+//					}
 
 					if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
 							model.sys.isStatus(Status.MSP_READY)) {

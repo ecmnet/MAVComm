@@ -89,7 +89,7 @@ public class MAVLinkReader2 {
 	 */
 	private final int[] lastPacket = new int[256];
 
-	private final byte[] bytes = new byte[8192];
+	private final byte[] bytes = new byte[2048];
 
 	private int offset = 0;
 
