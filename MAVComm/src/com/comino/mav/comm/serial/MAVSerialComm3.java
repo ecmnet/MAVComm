@@ -195,7 +195,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 				msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
 				if(msg!=null)
 					parser.parseMessage(msg);
-				LockSupport.parkNanos(200000);
+				LockSupport.parkNanos(1000000);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
