@@ -154,7 +154,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			MAVLinkMessage msg = null;
 
 			while(isConnected) {
-
+				LockSupport.parkNanos(100000);
 				if(selector.select(500)==0)
 					throw new IOException("Timeout");
 
