@@ -84,6 +84,8 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 	private static IMAVComm com = null;
 
 
+	private int errors = 0;
+
 	public static IMAVComm getInstance(DataModel model) {
 		if(com==null)
 			com = new MAVSerialComm2(model);
@@ -119,6 +121,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 	 */
 	@Override
 	public boolean open() {
+		errors = 0;
 		while(!open(port ,BAUDRATE,8,1,0)) {
 			try {
 				if(serialPort.isOpened()) {
@@ -208,7 +211,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 				break;
 			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			errors++;
 			close();
 		}
 
@@ -260,6 +263,13 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 	public boolean isSerial() {
 		return true;
 	}
+
+
+	@Override
+	public int getErrorCount() {
+		return errors;
+	}
+
 
 
 
@@ -332,6 +342,5 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 
 
 	}
-
 
 }

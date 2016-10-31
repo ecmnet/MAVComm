@@ -84,8 +84,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 	protected   DataModel model = null;
 	protected   MAVUdpProxyNIO2 proxy = null;
 
-	protected  int commError=0;
-
 	private     boolean  isRunning = false;
 
 	public static IMAVController getInstance() {
@@ -135,7 +133,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 			}
 			return true;
 		} catch (IOException e1) {
-			commError++;
 			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getMessage());
 			return false;
 		}
@@ -192,7 +189,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 
 	public boolean start() {
-		commError=0;
 		isRunning = true;
 		return true;
 	}
@@ -323,7 +319,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public int getErrorCount() {
-		return commError;
+		return comm.getErrorCount();
 	}
 
 }

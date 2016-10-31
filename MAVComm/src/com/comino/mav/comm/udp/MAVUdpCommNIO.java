@@ -71,6 +71,8 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 	private boolean					isConnected = false;
 
+	private int errors = 0;
+
 	private static MAVUdpCommNIO com = null;
 
 	public static MAVUdpCommNIO getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
@@ -96,34 +98,36 @@ public class MAVUdpCommNIO implements IMAVComm {
 			return true;
 		}
 
-			try {
-				System.out.println("Try to open UDP channel V2....");
-				channel = DatagramChannel.open();
+		errors = 0;
 
-				channel.bind(bindPort);
-				channel.configureBlocking(false);
-				channel.connect(peerPort);
+		try {
+			System.out.println("Try to open UDP channel V2....");
+			channel = DatagramChannel.open();
 
-//				LockSupport.parkNanos(10000000);
-//
-				msg_heartbeat msg = new msg_heartbeat(255,0);
-				msg.isValid = true;
-				write(msg);
+			channel.bind(bindPort);
+			channel.configureBlocking(false);
+			channel.connect(peerPort);
 
-//				msg_system_time time = new msg_system_time(1,1);
-//				time.time_unix_usec = Instant.now().toEpochMilli()*1000L;
-//				time.isValid = true;
-//				write(time);
+			//				LockSupport.parkNanos(10000000);
+			//
+			msg_heartbeat msg = new msg_heartbeat(255,0);
+			msg.isValid = true;
+			write(msg);
 
-				LockSupport.parkNanos(10000000);
+			//				msg_system_time time = new msg_system_time(1,1);
+			//				time.time_unix_usec = Instant.now().toEpochMilli()*1000L;
+			//				time.isValid = true;
+			//				write(time);
 
-				parser.start(channel);
-				return true;
-			} catch(Exception e) {
-				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
-				close();
-				isConnected = false;
-			}
+			LockSupport.parkNanos(10000000);
+
+			parser.start(channel);
+			return true;
+		} catch(Exception e) {
+			System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
+			close();
+			isConnected = false;
+		}
 
 		return false;
 	}
@@ -138,11 +142,11 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 	public void write(MAVLinkMessage msg) throws IOException {
 		ByteBuffer buf = ByteBuffer.wrap(msg.encode());
-//		for(int i=0; i<buf.array().length;i++)
-//			System.out.print(buf.array()[i]+" ");
-//		System.out.println();
+		//		for(int i=0; i<buf.array().length;i++)
+		//			System.out.print(buf.array()[i]+" ");
+		//		System.out.println();
 		if(channel.isConnected())
-		   channel.write(buf);
+			channel.write(buf);
 		else
 			throw new IOException("Channel not connected");
 	}
@@ -170,6 +174,13 @@ public class MAVUdpCommNIO implements IMAVComm {
 		return false;
 	}
 
+
+	@Override
+	public int getErrorCount() {
+		return errors;
+	}
+
+
 	public boolean isConnected() {
 		return parser.isConnected();
 	}
@@ -188,14 +199,14 @@ public class MAVUdpCommNIO implements IMAVComm {
 		} catch(IOException e) {
 
 		}
-	//	LockSupport.parkNanos(1000000000);
+		//	LockSupport.parkNanos(1000000000);
 	}
 
 
 
 	public static void main(String[] args) {
 		MAVUdpCommNIO comm = new MAVUdpCommNIO(new DataModel(), "127.0.0.1", 14556, 14550);
-	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
+		//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();
 
@@ -214,11 +225,11 @@ public class MAVUdpCommNIO implements IMAVComm {
 
 			while(System.currentTimeMillis()< (time+60000)) {
 
-//					comm.model.state.print("NED:");
-//								System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
+				//					comm.model.state.print("NED:");
+				//								System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
 
 				if(comm.isConnected)
-				  System.out.println("ANGLEX="+comm.model.hud.aX+" ANGLEY="+comm.model.hud.aY+" "+comm.model.sys.toString());
+					System.out.println("ANGLEX="+comm.model.hud.aX+" ANGLEY="+comm.model.hud.aY+" "+comm.model.sys.toString());
 
 				Thread.sleep(1000);
 

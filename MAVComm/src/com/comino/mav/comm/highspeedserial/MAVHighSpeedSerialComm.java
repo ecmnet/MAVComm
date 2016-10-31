@@ -135,6 +135,37 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 	}
 
 
+	@Override
+	public boolean isConnected() {
+		return true;
+	}
+
+
+	@Override
+	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
+		parser.addStatusChangeListener(listener);
+
+	}
+
+	@Override
+	public void addMAVMessageListener(IMAVMessageListener listener) {
+		parser.addMAVMessagekListener(listener);
+
+	}
+
+	@Override
+	public void writeMessage(LogMessage m) {
+
+
+	}
+
+	@Override
+	public int getErrorCount() {
+		return 0;
+	}
+
+
+
 	public static void main(String[] args) {
 		IMAVComm comm = new MAVHighSpeedSerialComm(new DataModel());
 		comm.open();
@@ -202,30 +233,6 @@ public class MAVHighSpeedSerialComm implements IMAVComm {
 		}
 
 
-
-
-	}
-
-	@Override
-	public boolean isConnected() {
-		return true;
-	}
-
-
-	@Override
-	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
-		parser.addStatusChangeListener(listener);
-
-	}
-
-	@Override
-	public void addMAVMessageListener(IMAVMessageListener listener) {
-		parser.addMAVMessagekListener(listener);
-
-	}
-
-	@Override
-	public void writeMessage(LogMessage m) {
 
 
 	}

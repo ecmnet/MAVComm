@@ -79,6 +79,8 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 
 	private static IMAVComm com = null;
 
+	private int errors=0;
+
 
 	public static IMAVComm getInstance(DataModel model) {
 		if(com==null)
@@ -164,6 +166,8 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 		if(serialPort.isOpened())
 			return true;
 
+		errors=0;
+
 		try {
 			serialPort.openPort();
 			serialPort.setParams(baudRate, dataBits, stopBits, parity);
@@ -197,7 +201,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 					parser.parseMessage(msg);
 				LockSupport.parkNanos(1000000);
 			} catch(Exception e) {
-				e.printStackTrace();
+				errors++;
 			}
 		}
 	}
@@ -218,6 +222,11 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 	public void addMAVLinkListener(IMAVLinkListener listener) {
 		parser.addMAVLinkListener(listener);
 
+	}
+
+	@Override
+	public int getErrorCount() {
+		return errors;
 	}
 
 

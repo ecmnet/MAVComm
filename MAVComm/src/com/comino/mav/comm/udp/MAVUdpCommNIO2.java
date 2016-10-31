@@ -82,6 +82,8 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	private MAVLinkReader reader;
 
+	private int errors = 0;
+
 	private Selector selector;
 
 	private static MAVUdpCommNIO2 com = null;
@@ -109,6 +111,8 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			isConnected = true;
 			return true;
 		}
+
+		errors = 0;
 
 		try {
 			isConnected = true;
@@ -176,12 +180,18 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			}
 
 		} catch(Exception e) {
+			errors++;
 			rxBuffer.clear();
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
 			close();
 			isConnected = false;
 		}
 
+	}
+
+	@Override
+	public int getErrorCount() {
+		return errors;
 	}
 
 

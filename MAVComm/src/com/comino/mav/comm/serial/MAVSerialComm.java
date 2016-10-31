@@ -293,4 +293,9 @@ public class MAVSerialComm implements IMAVComm {
 		return true;
 	}
 
+	@Override
+	public int getErrorCount() {
+		return 0;
+	}
+
 }

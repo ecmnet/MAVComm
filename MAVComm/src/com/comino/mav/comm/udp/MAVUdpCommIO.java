@@ -72,6 +72,8 @@ public class MAVUdpCommIO implements IMAVComm {
 
 	private static MAVUdpCommIO com = null;
 
+	private int errors = 0;
+
 	public static MAVUdpCommIO getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
 			com = new MAVUdpCommIO(model, peerAddress, peerPort, bindPort);
@@ -93,25 +95,27 @@ public class MAVUdpCommIO implements IMAVComm {
 			return true;
 		}
 
-			try {
+		errors = 0;
 
-				channel = DatagramChannel.open();
-				channel.bind(bindPort);
-				channel.configureBlocking(false);
-				channel.connect(peerPort);
+		try {
 
-				msg_heartbeat msg = new msg_heartbeat(255,0);
-				msg.isValid = true;
-				write(msg);
+			channel = DatagramChannel.open();
+			channel.bind(bindPort);
+			channel.configureBlocking(false);
+			channel.connect(peerPort);
 
-				parser.start(channel);
-				isConnected = true;
-				return true;
-			} catch(Exception e) {
-				System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
-				close();
-				isConnected = false;
-			}
+			msg_heartbeat msg = new msg_heartbeat(255,0);
+			msg.isValid = true;
+			write(msg);
+
+			parser.start(channel);
+			isConnected = true;
+			return true;
+		} catch(Exception e) {
+			System.out.println("Cannot connect to Port: "+e.getMessage()+" "+peerPort.toString());
+			close();
+			isConnected = false;
+		}
 
 		return false;
 	}
@@ -175,11 +179,16 @@ public class MAVUdpCommIO implements IMAVComm {
 		LockSupport.parkNanos(1000000000);
 	}
 
+	@Override
+	public int getErrorCount() {
+		return errors;
+	}
+
 
 
 	public static void main(String[] args) {
 		MAVUdpCommIO comm = new MAVUdpCommIO(new DataModel(), "127.0.0.1", 14556,14550);
-	//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
+		//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();
 
@@ -202,7 +211,7 @@ public class MAVUdpCommIO implements IMAVComm {
 				//				System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
 
 				if(comm.model.sys.isStatus(Status.MSP_CONNECTED))
-				  System.out.println("ANGLEX="+comm.model.hud.aX+" ANGLEY="+comm.model.hud.aY+" "+comm.model.sys.toString());
+					System.out.println("ANGLEX="+comm.model.hud.aX+" ANGLEY="+comm.model.hud.aY+" "+comm.model.sys.toString());
 
 				Thread.sleep(1000);
 
