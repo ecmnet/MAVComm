@@ -37,6 +37,7 @@ package com.comino.msp.model;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
+import com.comino.msp.main.StartUp;
 import com.comino.msp.model.segment.Attitude;
 import com.comino.msp.model.segment.Battery;
 import com.comino.msp.model.segment.Debug;
@@ -183,11 +184,27 @@ public class DataModel extends Segment implements Serializable {
 		this.est.clear();
 	}
 
-	public float getValue(String classkey) throws Exception {
-		String[] key = classkey.split(".");
-		Field mclass_field = this.getClass().getField(key[0]);
-		Object mclass = mclass_field.get(this);
-		Field mfield_field = mclass.getClass().getField(key[1]);
-		return new Double(mfield_field.getDouble(mclass)).floatValue();
+	public float getValue(String classkey) {
+		try {
+			String[] key = classkey.split("\\.");
+			Field mclass_field = this.getClass().getField(key[0]);
+			Object mclass = mclass_field.get(this);
+			Field mfield_field = mclass.getClass().getField(key[1]);
+			return new Double(mfield_field.getDouble(mclass)).floatValue();
+		} catch(Exception e) {
+			return Float.NaN;
+		}
+	}
+
+	public static void main(String[] args) {
+		DataModel m = new DataModel();
+		m.battery.a0 = 5;
+		try {
+			System.out.println(m.getValue("battery.a0"));
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 }
