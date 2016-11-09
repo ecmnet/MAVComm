@@ -35,6 +35,7 @@
 package com.comino.msp.model;
 
 import java.io.Serializable;
+import java.lang.reflect.Field;
 
 import com.comino.msp.model.segment.Attitude;
 import com.comino.msp.model.segment.Battery;
@@ -180,5 +181,13 @@ public class DataModel extends Segment implements Serializable {
 		this.msg.clear();
 		this.vision.clear();
 		this.est.clear();
+	}
+
+	public float getValue(String classkey) throws Exception {
+		String[] key = classkey.split(".");
+		Field mclass_field = this.getClass().getField(key[0]);
+		Object mclass = mclass_field.get(this);
+		Field mfield_field = mclass.getClass().getField(key[1]);
+		return new Double(mfield_field.getDouble(mclass)).floatValue();
 	}
 }
