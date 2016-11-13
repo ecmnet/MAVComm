@@ -55,7 +55,7 @@ public class MAVCommTest implements Runnable {
 
 
 		if(args.length>0)
-			control = new MAVUdpController("127.0.0.1",14556,14550, true);
+			control = new MAVUdpController("192.168.4.1",14555,14550, true);
 		else
 		  System.exit(-1);
 
@@ -79,7 +79,7 @@ public class MAVCommTest implements Runnable {
 			try {
 				Thread.sleep(100000);
 				if(control.isConnected())
-				  ;//  System.out.println(control.getCurrentModel().hud.ag);
+				  System.out.println(control.getCurrentModel().hud.ag);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
