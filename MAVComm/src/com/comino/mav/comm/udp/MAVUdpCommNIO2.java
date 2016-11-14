@@ -128,7 +128,9 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 			LockSupport.parkNanos(10000000);
 
-			new Thread(this).start();
+			Thread t = new Thread(this);
+			t.setDaemon(true);
+			t.start();
 
 
 		} catch(Exception e) {
