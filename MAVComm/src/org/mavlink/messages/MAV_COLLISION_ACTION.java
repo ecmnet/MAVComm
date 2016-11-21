@@ -17,11 +17,11 @@ public interface MAV_COLLISION_ACTION {
      */
     public final static int MAV_COLLISION_ACTION_REPORT = 1;
     /**
-     * Ascend or Descend to avoid thread
+     * Ascend or Descend to avoid threat
      */
     public final static int MAV_COLLISION_ACTION_ASCEND_OR_DESCEND = 2;
     /**
-     * Ascend or Descend to avoid thread
+     * Move horizontally to avoid threat
      */
     public final static int MAV_COLLISION_ACTION_MOVE_HORIZONTALLY = 3;
     /**

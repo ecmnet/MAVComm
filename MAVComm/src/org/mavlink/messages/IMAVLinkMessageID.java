@@ -11,12 +11,14 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_REQUEST_DATA_STREAM = 66;
   public static int MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET = 140;
   public static int MAVLINK_MSG_ID_SETUP_SIGNING = 256;
+  public static int MAVLINK_MSG_ID_FLIGHT_INFORMATION = 264;
   public static int MAVLINK_MSG_ID_HIL_SENSOR = 107;
   public static int MAVLINK_MSG_ID_CAMERA_TRIGGER = 112;
   public static int MAVLINK_MSG_ID_PARAM_REQUEST_LIST = 21;
   public static int MAVLINK_MSG_ID_GPS_RTK = 127;
   public static int MAVLINK_MSG_ID_POSITION_TARGET_LOCAL_NED = 85;
   public static int MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE = 146;
+  public static int MAVLINK_MSG_ID_MOUNT_STATUS = 265;
   public static int MAVLINK_MSG_ID_TIMESYNC = 111;
   public static int MAVLINK_MSG_ID_MISSION_ITEM_REACHED = 46;
   public static int MAVLINK_MSG_ID_V2_EXTENSION = 248;
@@ -34,6 +36,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_LOG_ERASE = 121;
   public static int MAVLINK_MSG_ID_HIGH_LATENCY = 234;
   public static int MAVLINK_MSG_ID_DISTANCE_SENSOR = 132;
+  public static int MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED = 263;
   public static int MAVLINK_MSG_ID_BUTTON_CHANGE = 257;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV = 64;
   public static int MAVLINK_MSG_ID_ATTITUDE_TARGET = 83;
@@ -55,6 +58,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_MISSION_COUNT = 44;
   public static int MAVLINK_MSG_ID_SET_MODE = 11;
   public static int MAVLINK_MSG_ID_VIBRATION = 241;
+  public static int MAVLINK_MSG_ID_STORAGE_INFORMATION = 261;
   public static int MAVLINK_MSG_ID_SYSTEM_TIME = 2;
   public static int MAVLINK_MSG_ID_SCALED_PRESSURE2 = 137;
   public static int MAVLINK_MSG_ID_SAFETY_SET_ALLOWED_AREA = 54;
@@ -81,6 +85,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW = 92;
   public static int MAVLINK_MSG_ID_GPS_RTCM_DATA = 233;
   public static int MAVLINK_MSG_ID_RAW_PRESSURE = 28;
+  public static int MAVLINK_MSG_ID_CAMERA_SETTINGS = 260;
   public static int MAVLINK_MSG_ID_WIND_COV = 231;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED = 32;
   public static int MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT = 62;
@@ -114,6 +119,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV = 63;
   public static int MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE = 103;
   public static int MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE = 70;
+  public static int MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS = 262;
   public static int MAVLINK_MSG_ID_LOGGING_ACK = 268;
   public static int MAVLINK_MSG_ID_VFR_HUD = 74;
   public static int MAVLINK_MSG_ID_OPTICAL_FLOW_RAD = 106;
@@ -124,6 +130,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GPS2_RAW = 124;
   public static int MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT = 87;
   public static int MAVLINK_MSG_ID_NAMED_VALUE_INT = 252;
+  public static int MAVLINK_MSG_ID_CAMERA_INFORMATION = 259;
   public static int MAVLINK_MSG_ID_HEARTBEAT = 0;
   public static int MAVLINK_MSG_ID_TERRAIN_REPORT = 136;
   public static int MAVLINK_MSG_ID_MISSION_ACK = 47;

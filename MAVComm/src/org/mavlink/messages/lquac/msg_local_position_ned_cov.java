@@ -24,17 +24,13 @@ public class msg_local_position_ned_cov extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 229;
+    length = 225;
 }
 
   /**
-   * Timestamp (microseconds since UNIX epoch) in UTC. 0 for unknown. Commonly filled by the precision time source of a GPS receiver.
+   * Timestamp (microseconds since system boot or since UNIX epoch)
    */
-  public long time_utc;
-  /**
-   * Timestamp (milliseconds since system boot). 0 for system without monotonic timestamp
-   */
-  public long time_boot_ms;
+  public long time_usec;
   /**
    * X Position
    */
@@ -83,8 +79,7 @@ public class msg_local_position_ned_cov extends MAVLinkMessage {
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
-  time_utc = (long)dis.readLong();
-  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
+  time_usec = (long)dis.readLong();
   x = (float)dis.readFloat();
   y = (float)dis.readFloat();
   z = (float)dis.readFloat();
@@ -103,7 +98,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+229];
+  byte[] buffer = new byte[12+225];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(length & 0x00FF);
@@ -115,8 +110,7 @@ public byte[] encode() throws IOException {
   dos.writeByte(messageType & 0x00FF);
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
-  dos.writeLong(time_utc);
-  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
+  dos.writeLong(time_usec);
   dos.writeFloat(x);
   dos.writeFloat(y);
   dos.writeFloat(z);
@@ -133,15 +127,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 229);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 225);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[239] = crcl;
-  buffer[240] = crch;
+  buffer[235] = crcl;
+  buffer[236] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV : " +   "  time_utc="+time_utc+  "  time_boot_ms="+time_boot_ms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  ax="+ax+  "  ay="+ay+  "  az="+az+  "  covariance="+covariance+  "  estimator_type="+estimator_type;}
+return "MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV : " +   "  time_usec="+time_usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  ax="+ax+  "  ay="+ay+  "  az="+az+  "  covariance="+covariance+  "  estimator_type="+estimator_type;}
 }

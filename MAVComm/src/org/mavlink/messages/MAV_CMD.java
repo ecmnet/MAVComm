@@ -549,12 +549,12 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_MOUNT_CONFIGURE = 204;
     /**
      * Mission command to control a camera or antenna mount
-     * PARAM 1 : pitch or lat in degrees, depending on mount mode.
-     * PARAM 2 : roll or lon in degrees depending on mount mode
-     * PARAM 3 : yaw or alt (in meters) depending on mount mode
-     * PARAM 4 : reserved
-     * PARAM 5 : reserved
-     * PARAM 6 : reserved
+     * PARAM 1 : pitch (WIP: DEPRECATED: or lat in degrees) depending on mount mode.
+     * PARAM 2 : roll (WIP: DEPRECATED: or lon in degrees) depending on mount mode.
+     * PARAM 3 : yaw (WIP: DEPRECATED: or alt in meters) depending on mount mode.
+     * PARAM 4 : WIP: alt in meters depending on mount mode.
+     * PARAM 5 : WIP: latitude in degrees * 1E7, set if appropriate mount mode.
+     * PARAM 6 : WIP: longitude in degrees * 1E7, set if appropriate mount mode.
      * PARAM 7 : MAV_MOUNT_MODE enum value
      */
     public final static int MAV_CMD_DO_MOUNT_CONTROL = 205;
@@ -728,11 +728,11 @@ public interface MAV_CMD {
      * Request the reboot or shutdown of system components.
      * PARAM 1 : 0: Do nothing for autopilot, 1: Reboot autopilot, 2: Shutdown autopilot, 3: Reboot autopilot and keep it in the bootloader until upgraded.
      * PARAM 2 : 0: Do nothing for onboard computer, 1: Reboot onboard computer, 2: Shutdown onboard computer, 3: Reboot onboard computer and keep it in the bootloader until upgraded.
-     * PARAM 3 : Reserved, send 0
-     * PARAM 4 : Reserved, send 0
+     * PARAM 3 : WIP: 0: Do nothing for camera, 1: Reboot onboard camera, 2: Shutdown onboard camera, 3: Reboot onboard camera and keep it in the bootloader until upgraded
+     * PARAM 4 : WIP: 0: Do nothing for mount (e.g. gimbal), 1: Reboot mount, 2: Shutdown mount, 3: Reboot mount and keep it in the bootloader until upgraded
      * PARAM 5 : Reserved, send 0
      * PARAM 6 : Reserved, send 0
-     * PARAM 7 : Reserved, send 0
+     * PARAM 7 : WIP: ID (e.g. camera ID -1 for all IDs)
      */
     public final static int MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN = 246;
     /**
@@ -792,15 +792,81 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES = 520;
     /**
+     * WIP: Request camera information (CAMERA_INFORMATION)
+     * PARAM 1 : 1: Request camera capabilities
+     * PARAM 2 : Camera ID
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_CAMERA_INFORMATION = 521;
+    /**
+     * WIP: Request camera settings (CAMERA_SETTINGS)
+     * PARAM 1 : 1: Request camera settings
+     * PARAM 2 : Camera ID
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_CAMERA_SETTINGS = 522;
+    /**
+     * WIP: Set the camera settings part 1 (CAMERA_SETTINGS)
+     * PARAM 1 : Camera ID
+     * PARAM 2 : Aperture (1/value)
+     * PARAM 3 : Aperture locked (0: auto, 1: locked)
+     * PARAM 4 : Shutter speed in s
+     * PARAM 5 : Shutter speed locked (0: auto, 1: locked)
+     * PARAM 6 : ISO sensitivity
+     * PARAM 7 : ISO sensitivity locked (0: auto, 1: locked)
+     */
+    public final static int MAV_CMD_SET_CAMERA_SETTINGS_1 = 523;
+    /**
+     * WIP: Set the camera settings part 2 (CAMERA_SETTINGS)
+     * PARAM 1 : Camera ID
+     * PARAM 2 : White balance locked (0: auto, 1: locked)
+     * PARAM 3 : White balance (color temperature in K)
+     * PARAM 4 : Reserved for camera mode ID
+     * PARAM 5 : Reserved for color mode ID
+     * PARAM 6 : Reserved for image format ID
+     * PARAM 7 : Reserved
+     */
+    public final static int MAV_CMD_SET_CAMERA_SETTINGS_2 = 524;
+    /**
+     * WIP: Request storage information (STORAGE_INFORMATION)
+     * PARAM 1 : 1: Request storage information
+     * PARAM 2 : Storage ID
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_STORAGE_INFORMATION = 525;
+    /**
+     * WIP: Format a storage medium
+     * PARAM 1 : 1: Format storage
+     * PARAM 2 : Storage ID
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_STORAGE_FORMAT = 526;
+    /**
+     * WIP: Request camera capture status (CAMERA_CAPTURE_STATUS)
+     * PARAM 1 : 1: Request camera capture status
+     * PARAM 2 : Camera ID
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS = 527;
+    /**
+     * WIP: Request flight information (FLIGHT_INFORMATION)
+     * PARAM 1 : 1: Request flight information
+     * PARAM 2 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_FLIGHT_INFORMATION = 528;
+    /**
      * Start image capture sequence
      * PARAM 1 : Duration between two consecutive pictures (in seconds)
      * PARAM 2 : Number of images to capture total - 0 for unlimited capture
-     * PARAM 3 : Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc)
+     * PARAM 3 : Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used
+     * PARAM 4 : WIP: Resolution horizontal in pixels
+     * PARAM 5 : WIP: Resolution horizontal in pixels
+     * PARAM 6 : WIP: Camera ID
      */
     public final static int MAV_CMD_IMAGE_START_CAPTURE = 2000;
     /**
      * Stop image capture sequence
-     * PARAM 1 : Reserved
+     * PARAM 1 : Camera ID
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_IMAGE_STOP_CAPTURE = 2001;
@@ -815,12 +881,14 @@ public interface MAV_CMD {
      * Starts video capture
      * PARAM 1 : Camera ID (0 for all cameras), 1 for first, 2 for second, etc.
      * PARAM 2 : Frames per second
-     * PARAM 3 : Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc)
+     * PARAM 3 : Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used
+     * PARAM 4 : WIP: Resolution horizontal in pixels
+     * PARAM 5 : WIP: Resolution horizontal in pixels
      */
     public final static int MAV_CMD_VIDEO_START_CAPTURE = 2500;
     /**
      * Stop the current video capture
-     * PARAM 1 : Reserved
+     * PARAM 1 : WIP: Camera ID
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_STOP_CAPTURE = 2501;

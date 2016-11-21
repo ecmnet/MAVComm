@@ -24,13 +24,13 @@ public class msg_attitude_quaternion_cov extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 68;
+    length = 72;
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (microseconds since system boot or since UNIX epoch)
    */
-  public long time_boot_ms;
+  public long time_usec;
   /**
    * Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)
    */
@@ -55,7 +55,7 @@ public class msg_attitude_quaternion_cov extends MAVLinkMessage {
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
-  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
+  time_usec = (long)dis.readLong();
   for (int i=0; i<4; i++) {
     q[i] = (float)dis.readFloat();
   }
@@ -70,7 +70,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+68];
+  byte[] buffer = new byte[12+72];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(length & 0x00FF);
@@ -82,7 +82,7 @@ public byte[] encode() throws IOException {
   dos.writeByte(messageType & 0x00FF);
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
-  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
+  dos.writeLong(time_usec);
   for (int i=0; i<4; i++) {
     dos.writeFloat(q[i]);
   }
@@ -95,15 +95,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 68);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 72);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[78] = crcl;
-  buffer[79] = crch;
+  buffer[82] = crcl;
+  buffer[83] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV : " +   "  time_boot_ms="+time_boot_ms+  "  q="+q+  "  rollspeed="+rollspeed+  "  pitchspeed="+pitchspeed+  "  yawspeed="+yawspeed+  "  covariance="+covariance;}
+return "MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV : " +   "  time_usec="+time_usec+  "  q="+q+  "  rollspeed="+rollspeed+  "  pitchspeed="+pitchspeed+  "  yawspeed="+yawspeed+  "  covariance="+covariance;}
 }

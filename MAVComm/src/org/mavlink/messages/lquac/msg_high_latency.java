@@ -24,13 +24,9 @@ public class msg_high_latency extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_HIGH_LATENCY;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 54;
+    length = 40;
 }
 
-  /**
-   * Timestamp (microseconds since UNIX epoch)
-   */
-  public long time_usec;
   /**
    * A bitfield for use for autopilot-specific flags.
    */
@@ -56,21 +52,9 @@ public class msg_high_latency extends MAVLinkMessage {
    */
   public int heading;
   /**
-   * roll setpoint (centidegrees)
-   */
-  public int roll_sp;
-  /**
-   * pitch setpoint (centidegrees)
-   */
-  public int pitch_sp;
-  /**
    * heading setpoint (centidegrees)
    */
   public int heading_sp;
-  /**
-   * Altitude above the home position (meters)
-   */
-  public int altitude_home;
   /**
    * Altitude above mean sea level (meters)
    */
@@ -143,17 +127,13 @@ public class msg_high_latency extends MAVLinkMessage {
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
-  time_usec = (long)dis.readLong();
   custom_mode = (int)dis.readInt()&0x00FFFFFFFF;
   latitude = (int)dis.readInt();
   longitude = (int)dis.readInt();
   roll = (int)dis.readShort();
   pitch = (int)dis.readShort();
   heading = (int)dis.readUnsignedShort()&0x00FFFF;
-  roll_sp = (int)dis.readShort();
-  pitch_sp = (int)dis.readShort();
   heading_sp = (int)dis.readShort();
-  altitude_home = (int)dis.readShort();
   altitude_amsl = (int)dis.readShort();
   altitude_sp = (int)dis.readShort();
   wp_distance = (int)dis.readUnsignedShort()&0x00FFFF;
@@ -176,7 +156,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+54];
+  byte[] buffer = new byte[12+40];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(length & 0x00FF);
@@ -188,17 +168,13 @@ public byte[] encode() throws IOException {
   dos.writeByte(messageType & 0x00FF);
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
-  dos.writeLong(time_usec);
   dos.writeInt((int)(custom_mode&0x00FFFFFFFF));
   dos.writeInt((int)(latitude&0x00FFFFFFFF));
   dos.writeInt((int)(longitude&0x00FFFFFFFF));
   dos.writeShort(roll&0x00FFFF);
   dos.writeShort(pitch&0x00FFFF);
   dos.writeShort(heading&0x00FFFF);
-  dos.writeShort(roll_sp&0x00FFFF);
-  dos.writeShort(pitch_sp&0x00FFFF);
   dos.writeShort(heading_sp&0x00FFFF);
-  dos.writeShort(altitude_home&0x00FFFF);
   dos.writeShort(altitude_amsl&0x00FFFF);
   dos.writeShort(altitude_sp&0x00FFFF);
   dos.writeShort(wp_distance&0x00FFFF);
@@ -219,15 +195,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 54);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 40);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[64] = crcl;
-  buffer[65] = crch;
+  buffer[50] = crcl;
+  buffer[51] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HIGH_LATENCY : " +   "  time_usec="+time_usec+  "  custom_mode="+custom_mode+  "  latitude="+latitude+  "  longitude="+longitude+  "  roll="+roll+  "  pitch="+pitch+  "  heading="+heading+  "  roll_sp="+roll_sp+  "  pitch_sp="+pitch_sp+  "  heading_sp="+heading_sp+  "  altitude_home="+altitude_home+  "  altitude_amsl="+altitude_amsl+  "  altitude_sp="+altitude_sp+  "  wp_distance="+wp_distance+  "  base_mode="+base_mode+  "  landed_state="+landed_state+  "  throttle="+throttle+  "  airspeed="+airspeed+  "  airspeed_sp="+airspeed_sp+  "  groundspeed="+groundspeed+  "  climb_rate="+climb_rate+  "  gps_nsat="+gps_nsat+  "  gps_fix_type="+gps_fix_type+  "  battery_remaining="+battery_remaining+  "  temperature="+temperature+  "  temperature_air="+temperature_air+  "  failsafe="+failsafe+  "  wp_num="+wp_num;}
+return "MAVLINK_MSG_ID_HIGH_LATENCY : " +   "  custom_mode="+custom_mode+  "  latitude="+latitude+  "  longitude="+longitude+  "  roll="+roll+  "  pitch="+pitch+  "  heading="+heading+  "  heading_sp="+heading_sp+  "  altitude_amsl="+altitude_amsl+  "  altitude_sp="+altitude_sp+  "  wp_distance="+wp_distance+  "  base_mode="+base_mode+  "  landed_state="+landed_state+  "  throttle="+throttle+  "  airspeed="+airspeed+  "  airspeed_sp="+airspeed_sp+  "  groundspeed="+groundspeed+  "  climb_rate="+climb_rate+  "  gps_nsat="+gps_nsat+  "  gps_fix_type="+gps_fix_type+  "  battery_remaining="+battery_remaining+  "  temperature="+temperature+  "  temperature_air="+temperature_air+  "  failsafe="+failsafe+  "  wp_num="+wp_num;}
 }
