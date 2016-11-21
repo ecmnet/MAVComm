@@ -399,7 +399,7 @@ public class MAVLinkToModelParser {
 
 				model.state.v = (float)Math.sqrt( ned.vx* ned.vx +  ned.vy* ned.vy);
 
-				model.state.tms = ned.time_boot_ms*1000;
+				model.state.tms = ned.time_usec*1000;
 
 			}
 		});
