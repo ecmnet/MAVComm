@@ -41,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import org.mavlink.messages.MAVLinkMessage;
 
 import com.comino.mav.control.IMAVController;
+import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
@@ -59,7 +60,6 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 
 	public MAVSimController() {
-		System.out.println("Simulation Controller loaded");
 		model = new DataModel();
 		collector = new ModelCollectorService(model);
 		msgList = new ArrayList<LogMessage>();
@@ -74,6 +74,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 	@Override
 	public boolean connect() {
+		MSPLogger.getInstance().writeLocalDebugMsg("Simulation Controller loaded");
 		return true;
 	}
 
