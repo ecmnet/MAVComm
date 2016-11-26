@@ -614,16 +614,16 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_INVERTED_FLIGHT = 210;
     /**
-     * Sets a desired vehicle turn angle and thrust change
+     * Sets a desired vehicle turn angle and speed change
      * PARAM 1 : yaw angle to adjust steering by in centidegress
-     * PARAM 2 : Thrust - normalized to -2 .. 2
+     * PARAM 2 : speed - normalized to 0 .. 1
      * PARAM 3 : Empty
      * PARAM 4 : Empty
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
      */
-    public final static int MAV_CMD_DO_SET_POSITION_YAW_THRUST = 213;
+    public final static int MAV_CMD_NAV_SET_YAW_SPEED = 213;
     /**
      * Mission command to control a camera or antenna mount, using a quaternion as reference.
      * PARAM 1 : q1 - quaternion param #1, w (1 in null-rotation)

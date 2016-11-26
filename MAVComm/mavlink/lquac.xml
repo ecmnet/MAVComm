@@ -16,10 +16,14 @@
                   <param index="1">enable/disable offboard</param>
               </entry>
               <entry value="71" name="MSP_CMD_VISION">
-                  <description>Enable/Disable offboard control</description>
-                  <param index="1">enable/disable offboard</param>
+                  <description>Enable/Disable vision control</description>
+                  <param index="1">enable/disable vision</param>
               </entry>
-              <entry value="71" name="MSP_CMD_OFFBOARD_SETLOCALPOS">
+               <entry value="72" name="MSP_CMD_COMBINEDFILESTREAM">
+                  <description>Enable/Disable combinedFileStream recording</description>
+                  <param index="1">enable/disable Stream recording</param>
+              </entry>
+              <entry value="73" name="MSP_CMD_OFFBOARD_SETLOCALPOS">
                   <description>Set offboard position via MSP</description>
                   <param index="1">LocalNED.X (set to NAN to ignore)</param>
                   <param index="2">LocalNED.Y (set to NAN to ignore)</param>
