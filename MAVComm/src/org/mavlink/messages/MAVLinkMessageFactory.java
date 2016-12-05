@@ -18,7 +18,6 @@ import org.mavlink.messages.lquac.msg_param_request_list;
 import org.mavlink.messages.lquac.msg_gps_rtk;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_control_system_state;
-import org.mavlink.messages.lquac.msg_mount_status;
 import org.mavlink.messages.lquac.msg_timesync;
 import org.mavlink.messages.lquac.msg_mission_item_reached;
 import org.mavlink.messages.lquac.msg_v2_extension;
@@ -97,6 +96,7 @@ import org.mavlink.messages.lquac.msg_serial_control;
 import org.mavlink.messages.lquac.msg_logging_data_acked;
 import org.mavlink.messages.lquac.msg_param_value;
 import org.mavlink.messages.lquac.msg_sim_state;
+import org.mavlink.messages.lquac.msg_mount_orientation;
 import org.mavlink.messages.lquac.msg_set_attitude_target;
 import org.mavlink.messages.lquac.msg_safety_allowed_area;
 import org.mavlink.messages.lquac.msg_gps_global_origin;
@@ -167,7 +167,6 @@ import org.mavlink.messages.lquac.msg_param_request_list;
 import org.mavlink.messages.lquac.msg_gps_rtk;
 import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_control_system_state;
-import org.mavlink.messages.lquac.msg_mount_status;
 import org.mavlink.messages.lquac.msg_timesync;
 import org.mavlink.messages.lquac.msg_mission_item_reached;
 import org.mavlink.messages.lquac.msg_v2_extension;
@@ -248,6 +247,7 @@ import org.mavlink.messages.lquac.msg_serial_control;
 import org.mavlink.messages.lquac.msg_logging_data_acked;
 import org.mavlink.messages.lquac.msg_param_value;
 import org.mavlink.messages.lquac.msg_sim_state;
+import org.mavlink.messages.lquac.msg_mount_orientation;
 import org.mavlink.messages.lquac.msg_set_attitude_target;
 import org.mavlink.messages.lquac.msg_safety_allowed_area;
 import org.mavlink.messages.lquac.msg_gps_global_origin;
@@ -356,10 +356,6 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE:
       msg = new msg_control_system_state(sysId, componentId);
-      msg.decode(dis);
-      break;
-  case MAVLINK_MSG_ID_MOUNT_STATUS:
-      msg = new msg_mount_status(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_TIMESYNC:
@@ -680,6 +676,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_SIM_STATE:
       msg = new msg_sim_state(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_MOUNT_ORIENTATION:
+      msg = new msg_mount_orientation(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_SET_ATTITUDE_TARGET:
