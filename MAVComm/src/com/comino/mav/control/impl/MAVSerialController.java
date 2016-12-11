@@ -34,7 +34,7 @@
 
 package com.comino.mav.control.impl;
 
-import com.comino.mav.comm.serial.MAVSerialComm;
+import com.comino.mav.comm.serial.MAVSerialComm3;
 import com.comino.mav.control.IMAVController;
 
 /*
@@ -47,7 +47,7 @@ public class MAVSerialController extends MAVController implements IMAVController
 	public MAVSerialController() {
 		super();
 		System.out.println("Serial Controller loaded");
-		comm = MAVSerialComm.getInstance(model);
+		comm = MAVSerialComm3.getInstance(model,57600);
 
 	}
 
@@ -64,6 +64,12 @@ public class MAVSerialController extends MAVController implements IMAVController
 	@Override
 	public boolean isConnected() {
 		return comm.isConnected();
+	}
+
+	@Override
+	public boolean close() {
+		comm.close();
+		return true;
 	}
 
 }

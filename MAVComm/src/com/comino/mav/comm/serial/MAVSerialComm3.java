@@ -66,11 +66,10 @@ import jssc.SerialPortList;
 public class MAVSerialComm3 implements IMAVComm, Runnable {
 
 	//	private static final int BAUDRATE  = 57600;
-	private static final int BAUDRATE  = 921600;
-
 
 	private SerialPort 			serialPort;
-	private String	        port;
+	private int                 baudrate = 921600;
+	private String	            port;
 
 	private DataModel 			model = null;
 
@@ -81,16 +80,16 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 
 	private int errors=0;
 
-
-	public static IMAVComm getInstance(DataModel model) {
+	public static IMAVComm getInstance(DataModel model, int baudrate) {
 		if(com==null)
-			com = new MAVSerialComm3(model);
+			com = new MAVSerialComm3(model, baudrate);
 		return com;
 	}
 
-	private MAVSerialComm3(DataModel model) {
+	private MAVSerialComm3(DataModel model, int baudrate) {
+		this.baudrate = baudrate;
 		this.model = model; int i=0;
-		System.out.println("Searching ports... ");
+		System.out.print("Searching ports... ");
 		String[] list = SerialPortList.getPortNames();
 
 		if(list.length>0) {
@@ -105,6 +104,13 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 		else
 			port ="/dev/tty.SLAB_USBtoUART";
 
+		// USB Hack
+		if(baudrate==57600)
+			port ="/dev/tty.usbmodem1";
+
+
+		System.out.println(port);
+
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
 		this.reader = new MAVLinkReader(3);
@@ -116,7 +122,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 	 */
 	@Override
 	public boolean open() {
-		while(!open(port ,BAUDRATE,8,1,0)) {
+		while(!open(port ,baudrate,8,1,0)) {
 			try {
 				if(serialPort.isOpened()) {
 					try {
@@ -155,6 +161,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 	@Override
 	public void close() {
 		try {
+			System.out.println("Closing serial 3");
 			serialPort.closePort();
 		} catch (SerialPortException e) {
 
@@ -262,7 +269,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm3(new DataModel());
+		IMAVComm comm = new MAVSerialComm3(new DataModel(),57600);
 		comm.open();
 
 

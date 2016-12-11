@@ -68,8 +68,7 @@ import jssc.SerialPortList;
 
 public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 
-	//	private static final int BAUDRATE  = 57600;
-	private static final int BAUDRATE  = 921600;
+	//	private static final int BAUDRATE  = 57600
 
 
 	private SerialPort 			serialPort;
@@ -86,15 +85,18 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 
 	private int errors = 0;
 
-	public static IMAVComm getInstance(DataModel model) {
+
+	private int baudrate = 921600;
+
+	public static IMAVComm getInstance(DataModel model, int baudrate) {
 		if(com==null)
-			com = new MAVSerialComm2(model);
+			com = new MAVSerialComm2(model, baudrate);
 		return com;
 	}
 
-	private MAVSerialComm2(DataModel model) {
+	private MAVSerialComm2(DataModel model, int baudrate) {
 		this.model = model; int i=0;
-
+		this.baudrate = baudrate;
 		System.out.println("Searching ports... ");
 		String[] list = SerialPortList.getPortNames();
 
@@ -122,7 +124,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 	@Override
 	public boolean open() {
 		errors = 0;
-		while(!open(port ,BAUDRATE,8,1,0)) {
+		while(!open(port ,baudrate,8,1,0)) {
 			try {
 				if(serialPort.isOpened()) {
 					try {
@@ -275,7 +277,7 @@ public class MAVSerialComm2 implements IMAVComm, SerialPortEventListener {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm2(new DataModel());
+		IMAVComm comm = new MAVSerialComm2(new DataModel(), 921600);
 		comm.open();
 
 

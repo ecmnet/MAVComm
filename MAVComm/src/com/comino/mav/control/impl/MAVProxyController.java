@@ -71,6 +71,8 @@ import com.comino.msp.model.segment.Status;
 
 public class MAVProxyController implements IMAVMSPController {
 
+	private static final int BAUDRATE  = 921600;
+
 	protected String peerAddress = null;
 
 	protected static IMAVMSPController controller = null;
@@ -106,7 +108,7 @@ public class MAVProxyController implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm.getInstance(model);
+			    comm = MAVSerialComm.getInstance(model,BAUDRATE);
 			else
 				comm = MAVHighSpeedSerialComm.getInstance(model);
 			comm.open();
