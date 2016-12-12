@@ -34,6 +34,7 @@
 
 package com.comino.mav.control.impl;
 
+import com.comino.mav.comm.serial.MAVSerialComm2;
 import com.comino.mav.comm.serial.MAVSerialComm3;
 import com.comino.mav.control.IMAVController;
 
