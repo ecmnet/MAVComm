@@ -53,9 +53,10 @@
 				<attribute name="Built-By" value="${user.name}" />
 
 				<attribute name="Class-Path" value="jna-4.1.0.jar
-									    	        purejavacomm-0.0.21.jar
+									    	        jssc.jar
+
 					                                gson-2.4.jar
-					                                libAMA0.so
+
 					                                resources/"
 				/>
 

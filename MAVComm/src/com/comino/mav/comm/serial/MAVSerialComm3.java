@@ -206,7 +206,6 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 				msg = reader.getNextMessage(serialPort.readBytes(bytesCount), bytesCount);
 				if(msg!=null)
 					parser.parseMessage(msg);
-
 				Thread.sleep(0,200000);
 			} catch(Exception e) {
 				errors++;

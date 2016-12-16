@@ -111,6 +111,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 				comm = MAVHighSpeedSerialComm.getInstance(model);
 			proxy = new MAVUdpProxyNIO2("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
+//			proxy = new MAVUdpProxyNIO2("192.168.178.20",14550,"192.168.178.22",14555,comm);
+//			peerAddress = "192.168.178.20";
 			System.out.println("Proxy Controller loaded ");
 
 		}

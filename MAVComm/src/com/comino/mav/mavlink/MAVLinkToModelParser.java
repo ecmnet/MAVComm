@@ -115,6 +115,7 @@ public class MAVLinkToModelParser {
 
 	private long    gpos_tms = 0;
 	private long    mocap_tms = 0;
+	private long    rc_tms = 0;
 
 	private long    time_offset_ns   = 0;
 	private long    time_offset_tms  = 0;
@@ -540,15 +541,12 @@ public class MAVLinkToModelParser {
 
 		registerListener(msg_rc_channels.class, new IMAVLinkListener() {
 
-			short rssi_old=0;
-
 			@Override
 			public void received(Object o) {
 
 				msg_rc_channels rc = (msg_rc_channels)o;
 
-				model.rc.rssi = (short)((rc.rssi+rssi_old)/2);
-				rssi_old = (short)rc.rssi;
+				model.rc.rssi = (short)(rc.rssi);
 
 				model.sys.setStatus(Status.MSP_RC_ATTACHED, (model.rc.rssi>0));
 				//				model.sys.setStatus(Status.MSP_RC_ATTACHED, (true));
@@ -558,6 +556,8 @@ public class MAVLinkToModelParser {
 				model.rc.s2 = rc.chan3_raw < 65534 ? (short)rc.chan3_raw : 1500;
 				model.rc.s3 = rc.chan4_raw < 65534 ? (short)rc.chan4_raw : 1500;
 				model.rc.tms = rc.time_boot_ms;
+
+				rc_tms = System.currentTimeMillis();
 
 				notifyStatusChange();
 
@@ -780,61 +780,66 @@ public class MAVLinkToModelParser {
 
 	public void parseMessage(MAVLinkMessage msg) throws IOException {
 
-			List<IMAVLinkListener> listenerList = null;
-			if(msg!=null) {
-				model.sys.setStatus(Status.MSP_CONNECTED,true);
-				model.sys.tms = System.nanoTime()/1000;
+		List<IMAVLinkListener> listenerList = null;
+		if(msg!=null) {
+			model.sys.setStatus(Status.MSP_CONNECTED,true);
+			model.sys.tms = System.nanoTime()/1000;
 
-				mavList.put(msg.getClass(),msg);
-				listenerList = listeners.get(msg.getClass());
-				if(listenerList!=null) {
-					for(IMAVLinkListener listener : listenerList)
-						listener.received(msg);
-				}
-
-				if(mavListener!=null) {
-					for(IMAVLinkListener mavlistener : mavListener)
-						mavlistener.received(msg);
-				}
-
-				if(model.sys.isStatus(Status.MSP_ARMED))
-					model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+			mavList.put(msg.getClass(),msg);
+			listenerList = listeners.get(msg.getClass());
+			if(listenerList!=null) {
+				for(IMAVLinkListener listener : listenerList)
+					listener.received(msg);
 			}
 
-			// if no global position was published within the last second:
-			if((System.currentTimeMillis() - gpos_tms)>1000)
-				model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
-
-			if((System.currentTimeMillis() - mocap_tms)>1000) {
-				model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
-				mocap_tms = System.currentTimeMillis();
+			if(mavListener!=null) {
+				for(IMAVLinkListener mavlistener : mavListener)
+					mavlistener.received(msg);
 			}
 
+			if(model.sys.isStatus(Status.MSP_ARMED))
+				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+		}
 
-			if((System.nanoTime()/1000) > (model.sys.tms+1000000) &&
-					model.sys.isStatus(Status.MSP_CONNECTED)) {
+		// if no global position was published within the last second:
+		if((System.currentTimeMillis() - gpos_tms)>1000)
+			model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
 
-				model.sys.setStatus(Status.MSP_CONNECTED, false);
-				model.sys.setStatus(Status.MSP_READY, false);
-				notifyStatusChange();
-				link.close(); link.open();
-				model.sys.tms = System.nanoTime()/1000;
-			}
+		if((System.currentTimeMillis() - mocap_tms)>1000) {
+			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
+			mocap_tms = System.currentTimeMillis();
+		}
 
-			//		if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
-			//				&& link.isSerial()) {
-			//			time_offset_tms = System.currentTimeMillis();
-			//			msg_timesync sync_s = new msg_timesync(1,1);
-			//			sync_s.tc1 = 0;
-			//			sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
-			//			link.write(sync_s);
-			//		}
+		if((System.currentTimeMillis() - rc_tms)>1000) {
+			model.sys.setStatus(Status.MSP_RC_ATTACHED, (false));
+			notifyStatusChange(); model.rc.rssi = 0;
+			rc_tms = System.currentTimeMillis();
+		}
 
-			if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
-					model.sys.isStatus(Status.MSP_READY)) {
-				model.sys.setStatus(Status.MSP_READY, false);
-				notifyStatusChange();
-			}
+		if((System.nanoTime()/1000) > (model.sys.tms+1000000) &&
+				model.sys.isStatus(Status.MSP_CONNECTED)) {
+
+			model.sys.setStatus(Status.MSP_CONNECTED, false);
+			model.sys.setStatus(Status.MSP_READY, false);
+			notifyStatusChange();
+			link.close(); link.open();
+			model.sys.tms = System.nanoTime()/1000;
+		}
+
+		//		if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
+		//				&& link.isSerial()) {
+		//			time_offset_tms = System.currentTimeMillis();
+		//			msg_timesync sync_s = new msg_timesync(1,1);
+		//			sync_s.tc1 = 0;
+		//			sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
+		//			link.write(sync_s);
+		//		}
+
+		if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
+				model.sys.isStatus(Status.MSP_READY)) {
+			model.sys.setStatus(Status.MSP_READY, false);
+			notifyStatusChange();
+		}
 	}
 
 	private class MAVLinkParserWorker implements Runnable {

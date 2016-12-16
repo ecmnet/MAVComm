@@ -57,7 +57,7 @@ public class StartUp implements Runnable {
 		if(args.length>0)
 			control = new MAVProxyController2(true);
 		else
-			control = new MAVProxyController(false);
+			control = new MAVProxyController2(false);
 
 		MSPLogger.getInstance(control);
 
@@ -93,10 +93,7 @@ public class StartUp implements Runnable {
 					control.connect();
 				}
 
-				msg_timesync sync = new msg_timesync(1,2);
-				sync.tc1 = 0;
-				sync.ts1 = 0L;
-				control.sendMAVLinkMessage(sync);
+				System.out.println(control.getCurrentModel().hud.h);
 
 			} catch (Exception e) {
 				control.close();
