@@ -148,10 +148,11 @@ public class MAVSimController extends MAVController implements IMAVController {
 			count++;
 			if(model.state.l_z > -5.0f)
 				model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
-			model.state.l_x = (float)(Math.sin(count/100f))*0.2f;
+			model.state.l_x = (float)(Math.sin(count/10f))*1f;
 			model.state.l_y = (float)(Math.cos(count/100f))*0.2f;
 
 			model.raw.di = (float)Math.random()*0.5f+1;
+			model.attitude.p = count % 2;
 			model.imu.accx = (float)Math.random()*0.5f-0.25f;
 			model.imu.accy = (float)Math.random()*0.5f-0.25f;
 			model.imu.accz = (float)Math.random()*0.5f-9.81f;
