@@ -168,6 +168,7 @@ public class MAVLinkToModelParser {
 				msg_msp_status status = (msg_msp_status)o;
 				model.sys.load_m = status.load / 4f;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
+				model.sys.tms = System.nanoTime()/1000;
 			}
 		});
 
@@ -816,7 +817,7 @@ public class MAVLinkToModelParser {
 			rc_tms = System.currentTimeMillis();
 		}
 
-		if((System.nanoTime()/1000) > (model.sys.tms+1000000) &&
+		if((System.nanoTime()/1000) > (model.sys.tms+50000000) &&
 				model.sys.isStatus(Status.MSP_CONNECTED)) {
 
 			model.sys.setStatus(Status.MSP_CONNECTED, false);
@@ -835,7 +836,7 @@ public class MAVLinkToModelParser {
 		//			link.write(sync_s);
 		//		}
 
-		if((System.nanoTime()/1000) > (model.imu.tms+5000000) &&
+		if((System.nanoTime()/1000) > (model.imu.tms+500000) &&
 				model.sys.isStatus(Status.MSP_READY)) {
 			model.sys.setStatus(Status.MSP_READY, false);
 			notifyStatusChange();
