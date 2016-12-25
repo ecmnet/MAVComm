@@ -24,7 +24,7 @@ public class msg_msp_vision extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_VISION;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 49;
+    length = 57;
 }
 
   /**
@@ -60,6 +60,14 @@ public class msg_msp_vision extends MAVLinkMessage {
    */
   public float h;
   /**
+   * Pitch
+   */
+  public float p;
+  /**
+   * Roll
+   */
+  public float r;
+  /**
    * FPS of mocap system
    */
   public float fps;
@@ -87,6 +95,8 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   vy = (float)dis.readFloat();
   vz = (float)dis.readFloat();
   h = (float)dis.readFloat();
+  p = (float)dis.readFloat();
+  r = (float)dis.readFloat();
   fps = (float)dis.readFloat();
   flags = (int)dis.readInt()&0x00FFFFFFFF;
   errors = (int)dis.readInt()&0x00FFFFFFFF;
@@ -96,7 +106,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+49];
+  byte[] buffer = new byte[12+57];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(length & 0x00FF);
@@ -116,6 +126,8 @@ public byte[] encode() throws IOException {
   dos.writeFloat(vy);
   dos.writeFloat(vz);
   dos.writeFloat(h);
+  dos.writeFloat(p);
+  dos.writeFloat(r);
   dos.writeFloat(fps);
   dos.writeInt((int)(flags&0x00FFFFFFFF));
   dos.writeInt((int)(errors&0x00FFFFFFFF));
@@ -123,15 +135,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 49);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 57);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[59] = crcl;
-  buffer[60] = crch;
+  buffer[67] = crcl;
+  buffer[68] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h="+h+  "  fps="+fps+  "  flags="+flags+  "  errors="+errors+  "  quality="+quality;}
+return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h="+h+  "  p="+p+  "  r="+r+  "  fps="+fps+  "  flags="+flags+  "  errors="+errors+  "  quality="+quality;}
 }

@@ -79,6 +79,8 @@
                <field type="float"         name="vy">Y Velocity</field>
                <field type="float"         name="vz">Z Velocity</field>
                <field type="float"         name="h">Initial heading</field>
+               <field type="float"         name="p">Pitch</field>
+               <field type="float"         name="r">Roll</field>
                <field type="uint8_t"       name="quality">Quality of estimation</field>
                <field type="float"         name="fps">FPS of mocap system</field>
                <field type="uint64_t"      name="tms">Timestamp</field>
