@@ -144,13 +144,13 @@ public class MAVLinkToModelParser {
 				model.vision.vy= mocap.vy;
 				model.vision.vz= mocap.vz;
 
-				model.vision.x = mocap.x;
-				model.vision.y = mocap.y;
-				model.vision.z = mocap.z;
-
-				model.vision.h= mocap.h;
-				model.vision.p= mocap.p;
-				model.vision.r= mocap.r;
+//				model.vision.x = mocap.x;
+//				model.vision.y = mocap.y;
+//				model.vision.z = mocap.z;
+//
+//				model.vision.h= mocap.h;
+//				model.vision.p= mocap.p;
+//				model.vision.r= mocap.r;
 
 				model.vision.qual= mocap.quality;
 				model.vision.errors = (int)mocap.errors;
@@ -162,6 +162,20 @@ public class MAVLinkToModelParser {
 					mocap_tms = System.currentTimeMillis();
 					model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true );
 				}
+			}
+		});
+
+		registerListener(msg_vision_position_estimate.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_vision_position_estimate mocap = (msg_vision_position_estimate)o;
+
+				model.vision.x = mocap.x;
+				model.vision.y = mocap.y;
+				model.vision.z = mocap.z;
+			    model.vision.h= MSPMathUtils.fromRad(mocap.yaw);
+				model.vision.p= mocap.pitch;
+				model.vision.r= mocap.roll;
 			}
 		});
 
