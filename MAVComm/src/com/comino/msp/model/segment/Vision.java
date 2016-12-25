@@ -50,9 +50,12 @@ public class Vision extends Segment {
 	public float vy = Float.NaN;
 	public float vz = Float.NaN;
 
+	public float h    = Float.NaN;
+	public float p    = Float.NaN;
+	public float r    = Float.NaN;
+
 	public int   flags = 0;
 	public float fps   = Float.NaN;
-	public float dh    = Float.NaN;
 	public float qual  = Float.NaN;
 
 	public int   errors = 0;
@@ -68,7 +71,9 @@ public class Vision extends Segment {
 		vz = a.vz;
 		errors = a.errors;
 
-		dh = a.dh;
+		h = a.h;
+		p = a.p;
+		r = a.r;
 		qual = a.qual;
 
 		flags = a.flags;
@@ -88,7 +93,9 @@ public class Vision extends Segment {
 
 		a.errors = errors;
 
-		a.dh = dh;
+		a.h = h;
+		a.p = p;
+		a.r = r;
 		a.qual = qual;
 
 		a.flags = flags;
@@ -106,7 +113,10 @@ public class Vision extends Segment {
 		vy = 0;
 		vz = 0;
 
-		dh = 0;
+		h = 0;
+		p = 0;
+		r = 0;
+
 		qual=0;
 
 		flags = 0;
