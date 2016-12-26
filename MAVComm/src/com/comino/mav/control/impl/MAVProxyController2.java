@@ -106,7 +106,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm3.getInstance(model, BAUDRATE);
+			    comm = MAVSerialComm3.getInstance(model, BAUDRATE, false);
 			else
 				comm = MAVHighSpeedSerialComm.getInstance(model);
 			proxy = new MAVUdpProxyNIO2("172.168.178.2",14550,"172.168.178.1",14555,comm);

@@ -82,15 +82,20 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 
 	private int errors=0;
 
-	public static IMAVComm getInstance(DataModel model, int baudrate) {
+	public static IMAVComm getInstance(DataModel model, int baudrate, boolean isUSB) {
 		if(com==null)
-			com = new MAVSerialComm3(model, baudrate);
+			com = new MAVSerialComm3(model, baudrate, isUSB);
 		return com;
 	}
 
-	private MAVSerialComm3(DataModel model, int baudrate) {
+	private MAVSerialComm3(DataModel model, int baudrate, boolean isUSB) {
 		this.baudrate = baudrate;
 		this.model = model; int i=0;
+
+		if(isUSB)
+			port ="/dev/tty.usbmodem1";
+		else {
+
 		System.out.print("Searching ports... ");
 		String[] list = SerialPortList.getPortNames();
 
@@ -105,11 +110,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 		}
 		else
 			port ="/dev/tty.SLAB_USBtoUART";
-
-		// USB Hack
-		if(baudrate==57600)
-			port ="/dev/tty.usbmodem1";
-
+		}
 
 		System.out.println(port+" with "+baudrate+ " baud");
 
@@ -274,7 +275,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm3(new DataModel(),921600);
+		IMAVComm comm = new MAVSerialComm3(new DataModel(),921600, false);
 		comm.open();
 
 

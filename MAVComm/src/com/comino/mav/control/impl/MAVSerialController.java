@@ -48,7 +48,7 @@ public class MAVSerialController extends MAVController implements IMAVController
 	public MAVSerialController() {
 		super();
 		System.out.println("Serial Controller loaded");
-		comm = MAVSerialComm3.getInstance(model,57600);
+		comm = MAVSerialComm3.getInstance(model,2000000, true);
 
 	}
 
