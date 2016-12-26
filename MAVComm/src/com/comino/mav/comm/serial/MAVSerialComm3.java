@@ -76,6 +76,8 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 	private MAVLinkToModelParser parser = null;
 	private MAVLinkReader reader;
 
+	private boolean isRunning = false;
+
 	private static IMAVComm com = null;
 
 	private int errors=0;
@@ -160,12 +162,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 	 */
 	@Override
 	public void close() {
-		try {
-			System.out.println("Closing serial 3");
-			serialPort.closePort();
-		} catch (SerialPortException e) {
-
-		}
+		isRunning = false;
 	}
 
 	private boolean open(String portName, int baudRate, int dataBits, int stopBits, int parity) {
@@ -188,6 +185,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 			System.err.println(e2.getMessage());
 			return false;
 		}
+		isRunning = true;
 		new Thread(this).start();
 		System.out.println("Connected to "+serialPort.getPortName());
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
@@ -198,7 +196,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 	@Override
 	public void run() {
 		MAVLinkMessage msg = null;
-		while(serialPort.isOpened()) {
+		while(isRunning) {
 			try {
 				int bytesCount = serialPort.getInputBufferBytesCount();
 //				System.out.println(bytesCount);
@@ -211,6 +209,12 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 			} catch(Exception e) {
 				errors++;
 			}
+		}
+		try {
+			System.out.println("Closing serial 3");
+			serialPort.closePort();
+		} catch (SerialPortException e) {
+
 		}
 	}
 
