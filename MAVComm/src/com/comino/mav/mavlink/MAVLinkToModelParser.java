@@ -65,6 +65,7 @@ import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_manual_control;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_msp_vision;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
@@ -135,6 +136,14 @@ public class MAVLinkToModelParser {
 		this.msgListener = new ArrayList<IMAVMessageListener>();
 
 		listeners = new HashMap<Class<?>,List<IMAVLinkListener>>();
+
+		registerListener(msg_msp_micro_slam.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_msp_micro_slam slam = (msg_msp_micro_slam)o;
+
+			}
+		});
 
 		registerListener(msg_msp_vision.class, new IMAVLinkListener() {
 			@Override
@@ -677,6 +686,7 @@ public class MAVLinkToModelParser {
 						(version.flight_sw_version >> (8*3)) & 0xFF,
 						(version.flight_sw_version >> (8*2)) & 0xFF,
 						(version.flight_sw_version >> (8*1)) & 0xFF);
+				System.out.println("Version: "+model.sys.version);
 			}
 		});
 

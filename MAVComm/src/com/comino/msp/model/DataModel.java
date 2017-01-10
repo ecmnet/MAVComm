@@ -49,6 +49,7 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Raw;
 import com.comino.msp.model.segment.Rc;
 import com.comino.msp.model.segment.Servo;
+import com.comino.msp.model.segment.Slam;
 import com.comino.msp.model.segment.State;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.model.segment.Telemetry;
@@ -84,7 +85,8 @@ public class DataModel extends Segment implements Serializable {
 	public   Debug		    debug = null;
 	public   LogMessage       msg = null;
 	public   Vision        vision = null;
-	public   EstStatus       est   = null;
+	public   EstStatus       est  = null;
+	public   Slam           slam  = null;
 
 
 	public DataModel()  {
@@ -106,8 +108,7 @@ public class DataModel extends Segment implements Serializable {
 		this.msg            = new LogMessage();
 		this.vision         = new Vision();
 		this.est            = new EstStatus();
-
-
+		this.slam           = new Slam();
 	}
 
 	public DataModel(DataModel m) {
@@ -134,6 +135,7 @@ public class DataModel extends Segment implements Serializable {
 		this.msg            = m.msg.clone();
 		this.vision         = m.vision.clone();
 		this.est            = m.est.clone();
+		this.slam           = m.slam.clone();
 	}
 
 
@@ -157,6 +159,7 @@ public class DataModel extends Segment implements Serializable {
 		this.msg.set(m.msg);
 		this.vision.set(m.vision);
 		this.est.set(m.est);
+		this.slam.set(m.slam);
 	}
 
 	public DataModel clone() {
@@ -182,6 +185,7 @@ public class DataModel extends Segment implements Serializable {
 		this.msg.clear();
 		this.vision.clear();
 		this.est.clear();
+		this.slam.clear();
 	}
 
 	public float getValue(String classkey) {

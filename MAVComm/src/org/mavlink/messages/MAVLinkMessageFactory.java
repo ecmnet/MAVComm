@@ -309,6 +309,7 @@ import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 /**
  * Class MAVLinkMessageFactory
  * Generate MAVLink message classes from byte array
@@ -924,6 +925,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_RESOURCE_REQUEST:
       msg = new msg_resource_request(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_MSP_MICRO_SLAM:
+      msg = new msg_msp_micro_slam(sysId, componentId);
       msg.decode(dis);
       break;
   default:

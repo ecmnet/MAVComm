@@ -87,5 +87,11 @@
                <field type="uint32_t"      name="flags">Info flags</field>
                <field type="uint32_t"      name="errors">Error counter</field>
            </message>
+           <message id="183" name="MSP_MICRO_SLAM">
+               <description>MSP MICRO SLAM Data (12x12x12 each 20cm), encoded in bytes</description>
+               <field type="uint8_t[216]" name="data">SLAM data bytes</field>
+               <field type="uint64_t"      name="tms">Timestamp</field>
+               <field type="uint32_t"      name="flags">Info flags</field>
+           </message>
       </messages>
 </mavlink>

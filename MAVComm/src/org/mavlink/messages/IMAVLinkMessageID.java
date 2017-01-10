@@ -160,4 +160,5 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET = 139;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET = 89;
   public static int MAVLINK_MSG_ID_RESOURCE_REQUEST = 142;
+  public static int MAVLINK_MSG_ID_MSP_MICRO_SLAM = 183;
 }
