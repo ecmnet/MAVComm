@@ -151,6 +151,10 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.state.l_x = (float)(Math.sin(count/10f))*1f;
 			model.state.l_y = (float)(Math.cos(count/100f))*0.2f;
 
+			model.vision.x = model.state.l_x + (float)Math.random()*0.2f-0.1f;
+			model.vision.y = model.state.l_y + (float)Math.random()*0.2f-0.1f;
+			model.vision.z = model.state.l_z + (float)Math.random()*0.2f-0.1f;
+
 			model.raw.di = (float)Math.random()*0.5f+1;
 			model.attitude.p = count % 2;
 			model.imu.accx = (float)Math.random()*0.5f-0.25f;
@@ -166,6 +170,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.latitude = 47.37174f;
 			model.gps.longitude = 8.54226f;
 			model.gps.numsat = 8;
+
+			model.slam.cx = 0;
+			model.slam.cy = 0;
+			model.slam.cz = 0;
+			model.slam.res = 0.2f;
+
 
 			model.hud.ag = (float)Math.random()*10f+500f;
 

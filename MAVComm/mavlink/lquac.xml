@@ -88,8 +88,12 @@
                <field type="uint32_t"      name="errors">Error counter</field>
            </message>
            <message id="183" name="MSP_MICRO_SLAM">
-               <description>MSP MICRO SLAM Data (12x12x12 each 20cm), encoded in bytes</description>
-               <field type="uint8_t[216]" name="data">SLAM data bytes</field>
+               <description>MSP MICRO SLAM Data (12x12x12), encoded in longs</description>
+               <field type="uint64_t[27]"  name="data">SLAM data bytes</field>
+               <field type="float"         name="cx" >Center x</field>
+               <field type="float"         name="cy" >Center y</field>
+               <field type="float"         name="cz" >Center z</field>
+               <field type="float"         name="res">Center x</field>
                <field type="uint64_t"      name="tms">Timestamp</field>
                <field type="uint32_t"      name="flags">Info flags</field>
            </message>
