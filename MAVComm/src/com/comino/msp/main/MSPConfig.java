@@ -126,11 +126,11 @@ public class MSPConfig {
 	}
 
 	public int getIntProperty(String key, String defaultValue) {
-		return Integer.parseInt(prop.getProperty(key, defaultValue));
+		return (int)Float.parseFloat(prop.getProperty(key, defaultValue).trim());
 	}
 
 	public float getFloatProperty(String key, String defaultValue) {
-		return Float.parseFloat(prop.getProperty(key, defaultValue));
+		return Float.parseFloat(prop.getProperty(key, defaultValue).trim());
 	}
 
 

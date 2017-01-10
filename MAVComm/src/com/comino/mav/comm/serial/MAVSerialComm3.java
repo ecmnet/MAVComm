@@ -197,7 +197,7 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 	@Override
 	public void run() {
 		MAVLinkMessage msg = null;
-		while(isRunning) {
+		while(isRunning && serialPort.isOpened()) {
 			try {
 				int bytesCount = serialPort.getInputBufferBytesCount();
 //				System.out.println(bytesCount);
