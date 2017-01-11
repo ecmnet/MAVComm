@@ -15,19 +15,35 @@ public class Slam extends Segment {
 	public static final int MAXBLOCKS = LENGTH*LENGTH*LENGTH;
 
 	BitSet data  = new BitSet(MAXBLOCKS);
-	public float  cx=0;
-	public float  cy=0;
-	public float  cz=0;
-	public float res=0.2f;
+	private float  cx,cy,cz,res;
 	public int   flags = 0;
 
+	public Slam() {
+		this(0,0,0,0.2f);
+	}
+
+	public Slam(float res) {
+		this(0,0,0,res);
+	}
+
+	public Slam(float cx, float cy, float cz, float res) {
+		this.cx = cx - LENGTH/2f*res;
+		this.cy = cy - LENGTH/2f*res;
+		this.cz = cz - LENGTH/2f*res;
+		this.res = res;
+	}
+
 	public void set(Slam a) {
-		data = (BitSet)a.data.clone();
+		data = new BitSet(MAXBLOCKS);
+		data.xor(a.data);
 		flags = a.flags;
 	}
 
 	public Slam clone() {
-		Slam at = new Slam();
+		Slam at = new Slam(res);
+		at.cx = cx;
+		at.cy = cy;
+		at.cz = cz;
 		at.set(this);
 		return at;
 	}
@@ -45,8 +61,29 @@ public class Slam extends Segment {
 		data = BitSet.valueOf(array);
 	}
 
-	public void  setBlock(float xpos, float ypos, float zpos) {
-		data.set(calculateBlock(xpos, ypos, zpos));
+	public void moveTo(float cx, float cy, float cz) {
+		scale(cx,cy,cz, res);
+		System.out.println("New origin is: "+cx+","+cy+","+cz);
+	}
+
+	public void scale(float cx, float cy, float cz, float res) {
+		List<BlockPoint3D> list = getBlocks();
+		this.cx = cx - LENGTH/2f*res;
+		this.cy = cy - LENGTH/2f*res;
+		this.cz = cz - LENGTH/2f*res;
+		this.res = res;
+		if(list!=null) {
+			data.clear();
+			for( BlockPoint3D p : list)
+				setBlock(p.x, p.y, p.z);
+		}
+	}
+
+	public boolean  setBlock(float xpos, float ypos, float zpos) {
+        if( Math.abs(xpos) > LENGTH/2 * res || Math.abs(ypos) > LENGTH/2 * res  || Math.abs(zpos) > LENGTH/2 * res)
+        	return false;
+        data.set(calculateBlock(xpos, ypos, zpos));
+		return true;
 	}
 
 	public boolean isBlocked(float xpos, float ypos, float zpos) {
@@ -60,32 +97,63 @@ public class Slam extends Segment {
 		return blocked;
 	}
 
+	public boolean hasBlocked() {
+		return !data.isEmpty();
+	}
+
 	public List<BlockPoint3D> getBlocks() {
+
+		if(!hasBlocked())
+			return null;
+
 		List<BlockPoint3D> list = new ArrayList<BlockPoint3D>();
 		for(int i=0;i<MAXBLOCKS;i++) {
 			if(data.get(i)) {
 				list.add(new BlockPoint3D(
-				  i % LENGTH * res + cx,i / LENGTH % LENGTH * res + cy, i / (LENGTH * LENGTH) * res,res + cz)
+						(i % LENGTH              ) * res + cx -res/2f,
+						( i / LENGTH  % LENGTH   ) * res + cy +res/2f,
+						( i / ( LENGTH * LENGTH )) * res + cz +res/2f, res)
 				);
 			}
 		}
 		return list;
 	}
 
-	private int calculateBlock(float xpos, float ypos, float zpos) {
-		int block = (int)((xpos - cx) / res)
-				  + (int)((ypos - cy) / res) * LENGTH
-				  + (int)((zpos - cz) / res) * LENGTH * LENGTH;
+
+	public int calculateBlock(float xpos, float ypos, float zpos) {
+		int block =  Math.round((xpos  - cx) / res)
+				  +  Math.round((ypos  - cy) / res) * LENGTH
+				  +  Math.round((zpos  - cz) / res) * LENGTH * LENGTH;
 		return block;
 	}
 
 	public static void main(String[] args) {
-		Slam s = new Slam();
-		s.setBlock(0.5f,0.5f,0.1f);
-		s.setBlock(1.5f,0.5f,0.4f);
+		Slam s = new Slam(0,0,0,0.2f);
+
+		s.setBlock(0.4f,-0.4f,-0.8f);
+		s.setBlock(0.2f,-0.2f,0);
+		s.setBlock(0.0f,0.0f,0.2f);
+
 		List<BlockPoint3D> list = s.getBlocks();
 		for( BlockPoint3D p : list) {
-			System.out.println(p.x+","+p.y+","+p.z);
+			System.out.println(s.calculateBlock(p.x, p.y, p.z)+":"+p);
+		}
+		System.out.println();
+    //    s.moveTo(0.4f, -0.4f,-0.4f);
+
+		List<BlockPoint3D> list2 = s.getBlocks();
+		for( BlockPoint3D p : list2) {
+			System.out.println(s.calculateBlock(p.x, p.y, p.z)+":"+p);
+		}
+
+		System.out.println();
+    //    s.moveTo(0,0,0);
+
+        Slam u = s.clone();
+
+		List<BlockPoint3D> list3 = u.getBlocks();
+		for( BlockPoint3D p : list3) {
+			System.out.println(s.calculateBlock(p.x, p.y, p.z)+":"+p);
 		}
 
 	}

@@ -15,4 +15,8 @@ public class BlockPoint3D {
 		this.res = res;
 	}
 
+	public String toString() {
+		return String.format("< % #.2f,% #.2f,% #.2f > ( %#.2f )",x,y,z,res);
+	}
+
 }

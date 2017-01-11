@@ -171,10 +171,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.longitude = 8.54226f;
 			model.gps.numsat = 8;
 
-			model.slam.cx = 0;
-			model.slam.cy = 0;
-			model.slam.cz = 0;
-			model.slam.res = 0.2f;
+			model.slam.setBlock(count*0.0005f,count*0.0005f, 0);
 
 
 			model.hud.ag = (float)Math.random()*10f+500f;
