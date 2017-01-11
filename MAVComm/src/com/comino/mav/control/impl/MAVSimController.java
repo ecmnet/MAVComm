@@ -65,6 +65,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 		msgList = new ArrayList<LogMessage>();
 		msgListener = new ArrayList<IMAVMessageListener>();
 		modeListener = new ArrayList<IMSPStatusChangedListener>();
+		model.slam.scale(0, 0, 0, 0.5f);
 
 
 
@@ -172,6 +173,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.numsat = 8;
 
 			model.slam.setBlock(count*0.0005f,count*0.0005f, 0);
+			model.slam.setBlock(-0.8f+count*0.0005f,0.8f, 0);
 
 
 			model.hud.ag = (float)Math.random()*10f+500f;

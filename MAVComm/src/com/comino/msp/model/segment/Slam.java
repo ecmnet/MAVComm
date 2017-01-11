@@ -80,7 +80,9 @@ public class Slam extends Segment {
 	}
 
 	public boolean  setBlock(float xpos, float ypos, float zpos) {
-        if( Math.abs(xpos) > LENGTH/2 * res || Math.abs(ypos) > LENGTH/2 * res  || Math.abs(zpos) > LENGTH/2 * res)
+        if( Math.abs(Math.round(xpos)) >= LENGTH/2 * res ||
+        	Math.abs(Math.round(ypos)) >= LENGTH/2 * res ||
+        	Math.abs(Math.round(zpos)) >= LENGTH/2 * res)
         	return false;
         data.set(calculateBlock(xpos, ypos, zpos));
 		return true;
