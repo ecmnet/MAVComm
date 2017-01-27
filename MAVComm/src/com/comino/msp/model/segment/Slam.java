@@ -114,12 +114,12 @@ public class Slam extends Segment {
 		}
 	}
 
-	public boolean  setBlock(float xpos, float ypos, float zpos) {
+	public boolean  setBlock(double xpos, double ypos, double zpos) {
 		setBlock(xpos,ypos,zpos,true);
 		return true;
 	}
 
-	public boolean  setBlock(float xpos, float ypos, float zpos, boolean set) {
+	public boolean  setBlock(double xpos, double ypos, double zpos, boolean set) {
 		if( Math.abs(Math.round(xpos)) >= LENGTH/2 * res ||
 	    	Math.abs(Math.round(ypos)) >= LENGTH/2 * res ||
 			Math.abs(Math.round(zpos)) >= LENGTH/2 * res)
@@ -131,11 +131,11 @@ public class Slam extends Segment {
 		return true;
 	}
 
-	public boolean isBlocked(float xpos, float ypos, float zpos) {
+	public boolean isBlocked(double xpos, double ypos, double zpos) {
 		return data.get(calculateBlock(xpos, ypos, zpos));
 	}
 
-	public boolean isBlocked(float xpos, float ypos) {
+	public boolean isBlocked(double xpos, double ypos) {
 		boolean blocked = false;
 		for(int i=0; i< 8; i++)
 			blocked = blocked | isBlocked(xpos,ypos,i*res);
@@ -155,9 +155,9 @@ public class Slam extends Segment {
 		for(int i=0;i<MAXBLOCKS;i++) {
 			if(data.get(i)) {
 				list.add(new BlockPoint3D(
-						(i %    LENGTH              ) * res + cx -res/2f,
-						( i /   LENGTH  % LENGTH    ) * res + cy +res/2f,
-						( i / ( LENGTH * LENGTH )   ) * res + cz +res/2f, res)
+						(i %    LENGTH              ) * res + cx ,
+						( i /   LENGTH  % LENGTH    ) * res + cy ,
+						( i / ( LENGTH * LENGTH )   ) * res + cz , res)
 						);
 			}
 		}
@@ -165,19 +165,21 @@ public class Slam extends Segment {
 	}
 
 
-	public int calculateBlock(float xpos, float ypos, float zpos) {
-		int block =  Math.round((xpos  - cx) / res)
-			      +  Math.round((ypos  - cy) / res) * LENGTH
-				  +  Math.round((zpos  - cz) / res) * LENGTH * LENGTH;
-		return block;
+	public int calculateBlock(double xpos, double ypos, double zpos) {
+		long block =  Math.round((xpos  - cx) / res)
+			       +  Math.round((ypos  - cy) / res) * LENGTH
+				   +  Math.round((zpos  - cz) / res) * LENGTH * LENGTH;
+		if(block<0)
+			block = 0;
+		return (int)block;
 	}
 
 	public static void main(String[] args) {
 		Slam s = new Slam(0,0,0,0.2f);
 
-		s.setBlock(0.4f,-0.4f,-0.8f);
-		s.setBlock(0.2f,-0.2f,0);
-		s.setBlock(0.0f,0.0f,0.2f);
+		s.setBlock(0,0,0);
+//		s.setBlock(0.2f,-0.2f,0);
+//		s.setBlock(0.0f,0.0f,0.2f);
 
 		List<BlockPoint3D> list = s.getBlocks();
 		for( BlockPoint3D p : list) {
