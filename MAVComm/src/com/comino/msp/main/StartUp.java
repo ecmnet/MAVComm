@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2016 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,6 +34,8 @@
 
 package com.comino.msp.main;
 
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
+import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -41,6 +43,7 @@ import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.mav.control.impl.MAVProxyController2;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.commander.MSPCommander;
+import com.comino.msp.model.segment.Slam;
 
 public class StartUp implements Runnable {
 
@@ -84,16 +87,44 @@ public class StartUp implements Runnable {
 	@Override
 	public void run() {
 		long tms = System.currentTimeMillis();
+		Slam s = new Slam(0.5f);
 		while(true) {
 			try {
-				Thread.sleep(500);
+				Thread.sleep(200);
 				if(!control.isConnected()) {
 					if(control.isConnected())
 						control.close();
 					control.connect();
 				}
 
-				System.out.println(control.getCurrentModel().hud.h);
+				float f = (float)(Math.random()-0.5);
+
+				s.setBlock(f,0.1f,0.8f);
+				s.setBlock(0.3f,1.0f, 0);
+				s.setBlock(-0.8f,-1.5f, 0);
+
+
+				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+				slam.tms = System.nanoTime() / 1000;
+				slam.cx = 0.1f;
+				slam.cy = 0.2f;
+				slam.res = s.res;
+			    slam.data = s.toArray();
+				control.sendMAVLinkMessage(slam);
+
+				s.setBlock(f,0.1f,0.8f, false);
+
+				Thread.sleep(200);
+
+				msg_msp_status msg = new msg_msp_status(2,1);
+//				msg.arch=" ".toCharArray();
+//				msg.version="1".toCharArray();
+                msg.uptime_ms = System.currentTimeMillis()/1000;
+				msg.unix_time_us = System.currentTimeMillis() * 1000;
+				control.sendMAVLinkMessage(msg);
+
+				if(!Float.isNaN(control.getCurrentModel().hud.h))
+				   System.out.println("Altitude:"+control.getCurrentModel().hud.h);
 
 			} catch (Exception e) {
 				control.close();

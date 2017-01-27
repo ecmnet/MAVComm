@@ -1,6 +1,40 @@
+/****************************************************************************
+ *
+ *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************/
+
 package com.comino.msp.model.segment;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
 
@@ -14,9 +48,10 @@ public class Slam extends Segment {
 	public static final int LENGTH   = 12;
 	public static final int MAXBLOCKS = LENGTH*LENGTH*LENGTH;
 
-	BitSet data  = new BitSet(MAXBLOCKS);
-	private float  cx,cy,cz,res;
-	public int   flags = 0;
+	public BitSet data  = new BitSet(MAXBLOCKS);
+	private float  cx,cy,cz;
+	public float   res;
+	public int     flags = 0;
 
 	public Slam() {
 		this(0,0,0,0.2f);
@@ -54,7 +89,7 @@ public class Slam extends Segment {
 	}
 
 	public long[] toArray() {
-		return data.toLongArray();
+		return Arrays.copyOf(data.toLongArray(), MAXBLOCKS/64);
 	}
 
 	public void fromArray(long[] array) {
@@ -80,11 +115,19 @@ public class Slam extends Segment {
 	}
 
 	public boolean  setBlock(float xpos, float ypos, float zpos) {
-        if( Math.abs(Math.round(xpos)) >= LENGTH/2 * res ||
-        	Math.abs(Math.round(ypos)) >= LENGTH/2 * res ||
-        	Math.abs(Math.round(zpos)) >= LENGTH/2 * res)
-        	return false;
-        data.set(calculateBlock(xpos, ypos, zpos));
+		setBlock(xpos,ypos,zpos,true);
+		return true;
+	}
+
+	public boolean  setBlock(float xpos, float ypos, float zpos, boolean set) {
+		if( Math.abs(Math.round(xpos)) >= LENGTH/2 * res ||
+	    	Math.abs(Math.round(ypos)) >= LENGTH/2 * res ||
+			Math.abs(Math.round(zpos)) >= LENGTH/2 * res)
+			return false;
+		if(set)
+			data.set(calculateBlock(xpos, ypos, zpos));
+		else
+			data.clear(calculateBlock(xpos, ypos, zpos));
 		return true;
 	}
 
@@ -112,10 +155,10 @@ public class Slam extends Segment {
 		for(int i=0;i<MAXBLOCKS;i++) {
 			if(data.get(i)) {
 				list.add(new BlockPoint3D(
-						(i % LENGTH              ) * res + cx -res/2f,
-						( i / LENGTH  % LENGTH   ) * res + cy +res/2f,
-						( i / ( LENGTH * LENGTH )) * res + cz +res/2f, res)
-				);
+						(i %    LENGTH              ) * res + cx -res/2f,
+						( i /   LENGTH  % LENGTH    ) * res + cy +res/2f,
+						( i / ( LENGTH * LENGTH )   ) * res + cz +res/2f, res)
+						);
 			}
 		}
 		return list;
@@ -124,7 +167,7 @@ public class Slam extends Segment {
 
 	public int calculateBlock(float xpos, float ypos, float zpos) {
 		int block =  Math.round((xpos  - cx) / res)
-				  +  Math.round((ypos  - cy) / res) * LENGTH
+			      +  Math.round((ypos  - cy) / res) * LENGTH
 				  +  Math.round((zpos  - cz) / res) * LENGTH * LENGTH;
 		return block;
 	}
@@ -141,7 +184,7 @@ public class Slam extends Segment {
 			System.out.println(s.calculateBlock(p.x, p.y, p.z)+":"+p);
 		}
 		System.out.println();
-    //    s.moveTo(0.4f, -0.4f,-0.4f);
+		//    s.moveTo(0.4f, -0.4f,-0.4f);
 
 		List<BlockPoint3D> list2 = s.getBlocks();
 		for( BlockPoint3D p : list2) {
@@ -149,9 +192,9 @@ public class Slam extends Segment {
 		}
 
 		System.out.println();
-    //    s.moveTo(0,0,0);
+		//    s.moveTo(0,0,0);
 
-        Slam u = s.clone();
+		Slam u = s.clone();
 
 		List<BlockPoint3D> list3 = u.getBlocks();
 		for( BlockPoint3D p : list3) {
