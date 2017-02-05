@@ -49,9 +49,13 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
+import org.mavlink.messages.lquac.msg_logging_data;
+import org.mavlink.messages.lquac.msg_logging_data_acked;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
+
+import javafx.scene.chart.PieChart.Data;
 
 
 public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
@@ -217,6 +221,25 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	@Override
 	public void received(Object o) {
+
+		//TODO: Issue:msg_logging_data_acked cannot be sent out => ULOG over MAVComm does not work
+//
+//		if( o instanceof msg_logging_data_acked) {
+//	        msg_logging_data s = new msg_logging_data(2,1);
+//	        s.data = ((msg_logging_data_acked) o).data;
+//	        s.sequence = ((msg_logging_data_acked) o).sequence;
+//	        s.first_message_offset = ((msg_logging_data_acked) o).sequence;
+//	        o = s;
+//
+//	        try {
+//				System.out.println(s.encode().length);
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}
+
+
 		try {
 			write((MAVLinkMessage) o);
 		} catch (IOException e) {
