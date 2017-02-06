@@ -25,7 +25,7 @@ public class msg_gps_raw_int extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_GPS_RAW_INT;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 30;
+    payload_length = 30;
 }
 
   /**
@@ -90,7 +90,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+30];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

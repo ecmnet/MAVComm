@@ -24,7 +24,7 @@ public class msg_position_target_global_int extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 51;
+    payload_length = 51;
 }
 
   /**
@@ -109,7 +109,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+51];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

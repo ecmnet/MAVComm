@@ -24,7 +24,7 @@ public class msg_camera_image_captured extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 255;
+    payload_length = 255;
 }
 
   /**
@@ -104,7 +104,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+255];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

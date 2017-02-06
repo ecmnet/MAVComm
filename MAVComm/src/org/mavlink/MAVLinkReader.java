@@ -88,12 +88,18 @@ public class MAVLinkReader {
 
 	private int id;
 
+	private boolean debug = false;
+
 	/**
 	 * Constructor with MAVLink 1.0 by default and without stream. Must be used whith byte array read methods.
 	 */
 	public MAVLinkReader(int id) {
-		// Issue 1 by BoxMonster44 : use correct packet start
 		this((byte)IMAVLinkMessage.MAVPROT_PACKET_START_V20,id);
+	}
+
+	public MAVLinkReader(int id, boolean debug) {
+		this((byte)IMAVLinkMessage.MAVPROT_PACKET_START_V20,id);
+		this.debug = debug;
 	}
 
 
@@ -356,11 +362,12 @@ public class MAVLinkReader {
 			// CRC-EXTRA for Mavlink 1.0
 			try {
 				crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[msgId], crc);
-			} catch(Exception e) { }
+			} catch(Exception e) {  }
 		}
 
 		byte crcl = (byte) (crc & 0x00FF);
 		byte crch = (byte) ((crc >> 8) & 0x00FF);
+
 		if ((crcl == crcLow) && (crch == crcHigh) ) {
 			msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
 			if (msg != null) {
@@ -380,7 +387,8 @@ public class MAVLinkReader {
 		}
 		else {
 			badCRC = badCRC + 1;
-//			 System.err.println(badCRC+ ":: "+id+" CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
+			if(debug)
+       		 System.err.println("ID: "+id+" CRC: MSG="+msgId+" Length: "+(lengthToRead+12)+" "+bytesToHex(receivedBuffer,lengthToRead+12));
 			validData = false;
 		}
 		// restart buffer

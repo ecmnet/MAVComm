@@ -24,7 +24,7 @@ public class msg_terrain_check extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_TERRAIN_CHECK;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 8;
+    payload_length = 8;
 }
 
   /**
@@ -49,7 +49,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+8];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

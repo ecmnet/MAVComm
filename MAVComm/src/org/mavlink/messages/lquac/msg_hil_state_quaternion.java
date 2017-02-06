@@ -24,7 +24,7 @@ public class msg_hil_state_quaternion extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_HIL_STATE_QUATERNION;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 64;
+    payload_length = 64;
 }
 
   /**
@@ -121,7 +121,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+64];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

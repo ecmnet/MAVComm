@@ -24,7 +24,7 @@ public class msg_command_long extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_COMMAND_LONG;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 33;
+    payload_length = 33;
 }
 
   /**
@@ -94,7 +94,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+33];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

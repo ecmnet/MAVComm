@@ -24,7 +24,7 @@ public class msg_set_actuator_control_target extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 43;
+    payload_length = 43;
 }
 
   /**
@@ -66,7 +66,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+43];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

@@ -24,7 +24,7 @@ public class msg_hil_optical_flow extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_HIL_OPTICAL_FLOW;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 44;
+    payload_length = 44;
 }
 
   /**
@@ -99,7 +99,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+44];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

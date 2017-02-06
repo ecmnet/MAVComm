@@ -24,7 +24,7 @@ public class msg_home_position extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_HOME_POSITION;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 52;
+    payload_length = 52;
 }
 
   /**
@@ -91,7 +91,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+52];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

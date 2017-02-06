@@ -59,7 +59,7 @@ public abstract class MAVLinkMessage extends MAVLinkMessageCoder implements IMAV
     /**
      * Message length
      */
-    public int length = -1;
+    public int payload_length = -1;
 
     /**
      * Incompat flags

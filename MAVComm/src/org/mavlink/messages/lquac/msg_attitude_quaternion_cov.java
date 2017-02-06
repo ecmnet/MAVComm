@@ -24,7 +24,7 @@ public class msg_attitude_quaternion_cov extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 72;
+    payload_length = 72;
 }
 
   /**
@@ -73,7 +73,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+72];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

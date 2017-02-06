@@ -22,23 +22,21 @@ public class LoggingTest {
 		msg1.sequence = 1;
 		msg1.first_message_offset = 34;
 
+		MAVLinkMessage rec = null;
+
 		try {
-			System.out.println(msg1);
+			System.out.println(" M:"+msg1);
 			byte[] b = msg1.encode();
-			MAVLinkMessage rec = reader.getNextMessage(b, b.length);
-			System.out.println(rec);
+			rec = reader.getNextMessage(b, b.length);
+			System.out.println("R:"+rec);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-
-
-		msg_altitude msg2  = new msg_altitude(1,1);
 		try {
-			System.out.println(msg2);
-			byte[] b = msg2.encode();
-			MAVLinkMessage rec = reader.getNextMessage(b, b.length);
-			System.out.println(rec);
+			byte[] b = rec.encode();
+			MAVLinkMessage rec2 = reader.getNextMessage(b, b.length);
+			System.out.println("E:"+rec2);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

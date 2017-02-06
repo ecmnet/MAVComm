@@ -24,7 +24,7 @@ public class msg_rc_channels extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_RC_CHANNELS;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 42;
+    payload_length = 42;
 }
 
   /**
@@ -144,7 +144,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+42];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

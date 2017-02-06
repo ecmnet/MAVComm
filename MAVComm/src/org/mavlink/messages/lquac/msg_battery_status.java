@@ -24,7 +24,7 @@ public class msg_battery_status extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_BATTERY_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 36;
+    payload_length = 36;
 }
 
   /**
@@ -86,7 +86,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+36];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);

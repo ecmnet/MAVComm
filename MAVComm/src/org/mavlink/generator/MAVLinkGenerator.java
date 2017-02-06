@@ -264,7 +264,7 @@ public class MAVLinkGenerator {
                 fieldWrite = new StringBuffer();
                 if (forEmbeddedJava) {
                 	sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V20 + ");\n");
-                	sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
+                	sbWrite.append("  dos.writeByte(payload_length & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(incompat & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(compat & 0x00FF);\n");
                     sbWrite.append("  dos.writeByte(packet & 0x00FF);\n");
@@ -276,7 +276,7 @@ public class MAVLinkGenerator {
                 }
                 else {
                 	sbWrite.append("  dos.writeByte((byte)" + IMAVLinkMessage.STRING_MAVPROT_PACKET_START_V20 + ");\n");
-                	sbWrite.append("  dos.writeByte(length & 0x00FF);\n");
+                	sbWrite.append("  dos.writeByte(payload_length & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(incompat & 0x00FF);\n");
                 	sbWrite.append("  dos.writeByte(compat & 0x00FF);\n");
                     sbWrite.append("  dos.put((byte)(seq   & 0x00FF));\n");
@@ -355,7 +355,7 @@ public class MAVLinkGenerator {
                         extraCrcBuffer = extraCrcBuffer + (char) type.arrayLenth;
                     }
                 }
-                writer.print("    length = " + fieldLen + ";\n}\n\n");
+                writer.print("    payload_length = " + fieldLen + ";\n}\n\n");
                 writer.print(fieldWrite.toString());
                 int extra_crc = MAVLinkCRC.crc_calculate(MAVLinkCRC.stringToByte(extraCrcBuffer));
                 int magicNumber = (extra_crc & 0x00FF) ^ ((extra_crc >> 8 & 0x00FF));

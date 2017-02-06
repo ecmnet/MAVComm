@@ -24,7 +24,7 @@ public class msg_data_transmission_handshake extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE;
     this.sysId = sysId;
     this.componentId = componentId;
-    length = 13;
+    payload_length = 13;
 }
 
   /**
@@ -74,7 +74,7 @@ public byte[] encode() throws IOException {
   byte[] buffer = new byte[12+13];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
-  dos.writeByte(length & 0x00FF);
+  dos.writeByte(payload_length & 0x00FF);
   dos.writeByte(incompat & 0x00FF);
   dos.writeByte(compat & 0x00FF);
   dos.writeByte(packet & 0x00FF);
