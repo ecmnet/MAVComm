@@ -361,7 +361,7 @@ public class MAVLinkReader {
 
 		byte crcl = (byte) (crc & 0x00FF);
 		byte crch = (byte) ((crc >> 8) & 0x00FF);
-		if ((crcl == crcLow) && (crch == crcHigh) ) {
+//		if ((crcl == crcLow) && (crch == crcHigh) ) {
 			msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
 			if (msg != null) {
 				msg.packet = packet;
@@ -377,12 +377,12 @@ public class MAVLinkReader {
 				System.err.println("ERROR creating message  Id=" + msgId);
 				validData = false;
 			}
-		}
-		else {
-			badCRC += 1;
-//			 System.err.println(id+" CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
-//			validData = false;
-		}
+//		}
+//		else {
+//			badCRC += 1;
+////			 System.err.println(id+" CRC: MSG="+msgId+" "+bytesToHex(receivedBuffer,lengthToRead+12));
+////			validData = false;
+//		}
 		// restart buffer
 		lastPacket[sysId] = packet;
 		nbReceived = 0;

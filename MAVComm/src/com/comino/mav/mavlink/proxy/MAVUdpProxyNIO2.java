@@ -223,22 +223,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	public void received(Object o) {
 
 		//TODO: Issue:msg_logging_data_acked cannot be sent out => ULOG over MAVComm does not work
-//
-//		if( o instanceof msg_logging_data_acked) {
-//	        msg_logging_data s = new msg_logging_data(2,1);
-//	        s.data = ((msg_logging_data_acked) o).data;
-//	        s.sequence = ((msg_logging_data_acked) o).sequence;
-//	        s.first_message_offset = ((msg_logging_data_acked) o).sequence;
-//	        o = s;
-//
-//	        try {
-//				System.out.println(s.encode().length);
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}
-
 
 		try {
 			write((MAVLinkMessage) o);
