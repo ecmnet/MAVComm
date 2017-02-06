@@ -228,6 +228,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 	}
 
 
+
+
 	public static void main(String[] args) {
 
 
@@ -323,7 +325,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public int getErrorCount() {
-		return comm.getErrorCount();
+		return proxy.getBadCRC();
 	}
 
 }

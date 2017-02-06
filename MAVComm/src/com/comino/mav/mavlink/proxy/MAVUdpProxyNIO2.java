@@ -74,6 +74,8 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	private boolean 			isConnected = false;
 
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(16384);
+
 
 	//	public MAVUdpProxy() {
 	//		this("172.168.178.2",14550,"172.168.178.1",14555);
@@ -90,7 +92,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
-		System.out.println("Proxy (NIO2): BindPort="+bPort+" PeerPort="+pPort);
+		System.out.println("Proxy (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
 	}
 
@@ -155,8 +157,6 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	@Override
 	public void run() {
 
-		ByteBuffer rxBuffer = ByteBuffer.allocate(4096);
-
 		SelectionKey key = null;
 		MAVLinkMessage msg = null;
 
@@ -209,6 +209,11 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 			close();
 			isConnected = false;
 		}
+	}
+
+
+	public int getBadCRC() {
+		return reader.getBadCRC();
 	}
 
 	public  void write(MAVLinkMessage msg) throws IOException {

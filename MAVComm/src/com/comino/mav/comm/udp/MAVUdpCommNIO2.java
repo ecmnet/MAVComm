@@ -88,6 +88,8 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	private static MAVUdpCommNIO2 com = null;
 
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(16384);
+
 	public static MAVUdpCommNIO2 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
 			com = new MAVUdpCommNIO2(model, peerAddress, peerPort, bindPort);
@@ -101,7 +103,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 		this.bindPort = new InetSocketAddress(bPort);
 		this.reader = new MAVLinkReader(2);
 
-		System.out.println("Vehicle (NIO2): BindPort="+bPort+" PeerPort="+pPort);
+		System.out.println("Vehicle (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
 	}
 
@@ -144,7 +146,6 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	@Override
 	public void run() {
-		ByteBuffer rxBuffer = ByteBuffer.allocate(4096);
 		SelectionKey key = null;
 		try {
 			channel.register(selector, SelectionKey.OP_READ);
