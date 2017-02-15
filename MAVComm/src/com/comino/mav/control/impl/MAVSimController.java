@@ -145,6 +145,10 @@ public class MAVSimController extends MAVController implements IMAVController {
 		public void run() {
 			model.battery.p = (short)(95+Math.random()*2f);
 
+			model.base.latitude = 48;
+			model.base.longitude = 11;
+			model.base.altitude = 520;
+			model.base.numsat = 9;
 
 			count++;
 			if(model.state.l_z > -5.0f)

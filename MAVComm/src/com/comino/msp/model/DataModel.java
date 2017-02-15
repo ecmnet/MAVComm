@@ -77,6 +77,7 @@ public class DataModel extends Segment implements Serializable {
 	public   State     home_state = null;
 	public   Telemetry telemetry  = null;
 	public	 GPS	         gps  = null;
+	public	 GPS	        base  = null;
 	public	 Raw			 raw  = null;
 	public   Status          sys  = null;
 	public	 Servo			servo = null;
@@ -99,6 +100,7 @@ public class DataModel extends Segment implements Serializable {
 		this.home_state 	= new State();
 		this.telemetry 		= new Telemetry();
 		this.gps       		= new GPS();
+		this.base           = new GPS();
 		this.raw            = new Raw();
 		this.sys       		= new Status();
 		this.servo			= new Servo();
@@ -125,6 +127,7 @@ public class DataModel extends Segment implements Serializable {
 		this.home_state     = m.home_state.clone();
 		this.telemetry 		= m.telemetry.clone();
 		this.gps       		= m.gps.clone();
+		this.base           = m.base.clone();
 		this.raw            = m.raw.clone();
 		this.sys       		= m.sys.clone();
 		this.servo			= m.servo.clone();
@@ -149,6 +152,7 @@ public class DataModel extends Segment implements Serializable {
 		this.home_state.set(m.home_state);
 		this.telemetry.set(m.telemetry);
 		this.gps.set(m.gps);
+		this.base.set(m.base);
 		this.raw.set(raw);
 		this.sys.set(m.sys);
 		this.servo.set(m.servo);
@@ -177,6 +181,7 @@ public class DataModel extends Segment implements Serializable {
 		this.home_state.clear();
 		this.telemetry.clear();
 		this.gps.clear();
+		this.base.clear();
 		this.servo.clear();
 		this.rc.clear();
 		this.vibration.clear();
