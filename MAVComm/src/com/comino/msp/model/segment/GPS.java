@@ -44,8 +44,10 @@ public class GPS extends Segment {
 	private static final long serialVersionUID = 3343922430238721067L;
 
 
-	public static final int GPS_SAT_FIX   = 0;
-	public static final int GPS_SAT_VALID = 1;
+	public static final int GPS_SAT_FIX      = 0;
+	public static final int GPS_SAT_VALID    = 1;
+	public static final int GPS_SAT_RTK      = 2;
+	public static final int GPS_SAT_RTKFIX   = 3;
 
 	public int		flags		= 0;
 
@@ -57,6 +59,7 @@ public class GPS extends Segment {
 	public float  	eph 	    = Float.NaN;
 	public float  	hdop 	    = Float.NaN;
 	public float  	speed 		= Float.NaN;
+	public byte     fixtype     = (byte)0;
 
 
 
@@ -74,8 +77,12 @@ public class GPS extends Segment {
 
 	public void set(int _fix, int _numsat, float _lat, float _lon, int _altitude, int _heading, float _eph, float _speed) {
 
-	    setFlag(GPS_SAT_FIX, _fix > 0);
+	    setFlag(GPS_SAT_FIX,    _fix > 0);
+	    setFlag(GPS_SAT_RTK,    _fix > 3);
+	    setFlag(GPS_SAT_RTKFIX, _fix > 4);
 	    setFlag(GPS_SAT_VALID, numsat > 6);
+
+	    fixtype     = (byte)_fix;
 
 		numsat 		= (byte)_numsat;
 		latitude 	= _lat;
@@ -111,7 +118,7 @@ public class GPS extends Segment {
 		g.hdop          = hdop;
 		g.altitude		= altitude;
 		g.speed     	= speed;
-
+        g.fixtype       = fixtype;
 
 		return g;
 	}
@@ -128,6 +135,7 @@ public class GPS extends Segment {
 		eph 		= 0;
 		hdop        = 0;
 		speed 		= 0;
+		fixtype     = 0;
 
 	}
 

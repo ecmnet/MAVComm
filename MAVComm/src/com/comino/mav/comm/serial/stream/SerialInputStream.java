@@ -107,7 +107,7 @@ public class SerialInputStream extends InputStream {
 
 		try {
 			byte[] readBuf = serialPort.readBytes(available);
-			System.arraycopy(readBuf, 0, buf, offset, length);
+			System.arraycopy(readBuf, 0, buf, offset, available);
 			return readBuf.length;
 		} catch (Exception e) {
 			System.err.println(length);

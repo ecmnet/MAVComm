@@ -364,13 +364,17 @@ public class MAVLinkToModelParser {
 				msg_gps_raw_int gps = (msg_gps_raw_int)o;
 				model.gps.numsat = (byte) gps.satellites_visible;
 				model.gps.setFlag(GPS.GPS_SAT_FIX, gps.fix_type>0);
+				model.gps.setFlag(GPS.GPS_SAT_RTK, gps.fix_type>3);
+				model.gps.setFlag(GPS.GPS_SAT_RTKFIX, gps.fix_type>4);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
 
 				model.gps.hdop   = gps.eph/100f;
 				model.gps.latitude = gps.lat/1e7f;
 				model.gps.longitude = gps.lon/1e7f;
 				model.gps.altitude = (short)(gps.alt/1000);
+				model.gps.fixtype = (byte)gps.fix_type;
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>6);
+				model.sys.setSensor(Status.MSP_RTK_AVAILABILITY, gps.fix_type>3);
 
 			}
 		});

@@ -88,12 +88,13 @@ public class Status extends Segment {
 	public static final  int MSP_SYSM_AVAILABILITY    		= 7;
 	public static final  int MSP_SLAM_AVAILABILITY    		= 8;
 	public static final  int MSP_BASE_AVAILABILITY    		= 9;
+	public static final  int MSP_RTK_AVAILABILITY    		=10;
 
 
 
 	private static final String[] sensor_names = {
 
-		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE",
+		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
 
 	};
 

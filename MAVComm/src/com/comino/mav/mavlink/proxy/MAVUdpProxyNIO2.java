@@ -196,6 +196,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 										listener.received(msg);
 									else {
 										if(comm.isConnected()) {
+//											System.out.println("Execute: "+msg.toString());
 											comm.write(msg);
 										}
 									}
