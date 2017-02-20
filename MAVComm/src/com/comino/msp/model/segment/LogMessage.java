@@ -69,4 +69,8 @@ public class LogMessage extends Segment {
 		this.severity = 0;
 	}
 
+	public String toString() {
+		return msg+" ("+severity+")";
+	}
+
 }
