@@ -34,8 +34,15 @@
 
 package com.comino.mav.control.impl;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_command_long;
@@ -51,9 +58,10 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.ExecutorService;
 
 
-public class MAVController implements IMAVController {
+public class MAVController implements IMAVController, Runnable {
 
 	protected String peerAddress = null;
 
@@ -67,6 +75,12 @@ public class MAVController implements IMAVController {
 
 	protected   int commError = 0;
 
+	private boolean file_log_enabled  = false;
+
+	private String           filename;
+	private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+	private PrintStream      ps_log;
+
 	public static IMAVController getInstance() {
 		return controller;
 	}
@@ -76,6 +90,43 @@ public class MAVController implements IMAVController {
 		controller = this;
 		model = new DataModel();
 		collector = new ModelCollectorService(model);
+	}
+
+	public void enableFileLogging(boolean enable, String directory_name) {
+		this.file_log_enabled = enable;
+		if(enable) {
+			if(directory_name==null)
+			  directory_name = System.getProperty("user.home")+"/MSPLog";
+			File file = new File(directory_name);
+			if(!file.exists() || !file.isDirectory()){
+				boolean wasDirectoryMade = file.mkdirs();
+				if(wasDirectoryMade)System.out.println("Directory "+directory_name+" created");
+				else {
+					file_log_enabled = false;
+					System.out.println("No logging to file: Could not create directory "+directory_name);
+					return;
+				}
+			}
+			// create file, if it does not exist
+			SimpleDateFormat sdfFile = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
+			this.filename = directory_name +"/msplog_"+sdfFile.format(new Date());
+			System.out.println("Logging to: "+filename);
+
+			try {
+				FileOutputStream fos_log  = new FileOutputStream(filename + ".log");
+				ps_log = new PrintStream(fos_log);
+			} catch (FileNotFoundException e) {
+				System.out.println("No logging to file: Error creating log file.");
+				file_log_enabled = false;
+				return;
+			}
+
+			addMAVMessageListener((msg) -> {
+				writeLogToFile(msg.toString());
+			});
+
+			ExecutorService.get().schedule(this, 10, TimeUnit.SECONDS);
+		}
 	}
 
 
@@ -89,7 +140,7 @@ public class MAVController implements IMAVController {
 
 		try {
 			comm.write(msg);
-//			System.out.println("Execute: "+msg.toString());
+			//			System.out.println("Execute: "+msg.toString());
 			return true;
 		} catch (IOException e1) {
 			commError++;
@@ -195,6 +246,8 @@ public class MAVController implements IMAVController {
 	public boolean close() {
 		collector.stop();
 		comm.close();
+		if(file_log_enabled)
+			ps_log.close();
 		return true;
 	}
 
@@ -229,10 +282,10 @@ public class MAVController implements IMAVController {
 	@Override
 	public void writeLogMessage(LogMessage m) {
 		if(comm!=null)
-		  comm.writeMessage(m);
+			comm.writeMessage(m);
 		model.msg.set(m);
-
 	}
+
 
 
 	@Override
@@ -243,11 +296,19 @@ public class MAVController implements IMAVController {
 
 	@Override
 	public String getConnectedAddress() {
-        return peerAddress;
+		return peerAddress;
 	}
 
 
+	@Override
+	public void run() {
+		if(file_log_enabled) {
+			ps_log.flush();
+			ExecutorService.get().schedule(this, 1, TimeUnit.SECONDS);
+		}
+	}
 
-
-
+	private void writeLogToFile(String msg) {
+		ps_log.println(sdf1.format(new Date())+": "+msg);
+	}
 }

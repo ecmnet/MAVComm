@@ -67,15 +67,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 		modeListener = new ArrayList<IMSPStatusChangedListener>();
 		model.slam.scale(0, 0, 0, 0.5f);
 
-
-
-
 		ExecutorService.get().scheduleAtFixedRate(new Simulation(), 2000, 50, TimeUnit.MILLISECONDS);
 	}
 
 	@Override
 	public boolean connect() {
-		MSPLogger.getInstance().writeLocalDebugMsg("Simulation Controller loaded");
+		MSPLogger.getInstance().writeLocalMsg("Simulation Controller loaded");
 		return true;
 	}
 

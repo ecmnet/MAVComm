@@ -328,4 +328,11 @@ public class MAVProxyController2 implements IMAVMSPController {
 		return proxy.getBadCRC();
 	}
 
+
+	@Override
+	public void enableFileLogging(boolean enable, String directory) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

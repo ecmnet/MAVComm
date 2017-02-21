@@ -361,4 +361,11 @@ public class MAVProxyController implements IMAVMSPController {
 		return commError;
 	}
 
+
+	@Override
+	public void enableFileLogging(boolean enable, String directory) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

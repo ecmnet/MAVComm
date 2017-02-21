@@ -53,6 +53,8 @@ public interface IMAVController {
 	public boolean isSimulation();
 	public boolean isConnected();
 
+	public void enableFileLogging(boolean enable, String directory);
+
 	public int getErrorCount();
 
 	public DataModel getCurrentModel();
