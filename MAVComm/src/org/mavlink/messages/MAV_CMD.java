@@ -681,14 +681,14 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_LAST = 240;
     /**
-     * Trigger calibration. This command will be only accepted if in pre-flight mode.
-     * PARAM 1 : Gyro calibration: 0: no, 1: yes
-     * PARAM 2 : Magnetometer calibration: 0: no, 1: yes
-     * PARAM 3 : Ground pressure: 0: no, 1: yes
-     * PARAM 4 : Radio calibration: 0: no, 1: yes
-     * PARAM 5 : Accelerometer calibration: 0: no, 1: yes
-     * PARAM 6 : Compass/Motor interference calibration: 0: no, 1: yes
-     * PARAM 7 : Empty
+     * Trigger calibration. This command will be only accepted if in pre-flight mode. Except for Temperature Calibration, only one sensor should be set in a single message and all others should be zero.
+     * PARAM 1 : 1: gyro calibration, 3: gyro temperature calibration
+     * PARAM 2 : 1: magnetometer calibration
+     * PARAM 3 : 1: ground pressure calibration
+     * PARAM 4 : 1: radio RC calibration, 2: RC trim calibration
+     * PARAM 5 : 1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration
+     * PARAM 6 : 1: APM: compass/motor interference calibration / PX4: airspeed calibration
+     * PARAM 7 : 1: ESC calibration, 3: barometer temperature calibration
      */
     public final static int MAV_CMD_PREFLIGHT_CALIBRATION = 241;
     /**
