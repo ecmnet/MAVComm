@@ -118,7 +118,6 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 		try {
 			isConnected = true;
-			System.out.println("Try to open UDP channel....");
 			channel = DatagramChannel.open();
 			channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
@@ -127,6 +126,8 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			channel.configureBlocking(false);
 
 			selector = Selector.open();
+
+			channel.register(selector, SelectionKey.OP_READ);
 
 			LockSupport.parkNanos(10000000);
 
@@ -148,13 +149,12 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 	public void run() {
 		SelectionKey key = null;
 		try {
-			channel.register(selector, SelectionKey.OP_READ);
 
+
+			MAVLinkMessage msg = null;
 			msg_heartbeat hb = new msg_heartbeat(255,1);
 			hb.isValid = true;
 			write(hb);
-
-			MAVLinkMessage msg = null;
 
 			while(isConnected) {
 
@@ -207,6 +207,8 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 	}
 
 	public void write(MAVLinkMessage msg) throws IOException {
+		if(!channel.isConnected())
+			throw new IOException("Not yet connected");
 		if(msg!=null && channel!=null && channel.isOpen())
 			channel.write(ByteBuffer.wrap(msg.encode()));
 	}

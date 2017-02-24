@@ -55,7 +55,7 @@ public class MAVCommTest implements Runnable {
 
 
 		if(args.length>0)
-			control = new MAVUdpController("192.168.4.1",14555,14550, true);
+			control = new MAVUdpController("172.168.178.1",14555,14550, true);
 		else
 		  System.exit(-1);
 

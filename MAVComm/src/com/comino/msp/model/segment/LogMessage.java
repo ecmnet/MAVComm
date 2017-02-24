@@ -70,7 +70,7 @@ public class LogMessage extends Segment {
 	}
 
 	public String toString() {
-		return msg+" ("+severity+")";
+		return "["+severity+"] "+msg;
 	}
 
 }
