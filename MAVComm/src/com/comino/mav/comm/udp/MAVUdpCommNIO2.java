@@ -140,9 +140,10 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
 			close();
 			isConnected = false;
+			return false;
 		}
 
-		return false;
+		return true;
 	}
 
 	@Override

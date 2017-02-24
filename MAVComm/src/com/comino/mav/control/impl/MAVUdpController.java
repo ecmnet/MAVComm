@@ -86,7 +86,8 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) { }
-				comm.open()	;
+				comm.open();
+				System.out.print(".");
 			}
 		}
 		collector.stop();
