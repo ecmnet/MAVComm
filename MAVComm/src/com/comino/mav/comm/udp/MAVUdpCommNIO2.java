@@ -109,7 +109,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	public boolean open() {
 
-		if(channel!=null && channel.isConnected()) {
+		if(channel!=null && parser.isConnected()) {
 			isConnected = true;
 			return true;
 		}
