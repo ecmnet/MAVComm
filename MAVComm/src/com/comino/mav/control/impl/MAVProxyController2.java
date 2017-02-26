@@ -35,28 +35,20 @@
 package com.comino.mav.control.impl;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_statustext;
-import org.mavlink.messages.lquac.msg_system_time;
-import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
-import com.comino.mav.comm.serial.MAVSerialComm;
-import com.comino.mav.comm.serial.MAVSerialComm2;
 import com.comino.mav.comm.serial.MAVSerialComm3;
-import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO;
 import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO2;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -178,6 +170,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 	public void registerListener(Class<?> clazz, IMAVLinkListener listener) {
 		proxy.registerListener(clazz, listener);
 	}
+
+
 
 	public boolean isConnected() {
 		return proxy.isConnected() && comm.isConnected();

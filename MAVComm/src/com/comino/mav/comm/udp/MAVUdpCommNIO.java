@@ -39,13 +39,11 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.time.Instant;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
-import org.mavlink.messages.lquac.msg_system_time;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkToModelParser;

@@ -41,19 +41,13 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
-import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
-import org.mavlink.messages.lquac.msg_system_time;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
@@ -117,7 +111,6 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 		errors = 0;
 
 		try {
-			isConnected = true;
 			channel = DatagramChannel.open();
 			channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
@@ -126,7 +119,6 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			channel.configureBlocking(false);
 
 			selector = Selector.open();
-
 			channel.register(selector, SelectionKey.OP_READ);
 
 			LockSupport.parkNanos(10000000);
@@ -134,9 +126,11 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			Thread t = new Thread(this);
 			t.setDaemon(true);
 			t.start();
+			isConnected = true;
 
 
 		} catch(Exception e) {
+			System.out.println(e.getMessage());
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
 			close();
 			isConnected = false;
@@ -148,14 +142,15 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	@Override
 	public void run() {
-		SelectionKey key = null;
+		SelectionKey key = null; MAVLinkMessage msg = null;
 		try {
 
-
-			MAVLinkMessage msg = null;
-			msg_heartbeat hb = new msg_heartbeat(255,1);
-			hb.isValid = true;
-			write(hb);
+			System.out.print(".");
+			if(channel.isConnected()) {
+				msg_heartbeat hb = new msg_heartbeat(255,1);
+				hb.isValid = true;
+				write(hb);
+			}
 
 			while(isConnected) {
 
@@ -247,11 +242,13 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	public void close() {
 		try {
-			selector.close();
+			if(selector!=null)
+				selector.close();
 			if (channel != null) {
 				channel.disconnect();
 				channel.close();
 			}
+
 		} catch(Exception e) {
 
 		}

@@ -36,14 +36,9 @@ package com.comino.mav.comm.serial;
 
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
-import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.MAV_MODE_FLAG;
-import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
@@ -57,8 +52,6 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
 import jssc.SerialPort;
-import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 

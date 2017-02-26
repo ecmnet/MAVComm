@@ -34,9 +34,6 @@
 
 package com.comino.mav.control.impl;
 
-import org.mavlink.messages.MAV_CMD;
-
-import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 
@@ -82,12 +79,10 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 			} catch (InterruptedException e) { }
 
 			if(!comm.isConnected()) {
-				comm.close();
+				comm.close(); comm.open();
 				try {
-					Thread.sleep(100);
+					Thread.sleep(200);
 				} catch (InterruptedException e) { }
-				comm.open();
-				System.out.print(".");
 			}
 		}
 		collector.stop();

@@ -1,13 +1,10 @@
 package com.comino.msp.main;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.MAVLinkReader;
-import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_logging_data_acked;
 
 public class LoggingTest {

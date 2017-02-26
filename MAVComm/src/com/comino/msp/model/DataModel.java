@@ -37,7 +37,6 @@ package com.comino.msp.model;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 
-import com.comino.msp.main.StartUp;
 import com.comino.msp.model.segment.Attitude;
 import com.comino.msp.model.segment.Battery;
 import com.comino.msp.model.segment.Debug;

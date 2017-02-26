@@ -46,16 +46,10 @@ import java.util.Iterator;
 
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
-import org.mavlink.messages.lquac.msg_logging_data;
-import org.mavlink.messages.lquac.msg_logging_data_acked;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
-
-import javafx.scene.chart.PieChart.Data;
 
 
 public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {

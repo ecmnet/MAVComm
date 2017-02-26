@@ -39,7 +39,6 @@ import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
-import java.nio.channels.SelectionKey;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;

@@ -33,9 +33,6 @@
 
 package com.comino.msp.main;
 
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.lquac.msg_autopilot_version;
-
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
 import com.comino.msp.log.MSPLogger;
