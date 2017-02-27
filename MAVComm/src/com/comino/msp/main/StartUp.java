@@ -85,7 +85,7 @@ public class StartUp implements Runnable {
 	@Override
 	public void run() {
 		long tms = System.currentTimeMillis();
-		Slam s = new Slam(0.5f);
+		Slam s = new Slam();
 		while(true) {
 			try {
 				Thread.sleep(200);
@@ -97,20 +97,20 @@ public class StartUp implements Runnable {
 
 				float f = (float)(Math.random()-0.5);
 
-				s.setBlock(f,0.1f,0.8f);
-				s.setBlock(0.3f,1.0f, 0);
-				s.setBlock(-0.8f,-1.5f, 0);
+				s.setBlock(f,0.1f);
+				s.setBlock(0.3f,1.0f);
+				s.setBlock(-0.8f,-1.5f);
 
 
 				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 				slam.tms = System.nanoTime() / 1000;
 				slam.cx = 0.1f;
 				slam.cy = 0.2f;
-				slam.res = s.res;
+				slam.res = s.getResolution();
 			    slam.data = s.toArray();
 				control.sendMAVLinkMessage(slam);
 
-				s.setBlock(f,0.1f,0.8f, false);
+				s.setBlock(f,0.1f, false);
 
 				Thread.sleep(200);
 
