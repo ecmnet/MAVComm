@@ -128,8 +128,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 			}
 			return true;
-		} catch (IOException e1) {
-			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getMessage());
+		} catch (Exception e1) {
+			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getClass().getSimpleName()+":"+e1.getMessage());
 			return false;
 		}
 

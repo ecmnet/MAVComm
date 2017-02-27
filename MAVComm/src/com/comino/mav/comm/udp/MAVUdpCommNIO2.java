@@ -121,6 +121,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			selector = Selector.open();
 			channel.register(selector, SelectionKey.OP_READ);
 
+
 			LockSupport.parkNanos(10000000);
 
 			Thread t = new Thread(this);
@@ -153,6 +154,8 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			}
 
 			while(isConnected) {
+
+				//LockSupport.parkNanos(1000000);
 
 				if(selector.select(500)==0)
 					throw new IOException("Timeout");
