@@ -177,9 +177,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.numsat = 8;
 
 			for(int i=0;i<10;i++)
-			model.slam.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);
-			model.slam.setBlock(-10+count*0.1f+0.05f,0);
-			model.slam.setBlock(0, -10+count*0.1f+0.05f);
+			 model.slam.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);
 
 			model.slam.setVehicle(model.state.l_x, model.state.l_y);
 

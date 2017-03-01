@@ -89,6 +89,8 @@ public class Slam extends Segment {
 		data.clear();
 	}
 
+	// Transfer via block only. positive values => set block; negative => remove block
+
 	public void toArray(long[] array) {
 		Arrays.fill(array, 0);
 		if(transfer.isEmpty())
@@ -110,9 +112,37 @@ public class Slam extends Segment {
 		}
 	}
 
+	public void setProperties(float extension_m, float resolution_m) {
+
+		if((int)(extension_m/resolution_m)*2 == this.dimension
+				        && (int)(resolution_m*100f) == this.resolution_cm)
+			return;
+
+		List<BlockPoint2D> tmp = new ArrayList<BlockPoint2D>();
+
+		if(!data.isEmpty()) {
+			data.forEach((i,p) -> {
+				tmp.add(new BlockPoint2D(p.x,p.y));
+			});
+			data.clear();
+		}
+
+		this.dimension = (int)(extension_m/resolution_m)*2;
+		this.resolution_cm = (int)(resolution_m*100f);
+		this.cx = dimension / 2;
+		this.cy = dimension / 2;
+		this.max_length = dimension * dimension;
+
+		if(tmp.size()>0)
+		   tmp.forEach((p) -> {
+			setBlock(p.x,p.y);
+		   });
+
+	}
+
 	public void setVehicle(double vx, double vy) {
-		this.vx = (int) ((vx - resolution_cm/200f) * 100f/resolution_cm)+cx;
-		this.vy = (int) ((vy - resolution_cm/200f) * 100f/resolution_cm)+cy;
+		this.vx = (int)Math.round((vx - resolution_cm/200f) * 100f/resolution_cm)+cx;
+		this.vy = (int)Math.round((vy - resolution_cm/200f) * 100f/resolution_cm)+cy;
 	}
 
 	public boolean setBlock(double xpos, double ypos) {
@@ -127,8 +157,8 @@ public class Slam extends Segment {
 		transfer.add(set ? block : -block);
 
 		if(set)
-			data.put(block,new BlockPoint2D((float)Math.floor(xpos * resolution_cm)/resolution_cm - resolution_cm/200f,
-					                        (float)Math.floor(ypos * resolution_cm)/resolution_cm - resolution_cm/200f));
+			data.put(block,new BlockPoint2D((float)Math.round(xpos * resolution_cm)/resolution_cm ,
+					                        (float)Math.round(ypos * resolution_cm)/resolution_cm ));
 		else
 			data.remove(block);
 
@@ -161,14 +191,14 @@ public class Slam extends Segment {
 
 
 	private int calculateBlock(double xpos, double ypos) {
-		int blockx  =  (int) (xpos * 100f/resolution_cm) + cx;
+		int blockx  =  (int)Math.round(xpos * 100.0/resolution_cm) + cx;
 		if(blockx > dimension-1)
 			blockx = dimension -1;
 		if(blockx < 0)
 			blockx = 0;
-		int blocky = (int)(ypos * 100f/resolution_cm) + cy;
-		if(blockx > dimension-1)
-			blockx = dimension -1;
+		int blocky = (int)Math.round(ypos * 100.0/resolution_cm ) + cy;
+		if(blocky > dimension-1)
+			blocky = dimension -1;
 		if(blocky < 0)
 			blocky = 0;
 		return blockx + blocky * dimension;
@@ -186,8 +216,10 @@ public class Slam extends Segment {
 					b.append("+");
 					continue;
 				}
-				if(isBlocked((c-cx)*resolution_cm/100f,(r-cy)*resolution_cm/100f))
+				if(isBlocked((c-cx)*resolution_cm/100f,(r-cy)*resolution_cm/100f )) {
 					b.append("X");
+//					System.out.println((c-cx)*resolution_cm/100f);
+				}
 				else
 					b.append(".");
 			}
@@ -204,7 +236,7 @@ public class Slam extends Segment {
 
 		Slam s = new Slam(2,0.10f);
 
-		s.setBlock(2.27, 0.0);
+		s.setBlock(1.77, 0.0);
 		s.setBlock(0.0, 1.0);
 		s.setBlock(1.0, 1.0);
 
@@ -226,6 +258,10 @@ public class Slam extends Segment {
 		t.clear();
 
 		t.fromArray(transfer);
+
+		System.out.println(t);
+
+		t.setProperties(5, 0.1f);
 
 		System.out.println(t);
 
