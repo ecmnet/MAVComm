@@ -66,9 +66,9 @@ public class MAVSimController extends MAVController implements IMAVController {
 		msgListener = new ArrayList<IMAVMessageListener>();
 		modeListener = new ArrayList<IMSPStatusChangedListener>();
 
-		model.slam.setBlock(-1, -1);
-		model.slam.setBlock(-3, -1);
-		model.slam.setBlock(-3, -3);
+		model.slam.setBlock(0,0);
+//		model.slam.setBlock(-3, -1);
+//		model.slam.setBlock(-3, -3);
 
 		ExecutorService.get().scheduleAtFixedRate(new Simulation(), 2000, 50, TimeUnit.MILLISECONDS);
 	}
@@ -176,9 +176,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.longitude = 8.54226f;
 			model.gps.numsat = 8;
 
-			model.slam.setBlock(count*0.0005f,count*0.0005f);
-			model.slam.setBlock(-0.8f+count*0.0005f,0.8f);
+			for(int i=0;i<10;i++)
+			model.slam.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);
+			model.slam.setBlock(-10+count*0.1f+0.05f,0);
+			model.slam.setBlock(0, -10+count*0.1f+0.05f);
 
+			model.slam.setVehicle(model.state.l_x, model.state.l_y);
 
 			model.hud.ag = (float)Math.random()*10f+500f;
 

@@ -107,7 +107,7 @@ public class StartUp implements Runnable {
 				slam.cx = 0.1f;
 				slam.cy = 0.2f;
 				slam.res = s.getResolution();
-			    slam.data = s.toArray();
+			    s.toArray(slam.data);
 				control.sendMAVLinkMessage(slam);
 
 				s.setBlock(f,0.1f, false);

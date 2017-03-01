@@ -141,6 +141,7 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_msp_micro_slam slam = (msg_msp_micro_slam)o;
 				model.slam.fromArray(slam.data);
+				model.slam.setVehicle(slam.cx, slam.cy);
 			    model.slam.tms = slam.tms;
 			}
 		});

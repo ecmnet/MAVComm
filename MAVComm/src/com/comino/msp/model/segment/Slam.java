@@ -35,32 +35,29 @@ package com.comino.msp.model.segment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.comino.msp.model.segment.generic.Segment;
 import com.comino.msp.utils.BlockPoint2D;
-import com.comino.msp.utils.BlockPoint3D;
 
 public class Slam extends Segment {
 
 	private static final long serialVersionUID = -77272456745165428L;
 
-	private static final int  MAX_LONG_SIZE = 27;
-
-	private int      dimension 		= 30;
-	private int      resolution_cm 	= 25;
+	private int      dimension 		= 0;
+	private int      resolution_cm 	= 0;
 	private int      max_length;
 
-	private BitSet   data  = null;
+	private static List<Integer>         transfer  = new ArrayList<Integer>();
+	private static Map<Integer,BlockPoint2D> data  = new ConcurrentHashMap<Integer, BlockPoint2D>();;
+
 	private int      cx,cy;
 	private int      vx,vy;
 
 	public Slam() {
-		this.cx = dimension / 2;
-		this.cy = dimension / 2;
-		this.max_length = dimension * dimension;
-		this.data  = new BitSet(max_length);
+		this(10, 0.1f);
 	}
 
 
@@ -70,72 +67,84 @@ public class Slam extends Segment {
 		this.cx = dimension / 2;
 		this.cy = dimension / 2;
 		this.max_length = dimension * dimension;
-		this.data  = new BitSet(max_length);
 	}
 
 	public void set(Slam a) {
-		data = new BitSet(max_length);
-		data.xor(a.data);
+		cx = a.cx;
+		cy = a.cy;
+		vx = a.vx;
+		vy = a.vy;
 	}
 
 	public Slam clone() {
 		Slam at = new Slam();
 		at.cx = cx;
 		at.cy = cy;
-		at.set(this);
+		at.vx = vx;
+		at.vy = vy;
 		return at;
 	}
 
 	public void clear() {
-		data.clear(0, data.length()-1);
+		data.clear();
 	}
 
-	public long[] toArray() {
-		return Arrays.copyOf(data.toLongArray(), MAX_LONG_SIZE);
+	public void toArray(long[] array) {
+		Arrays.fill(array, 0);
+		if(transfer.isEmpty())
+			return;
+		for(int i=0; i< array.length && transfer.size() > 0;i++) {
+			array[i] = transfer.remove(0);
+		}
 	}
 
 	public void fromArray(long[] array) {
-		if(array!=null)
-			data = BitSet.valueOf(array);
+		for(int i=0; i< array.length;i++) {
+			if(array[i]>0) {
+			    data.put((int)array[i],new BlockPoint2D(
+			    		     ((int)(array[i] % dimension)-cx)*resolution_cm/100f,
+			    		     ((int)(array[i] / dimension)-cy)*resolution_cm/100f));
+			}
+			if(array[i]<0)
+				data.remove(-(int)array[i]);
+		}
 	}
 
 	public void setVehicle(double vx, double vy) {
-		this.vx = (int) (vx * 100f/resolution_cm)+cx;
-		this.vy = (int) (vy * 100f/resolution_cm)+cy;
+		this.vx = (int) ((vx - resolution_cm/200f) * 100f/resolution_cm)+cx;
+		this.vy = (int) ((vy - resolution_cm/200f) * 100f/resolution_cm)+cy;
 	}
 
-	public boolean  setBlock(double xpos, double ypos) {
-		setBlock(xpos,ypos,true);
-		return true;
+	public boolean setBlock(double xpos, double ypos) {
+		return setBlock(xpos,ypos,true);
 	}
 
 	public boolean  setBlock(double xpos, double ypos, boolean set) {
+		int block = calculateBlock(xpos, ypos);
+		if(block< 0 || block > max_length)
+			return false;
+
+		transfer.add(set ? block : -block);
+
 		if(set)
-			data.set(calculateBlock(xpos, ypos));
+			data.put(block,new BlockPoint2D((float)Math.floor(xpos * resolution_cm)/resolution_cm - resolution_cm/200f,
+					                        (float)Math.floor(ypos * resolution_cm)/resolution_cm - resolution_cm/200f));
 		else
-			data.clear(calculateBlock(xpos, ypos));
+			data.remove(block);
+
 		return true;
 	}
 
 	public boolean isBlocked(double xpos, double ypos) {
-		return data.get(calculateBlock(xpos, ypos));
+		return data.containsKey(calculateBlock(xpos, ypos));
 	}
 
 	public boolean hasBlocked() {
 		return !data.isEmpty();
 	}
 
-	public List<BlockPoint2D> getBlocks() {
-
-		List<BlockPoint2D> list = new ArrayList<BlockPoint2D>();
-		for(int r= 0; r < dimension; r++) {
-			for(int c=0; c < dimension; c++) {
-				if(data.get(r * dimension + c)) {
-					list.add(new BlockPoint2D((c-cx)*resolution_cm/100f, (r-cy)*resolution_cm/100f));
-				}
-			}
-		}
-		return list;
+	public Map<Integer, BlockPoint2D> getData() {
+		return data;
 	}
 
 	public float getResolution() {
@@ -143,28 +152,30 @@ public class Slam extends Segment {
 	}
 
 	public float getVehicleX() {
-		return (float)vx;
+		return (float)(vx-cx)*resolution_cm/100f;
 	}
 
 	public float getVehicleY() {
-		return (float)vy;
+		return (float)(vy-cy)*resolution_cm/100f;
 	}
 
 
 	private int calculateBlock(double xpos, double ypos) {
-		int block  =  (int) (xpos * 100f/resolution_cm) + cx
-				+  ((int)(ypos * 100f/resolution_cm) + cy) * dimension;
-
-		if(block < 0 || block > max_length-1)
-			System.err.println(block+">"+max_length);
-
-		return block;
+		int blockx  =  (int) (xpos * 100f/resolution_cm) + cx;
+		if(blockx > dimension-1)
+			blockx = dimension -1;
+		if(blockx < 0)
+			blockx = 0;
+		int blocky = (int)(ypos * 100f/resolution_cm) + cy;
+		if(blockx > dimension-1)
+			blockx = dimension -1;
+		if(blocky < 0)
+			blocky = 0;
+		return blockx + blocky * dimension;
 	}
 
 	public String toString() {
 		StringBuilder b = new StringBuilder();
-		System.out.println("GridSize: +/-"+(dimension*resolution_cm/200f)+
-				" ("+dimension +"/"+resolution_cm+"/"+(dimension*dimension/8)+")");
 		for(int r= 0; r < dimension; r++) {
 			for(int c=0; c < dimension; c++) {
 				if(r==cy && c==cx) {
@@ -175,7 +186,7 @@ public class Slam extends Segment {
 					b.append("+");
 					continue;
 				}
-				if(data.get(r * dimension + c))
+				if(isBlocked((c-cx)*resolution_cm/100f,(r-cy)*resolution_cm/100f))
 					b.append("X");
 				else
 					b.append(".");
@@ -186,22 +197,37 @@ public class Slam extends Segment {
 		return b.toString();
 	}
 
-	public static void main(String[] args) {
-		Slam s = new Slam(5,0.25f);
 
-		s.setBlock(1.0, 0.0);
+	public static void main(String[] args) {
+
+		long[] transfer = new long[50];
+
+		Slam s = new Slam(2,0.10f);
+
+		s.setBlock(2.27, 0.0);
 		s.setBlock(0.0, 1.0);
 		s.setBlock(1.0, 1.0);
 
-		s.setVehicle(2.0, 1.3);
+		s.getData().entrySet().forEach((e) -> {
+			System.out.println(e.getKey()+":"+e.getValue());
 
-		List<BlockPoint2D> list = s.getBlocks();
-		for(BlockPoint2D p : list)
-			System.out.println(p);
+		});
+
+
 
 		System.out.println();
 
 		System.out.println(s);
+
+		Slam t = new Slam(2,0.10f);
+
+		s.toArray(transfer);
+
+		t.clear();
+
+		t.fromArray(transfer);
+
+		System.out.println(t);
 
 	}
 
