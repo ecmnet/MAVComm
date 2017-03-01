@@ -114,6 +114,9 @@ public class Slam extends Segment {
 
 	public void setProperties(float extension_m, float resolution_m) {
 
+		if(extension_m == 0 || resolution_m == 0)
+			return;
+
 		if((int)(extension_m/resolution_m)*2 == this.dimension
 				        && (int)(resolution_m*100f) == this.resolution_cm)
 			return;
@@ -204,6 +207,8 @@ public class Slam extends Segment {
 		return blockx + blocky * dimension;
 	}
 
+
+
 	public String toString() {
 		StringBuilder b = new StringBuilder();
 		for(int r= 0; r < dimension; r++) {
@@ -261,7 +266,7 @@ public class Slam extends Segment {
 
 		System.out.println(t);
 
-		t.setProperties(5, 0.1f);
+		t.setProperties(5, 0.2f);
 
 		System.out.println(t);
 

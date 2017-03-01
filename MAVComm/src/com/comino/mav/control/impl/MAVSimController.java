@@ -47,6 +47,7 @@ import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.model.segment.Slam;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
@@ -57,18 +58,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 	private List<IMAVMessageListener> msgListener        = null;
 	private ArrayList<IMSPStatusChangedListener> modeListener;
 
-
-
 	public MAVSimController() {
 		model = new DataModel();
 		collector = new ModelCollectorService(model);
 		msgList = new ArrayList<LogMessage>();
 		msgListener = new ArrayList<IMAVMessageListener>();
 		modeListener = new ArrayList<IMSPStatusChangedListener>();
-
-		model.slam.setBlock(0,0);
-//		model.slam.setBlock(-3, -1);
-//		model.slam.setBlock(-3, -3);
 
 		ExecutorService.get().scheduleAtFixedRate(new Simulation(), 2000, 50, TimeUnit.MILLISECONDS);
 	}
@@ -177,7 +172,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.numsat = 8;
 
 			for(int i=0;i<10;i++)
-			 model.slam.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);
+			  model.slam.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);
 
 			model.slam.setVehicle(model.state.l_x, model.state.l_y);
 

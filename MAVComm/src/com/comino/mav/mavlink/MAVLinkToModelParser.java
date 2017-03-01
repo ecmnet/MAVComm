@@ -142,6 +142,7 @@ public class MAVLinkToModelParser {
 				msg_msp_micro_slam slam = (msg_msp_micro_slam)o;
 				model.slam.fromArray(slam.data);
 				model.slam.setVehicle(slam.cx, slam.cy);
+				model.slam.setProperties(slam.extension, slam.resolution);
 			    model.slam.tms = slam.tms;
 			}
 		});
