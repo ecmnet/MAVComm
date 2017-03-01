@@ -50,8 +50,8 @@ public class Slam extends Segment {
 	private int      resolution_cm 	= 0;
 	private int      max_length;
 
-	private static List<Integer>         transfer  = new ArrayList<Integer>();
-	private static Map<Integer,BlockPoint2D> data  = new ConcurrentHashMap<Integer, BlockPoint2D>();;
+	private List<Integer>         transfer  = null;
+	private Map<Integer,BlockPoint2D> data  = null;
 
 	private int      cx,cy;
 	private int      vx,vy;
@@ -62,6 +62,8 @@ public class Slam extends Segment {
 
 
 	public Slam(float extension_m, float resolution_m) {
+		this.transfer = new ArrayList<Integer>();
+		this.data     = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);
 		this.cx = dimension / 2;
@@ -260,15 +262,16 @@ public class Slam extends Segment {
 
 		s.toArray(transfer);
 
-		t.clear();
 
 		t.fromArray(transfer);
 
 		System.out.println(t);
 
-		t.setProperties(5, 0.2f);
+		t.setProperties(3, 0.05f);
 
 		System.out.println(t);
+
+		System.out.println(s);
 
 	}
 

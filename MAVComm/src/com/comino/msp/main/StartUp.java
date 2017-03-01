@@ -106,7 +106,7 @@ public class StartUp implements Runnable {
 				slam.tms = System.nanoTime() / 1000;
 				slam.cx = 0.1f;
 				slam.cy = 0.2f;
-				slam.res = s.getResolution();
+				slam.resolution = s.getResolution();
 			    s.toArray(slam.data);
 				control.sendMAVLinkMessage(slam);
 
