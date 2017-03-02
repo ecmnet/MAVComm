@@ -115,10 +115,10 @@ public class Slam extends Segment {
 	}
 
 	public void invalidateTransfer() {
+		transfer.clear();
 		data.forEach((i,e) -> {
 			transfer.add(i);
 		});
-		System.out.println(data.size()+" was put into transfer "+transfer.size());
 	}
 
 	public void setProperties(float extension_m, float resolution_m) {

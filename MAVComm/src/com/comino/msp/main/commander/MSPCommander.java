@@ -72,7 +72,6 @@ public class MSPCommander {
 		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
-                System.out.println(o);
 				msg_msp_command cmd = (msg_msp_command)o;
 				switch(cmd.command) {
 				case MSP_CMD.MSP_CMD_RESTART:
@@ -82,7 +81,6 @@ public class MSPCommander {
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
 					setOffboardPosition(cmd); break;
 				case MSP_CMD.MSP_TRANSFER_MICROSLAM:
-					System.out.println("Slam data transfer requested");
 					model.slam.invalidateTransfer();
 					break;
 				}

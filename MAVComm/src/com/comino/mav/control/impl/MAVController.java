@@ -204,7 +204,6 @@ public class MAVController implements IMAVController, Runnable {
 				throw new IOException("MSP Commands only via UDP to proxy allowed");
 
 			comm.write(cmd);
-			System.out.println("Execute: "+cmd.toString());
 			return true;
 		} catch (IOException e1) {
 			commError++;
