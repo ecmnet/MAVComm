@@ -30,7 +30,13 @@
                   <param index="3">LocalNED.Z (set to NAN to ignore)</param>
                   <param index="4">Yaw (deg)  (set to NAN to ignore)</param>
               </entry>
+              <entry value="74" name="MSP_TRANSFER_MICROSLAM">
+                  <description>Invalidate MICROSLAM transfer</description>
+              </entry>
             </enum>
+
+
+
             <enum name="MSP_COMPONENT_CTRL">
               <description>Component control</description>
               <entry value="0" name="DISABLE">

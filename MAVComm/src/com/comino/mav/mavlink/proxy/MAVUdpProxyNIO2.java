@@ -41,8 +41,10 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
@@ -58,7 +60,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	private SocketAddress 			peerPort;
 	private DatagramChannel 		channel = null;
 
-	private HashMap<Class<?>,IMAVLinkListener> listeners = null;
+	private HashMap<Class<?>,List<IMAVLinkListener>> listeners = null;
 
 	private MAVLinkReader reader;
 
@@ -84,7 +86,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 		this.comm = comm;
 
-		listeners = new HashMap<Class<?>,IMAVLinkListener>();
+		listeners = new HashMap<Class<?>,List<IMAVLinkListener>>();
 
 		System.out.println("Proxy (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
@@ -145,7 +147,16 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 	}
 
 	public void registerListener(Class<?> clazz, IMAVLinkListener listener) {
-		listeners.put(clazz, listener);
+		System.out.println("Register MavLink listener: "+clazz.getSimpleName()+" : "+listener.getClass().getName());
+		List<IMAVLinkListener> list = null;
+		if(listeners.containsKey(clazz)) {
+			list = listeners.get(clazz);
+			list.add(listener);
+		} else {
+			list  = new ArrayList<IMAVLinkListener>();
+			list.add(listener);
+			listeners.put(clazz, list);
+		}
 	}
 
 	@Override
@@ -185,12 +196,14 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 								msg = reader.getNextMessage(rxBuffer.array(), rxBuffer.position());
 								rxBuffer.clear();
 								if(msg!=null) {
-									IMAVLinkListener listener = listeners.get(msg.getClass());
-									if(listener!=null)
-										listener.received(msg);
+									List<IMAVLinkListener> listener_list = listeners.get(msg.getClass());
+									if(listener_list!=null) {
+										for(IMAVLinkListener listener : listener_list)
+										   listener.received(msg);
+									}
 									else {
 										if(comm.isConnected()) {
-//											System.out.println("Execute: "+msg.toString());
+											//											System.out.println("Execute: "+msg.toString());
 											comm.write(msg);
 										}
 									}
@@ -218,7 +231,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	}
 
-//	MAVLinkReader r = new MAVLinkReader(99, true);
+	//	MAVLinkReader r = new MAVLinkReader(99, true);
 
 
 	@Override
@@ -226,22 +239,22 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 		//TODO: Issue:msg_logging_data_acked cannot be sent out => ULOG over MAVComm does not work
 
-//		if( o instanceof msg_logging_data_acked) {
-//
-//			synchronized(this) {
-//			msg_logging_data_acked p = (msg_logging_data_acked) o;
-//			System.out.println(p);
-//			try {
-//			byte[] b = p.encode();
-//			System.out.println("ID: 77 CRC: MSG=267 "+MAVLinkReader.bytesToHex(b, b.length));
-//			MAVLinkMessage rec = r.getNextMessage(b, b.length);
-//			System.out.println(b.length+" : "+rec);
-//			} catch(Exception w) {
-//				w.printStackTrace();
-//			}
-//			return;
-//			}
-//		}
+		//		if( o instanceof msg_logging_data_acked) {
+		//
+		//			synchronized(this) {
+		//			msg_logging_data_acked p = (msg_logging_data_acked) o;
+		//			System.out.println(p);
+		//			try {
+		//			byte[] b = p.encode();
+		//			System.out.println("ID: 77 CRC: MSG=267 "+MAVLinkReader.bytesToHex(b, b.length));
+		//			MAVLinkMessage rec = r.getNextMessage(b, b.length);
+		//			System.out.println(b.length+" : "+rec);
+		//			} catch(Exception w) {
+		//				w.printStackTrace();
+		//			}
+		//			return;
+		//			}
+		//		}
 
 
 		try {

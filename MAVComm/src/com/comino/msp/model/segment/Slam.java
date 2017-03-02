@@ -114,6 +114,13 @@ public class Slam extends Segment {
 		}
 	}
 
+	public void invalidateTransfer() {
+		data.forEach((i,e) -> {
+			transfer.add(i);
+		});
+		System.out.println(data.size()+" was put into transfer "+transfer.size());
+	}
+
 	public void setProperties(float extension_m, float resolution_m) {
 
 		if(extension_m == 0 || resolution_m == 0)
@@ -146,8 +153,8 @@ public class Slam extends Segment {
 	}
 
 	public void setVehicle(double vx, double vy) {
-		this.vx = (int)Math.round((vx - resolution_cm/200f) * 100f/resolution_cm)+cx;
-		this.vy = (int)Math.round((vy - resolution_cm/200f) * 100f/resolution_cm)+cy;
+		this.vx = (int)Math.round((vx + resolution_cm/200f) * 100f/resolution_cm)+cx;
+		this.vy = (int)Math.round((vy + resolution_cm/200f) * 100f/resolution_cm)+cy;
 	}
 
 	public boolean setBlock(double xpos, double ypos) {

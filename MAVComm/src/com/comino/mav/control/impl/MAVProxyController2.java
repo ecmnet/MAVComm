@@ -110,6 +110,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 		}
 		comm.addMAVLinkListener(proxy);
 
+
 	}
 
 	@Override
@@ -229,8 +230,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 		MAVProxyController2 control = new MAVProxyController2(true);
 
-
-		// Example to execute MSP MAVLinkMessages via sendMSPLinkCommand(..)
 		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {

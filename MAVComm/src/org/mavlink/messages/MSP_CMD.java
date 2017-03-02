@@ -35,4 +35,8 @@ public interface MSP_CMD {
      * PARAM 4 : Yaw (deg)  (set to NAN to ignore)
      */
     public final static int MSP_CMD_OFFBOARD_SETLOCALPOS = 73;
+    /**
+     * Invalidate MICROSLAM transfer
+     */
+    public final static int MSP_TRANSFER_MICROSLAM = 74;
 }
