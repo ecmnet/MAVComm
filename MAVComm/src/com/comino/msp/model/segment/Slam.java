@@ -93,13 +93,14 @@ public class Slam extends Segment {
 
 	// Transfer via block only. positive values => set block; negative => remove block
 
-	public void toArray(long[] array) {
+	public boolean toArray(long[] array) {
 		Arrays.fill(array, 0);
 		if(transfer.isEmpty())
-			return;
+			return false;
 		for(int i=0; i< array.length && transfer.size() > 0;i++) {
 			array[i] = transfer.remove(0);
 		}
+		return true;
 	}
 
 	public void fromArray(long[] array) {
