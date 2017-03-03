@@ -143,6 +143,7 @@ public class MAVLinkToModelParser {
 				model.slam.fromArray(slam.data);
 				model.slam.setVehicle(slam.cx, slam.cy);
 				model.slam.setProperties(slam.extension, slam.resolution);
+				model.slam.count = (int) slam.count;
 			    model.slam.tms = slam.tms;
 			}
 		});

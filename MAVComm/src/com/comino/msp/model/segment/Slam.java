@@ -46,12 +46,16 @@ public class Slam extends Segment {
 
 	private static final long serialVersionUID = -77272456745165428L;
 
+	// TODO: add blockcount => is 0 then refresh on MAVGCL side
+
 	private int      dimension 		= 0;
 	private int      resolution_cm 	= 0;
 	private int      max_length;
 
 	private List<Integer>         transfer  = null;
 	private Map<Integer,BlockPoint2D> data  = null;
+
+	public int      count;
 
 	private int      cx,cy;
 	private int      vx,vy;
@@ -62,6 +66,7 @@ public class Slam extends Segment {
 
 
 	public Slam(float extension_m, float resolution_m) {
+		this.count    = 0;
 		this.transfer = new ArrayList<Integer>();
 		this.data     = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.dimension = (int)(extension_m/resolution_m)*2;
@@ -100,6 +105,7 @@ public class Slam extends Segment {
 		for(int i=0; i< array.length && transfer.size() > 0;i++) {
 			array[i] = transfer.remove(0);
 		}
+		count = data.size();
 		return true;
 	}
 
@@ -120,6 +126,7 @@ public class Slam extends Segment {
 		data.forEach((i,e) -> {
 			transfer.add(i);
 		});
+		count = 0;
 	}
 
 	public void setProperties(float extension_m, float resolution_m) {
@@ -150,12 +157,11 @@ public class Slam extends Segment {
 		   tmp.forEach((p) -> {
 			setBlock(p.x,p.y);
 		   });
-
 	}
 
 	public void setVehicle(double vx, double vy) {
-		this.vx = (int)Math.round((vx + resolution_cm/200f) * 100f/resolution_cm)+cx;
-		this.vy = (int)Math.round((vy + resolution_cm/200f) * 100f/resolution_cm)+cy;
+		this.vx = (int)Math.round((vx) * 100f/resolution_cm)+cx;
+		this.vy = (int)Math.round((vy) * 100f/resolution_cm)+cy;
 	}
 
 	public boolean setBlock(double xpos, double ypos) {
@@ -174,6 +180,7 @@ public class Slam extends Segment {
 					                        (float)Math.round(ypos * resolution_cm)/resolution_cm ));
 		else
 			data.remove(block);
+		count = data.size();
 
 		return true;
 	}

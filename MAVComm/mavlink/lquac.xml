@@ -95,14 +95,14 @@
            </message>
            <message id="183" name="MSP_MICRO_SLAM">
                <description>MSP MICRO SLAM Data encoded in longs</description>
-               <field type="int32_t[40]"   name="data">SLAM data integers</field>
+               <field type="int32_t[50]"   name="data">SLAM data integers</field>
                <field type="float"         name="cx" >Center x</field>
                <field type="float"         name="cy" >Center y</field>
                <field type="float"         name="cz" >Center z</field>
                <field type="float"         name="resolution">Resolution in m</field>
                <field type="float"         name="extension">Extension in m per direction</field>
                <field type="uint64_t"      name="tms">Timestamp</field>
-               <field type="uint32_t"      name="flags">Info flags</field>
+               <field type="uint32_t"      name="count">BlockCount</field>
            </message>
       </messages>
 </mavlink>

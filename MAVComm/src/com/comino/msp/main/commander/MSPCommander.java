@@ -80,9 +80,6 @@ public class MSPCommander {
 					//					enableOffboardUpdater(cmd); break;
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
 					setOffboardPosition(cmd); break;
-				case MSP_CMD.MSP_TRANSFER_MICROSLAM:
-					model.slam.invalidateTransfer();
-					break;
 				}
 			}
 		});
