@@ -99,13 +99,13 @@ public class Slam extends Segment {
 	// Transfer via block only. positive values => set block; negative => remove block
 
 	public boolean toArray(long[] array) {
+		count = data.size();
 		Arrays.fill(array, 0);
 		if(transfer.isEmpty())
 			return false;
 		for(int i=0; i< array.length && transfer.size() > 0;i++) {
 			array[i] = transfer.remove(0);
 		}
-		count = data.size();
 		return true;
 	}
 
@@ -126,7 +126,7 @@ public class Slam extends Segment {
 		data.forEach((i,e) -> {
 			transfer.add(i);
 		});
-		count = 0;
+		count = -1;
 	}
 
 	public void setProperties(float extension_m, float resolution_m) {
