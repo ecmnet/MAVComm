@@ -61,7 +61,7 @@ public class Slam extends Segment {
 	private int      vx,vy;
 
 	public Slam() {
-		this(10, 0.1f);
+		this(10, 0.05f);
 	}
 
 
