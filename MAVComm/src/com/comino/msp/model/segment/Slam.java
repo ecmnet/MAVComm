@@ -112,9 +112,9 @@ public class Slam extends Segment {
 	public void fromArray(long[] array) {
 		for(int i=0; i< array.length;i++) {
 			if(array[i]>0) {
-			    data.put((int)array[i],new BlockPoint2D(
-			    		     ((int)(array[i] % dimension)-cx)*resolution_cm/100f,
-			    		     ((int)(array[i] / dimension)-cy)*resolution_cm/100f));
+				data.put((int)array[i],new BlockPoint2D(
+						((int)(array[i] % dimension)-cx)*resolution_cm/100f,
+						((int)(array[i] / dimension)-cy)*resolution_cm/100f));
 			}
 			if(array[i]<0)
 				data.remove(-(int)array[i]);
@@ -129,23 +129,30 @@ public class Slam extends Segment {
 		count = -1;
 	}
 
+	public void translate(float dx, float dy) {
+
+		List<BlockPoint2D> tmp = copy();
+		if(tmp != null) {
+			data.clear();
+
+			if(tmp.size()>0) {
+				tmp.forEach((p) -> {
+					setBlock(p.x+dx,p.y+dy);
+				});
+				invalidateTransfer();
+			}
+		}
+		setVehicle(getVehicleX()+dx, getVehicleY()+dy);
+	}
+
 	public void setProperties(float extension_m, float resolution_m) {
 
 		if(extension_m == 0 || resolution_m == 0)
 			return;
 
 		if((int)(extension_m/resolution_m)*2 == this.dimension
-				        && (int)(resolution_m*100f) == this.resolution_cm)
+				&& (int)(resolution_m*100f) == this.resolution_cm)
 			return;
-
-		List<BlockPoint2D> tmp = new ArrayList<BlockPoint2D>();
-
-		if(!data.isEmpty()) {
-			data.forEach((i,p) -> {
-				tmp.add(new BlockPoint2D(p.x,p.y));
-			});
-			data.clear();
-		}
 
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);
@@ -153,10 +160,17 @@ public class Slam extends Segment {
 		this.cy = dimension / 2;
 		this.max_length = dimension * dimension;
 
-		if(tmp.size()>0)
-		   tmp.forEach((p) -> {
-			setBlock(p.x,p.y);
-		   });
+		List<BlockPoint2D> tmp = copy();
+		if(tmp != null) {
+			data.clear();
+
+			if(tmp.size()>0) {
+				tmp.forEach((p) -> {
+					setBlock(p.x,p.y);
+				});
+				invalidateTransfer();
+			}
+		}
 	}
 
 	public void setVehicle(double vx, double vy) {
@@ -177,7 +191,24 @@ public class Slam extends Segment {
 
 		if(set)
 			data.put(block,new BlockPoint2D((float)Math.round(xpos * resolution_cm)/resolution_cm ,
-					                        (float)Math.round(ypos * resolution_cm)/resolution_cm ));
+					(float)Math.round(ypos * resolution_cm)/resolution_cm ));
+		else
+			data.remove(block);
+		count = data.size();
+
+		return true;
+	}
+
+	public boolean  setBlock(int block, boolean set) {
+		if(block< 0 || block > max_length)
+			return false;
+
+		transfer.add(set ? block : -block);
+
+		if(set)
+			data.put(block,new BlockPoint2D(
+					((int)(block % dimension)-cx)*resolution_cm/100f,
+					((int)(block / dimension)-cy)*resolution_cm/100f));
 		else
 			data.remove(block);
 		count = data.size();
@@ -240,7 +271,7 @@ public class Slam extends Segment {
 				}
 				if(isBlocked((c-cx)*resolution_cm/100f,(r-cy)*resolution_cm/100f )) {
 					b.append("X");
-//					System.out.println((c-cx)*resolution_cm/100f);
+					//					System.out.println((c-cx)*resolution_cm/100f);
 				}
 				else
 					b.append(".");
@@ -249,6 +280,18 @@ public class Slam extends Segment {
 		}
 		b.append("\n");
 		return b.toString();
+	}
+
+	private List<BlockPoint2D> copy() {
+		List<BlockPoint2D> tmp = new ArrayList<BlockPoint2D>();
+
+		if(!data.isEmpty()) {
+			data.forEach((i,p) -> {
+				tmp.add(new BlockPoint2D(p.x,p.y));
+			});
+			return tmp;
+		}
+		return null;
 	}
 
 
@@ -282,7 +325,7 @@ public class Slam extends Segment {
 
 		System.out.println(t);
 
-		t.setProperties(3, 0.05f);
+		t.translate(1, 1);
 
 		System.out.println(t);
 

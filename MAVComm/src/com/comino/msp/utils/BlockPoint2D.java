@@ -37,10 +37,12 @@ public class BlockPoint2D {
 
 	public float x=0;
 	public float y=0;
+	public long  tms = 0;
 
 	public BlockPoint2D(float x, float y) {
 		this.x = x;
 		this.y = y;
+		this.tms = System.nanoTime();
 	}
 
 	public String toString() {
