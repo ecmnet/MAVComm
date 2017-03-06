@@ -209,7 +209,6 @@ public class DataModel extends Segment implements Serializable {
 		try {
 			System.out.println(m.getValue("battery.a0"));
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -324,7 +324,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public void enableFileLogging(boolean enable, String directory) {
-		// TODO Auto-generated method stub
 
 	}
 
