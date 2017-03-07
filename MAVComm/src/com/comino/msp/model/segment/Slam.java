@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.comino.msp.model.segment.generic.Segment;
-import com.comino.msp.utils.BlockPoint2D;
+import com.comino.msp.slam.BlockPoint2D;
 
 public class Slam extends Segment {
 
@@ -187,13 +187,20 @@ public class Slam extends Segment {
 		if(block< 0 || block > max_length)
 			return false;
 
-		transfer.add(set ? block : -block);
+		if(set) {
+			if(!data.containsKey(block)) {
+				data.put(block,new BlockPoint2D((float)Math.round(xpos * resolution_cm)/resolution_cm ,
+						(float)Math.round(ypos * resolution_cm)/resolution_cm ));
+				transfer.add(block);
+			}
+		}
+		else {
+			if(data.containsKey(block)) {
+				transfer.add(-block);
+				data.remove(block);
+			}
+		}
 
-		if(set)
-			data.put(block,new BlockPoint2D((float)Math.round(xpos * resolution_cm)/resolution_cm ,
-					(float)Math.round(ypos * resolution_cm)/resolution_cm ));
-		else
-			data.remove(block);
 		count = data.size();
 
 		return true;

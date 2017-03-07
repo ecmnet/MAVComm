@@ -31,25 +31,22 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.utils;
+package com.comino.msp.slam;
 
-public class BlockPoint3D {
+public class BlockPoint2D {
 
 	public float x=0;
 	public float y=0;
-	public float z=0;
+	public long  tms = 0;
 
-	public float res=0.2f;
-
-	public BlockPoint3D(float x, float y, float z, float res) {
+	public BlockPoint2D(float x, float y) {
 		this.x = x;
 		this.y = y;
-		this.z = z;
-		this.res = res;
+		this.tms = System.nanoTime();
 	}
 
 	public String toString() {
-		return String.format("< % #.2f,% #.2f,% #.2f > ( %#.2f )",x,y,z,res);
+		return String.format("< % #.2f,% #.2f>",x,y);
 	}
 
 }
