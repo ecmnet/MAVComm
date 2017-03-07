@@ -855,7 +855,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_FLIGHT_INFORMATION = 528;
     /**
-     * Start image capture sequence
+     * Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture.
      * PARAM 1 : Duration between two consecutive pictures (in seconds)
      * PARAM 2 : Number of images to capture total - 0 for unlimited capture
      * PARAM 3 : Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used, set to -1 for highest resolution possible.
@@ -878,16 +878,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_TRIGGER_CONTROL = 2003;
     /**
-     * Starts video capture
+     * Starts video capture (recording)
      * PARAM 1 : Camera ID (0 for all cameras), 1 for first, 2 for second, etc.
      * PARAM 2 : Frames per second, set to -1 for highest framerate possible.
      * PARAM 3 : Resolution in megapixels (0.3 for 640x480, 1.3 for 1280x720, etc), set to 0 if param 4/5 are used, set to -1 for highest resolution possible.
      * PARAM 4 : WIP: Resolution horizontal in pixels
      * PARAM 5 : WIP: Resolution horizontal in pixels
+     * PARAM 6 : WIP: Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise time in Hz)
      */
     public final static int MAV_CMD_VIDEO_START_CAPTURE = 2500;
     /**
-     * Stop the current video capture
+     * Stop the current video capture (recording)
      * PARAM 1 : WIP: Camera ID
      * PARAM 2 : Reserved
      */

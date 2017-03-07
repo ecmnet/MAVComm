@@ -368,7 +368,8 @@ public class MAVLinkReader {
 		byte crcl = (byte) (crc & 0x00FF);
 		byte crch = (byte) ((crc >> 8) & 0x00FF);
 
-		if ((crcl == crcLow) && (crch == crcHigh) ) {
+		//TODO: Handle extensions properly
+		if ((crcl == crcLow) && (crch == crcHigh) || msgId==36 ) {
 			msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
 			if (msg != null) {
 				msg.packet = packet;
@@ -387,7 +388,7 @@ public class MAVLinkReader {
 		}
 		else {
 			badCRC = badCRC + 1;
-			if(debug)
+		if(debug)
        		 System.err.println("ID: "+id+" CRC: MSG="+msgId+" Length: "+(lengthToRead+12)+" "+bytesToHex(receivedBuffer,lengthToRead+12));
 			validData = false;
 		}

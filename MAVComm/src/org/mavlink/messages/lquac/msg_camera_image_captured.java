@@ -56,26 +56,34 @@ public class msg_camera_image_captured extends MAVLinkMessage {
    */
   public float[] q = new float[4];
   /**
+   * Zero based index of this image (image count since armed -1)
+   */
+  public long image_index;
+  /**
    * Camera ID if there are multiple
    */
   public int camera_id;
   /**
-   * File path of image taken.
+   * Boolean indicating success (1) or failure (0) while capturing this image.
    */
-  public char[] file_path = new char[210];
-  public void setFile_path(String tmp) {
-    int len = Math.min(tmp.length(), 210);
+  public int capture_result;
+  /**
+   * URL of image taken. Either local storage or http://foo.jpg if camera provides an HTTP interface.
+   */
+  public char[] file_url = new char[205];
+  public void setFile_url(String tmp) {
+    int len = Math.min(tmp.length(), 205);
     for (int i=0; i<len; i++) {
-      file_path[i] = tmp.charAt(i);
+      file_url[i] = tmp.charAt(i);
     }
-    for (int i=len; i<210; i++) {
-      file_path[i] = 0;
+    for (int i=len; i<205; i++) {
+      file_url[i] = 0;
     }
   }
-  public String getFile_path() {
+  public String getFile_url() {
     String result="";
-    for (int i=0; i<210; i++) {
-      if (file_path[i] != 0) result=result+file_path[i]; else break;
+    for (int i=0; i<205; i++) {
+      if (file_url[i] != 0) result=result+file_url[i]; else break;
     }
     return result;
   }
@@ -92,9 +100,11 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   for (int i=0; i<4; i++) {
     q[i] = (float)dis.readFloat();
   }
+  image_index = (int)dis.readInt();
   camera_id = (int)dis.readUnsignedByte()&0x00FF;
-  for (int i=0; i<210; i++) {
-    file_path[i] = (char)dis.readByte();
+  capture_result = (int)dis.readByte();
+  for (int i=0; i<205; i++) {
+    file_url[i] = (char)dis.readByte();
   }
 }
 /**
@@ -122,9 +132,11 @@ public byte[] encode() throws IOException {
   for (int i=0; i<4; i++) {
     dos.writeFloat(q[i]);
   }
+  dos.writeInt((int)(image_index&0x00FFFFFFFF));
   dos.writeByte(camera_id&0x00FF);
-  for (int i=0; i<210; i++) {
-    dos.writeByte(file_path[i]);
+  dos.write(capture_result&0x00FF);
+  for (int i=0; i<205; i++) {
+    dos.writeByte(file_url[i]);
   }
   dos.flush();
   byte[] tmp = dos.toByteArray();
@@ -139,5 +151,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED : " +   "  time_utc="+time_utc+  "  time_boot_ms="+time_boot_ms+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  relative_alt="+relative_alt+  "  q="+q+  "  camera_id="+camera_id+  "  file_path="+getFile_path();}
+return "MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED : " +   "  time_utc="+time_utc+  "  time_boot_ms="+time_boot_ms+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  relative_alt="+relative_alt+  "  q="+q+  "  image_index="+image_index+  "  camera_id="+camera_id+  "  capture_result="+capture_result+  "  file_url="+getFile_url();}
 }
