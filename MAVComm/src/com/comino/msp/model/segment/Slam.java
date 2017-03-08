@@ -150,7 +150,7 @@ public class Slam extends Segment {
 				invalidateTransfer();
 			}
 		}
-		setVehicle(getVehicleX()+dx, getVehicleY()+dy);
+		setIndicator(getIndicatorX()+dx, getIndicatorY()+dy);
 	}
 
 	public void setProperties(float extension_m, float resolution_m) {
@@ -181,7 +181,7 @@ public class Slam extends Segment {
 		}
 	}
 
-	public void setVehicle(double vx, double vy) {
+	public void setIndicator(double vx, double vy) {
 		this.vx = (int)Math.round((vx) * 100f/resolution_cm)+cx;
 		this.vy = (int)Math.round((vy) * 100f/resolution_cm)+cy;
 	}
@@ -246,11 +246,11 @@ public class Slam extends Segment {
 		return resolution_cm / 100f;
 	}
 
-	public float getVehicleX() {
+	public float getIndicatorX() {
 		return (float)(vx-cx)*resolution_cm/100f;
 	}
 
-	public float getVehicleY() {
+	public float getIndicatorY() {
 		return (float)(vy-cy)*resolution_cm/100f;
 	}
 

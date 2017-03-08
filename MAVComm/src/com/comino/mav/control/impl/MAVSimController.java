@@ -174,7 +174,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			for(int i=0;i<10;i++)
 			  model.slam.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);
 
-			model.slam.setVehicle(model.state.l_x, model.state.l_y);
+			model.slam.setIndicator(model.state.l_x, model.state.l_y);
 
 			model.hud.ag = (float)Math.random()*10f+500f;
 
