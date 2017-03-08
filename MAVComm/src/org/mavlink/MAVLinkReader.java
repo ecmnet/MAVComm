@@ -388,6 +388,7 @@ public class MAVLinkReader {
 		}
 		else {
 			badCRC = badCRC + 1;
+			//TODO: Put not parsed message in a hashmap for analysis
 		if(debug)
        		 System.err.println("ID: "+id+" CRC: MSG="+msgId+" Length: "+(lengthToRead+12)+" "+bytesToHex(receivedBuffer,lengthToRead+12));
 			validData = false;

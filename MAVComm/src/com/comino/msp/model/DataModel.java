@@ -137,6 +137,7 @@ public class DataModel extends Segment implements Serializable {
 		this.msg            = m.msg.clone();
 		this.vision         = m.vision.clone();
 		this.est            = m.est.clone();
+		this.slam           = m.slam.clone();
 	}
 
 

@@ -118,7 +118,6 @@ public class MAVLinkToModelParser {
 	private long    rc_tms = 0;
 
 	private long    time_offset_ns   = 0;
-	private long    time_offset_tms  = 0;
 
 	private LogMessage lastMessage = null;
 
@@ -141,6 +140,8 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_msp_micro_slam slam = (msg_msp_micro_slam)o;
 				model.slam.fromArray(slam.data);
+				model.slam.px = slam.px;
+				model.slam.py = slam.py;
 				model.slam.setVehicle(slam.cx, slam.cy);
 				model.slam.setProperties(slam.extension, slam.resolution);
 				model.slam.count = (int) slam.count;

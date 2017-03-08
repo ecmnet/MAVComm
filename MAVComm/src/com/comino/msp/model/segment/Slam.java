@@ -52,10 +52,12 @@ public class Slam extends Segment {
 	private int      resolution_cm 	= 0;
 	private int      max_length;
 
-	private List<Integer>         transfer  = null;
-	private Map<Integer,BlockPoint2D> data  = null;
+	private static List<Integer>         transfer  = new ArrayList<Integer>();
+	private static Map<Integer,BlockPoint2D> data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 
 	public int      count;
+	public float    px;
+	public float    py;
 
 	private int      cx,cy;
 	private int      vx,vy;
@@ -65,10 +67,8 @@ public class Slam extends Segment {
 	}
 
 
-	public Slam(float extension_m, float resolution_m) {
+	private Slam(float extension_m, float resolution_m) {
 		this.count    = 0;
-		this.transfer = new ArrayList<Integer>();
-		this.data     = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);
 		this.cx = dimension / 2;
@@ -81,6 +81,8 @@ public class Slam extends Segment {
 		cy = a.cy;
 		vx = a.vx;
 		vy = a.vy;
+		px = a.px;
+		py = a.py;
 	}
 
 	public Slam clone() {
@@ -89,11 +91,17 @@ public class Slam extends Segment {
 		at.cy = cy;
 		at.vx = vx;
 		at.vy = vy;
+		at.px = px;
+		at.py = py;
 		return at;
 	}
 
 	public void clear() {
 		data.clear();
+		vx = 0;
+		vy = 0;
+		px = 0;
+		py = 0;
 	}
 
 	// Transfer via block only. positive values => set block; negative => remove block
@@ -202,7 +210,6 @@ public class Slam extends Segment {
 		}
 
 		count = data.size();
-
 		return true;
 	}
 
