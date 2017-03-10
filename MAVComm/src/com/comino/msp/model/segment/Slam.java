@@ -55,6 +55,8 @@ public class Slam extends Segment {
 	private static List<Integer>         transfer  = new ArrayList<Integer>();
 	private static Map<Integer,BlockPoint2D> data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 
+//	private  Map<Integer,BlockPoint2D> data = null;
+
 	public int      count;
 	public float    px;
 	public float    py;
@@ -68,6 +70,7 @@ public class Slam extends Segment {
 
 
 	private Slam(float extension_m, float resolution_m) {
+//		this.data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.count    = 0;
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);
@@ -83,6 +86,7 @@ public class Slam extends Segment {
 		vy = a.vy;
 		px = a.px;
 		py = a.py;
+//		data.clear(); data.putAll(a.data);
 	}
 
 	public Slam clone() {
@@ -93,6 +97,7 @@ public class Slam extends Segment {
 		at.vy = vy;
 		at.px = px;
 		at.py = py;
+//		at.data.putAll(data);
 		return at;
 	}
 
