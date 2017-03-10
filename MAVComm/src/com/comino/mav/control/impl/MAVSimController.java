@@ -50,6 +50,7 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Slam;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
+import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVSimController extends MAVController implements IMAVController {
 
@@ -170,6 +171,9 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.gps.latitude = 47.37174f;
 			model.gps.longitude = 8.54226f;
 			model.gps.numsat = 8;
+
+			model.slam.pd = MSPMathUtils.toRad(count % 360);
+			model.slam.pv = 1 + (float)Math.random()*0.3f;
 
 			for(int i=0;i<10;i++)
 			  model.slam.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);
