@@ -99,8 +99,8 @@
                <field type="float"         name="cx" >Center x</field>
                <field type="float"         name="cy" >Center y</field>
                <field type="float"         name="cz" >Center z</field>
-               <field type="float"         name="px" >PathX</field>
-               <field type="float"         name="py" >PathY</field>
+               <field type="float"         name="pv" >Planned speed</field>
+               <field type="float"         name="pd" >Planned direction in rad</field>
                <field type="float"         name="resolution">Resolution in m</field>
                <field type="float"         name="extension">Extension in m per direction</field>
                <field type="uint64_t"      name="tms">Timestamp</field>

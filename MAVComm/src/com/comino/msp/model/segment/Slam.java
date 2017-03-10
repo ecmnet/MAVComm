@@ -58,8 +58,8 @@ public class Slam extends Segment {
 //	private  Map<Integer,BlockPoint2D> data = null;
 
 	public int      count;
-	public float    px;
-	public float    py;
+	public float    pd;		// planned direction
+	public float    pv;		// planned speed
 
 	private int      cx,cy;
 	private int      vx,vy;
@@ -84,8 +84,8 @@ public class Slam extends Segment {
 		cy = a.cy;
 		vx = a.vx;
 		vy = a.vy;
-		px = a.px;
-		py = a.py;
+		pv = a.pv;
+		pd = a.pd;
 //		data.clear(); data.putAll(a.data);
 	}
 
@@ -95,8 +95,8 @@ public class Slam extends Segment {
 		at.cy = cy;
 		at.vx = vx;
 		at.vy = vy;
-		at.px = px;
-		at.py = py;
+		at.pv = pv;
+		at.pd = pd;
 //		at.data.putAll(data);
 		return at;
 	}
@@ -105,8 +105,8 @@ public class Slam extends Segment {
 		data.clear();
 		vx = 0;
 		vy = 0;
-		px = 0;
-		py = 0;
+		pv = 0;
+		pd = 0;
 	}
 
 	// Transfer via block only. positive values => set block; negative => remove block

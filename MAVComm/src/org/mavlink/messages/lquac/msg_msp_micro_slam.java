@@ -48,13 +48,13 @@ public class msg_msp_micro_slam extends MAVLinkMessage {
    */
   public float cz;
   /**
-   * PathX
+   * Planned speed
    */
-  public float px;
+  public float pv;
   /**
-   * PathY
+   * Planned direction in rad
    */
-  public float py;
+  public float pd;
   /**
    * Resolution in m
    */
@@ -78,8 +78,8 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   cx = (float)dis.readFloat();
   cy = (float)dis.readFloat();
   cz = (float)dis.readFloat();
-  px = (float)dis.readFloat();
-  py = (float)dis.readFloat();
+  pv = (float)dis.readFloat();
+  pd = (float)dis.readFloat();
   resolution = (float)dis.readFloat();
   extension = (float)dis.readFloat();
   count = (int)dis.readInt()&0x00FFFFFFFF;
@@ -107,8 +107,8 @@ public byte[] encode() throws IOException {
   dos.writeFloat(cx);
   dos.writeFloat(cy);
   dos.writeFloat(cz);
-  dos.writeFloat(px);
-  dos.writeFloat(py);
+  dos.writeFloat(pv);
+  dos.writeFloat(pd);
   dos.writeFloat(resolution);
   dos.writeFloat(extension);
   dos.writeInt((int)(count&0x00FFFFFFFF));
@@ -125,5 +125,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_MICRO_SLAM : " +   "  tms="+tms+  "  data="+data+  "  cx="+cx+  "  cy="+cy+  "  cz="+cz+  "  px="+px+  "  py="+py+  "  resolution="+resolution+  "  extension="+extension+  "  count="+count;}
+return "MAVLINK_MSG_ID_MSP_MICRO_SLAM : " +   "  tms="+tms+  "  data="+data+  "  cx="+cx+  "  cy="+cy+  "  cz="+cz+  "  pv="+pv+  "  pd="+pd+  "  resolution="+resolution+  "  extension="+extension+  "  count="+count;}
 }
