@@ -69,7 +69,7 @@ public class Slam extends Segment {
 	}
 
 
-	private Slam(float extension_m, float resolution_m) {
+	public Slam(float extension_m, float resolution_m) {
 //		this.data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.count    = 0;
 		this.dimension = (int)(extension_m/resolution_m)*2;
@@ -318,7 +318,7 @@ public class Slam extends Segment {
 
 		long[] transfer = new long[50];
 
-		Slam s = new Slam(2,0.10f);
+		Slam s = new Slam(10,0.05f);
 
 		s.setBlock(1.77, 0.0);
 		s.setBlock(0.0, 1.0);
