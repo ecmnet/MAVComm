@@ -34,6 +34,7 @@
 
 package com.comino.msp.main;
 
+import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_msp_status;
 
@@ -41,6 +42,7 @@ import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController2;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.commander.MSPCommander;
+import com.comino.msp.model.segment.Grid;
 import com.comino.msp.model.segment.Slam;
 
 public class StartUp implements Runnable {
@@ -85,7 +87,7 @@ public class StartUp implements Runnable {
 	@Override
 	public void run() {
 		long tms = System.currentTimeMillis();
-		Slam s = new Slam();
+		Grid s = new Grid();
 		while(true) {
 			try {
 				Thread.sleep(200);
@@ -102,13 +104,13 @@ public class StartUp implements Runnable {
 				s.setBlock(-0.8f,-1.5f);
 
 
-				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-				slam.tms = System.nanoTime() / 1000;
-				slam.cx = 0.1f;
-				slam.cy = 0.2f;
-				slam.resolution = s.getResolution();
-			    s.toArray(slam.data);
-				control.sendMAVLinkMessage(slam);
+				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
+				grid.tms = System.nanoTime() / 1000;
+				grid.cx = 0.1f;
+				grid.cy = 0.2f;
+				grid.resolution = s.getResolution();
+			    s.toArray(grid.data);
+				control.sendMAVLinkMessage(grid);
 
 				s.setBlock(f,0.1f, false);
 

@@ -93,18 +93,21 @@
                <field type="uint32_t"      name="flags">Info flags</field>
                <field type="uint32_t"      name="errors">Error counter</field>
            </message>
-           <message id="183" name="MSP_MICRO_SLAM">
-               <description>MSP MICRO SLAM Data encoded in longs</description>
+           <message id="183" name="MSP_MICRO_GRID">
+               <description>MSP MICRO GRID Data encoded in longs</description>
                <field type="int32_t[40]"   name="data">SLAM data integers</field>
                <field type="float"         name="cx" >Center x</field>
                <field type="float"         name="cy" >Center y</field>
-               <field type="float"         name="cz" >Center z</field>
-               <field type="float"         name="pv" >Planned speed</field>
-               <field type="float"         name="pd" >Planned direction in rad</field>
                <field type="float"         name="resolution">Resolution in m</field>
                <field type="float"         name="extension">Extension in m per direction</field>
                <field type="uint64_t"      name="tms">Timestamp</field>
                <field type="uint32_t"      name="count">BlockCount</field>
+           </message>
+           <message id="184" name="MSP_MICRO_SLAM">
+               <description>MSP MICRO SLAM Data encoded in longs</description>
+               <field type="float"         name="pd" >Planned direction</field>
+               <field type="float"         name="pv" >Planned speed</field>
+               <field type="uint64_t"      name="tms">Timestamp</field>
            </message>
       </messages>
 </mavlink>

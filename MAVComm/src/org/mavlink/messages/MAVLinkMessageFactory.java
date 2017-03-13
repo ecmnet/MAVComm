@@ -300,6 +300,7 @@ import org.mavlink.messages.lquac.msg_attitude_quaternion_cov;
 import org.mavlink.messages.lquac.msg_hil_optical_flow;
 import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_debug;
+import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_param_request_read;
 import org.mavlink.messages.lquac.msg_command_int;
 import org.mavlink.messages.lquac.msg_gps_input;
@@ -889,6 +890,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_DEBUG:
       msg = new msg_debug(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_MSP_MICRO_GRID:
+      msg = new msg_msp_micro_grid(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_PARAM_REQUEST_READ:

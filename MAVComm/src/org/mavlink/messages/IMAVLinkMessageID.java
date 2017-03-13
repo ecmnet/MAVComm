@@ -151,6 +151,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_HIL_OPTICAL_FLOW = 114;
   public static int MAVLINK_MSG_ID_SERVO_OUTPUT_RAW = 36;
   public static int MAVLINK_MSG_ID_DEBUG = 254;
+  public static int MAVLINK_MSG_ID_MSP_MICRO_GRID = 183;
   public static int MAVLINK_MSG_ID_PARAM_REQUEST_READ = 20;
   public static int MAVLINK_MSG_ID_COMMAND_INT = 75;
   public static int MAVLINK_MSG_ID_GPS_INPUT = 232;
@@ -160,5 +161,5 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET = 139;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET = 89;
   public static int MAVLINK_MSG_ID_RESOURCE_REQUEST = 142;
-  public static int MAVLINK_MSG_ID_MSP_MICRO_SLAM = 183;
+  public static int MAVLINK_MSG_ID_MSP_MICRO_SLAM = 184;
 }

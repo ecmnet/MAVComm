@@ -42,6 +42,7 @@ import com.comino.msp.model.segment.Battery;
 import com.comino.msp.model.segment.Debug;
 import com.comino.msp.model.segment.EstStatus;
 import com.comino.msp.model.segment.GPS;
+import com.comino.msp.model.segment.Grid;
 import com.comino.msp.model.segment.Hud;
 import com.comino.msp.model.segment.Imu;
 import com.comino.msp.model.segment.LogMessage;
@@ -86,6 +87,7 @@ public class DataModel extends Segment implements Serializable {
 	public   LogMessage       msg = null;
 	public   Vision        vision = null;
 	public   EstStatus       est  = null;
+	public   Grid           grid  = null;
 	public   Slam           slam  = null;
 
 
@@ -110,6 +112,7 @@ public class DataModel extends Segment implements Serializable {
 		this.vision         = new Vision();
 		this.est            = new EstStatus();
 		this.slam           = new Slam();
+		this.grid           = new Grid();
 	}
 
 	public DataModel(DataModel m) {

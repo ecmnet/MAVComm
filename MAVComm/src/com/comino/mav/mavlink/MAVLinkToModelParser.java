@@ -64,6 +64,7 @@ import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_manual_control;
+import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_msp_vision;
@@ -135,17 +136,27 @@ public class MAVLinkToModelParser {
 
 		listeners = new HashMap<Class<?>,List<IMAVLinkListener>>();
 
+		registerListener(msg_msp_micro_grid.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_msp_micro_grid grid = (msg_msp_micro_grid)o;
+				model.grid.fromArray(grid.data);
+				model.grid.setIndicator(grid.cx, grid.cy);
+				model.grid.setProperties(grid.extension, grid.resolution);
+				model.grid.count = (int) grid.count;
+			    model.grid.tms = grid.tms;
+
+			}
+		});
+
 		registerListener(msg_msp_micro_slam.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
 				msg_msp_micro_slam slam = (msg_msp_micro_slam)o;
-				model.slam.fromArray(slam.data);
 				model.slam.pd = slam.pd;
 				model.slam.pv = slam.pv;
-				model.slam.setIndicator(slam.cx, slam.cy);
-				model.slam.setProperties(slam.extension, slam.resolution);
-				model.slam.count = (int) slam.count;
-			    model.slam.tms = slam.tms;
+			    model.grid.tms = slam.tms;
+
 			}
 		});
 
