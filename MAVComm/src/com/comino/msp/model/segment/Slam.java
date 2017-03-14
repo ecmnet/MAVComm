@@ -57,6 +57,17 @@ public class Slam extends Segment {
 		py = a.py;
 	}
 
+	public void setPath(float d_rad, float speed) {
+		pv = speed;
+		pd = d_rad;
+		calcPathPoint(1);
+	}
+
+	public void calcPathPoint(float f) {
+		px = (float)Math.cos(pd)*f*pv;
+		py = (float)Math.sin(pd)*f*pv;
+	}
+
 	public Slam clone() {
 		Slam at = new Slam();
 		at.pv = pv;
