@@ -155,6 +155,8 @@ public class MAVLinkToModelParser {
 				msg_msp_micro_slam slam = (msg_msp_micro_slam)o;
 				model.slam.pd = slam.pd;
 				model.slam.pv = slam.pv;
+				model.slam.px = slam.px;
+				model.slam.py = slam.py;
 			    model.grid.tms = slam.tms;
 
 			}

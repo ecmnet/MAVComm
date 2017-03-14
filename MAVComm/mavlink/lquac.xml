@@ -105,6 +105,8 @@
            </message>
            <message id="184" name="MSP_MICRO_SLAM">
                <description>MSP MICRO SLAM Data encoded in longs</description>
+               <field type="float"         name="px" >Planned path X</field>
+               <field type="float"         name="py" >Planned path Y</field>
                <field type="float"         name="pd" >Planned direction</field>
                <field type="float"         name="pv" >Planned speed</field>
                <field type="uint64_t"      name="tms">Timestamp</field>

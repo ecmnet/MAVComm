@@ -41,6 +41,8 @@ public class Slam extends Segment {
 
 	private static final long serialVersionUID = -353494527253663585L;
 
+	public float    px;		// planned path x
+	public float    py;		// planned path y
 	public float    pd;		// planned direction
 	public float    pv;		// planned speed
 
@@ -51,19 +53,24 @@ public class Slam extends Segment {
 	public void set(Slam a) {
 		pv = a.pv;
 		pd = a.pd;
+		px = a.px;
+		py = a.py;
 	}
 
 	public Slam clone() {
 		Slam at = new Slam();
 		at.pv = pv;
 		at.pd = pd;
-//		at.data.putAll(data);
+		at.px = px;
+		at.py = py;
 		return at;
 	}
 
 	public void clear() {
 		pv = 0;
 		pd = 0;
+		px = 0;
+		py = 0;
 	}
 
 }
