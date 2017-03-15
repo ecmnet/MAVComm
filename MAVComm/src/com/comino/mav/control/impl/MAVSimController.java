@@ -174,7 +174,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 			model.slam.pd = MSPMathUtils.toRad(count % 360);
 			model.slam.pv = 1 + (float)Math.random()*0.3f;
-			model.slam.calcPathPoint(1);
+			model.slam.calcPathPoint(model.state.l_x,model.state.l_y,1);
 
 			for(int i=0;i<10;i++)
 			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, Math.random()>0.5);

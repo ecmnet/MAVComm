@@ -60,12 +60,11 @@ public class Slam extends Segment {
 	public void setPath(float d_rad, float speed) {
 		pv = speed;
 		pd = d_rad;
-		calcPathPoint(1);
 	}
 
-	public void calcPathPoint(float f) {
-		px = (float)Math.cos(pd)*f*pv;
-		py = (float)Math.sin(pd)*f*pv;
+	public void calcPathPoint(float x, float y, float f) {
+		px = (float)Math.cos(pd)*f*pv+x;
+		py = (float)Math.sin(pd)*f*pv+y;
 	}
 
 	public Slam clone() {
