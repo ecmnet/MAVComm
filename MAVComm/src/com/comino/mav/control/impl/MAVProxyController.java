@@ -195,6 +195,7 @@ public class MAVProxyController implements IMAVMSPController {
 		commError=0;
 		isRunning = true;
 		Thread worker = new Thread(new MAVLinkProxyWorker());
+		worker.setName("UDP Proxy worker");
 		worker.start();
 		return true;
 	}

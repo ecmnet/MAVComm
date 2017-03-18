@@ -180,7 +180,9 @@ public class MAVSerialComm3 implements IMAVComm, Runnable {
 			return false;
 		}
 		isRunning = true;
-		new Thread(this).start();
+		Thread t = new Thread(this);
+		t.setName("Serial connection worker");
+		t.start();
 		System.out.println("Connected to "+serialPort.getPortName());
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
 		return true;

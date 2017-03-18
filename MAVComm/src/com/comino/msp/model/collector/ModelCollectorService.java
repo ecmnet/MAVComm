@@ -92,7 +92,9 @@ public class ModelCollectorService {
 			mode = COLLECTING;
 
 
-			new Thread(new Collector(0)).start();
+			Thread t = new Thread(new Collector(0));
+			t.setName("Collector service");
+			t.start();
 		}
 		return mode != STOPPED;
 		//service = ExecutorService.get().scheduleAtFixedRate(new Collector(), 0, MODELCOLLECTOR_INTERVAL_US, TimeUnit.MICROSECONDS);

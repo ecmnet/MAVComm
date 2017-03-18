@@ -778,6 +778,7 @@ public class MAVLinkToModelParser {
 			isRunning = true;
 			stream = new MAVLinkStream(channel);
 			Thread s = new Thread(new MAVLinkParserWorker());
+			s.setName("Mavlink parser worker");
 			s.setDaemon(true);
 			s.start();
 		}
