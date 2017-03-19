@@ -55,7 +55,7 @@ public class Grid extends Segment {
 	private static List<Integer>         transfer  = new ArrayList<Integer>();
 	private static Map<Integer,BlockPoint2D> data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 
-//	private  Map<Integer,BlockPoint2D> data = null;
+	//	private  Map<Integer,BlockPoint2D> data = null;
 
 	public int      count;
 
@@ -68,7 +68,7 @@ public class Grid extends Segment {
 
 
 	public Grid(float extension_m, float resolution_m) {
-//		this.data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
+		//		this.data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.count    = 0;
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);
@@ -105,6 +105,8 @@ public class Grid extends Segment {
 
 	public void fromArray(long[] array) {
 		for(int i=0; i< array.length;i++) {
+			if(data.containsKey(array[i]))
+				return;
 			if(array[i]>0) {
 				data.put((int)array[i],new BlockPoint2D(
 						((int)(array[i] % dimension)-cx)*resolution_cm/100f,
@@ -203,14 +205,20 @@ public class Grid extends Segment {
 		if(block< 0 || block > max_length)
 			return false;
 
-		transfer.add(set ? block : -block);
-
-		if(set)
-			data.put(block,new BlockPoint2D(
-					((int)(block % dimension)-cx)*resolution_cm/100f,
-					((int)(block / dimension)-cy)*resolution_cm/100f));
-		else
-			data.remove(block);
+		if(set) {
+			if(!data.containsKey(block)) {
+				data.put(block,new BlockPoint2D(
+						((int)(block % dimension)-cx)*resolution_cm/100f,
+						((int)(block / dimension)-cy)*resolution_cm/100f));
+				transfer.add(block);
+			}
+		}
+		else {
+			if(data.containsKey(block)) {
+				transfer.add(-block);
+				data.remove(block);
+			}
+		}
 		count = data.size();
 
 		return true;
