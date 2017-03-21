@@ -389,7 +389,7 @@ public class MAVLinkToModelParser {
 				model.gps.longitude = gps.lon/1e7f;
 				model.gps.altitude = (short)(gps.alt/1000);
 				model.gps.fixtype = (byte)gps.fix_type;
-				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>6);
+				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);
 				model.sys.setSensor(Status.MSP_RTK_AVAILABILITY, gps.fix_type>3);
 
 			}
