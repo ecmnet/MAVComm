@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
@@ -166,6 +167,8 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 		SelectionKey key = null;
 		MAVLinkMessage msg = null;
+		Iterator<?> selectedKeys = null;
+		List<IMAVLinkListener> listener_list = null;
 
 		try {
 			channel.register(selector, SelectionKey.OP_READ );
@@ -179,10 +182,10 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 			while(isConnected) {
 
-				if(selector.select()==0)
+				if(selector.select(500)==0)
 					continue;
 
-				Iterator<?> selectedKeys = selector.selectedKeys().iterator();
+				selectedKeys = selector.selectedKeys().iterator();
 
 				while (selectedKeys.hasNext()) {
 					key = (SelectionKey) selectedKeys.next();
@@ -198,7 +201,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 								msg = reader.getNextMessage(rxBuffer.array(), rxBuffer.position());
 								rxBuffer.clear();
 								if(msg!=null) {
-									List<IMAVLinkListener> listener_list = listeners.get(msg.getClass());
+									listener_list = listeners.get(msg.getClass());
 									if(listener_list!=null) {
 										for(IMAVLinkListener listener : listener_list)
 										   listener.received(msg);

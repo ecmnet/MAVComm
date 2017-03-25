@@ -145,6 +145,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 	@Override
 	public void run() {
 		SelectionKey key = null; MAVLinkMessage msg = null;
+		Iterator<?> selectedKeys = null;
 		try {
 
 			System.out.print(".");
@@ -156,18 +157,15 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 			while(isConnected) {
 
-
 				if(selector.select(500)==0)
 					throw new IOException("Timeout");
 
-				Iterator<?> selectedKeys = selector.selectedKeys().iterator();
+				selectedKeys = selector.selectedKeys().iterator();
 
 				while (selectedKeys.hasNext()) {
 					key = (SelectionKey) selectedKeys.next();
 					selectedKeys.remove();
 					if (!key.isValid()) {
-						  LockSupport.parkNanos(1000000);
-						  Thread.yield();
 						continue;
 					}
 
