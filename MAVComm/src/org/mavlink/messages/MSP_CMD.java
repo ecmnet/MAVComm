@@ -13,18 +13,18 @@ public interface MSP_CMD {
      */
     public final static int MSP_CMD_RESTART = 99;
     /**
-     * Enable/Disable offboard control
-     * PARAM 1 : enable/disable offboard
+     * Control offboard updater
+     * PARAM 1 : component command
      */
     public final static int MSP_CMD_OFFBOARD = 70;
     /**
-     * Enable/Disable vision control
-     * PARAM 1 : enable/disable vision
+     * EControl vision system
+     * PARAM 1 : component command
      */
     public final static int MSP_CMD_VISION = 71;
     /**
-     * Enable/Disable combinedFileStream recording
-     * PARAM 1 : enable/disable Stream recording
+     * Control filestream updater
+     * PARAM 1 : component command
      */
     public final static int MSP_CMD_COMBINEDFILESTREAM = 72;
     /**
@@ -39,4 +39,9 @@ public interface MSP_CMD {
      * Invalidate MICROSLAM transfer
      */
     public final static int MSP_TRANSFER_MICROSLAM = 74;
+    /**
+     * Control microslam system
+     * PARAM 1 : component command
+     */
+    public final static int MSP_CMD_MICROSLAM = 75;
 }

@@ -12,16 +12,16 @@
                   <description>Reboot the MSP companion</description>
               </entry>
               <entry value="70" name="MSP_CMD_OFFBOARD">
-                  <description>Enable/Disable offboard control</description>
-                  <param index="1">enable/disable offboard</param>
+                  <description>Control offboard updater</description>
+                  <param index="1">component command</param>
               </entry>
               <entry value="71" name="MSP_CMD_VISION">
-                  <description>Enable/Disable vision control</description>
-                  <param index="1">enable/disable vision</param>
+                  <description>EControl vision system</description>
+                  <param index="1">component command</param>
               </entry>
                <entry value="72" name="MSP_CMD_COMBINEDFILESTREAM">
-                  <description>Enable/Disable combinedFileStream recording</description>
-                  <param index="1">enable/disable Stream recording</param>
+                  <description>Control filestream updater</description>
+                  <param index="1">component command</param>
               </entry>
               <entry value="73" name="MSP_CMD_OFFBOARD_SETLOCALPOS">
                   <description>Set offboard position via MSP</description>
@@ -32,6 +32,10 @@
               </entry>
               <entry value="74" name="MSP_TRANSFER_MICROSLAM">
                   <description>Invalidate MICROSLAM transfer</description>
+              </entry>
+              <entry value="75" name="MSP_CMD_MICROSLAM">
+                  <description>Control microslam system</description>
+                  <param index="1">component command</param>
               </entry>
             </enum>
 
@@ -47,6 +51,9 @@
               </entry>
               <entry value="2" name="RESET">
                   <description>reset component</description>
+              </entry>
+               <entry value="3" name="CLEAR">
+                  <description>clear component data</description>
               </entry>
            </enum>
       </enums>

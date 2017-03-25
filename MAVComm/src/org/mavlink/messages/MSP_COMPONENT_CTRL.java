@@ -20,4 +20,8 @@ public interface MSP_COMPONENT_CTRL {
      * reset component
      */
     public final static int RESET = 2;
+    /**
+     * clear component data
+     */
+    public final static int CLEAR = 3;
 }
