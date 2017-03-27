@@ -954,6 +954,50 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE = 4001;
     /**
+     * Fence return point. There can only be one fence return point.
+     * PARAM 1 : Reserved
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Reserved
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Altitude
+     */
+    public final static int MAV_CMD_NAV_FENCE_RETURN_POINT = 5000;
+    /**
+     * Fence vertex for an inclusion polygon. The vehicle must stay within this area. Minimum of 3 vertices required.
+     * PARAM 1 : Polygon vertex count
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Reserved
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Reserved
+     */
+    public final static int MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION = 5001;
+    /**
+     * Fence vertex for an exclusion polygon. The vehicle must stay outside this area. Minimum of 3 vertices required.
+     * PARAM 1 : Polygon vertex count
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Reserved
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Reserved
+     */
+    public final static int MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION = 5002;
+    /**
+     * Rally point. You can have multiple rally points defined.
+     * PARAM 1 : Reserved
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Reserved
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Altitude
+     */
+    public final static int MAV_CMD_NAV_RALLY_POINT = 5100;
+    /**
      * Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.
      * PARAM 1 : Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.
      * PARAM 2 : Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.

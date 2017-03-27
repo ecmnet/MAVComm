@@ -139,7 +139,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 		@Override
 		public void run() {
-			model.battery.p = (short)(95+Math.random()*2f);
+			model.battery.b0 = 12.75f - count/500f;
 
 			model.base.latitude = 48;
 			model.base.longitude = 11;

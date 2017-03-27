@@ -64,4 +64,12 @@ public interface MAV_PROTOCOL_CAPABILITY {
      * Autopilot supports mavlink version 2.
      */
     public final static int MAV_PROTOCOL_CAPABILITY_MAVLINK2 = 8192;
+    /**
+     * Autopilot supports mission fence protocol.
+     */
+    public final static int MAV_PROTOCOL_CAPABILITY_MISSION_FENCE = 16384;
+    /**
+     * Autopilot supports mission rally point protocol.
+     */
+    public final static int MAV_PROTOCOL_CAPABILITY_MISSION_RALLY = 32768;
 }
