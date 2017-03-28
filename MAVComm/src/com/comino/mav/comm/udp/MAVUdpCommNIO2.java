@@ -132,9 +132,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 
 		} catch(Exception e) {
-			System.out.println(e.getMessage());
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
-			close();
 			isConnected = false;
 			return false;
 		}
@@ -165,9 +163,8 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 				while (selectedKeys.hasNext()) {
 					key = (SelectionKey) selectedKeys.next();
 					selectedKeys.remove();
-					if (!key.isValid()) {
+					if (!key.isValid())
 						continue;
-					}
 
 					if (key.isReadable()) {
 						if(channel.isConnected() && channel.receive(rxBuffer)!=null) {
@@ -185,7 +182,6 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 			errors++;
 			rxBuffer.clear();
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
-			close();
 			isConnected = false;
 		}
 
@@ -244,17 +240,12 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	public void close() {
 		try {
-			if(selector!=null)
+			if(selector!=null && selector.isOpen())
 				selector.close();
-			if (channel != null) {
-				channel.disconnect();
+			if (channel != null && channel.isOpen()) {
 				channel.close();
 			}
-
-		} catch(Exception e) {
-
-		}
-		//	LockSupport.parkNanos(1000000000);
+		} catch(Exception e) { }
 	}
 
 
