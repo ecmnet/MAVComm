@@ -71,7 +71,7 @@ public class MAVUdpProxyNIO2 implements IMAVLinkListener, Runnable {
 
 	private boolean 			isConnected = false;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(16384);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
 
 	//	public MAVUdpProxy() {
