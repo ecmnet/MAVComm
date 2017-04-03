@@ -329,11 +329,9 @@ public class MAVLinkToModelParser {
 				model.attitude.pr = att.pitchspeed;
 				model.attitude.yr = att.yawspeed;
 
-				model.attitude.tms  = att.time_boot_ms*1000;
-
 				model.hud.aX   = att.roll;
 				model.hud.aY   = att.pitch;
-				model.hud.tms  = att.time_boot_ms*1000;
+				model.hud.tms  = System.nanoTime()/1000;
 				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 
 				//System.out.println(att.toString());
@@ -369,6 +367,7 @@ public class MAVLinkToModelParser {
 				model.attitude.srr = att.body_roll_rate;
 				model.attitude.spr = att.body_pitch_rate;
 				model.attitude.syr = att.body_yaw_rate;
+				model.attitude.tms = System.nanoTime()/1000;
 
 				//System.out.println(att.toString());
 			}
@@ -448,7 +447,7 @@ public class MAVLinkToModelParser {
 
 				model.state.v = (float)Math.sqrt( ned.vx* ned.vx +  ned.vy* ned.vy);
 
-				model.state.tms = ned.time_usec*1000;
+				model.state.tms = ned.time_usec;
 
 			}
 		});
@@ -468,7 +467,7 @@ public class MAVLinkToModelParser {
 
 				model.state.v = (float)Math.sqrt( ned.vx* ned.vx +  ned.vy* ned.vy);
 
-				model.state.tms = ned.time_boot_ms*1000;
+				model.state.tms = System.nanoTime()/1000;
 
 			}
 		});
@@ -487,7 +486,7 @@ public class MAVLinkToModelParser {
 				model.est.tasRatio          = est.tas_ratio;
 				model.est.velRatio          = est.vel_ratio;
 
-				model.est.tms = est.time_usec * 1000;
+				model.est.tms = est.time_usec;
 			}
 		});
 
@@ -516,7 +515,7 @@ public class MAVLinkToModelParser {
 
 				model.target_state.c_frame = ned.coordinate_frame;
 
-				model.target_state.tms = ned.time_boot_ms*1000;
+				model.target_state.tms = System.nanoTime()/1000;
 
 				model.sys.setStatus(Status.MSP_LPOS_AVAILABILITY, true);
 
@@ -537,7 +536,7 @@ public class MAVLinkToModelParser {
 				model.state.g_vy = pos.vy/100f;
 				model.state.g_vz = pos.vz/100f;
 
-				gpos_tms = System.currentTimeMillis();
+				gpos_tms = System.nanoTime()/1000;
 				model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, true);
 
 			}
@@ -564,7 +563,7 @@ public class MAVLinkToModelParser {
 				model.imu.abs_pressure = imu.abs_pressure;
 
 				model.sys.imu_temp = (int)imu.temperature;
-				model.imu.tms = System.nanoTime()/1000;;
+				model.imu.tms = System.nanoTime()/1000;
 
 				model.sys.setStatus(Status.MSP_READY,true);
 				notifyStatusChange();
@@ -580,7 +579,7 @@ public class MAVLinkToModelParser {
 				msg_statustext msg = (msg_statustext)o;
 				LogMessage m = new LogMessage();
 				m.msg = (new String(msg.text)).trim();
-				m.tms = System.currentTimeMillis();
+				m.tms = System.nanoTime()/1000;
 				m.severity = msg.severity;
 				model.msg.set(m);
 				writeMessage(m);
