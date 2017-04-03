@@ -579,7 +579,7 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_statustext msg = (msg_statustext)o;
 				LogMessage m = new LogMessage();
-				m.msg = new String(msg.text);
+				m.msg = (new String(msg.text)).trim();
 				m.tms = System.currentTimeMillis();
 				m.severity = msg.severity;
 				model.msg.set(m);
