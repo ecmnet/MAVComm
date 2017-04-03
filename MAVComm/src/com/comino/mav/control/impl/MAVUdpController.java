@@ -34,6 +34,8 @@
 
 package com.comino.mav.control.impl;
 
+import java.util.concurrent.locks.LockSupport;
+
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 
@@ -77,7 +79,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 	public void run() {
 		while(connect) {
 			try {
-				Thread.sleep(200);
+				LockSupport.parkNanos(200000000);
 				if(!comm.isConnected()) {
 					comm.close(); comm.open();
 				}

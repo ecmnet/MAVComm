@@ -82,7 +82,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	private static MAVUdpCommNIO2 com = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(16384);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
 	public static MAVUdpCommNIO2 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
