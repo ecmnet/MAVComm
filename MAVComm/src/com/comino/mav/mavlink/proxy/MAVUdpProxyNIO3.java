@@ -48,11 +48,11 @@ import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
-import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkReaderV20;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 
@@ -64,7 +64,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 	private HashMap<Class<?>,List<IMAVLinkListener>> listeners = null;
 
-	private MAVLinkReader2 reader;
+	private MAVLinkReaderV20 reader;
 
 	private Selector selector;
 
@@ -84,7 +84,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 		peerPort = new InetSocketAddress(peerAddress, pPort);
 		bindPort = new InetSocketAddress(bindAddress, bPort);
-		reader = new MAVLinkReader2(1);
+		reader = new MAVLinkReaderV20(1);
 
 		this.comm = comm;
 

@@ -94,7 +94,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 		model = new DataModel();
 
 		if(sitl) {
-			comm = MAVUdpCommNIO2.getInstance(model, "127.0.0.1",14556, 14550);
+			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14556, 14550);
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller loaded (SITL) ");
@@ -102,7 +102,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm3.getInstance(model, BAUDRATE, false);
+			    comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
 			else
 				comm = MAVHighSpeedSerialComm.getInstance(model);
 			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);

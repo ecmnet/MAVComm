@@ -39,7 +39,6 @@ import java.util.LinkedList;
 import java.util.Map;
 
 import org.mavlink.MAVLinkReader;
-import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -47,6 +46,7 @@ import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkReaderV20;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -75,7 +75,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 
 	private MAVLinkToModelParser parser = null;
-	private MAVLinkReader2 reader;
+	private MAVLinkReaderV20 reader;
 
 	private static IMAVComm com = null;
 
@@ -114,7 +114,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
-		this.reader = new MAVLinkReader2(3);
+		this.reader = new MAVLinkReaderV20(3);
 
 	}
 
@@ -208,21 +208,19 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 		try {
 			switch (serialEvent.getEventType()) {
 			case SerialPortEvent.RXCHAR:
-				int bytesCount = serialEvent.getEventValue();
+				int bytesCount = serialPort.getInputBufferBytesCount();
 				if(bytesCount > 0) {
 					buffer = serialPort.readBytes(bytesCount);
 					for(int i=0;i<bytesCount;i++)
 						reader.readMavLinkMessageFromBuffer(buffer[i] & 0x00FF);
-
-					while((msg=reader.getNextMessage())!=null)
-						parser.parseMessage(msg);
-					Thread.sleep(0,100000);
 				}
+				while((msg=reader.getNextMessage())!=null)
+					parser.parseMessage(msg);
 				break;
 			}
 		} catch (Exception e) {
 			errors++;
-			close();
+			e.printStackTrace();
 		}
 
 	}
