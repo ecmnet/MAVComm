@@ -46,6 +46,7 @@ import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
 import org.mavlink.MAVLinkReader;
+import org.mavlink.MAVLinkReader2;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
@@ -61,7 +62,7 @@ import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
 
-public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
+public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 
 	private DataModel 				model = null;
@@ -74,28 +75,28 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	private boolean					isConnected = false;
 
-	private MAVLinkReader reader;
+	private MAVLinkReader2 reader;
 
 	private int errors = 0;
 
 	private Selector selector;
 
-	private static MAVUdpCommNIO2 com = null;
+	private static MAVUdpCommNIO3 com = null;
 
 	private ByteBuffer rxBuffer = ByteBuffer.allocate(100000);
 
-	public static MAVUdpCommNIO2 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
+	public static MAVUdpCommNIO3 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
-			com = new MAVUdpCommNIO2(model, peerAddress, peerPort, bindPort);
+			com = new MAVUdpCommNIO3(model, peerAddress, peerPort, bindPort);
 		return com;
 	}
 
-	private MAVUdpCommNIO2(DataModel model, String peerAddress, int pPort, int bPort) {
+	private MAVUdpCommNIO3(DataModel model, String peerAddress, int pPort, int bPort) {
 		this.model = model;
 		this.parser = new MAVLinkToModelParser(model,this);
 		this.peerPort = new InetSocketAddress(peerAddress,pPort);
 		this.bindPort = new InetSocketAddress(bPort);
-		this.reader = new MAVLinkReader(2);
+		this.reader = new MAVLinkReader2(2);
 
 		System.out.println("Vehicle (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
@@ -143,7 +144,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 	@Override
 	public void run() {
 		SelectionKey key = null; MAVLinkMessage msg = null;
-		Iterator<?> selectedKeys = null; byte[] buffer = new byte[8192];
+		Iterator<?> selectedKeys = null;
 		try {
 
 			System.out.print(".");
@@ -168,14 +169,13 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 					if (key.isReadable()) {
 						if(channel.isConnected() && channel.receive(rxBuffer)!=null) {
-							 if(rxBuffer.position()>12) {
 								rxBuffer.flip();
-								rxBuffer.get(buffer, 0, rxBuffer.limit());
-								reader.put(buffer, rxBuffer.limit());
-								while((msg=reader.getNextMessage())!=null)
+								while(rxBuffer.hasRemaining())
+									reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
+								while((msg=reader.getNextMessage())!=null) {
 									parser.parseMessage(msg);
+								}
 								rxBuffer.compact();
-							 }
 						}
 					}
 				}
@@ -254,7 +254,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 
 	public static void main(String[] args) {
-		MAVUdpCommNIO2 comm = new MAVUdpCommNIO2(new DataModel(), "127.0.0.1", 14556, 14550);
+		MAVUdpCommNIO3 comm = new MAVUdpCommNIO3(new DataModel(), "127.0.0.1", 14556, 14550);
 		//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();

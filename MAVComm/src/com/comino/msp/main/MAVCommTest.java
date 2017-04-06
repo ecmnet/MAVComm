@@ -33,9 +33,10 @@
 
 package com.comino.msp.main;
 
+import org.mavlink.messages.MAV_CMD;
+
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
-
 import com.comino.msp.log.MSPLogger;
 
 public class MAVCommTest implements Runnable {
@@ -53,13 +54,21 @@ public class MAVCommTest implements Runnable {
 
 
 		if(args.length>0)
-	//		control = new MAVUdpController("172.168.178.1",14555,14550, false);
-		control = new MAVUdpController("127.0.0.1",14556,14550, true);
+			control = new MAVUdpController("172.168.178.1",14555,14550, false);
+	//	control = new MAVUdpController("127.0.0.1",14556,14550, true);
 		else
 		  System.exit(-1);
 
-		if(!control.isConnected())
+		while(!control.isConnected()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			control.connect();
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_LOGGING_STOP);
+		}
 
 		MSPLogger.getInstance(control);
 

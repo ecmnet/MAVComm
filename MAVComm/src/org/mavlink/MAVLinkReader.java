@@ -6,6 +6,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -82,7 +83,7 @@ public class MAVLinkReader {
 
 	private long totalBytesReceived = 0;
 
-	private final byte[] bytes = new byte[8192];
+	private final byte[] bytes = new byte[16384];
 
 	private int offset = MAX_TM_SIZE;
 
@@ -144,7 +145,21 @@ public class MAVLinkReader {
 
 
 
+	public void put(byte[] buffer, int len) throws IOException {
 
+			dis = new DataInputStream(new ByteArrayInputStream(buffer, 0, len));
+			while (dis.available() >  0)
+				readNextMessageWithoutBlocking();
+	}
+
+	public  MAVLinkMessage getNextMessage() {
+		MAVLinkMessage msg = null;
+		if (!packets.isEmpty()) {
+			msg = (MAVLinkMessage) packets.firstElement();
+			packets.removeElementAt(0);
+		}
+		return msg;
+	}
 
 
 	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
@@ -156,6 +171,7 @@ public class MAVLinkReader {
 			}
 
 			dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
+
 
 			while (dis.available() >  lengthToRead+RECEIVED_OFFSET)
 				readNextMessageWithoutBlocking();

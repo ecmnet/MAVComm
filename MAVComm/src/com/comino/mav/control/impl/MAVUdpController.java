@@ -37,6 +37,7 @@ package com.comino.mav.control.impl;
 import java.util.concurrent.locks.LockSupport;
 
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
+import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
 
 
@@ -50,7 +51,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		this.isSITL = isSITL;
 		this.peerAddress = peerAddress;
 		System.out.println("UDP Controller loaded ("+peerAddress+":"+peerPort+")");
-		comm = MAVUdpCommNIO2.getInstance(model, peerAddress,peerPort, bindPort);
+		comm = MAVUdpCommNIO3.getInstance(model, peerAddress,peerPort, bindPort);
 
 	}
 

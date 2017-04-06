@@ -1,25 +1,4 @@
-/**
- * $Id: MAVLinkReader.java 20 2013-10-11 13:42:37Z ghelle31@gmail.com $
- * $Date: 2013-10-11 15:42:37 +0200 (ven., 11 oct. 2013) $
- *
- * ======================================================
- * Copyright (C) 2012 Guillaume Helle.
- * Project : MAVLINK Java
- * Module : org.mavlink.library
- * File : org.mavlink.messages.MAVLinkReader.java
- * Author : Guillaume Helle
- *
- * ======================================================
- * HISTORY
- * Who       yyyy/mm/dd   Action
- * --------  ----------   ------
- * ghelle   24 aout 2012  Create
- * ghelle   02/04/13      Add modifications from Kevin Hester for Andropilot project
- *
- * ====================================================================
- * Licence: MAVLink LGPL
- * ====================================================================
- */
+
 
 package org.mavlink;
 
@@ -32,10 +11,7 @@ import java.util.Vector;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAVLinkMessageFactory;
 
-/**
- * @author ghelle
- * @version $Rev: 20 $
- */
+
 public class MAVLinkReader2 {
 
 
@@ -75,23 +51,18 @@ public class MAVLinkReader2 {
 
 	private RxMsg rxmsg = new RxMsg();
 
-	/**
-	 * Input stream
-	 */
+
 	private DataInputStream dis = null;
 
-	public final static int RECEIVED_OFFSET = 10;
+	//public final static int RECEIVED_OFFSET = 10;
 
 	/**
 	 * Last sequence number received
 	 */
 	private final int[] lastPacket = new int[256];
 
-	private final byte[] bytes = new byte[2048];
-
-	private int offset = 0;
-
 	private int id = 0;
+	private int packet_lost=0;
 
 	/**
 	 * MAVLink messages received
@@ -143,52 +114,24 @@ public class MAVLinkReader2 {
 	 * @throws IOException
 	 */
 
-//	public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
-//		MAVLinkMessage msg = null;
-//
-//		if (len > 0) {
-//			for(int i=0;i<len;i++) {
-//				readMavLinkMessageFromBuffer(buffer[i] & 0x00FF);
-//			}
-//		}
-//
-//		if (!packets.isEmpty()) {
-//			msg = (MAVLinkMessage) packets.firstElement();
-//			packets.removeElementAt(0);
-//		}
-//		return msg;
-//	}
 
-		  public MAVLinkMessage getNextMessage(byte[] buffer, int len) throws IOException {
-		        MAVLinkMessage msg = null;
-		        if (packets.isEmpty() || len > 0) {
-		            for (int i = offset; i < len + offset; i++) {
-		                bytes[i] = buffer[i - offset];
-		            }
-		            dis = new DataInputStream(new ByteArrayInputStream(bytes, 0, len + offset));
-		            while (dis.available() > (rxmsg.len + 10)) {
-		            	readMavLinkMessageFromBuffer(dis.readByte() & 0x00FF);
-		            }
-		            offset = dis.available();
-		            for (int j = 0; j < offset; j++) {
-		                bytes[j] = dis.readByte();
-		            }
-		            dis.close();
-		            dis = null;
-		        }
-		        if (!packets.isEmpty()) {
-		            msg = (MAVLinkMessage) packets.firstElement();
-		            packets.removeElementAt(0);
-		        }
-		        return msg;
-		    }
+
+	public MAVLinkMessage getNextMessage() {
+		MAVLinkMessage msg = null;
+		if(!packets.isEmpty()) {
+			msg = packets.firstElement();
+			packets.remove(0);
+		}
+		return msg;
+	}
 
 
 
-
-
-	protected  boolean readMavLinkMessageFromBuffer(int c) {
+	public  boolean readMavLinkMessageFromBuffer(int v) {
 		try {
+
+			int c = (v & 0x00FF);
+			//	System.out.println(state+":"+byteToHex(c));
 
 			switch(state) {
 			case MAVLINK_PARSE_STATE_IDLE:
@@ -197,12 +140,12 @@ public class MAVLinkReader2 {
 					rxmsg.start = IMAVLinkMessage.MAVPROT_PACKET_START_V20;
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_STX;
 				}
-				if((byte)c==IMAVLinkMessage.MAVPROT_PACKET_START_V10) {
-					rxmsg.clear();
-					rxmsg.start = IMAVLinkMessage.MAVPROT_PACKET_START_V10;
-					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_STX;
-					return true;
-				}
+//				if((byte)c==IMAVLinkMessage.MAVPROT_PACKET_START_V10) {
+//					rxmsg.clear();
+//					rxmsg.start = IMAVLinkMessage.MAVPROT_PACKET_START_V10;
+//					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_STX;
+//					return true;
+//				}
 				break;
 			case MAVLINK_PARSE_STATE_GOT_STX:
 				rxmsg.len=c; lengthToRead=0;
@@ -256,71 +199,71 @@ public class MAVLinkReader2 {
 				state = t_parser_state.MAVLINK_PARSE_STATE_GOT_MSGID3;
 				break;
 			case MAVLINK_PARSE_STATE_GOT_MSGID3:
-				rxmsg.rawData[lengthToRead++] = (byte)c;
+				rxmsg.rawData[lengthToRead] = (byte)c;
 				rxmsg.crc = MAVLinkCRC.crc_accumulate((byte)c, rxmsg.crc);
-				if(lengthToRead >= rxmsg.len)
+				if(++lengthToRead >= rxmsg.len)
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_PAYLOAD;
 				break;
 			case MAVLINK_PARSE_STATE_GOT_PAYLOAD:
+				rxmsg.rawData[lengthToRead+1] = 0;
 				try {
 					if (IMAVLinkCRC.MAVLINK_EXTRA_CRC)
 						rxmsg.crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[rxmsg.msgId], rxmsg.crc);
 				} catch(Exception e) {
-					System.out.println("CRC: "+rxmsg.toString());
-					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
+					//					System.out.println("CRC: "+rxmsg.toString());
+					//					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
 				}
 
-				if(c!=(rxmsg.crc & 0x00FF))
-					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
-				else
-					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_CRC1;
+				//				if(c!=(rxmsg.crc & 0x00FF))
+				//					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
+				//				else
+				state = t_parser_state.MAVLINK_PARSE_STATE_GOT_CRC1;
 				break;
 			case MAVLINK_PARSE_STATE_GOT_BAD_CRC1:
 			case MAVLINK_PARSE_STATE_GOT_CRC1:
-				if (state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != (rxmsg.crc >> 8 & 0x00FF)) {
-					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
-				}
-				else
-					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
+				//				if (state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != (rxmsg.crc >> 8 & 0x00FF)) {
+				//					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
+				//				}
+				//				else
+				rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
+				rxmsg.signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
 
-				if((rxmsg.incompat & MAVLINK_IFLAG_SIGNED)==1) {
-					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_INCOMPLETE;
-					rxmsg.signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
-					state = t_parser_state.MAVLINK_PARSE_STATE_SIGNATURE_WAIT;
-				}  else {
-
-				}
+				//				if((rxmsg.incompat & MAVLINK_IFLAG_SIGNED)==1) {
+				//					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_INCOMPLETE;
+				//					rxmsg.signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
+				//					state = t_parser_state.MAVLINK_PARSE_STATE_SIGNATURE_WAIT;
+				//				}  else {
+				//					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
+				//				}
 				state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
-					if(msg!=null) {//&& checkPacket(rxmsg.sysId,rxmsg.sequence)) {
+					if(msg!=null) { // && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
-					} else {
-						System.err.println("Sequence error: "+rxmsg.packet+"\t"+msg);
-					}
+						//System.out.println("added: "+rxmsg.packet+":"+msg);
+					} else
+						packet_lost++;
 				}
 				break;
 
-			case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
-				rxmsg.signature[MAVLINK_SIGNATURE_BLOCK_LEN-rxmsg.signature_wait] = (byte)c;
-				rxmsg.signature_wait--;
-				if ( rxmsg.signature_wait == 0) {
-					// check signature here
-					// ...
-					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
-					if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
-						MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
-						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
-							msg.packet = rxmsg.packet;
-							packets.addElement(msg);
-							System.out.println(rxmsg.packet+":"+msg);
-						} else {
-							System.err.println(rxmsg.packet);
-						}
-					}
-				}
-				break;
+				//			case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
+				//				rxmsg.signature[MAVLINK_SIGNATURE_BLOCK_LEN-rxmsg.signature_wait] = (byte)c;
+				//				rxmsg.signature_wait--;
+				//				if ( rxmsg.signature_wait == 0) {
+				//					// check signature here
+				//					// ...
+				//					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
+				//					if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
+				//						MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
+				//						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
+				//							msg.packet = rxmsg.packet;
+				//							packets.addElement(msg);
+				//							System.out.println("added: "+rxmsg.packet+":"+msg);
+				//						}
+				//					}
+				//				}
+				//				break;
 			default: break;
 			}
 			return true;
@@ -362,6 +305,24 @@ public class MAVLinkReader2 {
 		return check;
 	}
 
+	final protected static char[] hexArray = "0123456789ABCDEF".toCharArray();
+	public static String bytesToHex(byte[] bytes, int len) {
+		char[] hexChars = new char[len * 2];
+		for ( int j = 0; j <len; j++ ) {
+			int v = bytes[j] & 0xFF;
+			hexChars[j * 2] = hexArray[v >>> 4];
+			hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+		}
+		return new String(hexChars);
+	}
+
+	public static String byteToHex(int c) {
+		int v = c & 0xFF;
+		char[] hexChars = new char[2];
+		hexChars[0] = hexArray[v >>> 4];
+		hexChars[1] = hexArray[v & 0x0F];
+		return new String(hexChars);
+	}
 
 	private class RxMsg {
 		public int start;
@@ -373,7 +334,7 @@ public class MAVLinkReader2 {
 		public int componentId;
 		public int msgId;
 		public int crc = MAVLinkCRC.crc_init();;
-		public byte[] rawData = new byte[256];
+		public byte[] rawData = new byte[257];
 		public byte[] signature = new byte[MAVLINK_SIGNATURE_BLOCK_LEN];
 
 		public mavlink_framing_t msg_received;
@@ -390,8 +351,6 @@ public class MAVLinkReader2 {
 			msgId=0;
 			signature_wait = MAVLINK_SIGNATURE_BLOCK_LEN;
 			crc= MAVLinkCRC.crc_init();
-			Arrays.fill(rawData, (byte)0x00);
-			Arrays.fill(signature, (byte)0x00);
 		}
 
 		public String toString() {

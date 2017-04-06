@@ -45,11 +45,15 @@ import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
+import com.comino.mav.comm.serial.MAVSerialComm2;
 import com.comino.mav.comm.serial.MAVSerialComm3;
+import com.comino.mav.comm.serial.MAVSerialComm4;
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
+import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO2;
+import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO3;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -74,7 +78,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 
 	protected   DataModel model = null;
-	protected   MAVUdpProxyNIO2 proxy = null;
+	protected   MAVUdpProxyNIO3 proxy = null;
 
 	private     boolean  isRunning = false;
 
@@ -91,7 +95,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 		if(sitl) {
 			comm = MAVUdpCommNIO2.getInstance(model, "127.0.0.1",14556, 14550);
-			proxy = new MAVUdpProxyNIO2("127.0.0.1",14650,"0.0.0.0",14656,comm);
+			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller loaded (SITL) ");
 		}
@@ -101,10 +105,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 			    comm = MAVSerialComm3.getInstance(model, BAUDRATE, false);
 			else
 				comm = MAVHighSpeedSerialComm.getInstance(model);
-			proxy = new MAVUdpProxyNIO2("172.168.178.2",14550,"172.168.178.1",14555,comm);
+			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
-//			proxy = new MAVUdpProxyNIO2("192.168.178.20",14550,"192.168.178.22",14555,comm);
-//			peerAddress = "192.168.178.20";
 			System.out.println("Proxy Controller loaded ");
 
 		}
