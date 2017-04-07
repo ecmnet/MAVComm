@@ -290,7 +290,7 @@ public class MAVController implements IMAVController, Runnable {
 
 	@Override
 	public int getErrorCount() {
-		return commError;
+		return comm.getErrorCount();
 	}
 
 

@@ -38,8 +38,9 @@ import org.mavlink.messages.MAV_CMD;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.main.control.listener.IMAVLinkListener;
 
-public class MAVCommTest implements Runnable {
+public class MAVCommTest implements Runnable, IMAVLinkListener {
 
 	private IMAVController control = null;
 	MSPConfig	           config  = null;
@@ -70,6 +71,8 @@ public class MAVCommTest implements Runnable {
 			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_LOGGING_STOP);
 		}
 
+		control.addMAVLinkListener(this);
+
 		MSPLogger.getInstance(control);
 
 		new Thread(this).start();
@@ -86,14 +89,20 @@ public class MAVCommTest implements Runnable {
 		while(true) {
 			try {
 				Thread.sleep(1000);
-				if(control.isConnected())
-				  System.out.println(control.getCurrentModel().hud.ag);
+//				if(control.isConnected())
+//				  System.out.println(control.getCurrentModel().hud.ag);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
 
 
 		}
+
+	}
+
+	@Override
+	public void received(Object o) {
+	     System.out.println(control.getErrorCount()+":"+o);
 
 	}
 

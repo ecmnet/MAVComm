@@ -46,7 +46,7 @@ import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.mavlink.MAVLinkReaderV20;
+import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -75,7 +75,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 
 	private MAVLinkToModelParser parser = null;
-	private MAVLinkReaderV20 reader;
+	private MAVLinkReader2 reader;
 
 	private static IMAVComm com = null;
 
@@ -114,7 +114,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
-		this.reader = new MAVLinkReaderV20(3);
+		this.reader = new MAVLinkReader2(3);
 
 	}
 
@@ -277,7 +277,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 	@Override
 	public int getErrorCount() {
-		return errors;
+		return reader.getLostPackages();
 	}
 
 

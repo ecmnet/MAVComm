@@ -52,7 +52,6 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		this.peerAddress = peerAddress;
 		System.out.println("UDP Controller loaded ("+peerAddress+":"+peerPort+")");
 		comm = MAVUdpCommNIO3.getInstance(model, peerAddress,peerPort, bindPort);
-
 	}
 
 	@Override
@@ -73,11 +72,14 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 
 	@Override
 	public boolean isConnected() {
+		if(comm == null)
+			return false;
 		return comm.isConnected();
 	}
 
 	@Override
 	public void run() {
+
 		while(connect) {
 			try {
 				LockSupport.parkNanos(200000000);

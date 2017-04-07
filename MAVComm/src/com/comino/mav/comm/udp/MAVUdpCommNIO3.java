@@ -50,7 +50,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.mavlink.MAVLinkReaderV20;
+import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -75,7 +75,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	private boolean					isConnected = false;
 
-	private MAVLinkReaderV20 reader;
+	private MAVLinkReader2 reader;
 
 	private int errors = 0;
 
@@ -96,7 +96,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		this.parser = new MAVLinkToModelParser(model,this);
 		this.peerPort = new InetSocketAddress(peerAddress,pPort);
 		this.bindPort = new InetSocketAddress(bPort);
-		this.reader = new MAVLinkReaderV20(2);
+		this.reader = new MAVLinkReader2(2);
 
 		System.out.println("Vehicle (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
@@ -143,8 +143,8 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	@Override
 	public void run() {
-		SelectionKey key = null; MAVLinkMessage msg = null;
-		Iterator<?> selectedKeys = null;
+		SelectionKey key = null;
+		Iterator<?> selectedKeys = null; MAVLinkMessage msg = null;
 		try {
 
 			System.out.print(".");
@@ -169,13 +169,15 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 					if (key.isReadable()) {
 						if(channel.isConnected() && channel.receive(rxBuffer)!=null) {
-								rxBuffer.flip();
-								while(rxBuffer.hasRemaining())
-									reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
-								while((msg=reader.getNextMessage())!=null) {
+							rxBuffer.flip();
+							while(rxBuffer.hasRemaining())
+								reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
+
+							if(reader.nbUnreadMessages()>0) {
+								while((msg=reader.getNextMessage())!=null)
 									parser.parseMessage(msg);
-								}
-								rxBuffer.compact();
+							}
+							rxBuffer.compact();
 						}
 					}
 				}
@@ -192,7 +194,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	@Override
 	public int getErrorCount() {
-		return errors;
+		return reader.getLostPackages();
 	}
 
 

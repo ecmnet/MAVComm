@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
 public class ExecutorService {
 
 
-	private static final int MAXTHREADS = 35;
+	private static final int MAXTHREADS = 50;
 
 	private static ScheduledThreadPoolExecutor schedThPoolExec =
 			new ScheduledThreadPoolExecutor(MAXTHREADS);
