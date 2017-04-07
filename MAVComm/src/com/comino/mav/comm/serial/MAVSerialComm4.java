@@ -35,6 +35,8 @@
 package com.comino.mav.comm.serial;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -79,10 +81,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 	private static IMAVComm com = null;
 
-	private LinkedList<MAVLinkMessage> sendQueue=null;
-
-	private int errors = 0;
-
+	private ByteBuffer buffer = ByteBuffer.allocate(4096);
 
 	private int baudrate = 921600;
 
@@ -98,7 +97,6 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 		System.out.println("Searching ports... ");
 		String[] list = SerialPortList.getPortNames();
 
-		this.sendQueue = new LinkedList<MAVLinkMessage>();
 
 		if(list.length>0) {
 			for(i=0;i<list.length;i++) {
@@ -123,7 +121,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 	 */
 	@Override
 	public boolean open() {
-		errors = 0;
+
 		while(!open(port ,baudrate,8,1,0)) {
 			try {
 				if(serialPort.isOpened()) {
@@ -204,22 +202,24 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 	@Override
 	public void serialEvent(SerialPortEvent serialEvent) {
-		MAVLinkMessage msg = null; byte[] buffer;
+		MAVLinkMessage msg = null;
 		try {
 			switch (serialEvent.getEventType()) {
 			case SerialPortEvent.RXCHAR:
 				int bytesCount = serialPort.getInputBufferBytesCount();
-				if(bytesCount > 0) {
-					buffer = serialPort.readBytes(bytesCount);
-					for(int i=0;i<bytesCount;i++)
-						reader.readMavLinkMessageFromBuffer(buffer[i] & 0x00FF);
-				}
+				buffer.put(serialPort.readBytes(bytesCount));
+
+				buffer.flip();
+				while(buffer.hasRemaining())
+					reader.readMavLinkMessageFromBuffer(buffer.get() & 0x00FF);
+				buffer.compact();
+
 				while((msg=reader.getNextMessage())!=null)
 					parser.parseMessage(msg);
 				break;
 			}
 		} catch (Exception e) {
-			errors++;
+
 			e.printStackTrace();
 		}
 

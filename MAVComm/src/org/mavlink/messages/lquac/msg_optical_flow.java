@@ -24,7 +24,7 @@ public class msg_optical_flow extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_OPTICAL_FLOW;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 26;
+    payload_length = 34;
 }
 
   /**
@@ -43,6 +43,14 @@ public class msg_optical_flow extends MAVLinkMessage {
    * Ground distance in meters. Positive value: distance known. Negative value: Unknown distance
    */
   public float ground_distance;
+  /**
+   * Flow rate in radians/second about X axis
+   */
+  public float flow_rate_x;
+  /**
+   * Flow rate in radians/second about Y axis
+   */
+  public float flow_rate_y;
   /**
    * Flow in pixels * 10 in x-sensor direction (dezi-pixels)
    */
@@ -67,6 +75,8 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   flow_comp_m_x = (float)dis.readFloat();
   flow_comp_m_y = (float)dis.readFloat();
   ground_distance = (float)dis.readFloat();
+  flow_rate_x = (float)dis.readFloat();
+  flow_rate_y = (float)dis.readFloat();
   flow_x = (int)dis.readShort();
   flow_y = (int)dis.readShort();
   sensor_id = (int)dis.readUnsignedByte()&0x00FF;
@@ -76,7 +86,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+26];
+  byte[] buffer = new byte[12+34];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -92,6 +102,8 @@ public byte[] encode() throws IOException {
   dos.writeFloat(flow_comp_m_x);
   dos.writeFloat(flow_comp_m_y);
   dos.writeFloat(ground_distance);
+  dos.writeFloat(flow_rate_x);
+  dos.writeFloat(flow_rate_y);
   dos.writeShort(flow_x&0x00FFFF);
   dos.writeShort(flow_y&0x00FFFF);
   dos.writeByte(sensor_id&0x00FF);
@@ -99,15 +111,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 26);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 34);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[36] = crcl;
-  buffer[37] = crch;
+  buffer[44] = crcl;
+  buffer[45] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_OPTICAL_FLOW : " +   "  time_usec="+time_usec+  "  flow_comp_m_x="+flow_comp_m_x+  "  flow_comp_m_y="+flow_comp_m_y+  "  ground_distance="+ground_distance+  "  flow_x="+flow_x+  "  flow_y="+flow_y+  "  sensor_id="+sensor_id+  "  quality="+quality;}
+return "MAVLINK_MSG_ID_OPTICAL_FLOW : " +   "  time_usec="+time_usec+  "  flow_comp_m_x="+flow_comp_m_x+  "  flow_comp_m_y="+flow_comp_m_y+  "  ground_distance="+ground_distance+  "  flow_rate_x="+flow_rate_x+  "  flow_rate_y="+flow_rate_y+  "  flow_x="+flow_x+  "  flow_y="+flow_y+  "  sensor_id="+sensor_id+  "  quality="+quality;}
 }

@@ -13,7 +13,7 @@ public interface MAV_CMD {
      * PARAM 1 : Hold time in decimal seconds. (ignored by fixed wing, time to stay at MISSION for rotary wing)
      * PARAM 2 : Acceptance radius in meters (if the sphere with this radius is hit, the MISSION counts as reached)
      * PARAM 3 : 0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.
-     * PARAM 4 : Desired yaw angle at MISSION (rotary wing)
+     * PARAM 4 : Desired yaw angle at MISSION (rotary wing). NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -68,7 +68,7 @@ public interface MAV_CMD {
      * PARAM 1 : Abort Alt
      * PARAM 2 : Empty
      * PARAM 3 : Empty
-     * PARAM 4 : Desired yaw angle
+     * PARAM 4 : Desired yaw angle. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -79,7 +79,7 @@ public interface MAV_CMD {
      * PARAM 1 : Minimum pitch (if airspeed sensor present), desired pitch without sensor
      * PARAM 2 : Empty
      * PARAM 3 : Empty
-     * PARAM 4 : Yaw angle (if magnetometer present), ignored without magnetometer
+     * PARAM 4 : Yaw angle (if magnetometer present), ignored without magnetometer. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -200,7 +200,7 @@ public interface MAV_CMD {
      * PARAM 1 : Empty
      * PARAM 2 : Empty
      * PARAM 3 : Empty
-     * PARAM 4 : Yaw angle in degrees
+     * PARAM 4 : Yaw angle in degrees. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -211,7 +211,7 @@ public interface MAV_CMD {
      * PARAM 1 : Empty
      * PARAM 2 : Empty
      * PARAM 3 : Empty
-     * PARAM 4 : Yaw angle in degrees
+     * PARAM 4 : Yaw angle in degrees. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -239,6 +239,17 @@ public interface MAV_CMD {
      * PARAM 7 : Empty
      */
     public final static int MAV_CMD_NAV_DELAY = 93;
+    /**
+     * Descend and place payload.  Vehicle descends until it detects a hanging payload has reached the ground, the gripper is opened to release the payload
+     * PARAM 1 : Maximum distance to descend (meters)
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Latitude (deg * 1E7)
+     * PARAM 6 : Longitude (deg * 1E7)
+     * PARAM 7 : Altitude (meters)
+     */
+    public final static int MAV_CMD_NAV_PAYLOAD_PLACE = 94;
     /**
      * NOP - This command is only used to mark the upper limit of the NAV/ACTION commands in the enumeration
      * PARAM 1 : Empty

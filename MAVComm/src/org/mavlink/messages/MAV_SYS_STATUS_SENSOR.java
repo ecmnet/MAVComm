@@ -108,4 +108,8 @@ public interface MAV_SYS_STATUS_SENSOR {
      * 0x1000000 Logging
      */
     public final static int MAV_SYS_STATUS_LOGGING = 16777216;
+    /**
+     * 0x2000000 Battery
+     */
+    public final static int MAV_SYS_STATUS_SENSOR_BATTERY = 33554432;
 }

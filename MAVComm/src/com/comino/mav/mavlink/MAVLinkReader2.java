@@ -64,7 +64,6 @@ public class MAVLinkReader2 {
 	 */
 	private final int[] lastPacket = new int[256];
 
-	private int id = 0;
 	private int packet_lost=0;
 
 	/**
@@ -83,7 +82,7 @@ public class MAVLinkReader2 {
 	 *            Start byte for MAVLink version
 	 */
 	public MAVLinkReader2(int id) {
-		this.id = id;
+
 		this.dis = null;
 		for (int i = 0; i < lastPacket.length; i++) {
 			lastPacket[i] = -1;
@@ -119,7 +118,7 @@ public class MAVLinkReader2 {
 
 
 
-	public synchronized MAVLinkMessage getNextMessage() {
+	public MAVLinkMessage getNextMessage() {
 		MAVLinkMessage msg = null;
 		if(packets.size()>0) {
 			msg = packets.remove(0);
@@ -242,6 +241,7 @@ public class MAVLinkReader2 {
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
 					if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
+						msg.isValid = true;
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
 						//System.out.println("added: "+rxmsg.packet+":"+msg);
@@ -263,7 +263,7 @@ public class MAVLinkReader2 {
 						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 							msg.packet = rxmsg.packet;
 							packets.addElement(msg);
-							System.out.println("added: "+rxmsg.packet+":"+msg);
+							//System.out.println("added: "+rxmsg.packet+":"+msg);
 						} else
 							packet_lost++;
 					} else
