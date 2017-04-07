@@ -71,4 +71,5 @@ public interface IMAVComm {
 
 	public void writeMessage(LogMessage m);
 
+
 }

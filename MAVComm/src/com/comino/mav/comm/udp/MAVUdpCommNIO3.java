@@ -172,12 +172,12 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 							rxBuffer.flip();
 							while(rxBuffer.hasRemaining())
 								reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
+							rxBuffer.compact();
 
 							if(reader.nbUnreadMessages()>0) {
 								while((msg=reader.getNextMessage())!=null)
 									parser.parseMessage(msg);
 							}
-							rxBuffer.clear();
 						}
 					}
 				}
@@ -205,7 +205,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		return null;
 	}
 
-	public void write(MAVLinkMessage msg) throws IOException {
+	public synchronized void write(MAVLinkMessage msg) throws IOException {
 		if(!channel.isConnected())
 			throw new IOException("Not yet connected");
 		if(msg!=null && channel!=null && channel.isOpen())
