@@ -237,7 +237,7 @@ public class MAVLinkReader2 {
 				}  else {
 					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				}
-				//	state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
+					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
 					if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {

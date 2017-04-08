@@ -564,6 +564,7 @@ public class MAVLinkToModelParser {
 
 				model.sys.imu_temp = (int)imu.temperature;
 				model.imu.tms = System.nanoTime()/1000;
+				model.sys.tms = System.nanoTime()/1000;
 
 				model.sys.setStatus(Status.MSP_READY,true);
 				notifyStatusChange();
@@ -579,7 +580,7 @@ public class MAVLinkToModelParser {
 				msg_statustext msg = (msg_statustext)o;
 				LogMessage m = new LogMessage();
 				m.msg = (new String(msg.text)).trim();
-				m.tms = System.nanoTime()/1000;
+				m.tms = System.currentTimeMillis();
 				m.severity = msg.severity;
 				model.msg.set(m);
 				writeMessage(m);
