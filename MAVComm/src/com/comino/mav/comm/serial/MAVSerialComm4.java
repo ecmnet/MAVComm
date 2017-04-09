@@ -46,6 +46,8 @@ import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
+import org.mavlink.messages.lquac.msg_serial_control;
+import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkReader2;
@@ -65,7 +67,7 @@ import jssc.SerialPortException;
 import jssc.SerialPortList;
 
 
-public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
+public class MAVSerialComm4 implements IMAVComm {
 
 	//	private static final int BAUDRATE  = 57600
 
@@ -81,7 +83,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 	private static IMAVComm com = null;
 
-	private ByteBuffer buffer = ByteBuffer.allocate(4096);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
 	private int baudrate = 921600;
 
@@ -175,11 +177,30 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 			serialPort.openPort();
 			serialPort.setParams(baudRate, dataBits, stopBits, parity);
 
-			serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE | SerialPort.FLOWCONTROL_NONE);
-
-			int eventMask = SerialPort.MASK_RXCHAR | SerialPort.MASK_TXEMPTY;
+			int eventMask = SerialPort.MASK_RXCHAR;
 			try {
-				serialPort.addEventListener(this, eventMask);
+				serialPort.addEventListener((serialEvent) -> {
+					MAVLinkMessage msg = null;
+					try {
+						switch (serialEvent.getEventType()) {
+						case SerialPortEvent.RXCHAR:
+							int bytesCount = serialPort.getInputBufferBytesCount();
+							rxBuffer.put(serialPort.readBytes(bytesCount));
+
+							rxBuffer.flip();
+							while(rxBuffer.hasRemaining())
+								reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
+							rxBuffer.compact();
+
+							while((msg=reader.getNextMessage())!=null)
+								parser.parseMessage(msg);
+							break;
+
+						}
+					} catch (Exception e) {
+						System.err.println(e.getMessage());
+					}
+				}, eventMask);
 			} catch (SerialPortException e) {
 				e.printStackTrace();
 			}
@@ -200,31 +221,6 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 
 	}
 
-	@Override
-	public void serialEvent(SerialPortEvent serialEvent) {
-		MAVLinkMessage msg = null;
-		try {
-			switch (serialEvent.getEventType()) {
-			case SerialPortEvent.RXCHAR:
-				int bytesCount = serialPort.getInputBufferBytesCount();
-				buffer.put(serialPort.readBytes(bytesCount));
-
-				buffer.flip();
-				while(buffer.hasRemaining())
-					reader.readMavLinkMessageFromBuffer(buffer.get() & 0x00FF);
-				buffer.compact();
-
-				while((msg=reader.getNextMessage())!=null)
-					parser.parseMessage(msg);
-				break;
-			}
-		} catch (Exception e) {
-
-			e.printStackTrace();
-		}
-
-	}
-
 	/* (non-Javadoc)
 	 * @see com.comino.px4.control.serial.IPX4Comm#write(org.mavlink.messages.MAVLinkMessage)
 	 */
@@ -232,11 +228,7 @@ public class MAVSerialComm4 implements IMAVComm, SerialPortEventListener {
 	public  void write(MAVLinkMessage msg) throws IOException {
 		try {
 			serialPort.writeBytes(msg.encode());
-			Thread.sleep(0,500000);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (Exception e) { }
 	}
 
 	@Override
