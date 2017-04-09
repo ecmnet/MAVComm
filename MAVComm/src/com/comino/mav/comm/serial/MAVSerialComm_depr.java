@@ -58,7 +58,7 @@ import jssc.SerialPortException;
 import jssc.SerialPortList;
 
 
-public class MAVSerialComm implements IMAVComm {
+public class MAVSerialComm_depr implements IMAVComm {
 
 
 	private SerialPort 			serialPort;
@@ -74,11 +74,11 @@ public class MAVSerialComm implements IMAVComm {
 
 	public static IMAVComm getInstance(DataModel model, int baudrate) {
 		if(com==null)
-			com = new MAVSerialComm(model, baudrate);
+			com = new MAVSerialComm_depr(model, baudrate);
 		return com;
 	}
 
-	private MAVSerialComm(DataModel model, int baudrate) {
+	private MAVSerialComm_depr(DataModel model, int baudrate) {
 		this.baudrate = baudrate;
 		this.model = model; int i=0;
 		System.out.println("Searching ports... ");
@@ -98,7 +98,7 @@ public class MAVSerialComm implements IMAVComm {
 
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
-		parser.start(new SerialPortChannel(serialPort));
+//		parser.start(new SerialPortChannel(serialPort));
 
 	}
 
@@ -196,7 +196,7 @@ public class MAVSerialComm implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm(new DataModel(),921600);
+		IMAVComm comm = new MAVSerialComm_depr(new DataModel(),921600);
 		comm.open();
 
 

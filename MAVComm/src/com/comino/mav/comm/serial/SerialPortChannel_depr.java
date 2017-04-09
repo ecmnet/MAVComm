@@ -42,11 +42,11 @@ import jssc.SerialPort;
 import jssc.SerialPortException;
 
 
-public class SerialPortChannel implements ByteChannel {
+public class SerialPortChannel_depr implements ByteChannel {
 
 	private final SerialPort serialPort;
 
-    public SerialPortChannel(SerialPort serialPort) {
+    public SerialPortChannel_depr(SerialPort serialPort) {
         this.serialPort = serialPort;
     }
 

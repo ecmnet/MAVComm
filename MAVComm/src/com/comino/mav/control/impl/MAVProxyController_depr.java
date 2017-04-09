@@ -46,7 +46,7 @@ import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
-import com.comino.mav.comm.serial.MAVSerialComm;
+import com.comino.mav.comm.serial.MAVSerialComm4;
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
@@ -65,7 +65,7 @@ import com.comino.msp.model.segment.Status;
  * serial driver (currently RPi only)
  */
 
-public class MAVProxyController implements IMAVMSPController {
+public class MAVProxyController_depr implements IMAVMSPController {
 
 	private static final int BAUDRATE  = 921600;
 
@@ -89,7 +89,7 @@ public class MAVProxyController implements IMAVMSPController {
 	}
 
 
-	public MAVProxyController(boolean sitl) {
+	public MAVProxyController_depr(boolean sitl) {
 		controller = this;
 		model = new DataModel();
 		listeners = new HashMap<Class<?>,IMAVLinkListener>();
@@ -104,7 +104,7 @@ public class MAVProxyController implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm.getInstance(model,BAUDRATE);
+			    comm = MAVSerialComm4.getInstance(model,BAUDRATE, false);
 			else
 				comm = MAVHighSpeedSerialComm.getInstance(model);
 			comm.open();
@@ -265,7 +265,7 @@ public class MAVProxyController implements IMAVMSPController {
 	public static void main(String[] args) {
 
 
-		MAVProxyController control = new MAVProxyController(true);
+		MAVProxyController_depr control = new MAVProxyController_depr(true);
 
 
 		// Example to execute MSP MAVLinkMessages via sendMSPLinkCommand(..)
