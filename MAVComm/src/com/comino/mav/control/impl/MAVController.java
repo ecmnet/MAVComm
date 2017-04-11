@@ -66,6 +66,8 @@ import com.comino.msp.utils.ExecutorService;
 public class MAVController implements IMAVController, Runnable {
 
 	protected String peerAddress = null;
+	protected int    peerPort = 0;
+	protected int    bindPort = 0;
 
 	protected static IMAVController controller = null;
 	protected IMAVComm comm = null;

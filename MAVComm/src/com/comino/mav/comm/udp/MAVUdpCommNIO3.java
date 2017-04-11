@@ -98,7 +98,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		this.bindPort = new InetSocketAddress(bPort);
 		this.reader = new MAVLinkReader2(2);
 
-		System.out.println("Vehicle (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
+		System.out.println("Vehicle (NIO3): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
 	}
 
