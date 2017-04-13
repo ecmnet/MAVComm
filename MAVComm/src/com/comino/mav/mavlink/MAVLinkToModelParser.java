@@ -915,16 +915,26 @@ public class MAVLinkToModelParser {
 						model.sys.setStatus(Status.MSP_CONNECTED,true);
 						model.sys.tms = System.nanoTime()/1000;
 
-						if(mavListener!=null) {
-							for(IMAVLinkListener mavlistener : mavListener)
-								mavlistener.received(msg);
+						if(mavListener!=null && mavListener.size()> 0) {
+							ExecutorService.get().execute( new Runnable() {
+								final MAVLinkMessage m = msg;
+								public void run() {
+									for(IMAVLinkListener mavlistener : mavListener)
+										mavlistener.received(m);
+								}
+							});
 						}
 
 						mavList.put(msg.getClass(),msg);
 						listenerList = listeners.get(msg.getClass());
-						if(listenerList!=null) {
-							for(IMAVLinkListener listener : listenerList)
-								listener.received(msg);
+						if(listenerList!=null && listenerList.size()> 0) {
+							ExecutorService.get().execute( new Runnable() {
+								final MAVLinkMessage m = msg;
+								public void run() {
+									for(IMAVLinkListener listener : listenerList)
+										listener.received(m);
+								}
+							});
 						}
 
 
