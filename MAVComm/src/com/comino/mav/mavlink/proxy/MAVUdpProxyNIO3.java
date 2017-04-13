@@ -125,7 +125,6 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 			} catch(Exception e) {
 				close();
 				isConnected = false;
-
 			}
 		}
 		return false;
@@ -214,28 +213,10 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 											if(comm.isConnected())
 												comm.write(msg);
 										}
-
 									}
 									rxBuffer.compact();
 								}
 							}
-							//							if(channel.isConnected() && channel.receive(rxBuffer)!=null) {
-							//								msg = reader.getNextMessage(rxBuffer.array(), rxBuffer.position());
-							//								rxBuffer.clear();
-							//								if(msg!=null) {
-							//									listener_list = listeners.get(msg.getClass());
-							//									if(listener_list!=null) {
-							//										for(IMAVLinkListener listener : listener_list)
-							//										   listener.received(msg);
-							//									}
-							//									else {
-							//										if(comm.isConnected()) {
-							//											//											System.out.println("Execute: "+msg.toString());
-							//											comm.write(msg);
-							//										}
-							//									}
-							//								}
-							//							}
 						} catch(Exception io) { }
 					}
 				}
@@ -258,30 +239,8 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 	}
 
-	//	MAVLinkReader r = new MAVLinkReader(99, true);
-
-
 	@Override
 	public void received(Object o) {
-
-
-		//		if( o instanceof msg_logging_data_acked) {
-		//
-		//			synchronized(this) {
-		//			msg_logging_data_acked p = (msg_logging_data_acked) o;
-		//			System.out.println(p);
-		//			try {
-		//			byte[] b = p.encode();
-		//			System.out.println("ID: 77 CRC: MSG=267 "+MAVLinkReader.bytesToHex(b, b.length));
-		//			MAVLinkMessage rec = r.getNextMessage(b, b.length);
-		//			System.out.println(b.length+" : "+rec);
-		//			} catch(Exception w) {
-		//				w.printStackTrace();
-		//			}
-		//			return;
-		//			}
-		//		}
-
 
 		try {
 			write((MAVLinkMessage) o);

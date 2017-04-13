@@ -224,57 +224,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 		return true;
 	}
 
-
-
-
-	public static void main(String[] args) {
-
-
-		MAVProxyController2 control = new MAVProxyController2(true);
-
-		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
-			@Override
-			public void received(Object o) {
-				msg_msp_command hud = (msg_msp_command)o;
-				System.out.println("MSP Command "+hud.command+" executed");
-			}
-		});
-
-
-
-		control.start();
-
-		try {
-			Thread.sleep(5000);
-			if(!control.isConnected())
-				control.connect();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-
-		while(true) {
-			try {
-				Thread.sleep(500);
-				if(!control.isConnected()) {
-					control.connect();
-
-
-				// Example to send MAVLinkMessages from MSP
-				//		           msg_msp_status sta = new msg_msp_status();
-				//		           sta.load = 50;
-				//		           control.proxy.write(sta);
-
-				}
-
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-
-
-
 	@Override
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
 		comm.addStatusChangeListener(listener);
@@ -288,7 +237,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public void addMAVMessageListener(IMAVMessageListener listener) {
-
 
 	}
 
