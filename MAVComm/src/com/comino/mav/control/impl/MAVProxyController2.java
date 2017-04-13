@@ -320,7 +320,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public int getErrorCount() {
-		return proxy.getBadCRC();
+		return comm.getErrorCount();
 	}
 
 

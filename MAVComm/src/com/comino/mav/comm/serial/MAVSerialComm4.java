@@ -82,8 +82,9 @@ public class MAVSerialComm4 implements IMAVComm {
 	private MAVLinkReader2 reader;
 
 	private static IMAVComm com = null;
+	MAVLinkMessage msg = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(65536);
 
 	private int baudrate = 921600;
 
@@ -102,7 +103,7 @@ public class MAVSerialComm4 implements IMAVComm {
 
 		if(list.length>0) {
 			for(i=0;i<list.length;i++) {
-				if(list[i].contains("tty.SLAB") || list[i].contains("tty.usb") || list[i].contains("AMA0")) {
+				if(list[i].contains("tty.SLAB") || list[i].contains("tty.usb") || list[i].contains("AMA0") || list[i].contains("S1")) {
 					break;
 				}
 			}
@@ -114,7 +115,7 @@ public class MAVSerialComm4 implements IMAVComm {
 
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
-		this.reader = new MAVLinkReader2(3);
+		this.reader = new MAVLinkReader2(3, false);
 
 	}
 
@@ -180,12 +181,12 @@ public class MAVSerialComm4 implements IMAVComm {
 			int eventMask = SerialPort.MASK_RXCHAR;
 			try {
 				serialPort.addEventListener((serialEvent) -> {
-					MAVLinkMessage msg = null;
+
 					try {
 						switch (serialEvent.getEventType()) {
 						case SerialPortEvent.RXCHAR:
-							int bytesCount = serialPort.getInputBufferBytesCount();
-							rxBuffer.put(serialPort.readBytes(bytesCount));
+
+							rxBuffer.put(serialPort.readBytes(serialPort.getInputBufferBytesCount()));
 
 							rxBuffer.flip();
 							while(rxBuffer.hasRemaining())
@@ -194,6 +195,7 @@ public class MAVSerialComm4 implements IMAVComm {
 
 							while((msg=reader.getNextMessage())!=null)
 								parser.parseMessage(msg);
+
 							break;
 
 						}

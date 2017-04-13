@@ -22,6 +22,7 @@ public class MAVLinkReader2 {
 
 	private static int MAVLINK_SIGNATURE_BLOCK_LEN = 13;
 	private static int MAVLINK_HEADER_LEN = 9;
+	private static int MAVLINK_MAX_PAYLOAD_SIZE = 255;
 
 
 	enum t_parser_state  {
@@ -52,7 +53,8 @@ public class MAVLinkReader2 {
 
 	private t_parser_state state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 
-	private RxMsg rxmsg = new RxMsg();
+	private RxMsg rxmsg      = new RxMsg();
+	private RxMsg rxmsg_last = new RxMsg();
 
 
 	private DataInputStream dis = null;
@@ -72,22 +74,20 @@ public class MAVLinkReader2 {
 	private final Vector<MAVLinkMessage> packets = new Vector<MAVLinkMessage>();
 
 	private int lengthToRead = 0;
+	private boolean noCRCCheck = false;
 
 
-
-	/**
-	 * Constructor for byte array read methods.
-	 *
-	 * @param start
-	 *            Start byte for MAVLink version
-	 */
 	public MAVLinkReader2(int id) {
+		this(id,false);
+	}
 
+	public MAVLinkReader2(int id, boolean noCRCCheck) {
+		this.noCRCCheck = noCRCCheck;
 		this.dis = null;
 		for (int i = 0; i < lastPacket.length; i++) {
 			lastPacket[i] = -1;
 		}
-		System.out.println("MAVLinkReader2 "+id+" started");
+		System.out.println("MAVLinkReader2 "+id+" started with debug="+noCRCCheck);
 	}
 
 	/**
@@ -222,8 +222,15 @@ public class MAVLinkReader2 {
 				break;
 			case MAVLINK_PARSE_STATE_GOT_BAD_CRC1:
 			case MAVLINK_PARSE_STATE_GOT_CRC1:
-				if (state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != (rxmsg.crc >> 8 & 0x00FF)) {
-					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
+				if ((state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != (rxmsg.crc >> 8 & 0x00FF)) && !noCRCCheck) {
+
+					// CRC workaraounds
+					if(rxmsg.msgId == 36 || rxmsg.msgId == 140)
+						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
+					else {
+						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
+						//System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
+					}
 				}
 				else
 					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
@@ -237,7 +244,7 @@ public class MAVLinkReader2 {
 				}  else {
 					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				}
-					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
+				//state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
 					if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
@@ -264,10 +271,12 @@ public class MAVLinkReader2 {
 							msg.packet = rxmsg.packet;
 							packets.addElement(msg);
 							//System.out.println("added: "+rxmsg.packet+":"+msg);
-						} else
+						} else {
 							packet_lost++;
-					} else
+						}
+					} else {
 						packet_lost++;
+					}
 				}
 				break;
 			default: break;
@@ -296,18 +305,21 @@ public class MAVLinkReader2 {
 	protected boolean checkPacket(int sysId, int packet) {
 		boolean check = false;
 
+		if(sysId!=1)
+			return true;
+
 		if (lastPacket[sysId] == -1) {
 			// it is the first message read
 			check = true;
 		}
 
 
-		if(packet==255) {
-			packet = lastPacket[sysId] + 1;
-			check = true;
-		}
+		//		if(packet==255) {
+		//			packet = lastPacket[sysId] + 1;
+		//			check = true;
+		//		}
 
-		 if (lastPacket[sysId] < packet) {
+		if (lastPacket[sysId] < packet) {
 			if (packet - lastPacket[sysId] == 1) {
 				check = true;
 			}
@@ -352,7 +364,7 @@ public class MAVLinkReader2 {
 		public int componentId;
 		public int msgId;
 		public int crc = MAVLinkCRC.crc_init();;
-		public byte[] rawData = new byte[257];
+		public byte[] rawData = new byte[MAVLINK_MAX_PAYLOAD_SIZE+MAVLINK_HEADER_LEN];
 		public byte[] signature = new byte[MAVLINK_SIGNATURE_BLOCK_LEN];
 
 		public mavlink_framing_t msg_received;
