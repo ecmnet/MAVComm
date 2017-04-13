@@ -88,6 +88,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSPMathUtils;
 
 
@@ -185,7 +186,7 @@ public class MAVLinkToModelParser {
 				model.vision.fps= mocap.fps;
 				model.vision.tms= System.nanoTime()/1000;
 				if(model.vision.errors < 5) {
-					mocap_tms = System.currentTimeMillis();
+					mocap_tms = System.nanoTime()/1000;
 					model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true );
 				}
 			}
@@ -852,12 +853,11 @@ public class MAVLinkToModelParser {
 		}
 
 		// if no global position was published within the last second:
-		if((System.currentTimeMillis() - gpos_tms)>1000)
+		if((System.currentTimeMillis() - gpos_tms*1000)>1000)
 			model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
 
-		if((System.currentTimeMillis() - mocap_tms)>1000) {
+		if((System.currentTimeMillis() - mocap_tms*1000)>1000) {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
-			mocap_tms = System.currentTimeMillis();
 		}
 
 		if((System.currentTimeMillis() - rc_tms)>1000) {
@@ -975,12 +975,18 @@ public class MAVLinkToModelParser {
 		}
 	}
 
-
 	private synchronized void notifyStatusChange() {
-		if(!oldStatus.isEqual(model.sys) && (System.currentTimeMillis() - startUpAt)>2000) {
 
-			for(IMSPStatusChangedListener listener : modeListener)
-				listener.update(oldStatus, model.sys);
+		if(!model.sys.isEqual(oldStatus) && (System.currentTimeMillis() - startUpAt)>2000) {
+
+			ExecutorService.get().execute( new Runnable() {
+				final Status os = oldStatus.clone(); final Status ns = model.sys.clone();
+				public void run() {
+						//System.err.println("Notify"+os+"/"+ns);
+						for(IMSPStatusChangedListener listener : modeListener)
+							listener.update(os, ns);
+				}
+			});
 
 			if(model.sys.isStatusChanged(oldStatus,Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
@@ -989,5 +995,20 @@ public class MAVLinkToModelParser {
 
 		}
 	}
+
+
+//	private synchronized void notifyStatusChange() {
+//		if(!oldStatus.isEqual(model.sys) && (System.currentTimeMillis() - startUpAt)>2000) {
+//
+//			for(IMSPStatusChangedListener listener : modeListener)
+//				listener.update(oldStatus, model.sys);
+//
+//			if(model.sys.isStatusChanged(oldStatus,Status.MSP_ARMED))
+//				t_armed_start = System.currentTimeMillis();
+//
+//			oldStatus.set(model.sys);
+//
+//		}
+//	}
 
 }
