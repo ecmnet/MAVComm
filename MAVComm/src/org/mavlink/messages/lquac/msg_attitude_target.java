@@ -40,11 +40,11 @@ public class msg_attitude_target extends MAVLinkMessage {
    */
   public float body_roll_rate;
   /**
-   * Body roll rate in radians per second
+   * Body pitch rate in radians per second
    */
   public float body_pitch_rate;
   /**
-   * Body roll rate in radians per second
+   * Body yaw rate in radians per second
    */
   public float body_yaw_rate;
   /**

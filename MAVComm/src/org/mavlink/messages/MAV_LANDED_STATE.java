@@ -20,4 +20,12 @@ public interface MAV_LANDED_STATE {
      * MAV is in air
      */
     public final static int MAV_LANDED_STATE_IN_AIR = 2;
+    /**
+     * MAV currently taking off
+     */
+    public final static int MAV_LANDED_STATE_TAKEOFF = 3;
+    /**
+     * MAV currently landing
+     */
+    public final static int MAV_LANDED_STATE_LANDING = 4;
 }

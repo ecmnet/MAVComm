@@ -40,19 +40,14 @@ import java.util.Map;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
-import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
-import com.comino.mav.comm.serial.MAVSerialComm2;
-import com.comino.mav.comm.serial.MAVSerialComm3;
 import com.comino.mav.comm.serial.MAVSerialComm4;
-import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO2;
 import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO3;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -79,8 +74,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	protected   DataModel model = null;
 	protected   MAVUdpProxyNIO3 proxy = null;
-
-	private     boolean  isRunning = false;
 
 	private static final int BAUDRATE  = 921600;
 
@@ -188,18 +181,6 @@ public class MAVProxyController2 implements IMAVMSPController {
 		return true;
 	}
 
-
-	public boolean start() {
-		isRunning = true;
-		return true;
-	}
-
-
-	public boolean stop() {
-		isRunning = false;
-		return false;
-	}
-
 	@Override
 	public boolean close() {
 		proxy.close();
@@ -275,6 +256,13 @@ public class MAVProxyController2 implements IMAVMSPController {
 	@Override
 	public void enableFileLogging(boolean enable, String directory) {
 
+	}
+
+
+	@Override
+	public boolean start() {
+
+		return false;
 	}
 
 }

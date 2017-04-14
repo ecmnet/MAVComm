@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_gps_rtcm_data
- * WORK IN PROGRESS! RTCM message for injecting into the onboard GPS (used for DGPS)
+ * RTCM message for injecting into the onboard GPS (used for DGPS)
  **/
 public class msg_gps_rtcm_data extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_GPS_RTCM_DATA = 233;

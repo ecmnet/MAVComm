@@ -80,4 +80,8 @@ public interface MAV_AUTOPILOT {
      * ASLUAV autopilot -- http://www.asl.ethz.ch
      */
     public final static int MAV_AUTOPILOT_ASLUAV = 17;
+    /**
+     * SmartAP Autopilot - http://sky-drones.com
+     */
+    public final static int MAV_AUTOPILOT_SMARTAP = 18;
 }

@@ -698,7 +698,7 @@ public interface MAV_CMD {
      * PARAM 3 : 1: ground pressure calibration
      * PARAM 4 : 1: radio RC calibration, 2: RC trim calibration
      * PARAM 5 : 1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration
-     * PARAM 6 : 1: APM: compass/motor interference calibration / PX4: airspeed calibration
+     * PARAM 6 : 1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration
      * PARAM 7 : 1: ESC calibration, 3: barometer temperature calibration
      */
     public final static int MAV_CMD_PREFLIGHT_CALIBRATION = 241;

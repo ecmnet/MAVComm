@@ -53,7 +53,7 @@ public class msg_hil_gps extends MAVLinkMessage {
    */
   public int epv;
   /**
-   * GPS ground speed (m/s * 100). If unknown, set to: 65535
+   * GPS ground speed in cm/s. If unknown, set to: 65535
    */
   public int vel;
   /**

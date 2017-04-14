@@ -44,7 +44,7 @@ public class msg_camera_settings extends MAVLinkMessage {
    */
   public float iso_sensitivity;
   /**
-   * Color temperature in K
+   * Color temperature in degrees Kelvin
    */
   public float white_balance;
   /**

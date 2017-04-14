@@ -32,7 +32,7 @@ public class msg_battery_status extends MAVLinkMessage {
    */
   public long current_consumed;
   /**
-   * Consumed energy, in 100*Joules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate
+   * Consumed energy, in HectoJoules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate
    */
   public long energy_consumed;
   /**

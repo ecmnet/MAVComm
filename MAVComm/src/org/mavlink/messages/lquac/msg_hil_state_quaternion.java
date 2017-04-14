@@ -60,23 +60,23 @@ public class msg_hil_state_quaternion extends MAVLinkMessage {
    */
   public long alt;
   /**
-   * Ground X Speed (Latitude), expressed as m/s * 100
+   * Ground X Speed (Latitude), expressed as cm/s
    */
   public int vx;
   /**
-   * Ground Y Speed (Longitude), expressed as m/s * 100
+   * Ground Y Speed (Longitude), expressed as cm/s
    */
   public int vy;
   /**
-   * Ground Z Speed (Altitude), expressed as m/s * 100
+   * Ground Z Speed (Altitude), expressed as cm/s
    */
   public int vz;
   /**
-   * Indicated airspeed, expressed as m/s * 100
+   * Indicated airspeed, expressed as cm/s
    */
   public int ind_airspeed;
   /**
-   * True airspeed, expressed as m/s * 100
+   * True airspeed, expressed as cm/s
    */
   public int true_airspeed;
   /**

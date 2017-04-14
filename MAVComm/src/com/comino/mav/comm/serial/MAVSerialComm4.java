@@ -84,7 +84,7 @@ public class MAVSerialComm4 implements IMAVComm {
 	private static IMAVComm com = null;
 	MAVLinkMessage msg = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(65536);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
 	private int baudrate = 921600;
 
@@ -186,7 +186,7 @@ public class MAVSerialComm4 implements IMAVComm {
 						switch (serialEvent.getEventType()) {
 						case SerialPortEvent.RXCHAR:
 
-							rxBuffer.put(serialPort.readBytes(serialPort.getInputBufferBytesCount()));
+							rxBuffer.put(serialPort.readBytes());
 
 							rxBuffer.flip();
 							while(rxBuffer.hasRemaining())
