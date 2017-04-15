@@ -44,6 +44,8 @@ import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
+import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm2;
+import com.comino.mav.comm.serial.MAVSerialComm3;
 import com.comino.mav.comm.serial.MAVSerialComm4;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
@@ -97,10 +99,14 @@ public class MAVProxyController2 implements IMAVMSPController {
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
 			    comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
 			else
-				comm = MAVHighSpeedSerialComm.getInstance(model);
+				comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
 			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
-			System.out.println("Proxy Controller loaded ");
+
+//			proxy = new MAVUdpProxyNIO3("192.168.178.20",14550,"192.168.178.22",14555,comm);
+//			peerAddress = "192.168.178.20";
+
+			System.out.println("Proxy Controller loaded: "+peerAddress);
 
 		}
 		comm.addMAVLinkListener(proxy);

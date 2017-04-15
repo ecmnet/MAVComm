@@ -137,7 +137,7 @@ public class MAVSerialComm4 implements IMAVComm {
 				Thread.sleep(1000);
 			} catch (Exception e) {	}
 		}
-		System.out.println("Serial (2) port opened: "+port);
+		System.out.println("Serial port "+this.getClass().getSimpleName()+" opened: "+port);
 		return true;
 	}
 
@@ -279,7 +279,7 @@ public class MAVSerialComm4 implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm4(new DataModel(), 921600);
+		IMAVComm comm = new MAVSerialComm4(new DataModel(),921600);
 		comm.open();
 
 
@@ -298,29 +298,33 @@ public class MAVSerialComm4 implements IMAVComm {
 			while(true) {
 
 
-				msg_command_long cmd = new msg_command_long(255,1);
-				cmd.target_system = 1;
-				cmd.target_component = 1;
-				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
-				cmd.confirmation = 0;
+				//				msg_command_long cmd = new msg_command_long(255,1);
+				//				cmd.target_system = 1;
+				//				cmd.target_component = 1;
+				//				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
+				//				cmd.confirmation = 0;
+				//
+				//				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+				//				cmd.param2 = 2;
+				//
+				//
+				//				try {
+				//					comm.write(cmd);
+				//					System.out.println("Execute: "+cmd.toString());
+				//				} catch (IOException e1) {
+				//					System.err.println(e1.getMessage());
+				//				}
 
-				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
-				cmd.param2 = 2;
-
-
-				try {
-					comm.write(cmd);
-					System.out.println("Execute: "+cmd.toString());
-				} catch (IOException e1) {
-					System.err.println(e1.getMessage());
-				}
+				comm.getMavLinkMessageMap().forEach((a,b) -> {
+					System.out.println(b);
+				});
 
 				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
 				if(msg!=null)
 					System.out.println(msg.custom_mode);
 				//				//		comm.getModel().state.print("NED:");
-				//	System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
-				//   System.out.println("ANGLEX="+comm.model.attitude.aX+" ANGLEY="+comm.model.attitude.aY+" "+comm.model.sys.toString());
+				System.out.println("REM="+comm.getModel().battery.p+" VOLT="+comm.getModel().battery.b0+" CURRENT="+comm.getModel().battery.c0);
+				System.out.println("ANGLEX="+comm.getModel().attitude.p+" ANGLEY="+comm.getModel().attitude.r+" "+comm.getModel().sys.toString());
 				Thread.sleep(2000);
 			}
 
@@ -346,5 +350,6 @@ public class MAVSerialComm4 implements IMAVComm {
 
 
 	}
+
 
 }
