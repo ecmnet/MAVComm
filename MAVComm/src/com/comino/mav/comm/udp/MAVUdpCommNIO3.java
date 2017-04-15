@@ -104,7 +104,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	public boolean open() {
 
-		if(channel!=null && parser.isConnected()) {
+		if(channel!=null && channel.isOpen() && parser.isConnected()) {
 			isConnected = true;
 			return true;
 		}
@@ -116,9 +116,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
 			channel.connect(peerPort);
-
 			channel.configureBlocking(false);
-
 			selector = Selector.open();
 			channel.register(selector, SelectionKey.OP_READ);
 
@@ -130,9 +128,14 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			t.setDaemon(true);
 			t.start();
 			isConnected = true;
+			System.out.println();
 
 
 		} catch(Exception e) {
+			try {
+				channel.disconnect();
+				channel.close();
+			} catch (IOException e1) { }
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
 			isConnected = false;
 			return false;
@@ -152,7 +155,9 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 				msg_heartbeat hb = new msg_heartbeat(255,1);
 				hb.isValid = true;
 				write(hb);
-			}
+			} else
+				isConnected = false;
+
 
 			while(isConnected) {
 
@@ -184,6 +189,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			}
 
 		} catch(Exception e) {
+			System.err.print(".");
 			errors++;
 			rxBuffer.clear();
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
@@ -248,6 +254,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			if(selector!=null && selector.isOpen())
 				selector.close();
 			if (channel != null && channel.isOpen()) {
+				channel.disconnect();
 				channel.close();
 			}
 		} catch(Exception e) { }

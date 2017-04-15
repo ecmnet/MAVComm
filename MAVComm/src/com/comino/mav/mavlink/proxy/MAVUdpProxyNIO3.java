@@ -120,10 +120,14 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				Thread t = new Thread(this);
 				t.setName("Proxy worker");
 				t.start();
+				System.out.println();
 
 				return true;
 			} catch(Exception e) {
-				close();
+				try {
+					channel.disconnect();
+					channel.close();
+				} catch (IOException e1) { }
 				isConnected = false;
 			}
 		}
@@ -178,8 +182,8 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				msg_heartbeat hb = new msg_heartbeat(255,1);
 				hb.isValid = true;
 				comm.write(hb);
-			}
-
+			} else
+				isConnected = false;
 
 			while(isConnected) {
 
