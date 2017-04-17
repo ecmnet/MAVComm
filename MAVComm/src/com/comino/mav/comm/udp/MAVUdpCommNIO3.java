@@ -64,6 +64,9 @@ import com.comino.msp.utils.ExecutorService;
 
 public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
+	private static final int RECEIVE_BUFFER_SIZE = 512 * 1024;
+	private static final int SEND_BUFFER_SIZE    = 256 * 1024;
+
 
 	private DataModel 				model = null;
 
@@ -115,6 +118,8 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			channel = DatagramChannel.open();
 			channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
+			channel.socket().setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
+			channel.socket().setSendBufferSize(SEND_BUFFER_SIZE);
 			channel.connect(peerPort);
 			channel.configureBlocking(false);
 			selector = Selector.open();
