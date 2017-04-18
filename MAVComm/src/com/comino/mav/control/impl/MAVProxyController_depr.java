@@ -35,22 +35,22 @@
 package com.comino.mav.control.impl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
+import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
-import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm2;
-import com.comino.mav.comm.serial.MAVSerialComm3;
 import com.comino.mav.comm.serial.MAVSerialComm4;
-import com.comino.mav.comm.udp.MAVUdpCommNIO3;
+import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO3;
+import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -65,7 +65,9 @@ import com.comino.msp.model.segment.Status;
  * serial driver (currently RPi only)
  */
 
-public class MAVProxyController2 implements IMAVMSPController {
+public class MAVProxyController_depr implements IMAVMSPController {
+
+	private static final int BAUDRATE  = 921600;
 
 	protected String peerAddress = null;
 
@@ -73,56 +75,58 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	protected IMAVComm comm = null;
 
+	protected HashMap<Class<?>,IMAVLinkListener> listeners = null;
 
 	protected   DataModel model = null;
-	protected   MAVUdpProxyNIO3 proxy = null;
+	protected   MAVUdpProxyNIO proxy = null;
 
-	private static final int BAUDRATE  = 921600;
+	protected  int commError=0;
+
+	private     boolean  isRunning = false;
 
 	public static IMAVController getInstance() {
 		return controller;
 	}
 
 
-	public MAVProxyController2(boolean sitl) {
+	public MAVProxyController_depr(boolean sitl) {
 		controller = this;
 		model = new DataModel();
+		listeners = new HashMap<Class<?>,IMAVLinkListener>();
 
 		if(sitl) {
-			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14556, 14550);
-			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
+			comm = MAVUdpCommNIO2.getInstance(model, "127.0.0.1",14556, 14550);
+			comm.open();
+			proxy = new MAVUdpProxyNIO("127.0.0.1",14650,"0.0.0.0",14656);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller loaded (SITL) ");
 		}
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
+			    comm = MAVSerialComm4.getInstance(model,BAUDRATE, false);
 			else
-				comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
-			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
+				comm = MAVHighSpeedSerialComm.getInstance(model);
+			comm.open();
+			proxy = new MAVUdpProxyNIO("172.168.178.2",14550,"172.168.178.1",14555);
 			peerAddress = "172.168.178.2";
-
-//			proxy = new MAVUdpProxyNIO3("192.168.178.20",14550,"192.168.178.22",14555,comm);
-//			peerAddress = "192.168.178.20";
-
-			System.out.println("Proxy Controller loaded: "+peerAddress);
+			System.out.println("Proxy Controller loaded ");
 
 		}
 		comm.addMAVLinkListener(proxy);
-
-
 	}
 
 	@Override
 	public boolean sendMAVLinkMessage(MAVLinkMessage msg) {
 
+
 		try {
-			if(msg.sysId==2) {
+			if(msg.componentId==2) {
 				proxy.write(msg);
 			} else {
 				if(controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
 					comm.write(msg);
+					MSPLogger.getInstance().writeLocalDebugMsg("Execute: "+msg.toString());
 				} else {
 					System.out.println("Command rejected. No connection.");
 					return false;
@@ -130,8 +134,9 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 			}
 			return true;
-		} catch (Exception e1) {
-			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getClass().getSimpleName()+":"+e1.getMessage());
+		} catch (IOException e1) {
+			commError++;
+			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getMessage());
 			return false;
 		}
 
@@ -139,6 +144,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public boolean sendMAVLinkCmd(int command, float...params) {
+
 
 		msg_command_long cmd = new msg_command_long(255,1);
 		cmd.target_system = 1;
@@ -170,10 +176,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 	}
 
 	public void registerListener(Class<?> clazz, IMAVLinkListener listener) {
-		proxy.registerListener(clazz, listener);
+		listeners.put(clazz, listener);
 	}
-
-
 
 	public boolean isConnected() {
 		return proxy.isConnected() && comm.isConnected();
@@ -181,10 +185,25 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public boolean connect() {
-		proxy.close();proxy.open(); comm.open();
-		if(comm.isConnected())
-			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+		commError=0;
+		sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+		return proxy.open();
+	}
+
+
+	public boolean start() {
+		commError=0;
+		isRunning = true;
+		Thread worker = new Thread(new MAVLinkProxyWorker());
+		worker.setName("UDP Proxy worker");
+		worker.start();
 		return true;
+	}
+
+
+	public boolean stop() {
+		isRunning = false;
+		return false;
 	}
 
 	@Override
@@ -211,6 +230,88 @@ public class MAVProxyController2 implements IMAVMSPController {
 		return true;
 	}
 
+
+	private class MAVLinkProxyWorker implements Runnable {
+
+		public void run() {
+
+			System.out.println("Starting proxy thread..");
+			MAVLinkMessage msg = null;
+
+			while (isRunning) {
+				try {
+
+					Thread.yield();
+					if(proxy.getInputStream()!=null)
+					    msg = proxy.getInputStream().read();
+
+					if(msg!=null) {
+
+						IMAVLinkListener listener = listeners.get(msg.getClass());
+						if(listener!=null)
+							listener.received(msg);
+						else
+							comm.write(msg);
+					}
+
+				} catch (Exception e) {
+					commError++;
+				}
+			}
+		}
+	}
+
+
+	public static void main(String[] args) {
+
+
+		MAVProxyController_depr control = new MAVProxyController_depr(true);
+
+
+		// Example to execute MSP MAVLinkMessages via sendMSPLinkCommand(..)
+		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_msp_command hud = (msg_msp_command)o;
+				System.out.println("MSP Command "+hud.command+" executed");
+			}
+		});
+
+
+
+		control.start();
+
+		try {
+			Thread.sleep(5000);
+			if(!control.isConnected())
+				control.connect();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		while(true) {
+			try {
+				Thread.sleep(500);
+				if(!control.isConnected()) {
+					control.connect();
+
+
+				// Example to send MAVLinkMessages from MSP
+				//		           msg_msp_status sta = new msg_msp_status();
+				//		           sta.load = 50;
+				//		           control.proxy.write(sta);
+
+				}
+
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+
+
+
 	@Override
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
 		comm.addStatusChangeListener(listener);
@@ -224,6 +325,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public void addMAVMessageListener(IMAVMessageListener listener) {
+
 
 	}
 
@@ -240,10 +342,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 		msg.setText(m.msg);
 		msg.componentId = 1;
 		msg.severity =m.severity;
-		try {
-			proxy.write(msg);
-		} catch (IOException e) {
-		}
+		proxy.write(msg);
+
 	}
 
 
@@ -255,20 +355,13 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public int getErrorCount() {
-		return comm.getErrorCount();
+		return commError;
 	}
 
 
 	@Override
 	public void enableFileLogging(boolean enable, String directory) {
 
-	}
-
-
-	@Override
-	public boolean start() {
-
-		return false;
 	}
 
 }

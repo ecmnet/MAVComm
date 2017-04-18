@@ -31,27 +31,15 @@
  *
  ****************************************************************************/
 
-
 package com.comino.mav.comm.highspeedserial;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Map;
-import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.MAV_MODE_FLAG;
-import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
-import org.mavlink.messages.lquac.msg_serial_control;
-import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -61,46 +49,32 @@ import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
-import jssc.SerialPort;
-import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
-import jssc.SerialPortException;
-import jssc.SerialPortList;
+
+public class MAVHighSpeedSerialComm implements IMAVComm {
 
 
-public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 
-	//	private static final int BAUDRATE  = 57600
+	private SerialAMA0 			serialPort;
+	private String	        port;
 
-
-	private SerialAMA0 ama0     = null;
-	private String	            port;
-
-	private DataModel 		    model = null;
-
+	private DataModel 			model = null;
 
 	private MAVLinkToModelParser parser = null;
-	private MAVLinkReader2 reader;
 
 	private static IMAVComm com = null;
-	MAVLinkMessage msg = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
-	private boolean isRunning;
-
-	public static IMAVComm getInstance(DataModel model, int baudrate, boolean isUSB) {
+	public static IMAVComm getInstance(DataModel model) {
 		if(com==null)
-			com = new MAVHighSpeedSerialComm2(model, baudrate);
+			com = new MAVHighSpeedSerialComm(model);
 		return com;
 	}
 
-	private MAVHighSpeedSerialComm2(DataModel model, int baudrate) {
+	private MAVHighSpeedSerialComm(DataModel model) {
 		this.model = model; int i=0;
-		System.out.println("Searching ports... ");
-		SerialAMA0 ama0 = new SerialAMA0();
 
+		serialPort = new SerialAMA0();
 		parser = new MAVLinkToModelParser(model, this);
-		this.reader = new MAVLinkReader2(3, false);
+		parser.start(new HighSpeedSerialPortChannel(serialPort));
 
 	}
 
@@ -109,29 +83,10 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 	 */
 	@Override
 	public boolean open() {
-		isRunning = true;
-		ama0.open();
-		System.out.println("Serial (HighSpeed2) port opened: "+port);
+		serialPort.open();
+		System.out.println("HighSpeedSerialPort connected");
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
 		return true;
-	}
-
-	@Override
-	public void run() {
-		while(isRunning) {
-            if(ama0.getInputBufferBytesCount()>0) {
-            byte[] b = ama0.readBytes(ama0.getInputBufferBytesCount());
-            for(int i=0;i<b.length;i++)
-            	reader.readMavLinkMessageFromBuffer(b[i] & 0x00FF);
-            while(reader.nbUnreadMessages()>0)
-				try {
-					parser.parseMessage(reader.getNextMessage());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-            }
-            LockSupport.parkNanos(100000000);
-		}
 	}
 
 
@@ -144,6 +99,10 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 		return model;
 	}
 
+	@Override
+	public boolean isSerial() {
+		return true;
+	}
 
 	@Override
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap() {
@@ -155,21 +114,18 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 	 */
 	@Override
 	public void close() {
-		isRunning = false;
-		ama0.close();
+			serialPort.close();
 
 	}
-
 
 
 	/* (non-Javadoc)
 	 * @see com.comino.px4.control.serial.IPX4Comm#write(org.mavlink.messages.MAVLinkMessage)
 	 */
 	@Override
-	public  void write(MAVLinkMessage msg) throws IOException {
-		try {
-			ama0.writeBytes(msg.encode());
-		} catch (Exception e) { }
+	public void write(MAVLinkMessage msg) throws IOException {
+			serialPort.writeBytes(msg.encode());
+
 	}
 
 	@Override
@@ -183,6 +139,7 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 	public boolean isConnected() {
 		return true;
 	}
+
 
 	@Override
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
@@ -203,22 +160,14 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 	}
 
 	@Override
-	public boolean isSerial() {
-		return true;
-	}
-
-
-	@Override
 	public int getErrorCount() {
-		return reader.getLostPackages();
+		return 0;
 	}
-
-
 
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVHighSpeedSerialComm2(new DataModel(), 921600);
+		IMAVComm comm = new MAVHighSpeedSerialComm(new DataModel());
 		comm.open();
 
 
@@ -232,41 +181,43 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 			colService.start();
 
 
-			//	while(System.currentTimeMillis()< (time+30000)) {
+		//	while(System.currentTimeMillis()< (time+30000)) {
 
 			while(true) {
 
 
-				msg_command_long cmd = new msg_command_long(255,1);
-				cmd.target_system = 1;
-				cmd.target_component = 1;
-				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
-				cmd.confirmation = 0;
-
-				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
-				cmd.param2 = 2;
-
-
-				try {
-					comm.write(cmd);
-					System.out.println("Execute: "+cmd.toString());
-				} catch (IOException e1) {
-					System.err.println(e1.getMessage());
-				}
+//				msg_command_long cmd = new msg_command_long(255,1);
+//				cmd.target_system = 1;
+//				cmd.target_component = 1;
+//				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
+//				cmd.confirmation = 0;
+//
+//				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+//				cmd.param2 = 2;
+//
+//
+//				try {
+//					comm.write(cmd);
+//					System.out.println("Execute: "+cmd.toString());
+//				} catch (IOException e1) {
+//				    System.err.println(e1.getMessage());
+//				}
 
 				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
-				if(msg!=null)
-					System.out.println(msg.custom_mode);
-				//				//		comm.getModel().state.print("NED:");
+
+//				if(msg!=null)
+//					System.out.println(msg.toString());
+//			      System.out.println(msg.custom_mode);
+//				//		comm.getModel().state.print("NED:");
 				//	System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
 				//   System.out.println("ANGLEX="+comm.model.attitude.aX+" ANGLEY="+comm.model.attitude.aY+" "+comm.model.sys.toString());
-				Thread.sleep(2000);
+				Thread.sleep(50);
 			}
 
-			//			colService.stop();
-			//			comm.close();
-			//
-			//			System.out.println(colService.getModelList().size()+" models collected");
+//			colService.stop();
+//			comm.close();
+//
+//			System.out.println(colService.getModelList().size()+" models collected");
 
 
 			//			for(int i=0;i<colService.getModelList().size();i++) {
@@ -285,6 +236,7 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 
 
 	}
+
 
 
 }

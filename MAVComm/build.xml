@@ -103,12 +103,12 @@
 	</target>
 
 	<target name="raspberry" description="Copy build to raspberry">
-		<copy todir="${deploy.dir}/slam">
+		<copy todir="${deploy.dir}">
 			<fileset dir="${dis.dir}/" />
 		</copy>
 		<buildnumber />
 		<echo>Current build number:${build.number}</echo>
-		<propertyfile file="${deploy.dir}/msp.properties">
+		<propertyfile file="${deploy.dir}/resources/msp.properties">
 			<entry key="build" value="${build.number}" />
 		</propertyfile>
 	</target>

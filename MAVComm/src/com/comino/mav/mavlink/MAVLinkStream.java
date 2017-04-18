@@ -41,6 +41,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.ByteChannel;
 import java.util.concurrent.locks.LockSupport;
 
+import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 
 

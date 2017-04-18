@@ -32,44 +32,67 @@
  ****************************************************************************/
 
 
-package com.comino.mav.control.impl;
+package com.comino.mav.comm.serial;
 
-import com.comino.mav.comm.serial.MAVSerialComm3;
-import com.comino.mav.control.IMAVController;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.ByteChannel;
 
-/*
- * Direct serial controller up to 115200 baud for telem1 connections e.g. Radio
- */
-
-public class MAVSerialController extends MAVController implements IMAVController {
+import jssc.SerialPort;
+import jssc.SerialPortException;
 
 
-	public MAVSerialController() {
-		super();
-		System.out.println("Serial Controller loaded");
-		comm = MAVSerialComm3.getInstance(model,2000000, true);
+public class SerialPortChannel_depr implements ByteChannel {
 
-	}
+	private final SerialPort serialPort;
 
-	@Override
-	public boolean connect() {
-		return comm.open();
-	}
+    public SerialPortChannel_depr(SerialPort serialPort) {
+        this.serialPort = serialPort;
+    }
 
-	@Override
-	public boolean isSimulation() {
-		return false;
-	}
+    @Override
+    public int read(ByteBuffer buffer) throws IOException {
+        try {
+            int available = serialPort.getInputBufferBytesCount();
+            if (available <= 0) {
+                return 0;
+            }
+            byte[] b = serialPort.readBytes(Math.min(available, buffer.remaining()));
+            if (b != null) {
+                buffer.put(b);
+                return b.length;
+            } else {
+                return 0;
+            }
+        } catch (SerialPortException e) {
+        	System.err.println(e.getMessage());
+            throw new IOException(e);
+        }
+    }
 
-	@Override
-	public boolean isConnected() {
-		return comm.isConnected();
-	}
+    @Override
+    public int write(ByteBuffer buffer) throws IOException {
+        try {
+            byte[] b = new byte[buffer.remaining()];
+            buffer.get(b);
+            return serialPort.writeBytes(b) ? b.length : 0;
+        } catch (SerialPortException e) {
+        	System.err.println(e.getMessage());
+            throw new IOException(e);
+        }
+    }
 
-	@Override
-	public boolean close() {
-		comm.close();
-		return true;
-	}
+    @Override
+    public boolean isOpen() {
+        return serialPort.isOpened();
+    }
 
+    @Override
+    public void close() throws IOException {
+        try {
+            serialPort.closePort();
+        } catch (SerialPortException e) {
+            throw new IOException(e);
+        }
+    }
 }

@@ -53,7 +53,11 @@ public class MAVLinkReader2 {
 
 	private t_parser_state state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 
-	private volatile RxMsg rxmsg      = null;
+	private RxMsg rxmsg      = new RxMsg();
+	private RxMsg rxmsg_last = new RxMsg();
+
+
+	private DataInputStream dis = null;
 
 	//public final static int RECEIVED_OFFSET = 10;
 
@@ -63,7 +67,6 @@ public class MAVLinkReader2 {
 	private final int[] lastPacket = new int[256];
 
 	private int packet_lost=0;
-	private int packet_count=0;
 
 	/**
 	 * MAVLink messages received
@@ -74,17 +77,16 @@ public class MAVLinkReader2 {
 	private boolean noCRCCheck = false;
 
 
-
 	public MAVLinkReader2(int id) {
 		this(id,false);
 	}
 
 	public MAVLinkReader2(int id, boolean noCRCCheck) {
 		this.noCRCCheck = noCRCCheck;
+		this.dis = null;
 		for (int i = 0; i < lastPacket.length; i++) {
 			lastPacket[i] = -1;
 		}
-		this.rxmsg = new RxMsg();
 		System.out.println("MAVLinkReader2 "+id+" started with debug="+noCRCCheck);
 	}
 
@@ -124,8 +126,13 @@ public class MAVLinkReader2 {
 		return msg;
 	}
 
-	public boolean readMavLinkMessageFromBuffer(int c) {
+
+
+	public  boolean readMavLinkMessageFromBuffer(int v) {
 		try {
+
+			int c = (v & 0x00FF);
+			//	System.out.println(state+":"+byteToHex(c));
 
 			switch(state) {
 			case MAVLINK_PARSE_STATE_IDLE:
@@ -133,7 +140,6 @@ public class MAVLinkReader2 {
 					rxmsg.clear();
 					rxmsg.start = IMAVLinkMessage.MAVPROT_PACKET_START_V20;
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_STX;
-					return true;
 				}
 				if((byte)c==IMAVLinkMessage.MAVPROT_PACKET_START_V10) {
 					rxmsg.clear();
@@ -205,6 +211,7 @@ public class MAVLinkReader2 {
 					if (IMAVLinkCRC.MAVLINK_EXTRA_CRC)
 						rxmsg.crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[rxmsg.msgId], rxmsg.crc);
 				} catch(Exception e) {
+
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1;
 				}
 
@@ -218,11 +225,11 @@ public class MAVLinkReader2 {
 				if ((state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != (rxmsg.crc >> 8 & 0x00FF)) && !noCRCCheck) {
 
 					// CRC workaraounds
-					if(rxmsg.msgId == 36 || rxmsg.msgId == 111 || rxmsg.msgId == 140 || rxmsg.msgId == 74  || rxmsg.msgId == 85
-							 || rxmsg.msgId == 83 )
+					if(rxmsg.msgId == 36 || rxmsg.msgId == 140)
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
 					else {
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
+						//System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
 					}
 				}
 				else
@@ -237,23 +244,18 @@ public class MAVLinkReader2 {
 				}  else {
 					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				}
-
+				//state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				if(rxmsg.msg_received == mavlink_framing_t.MAVLINK_FRAMING_OK) {
 					MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
 					if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 						msg.isValid = true;
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
-						packet_count++;
 						//System.out.println("added: "+rxmsg.packet+":"+msg);
-					} else {
+					} else
 						packet_lost++;
-					//	System.out.println("Sequence: "+rxmsg.msgId+":"+rxmsg.len);
-					}
-				} else {
+				} else
 					packet_lost++;
-				//	System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
-				}
 				break;
 
 			case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
@@ -268,8 +270,7 @@ public class MAVLinkReader2 {
 						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 							msg.packet = rxmsg.packet;
 							packets.addElement(msg);
-							packet_count++;
-						//	System.out.println("added: "+rxmsg.packet+":"+msg);
+							//System.out.println("added: "+rxmsg.packet+":"+msg);
 						} else {
 							packet_lost++;
 						}
@@ -278,9 +279,9 @@ public class MAVLinkReader2 {
 					}
 				}
 				break;
-			default:
+			default: break;
 			}
-			return false;
+			return true;
 		} catch(Exception io) {
 			io.printStackTrace();
 			state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
@@ -290,10 +291,6 @@ public class MAVLinkReader2 {
 
 	public int getLostPackages() {
 		return packet_lost;
-	}
-
-	public int getTotalPackages() {
-		return packet_count;
 	}
 
 

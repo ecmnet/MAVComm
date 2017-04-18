@@ -54,7 +54,7 @@ public class StartUp implements Runnable {
 
 	public StartUp(String[] args) {
 
-		config  = MSPConfig.getInstance("msp.properties");
+		config  = MSPConfig.getInstance("home/pi","msp.properties");
 		System.out.println("MSPService version "+config.getVersion());
 
 		if(args.length>0)

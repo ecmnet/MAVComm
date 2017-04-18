@@ -263,10 +263,4 @@ public class MAVUdpCommNIO implements IMAVComm {
 		parser.writeMessage(m);
 
 	}
-
-	@Override
-	public int getTotalPackageCount() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }
