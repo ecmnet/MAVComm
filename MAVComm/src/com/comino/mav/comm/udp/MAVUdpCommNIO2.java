@@ -45,11 +45,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
@@ -193,6 +193,11 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 	@Override
 	public int getErrorCount() {
 		return errors;
+	}
+
+	@Override
+	public int getTotalPackageCount() {
+		return 0;
 	}
 
 

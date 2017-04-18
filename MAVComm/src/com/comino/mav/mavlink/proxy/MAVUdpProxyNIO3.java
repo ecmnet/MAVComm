@@ -47,16 +47,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 
 public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
+
+	private static final int RECEIVE_BUFFER_SIZE = 512 * 1024;
+	private static final int SEND_BUFFER_SIZE    = 256 * 1024;
 
 	private SocketAddress 			bindPort = null;
 	private SocketAddress 			peerPort;
@@ -90,7 +93,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 		listeners = new HashMap<Class<?>,List<IMAVLinkListener>>();
 
-		System.out.println("Proxy (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
+		System.out.println("Proxy (NIO3): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
 	}
 
@@ -109,6 +112,8 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
 					channel.socket().setTrafficClass(0x10);
+					channel.socket().setReceiveBufferSize(RECEIVE_BUFFER_SIZE);
+					channel.socket().setSendBufferSize(SEND_BUFFER_SIZE);
 					channel.configureBlocking(false);
 
 				} catch (IOException e) {

@@ -3,9 +3,10 @@ package com.comino.msp.main;
 import java.io.IOException;
 
 import org.mavlink.IMAVLinkCRC;
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_logging_data_acked;
+
+import com.comino.mav.mavlink.MAVLinkReader;
 
 public class LoggingTest {
 

@@ -47,11 +47,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 
 

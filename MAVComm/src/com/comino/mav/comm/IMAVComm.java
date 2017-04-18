@@ -69,6 +69,8 @@ public interface IMAVComm {
 
 	public int getErrorCount();
 
+	public int getTotalPackageCount();
+
 	public void writeMessage(LogMessage m);
 
 

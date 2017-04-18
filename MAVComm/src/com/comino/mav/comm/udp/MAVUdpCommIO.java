@@ -242,6 +242,11 @@ public class MAVUdpCommIO implements IMAVComm {
 	}
 
 	@Override
+	public int getTotalPackageCount() {
+		return 0;
+	}
+
+	@Override
 	public void writeMessage(LogMessage m) {
 		parser.writeMessage(m);
 

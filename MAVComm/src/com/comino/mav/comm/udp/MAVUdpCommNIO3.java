@@ -45,11 +45,11 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -254,6 +254,11 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		return model;
 	}
 
+	@Override
+	public int getTotalPackageCount() {
+		return reader.getTotalPackages();
+	}
+
 	public void close() {
 		try {
 			if(selector!=null && selector.isOpen())
@@ -272,7 +277,6 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();
-
 
 
 		long time = System.currentTimeMillis();

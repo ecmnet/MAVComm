@@ -36,18 +36,11 @@ package com.comino.mav.comm.serial;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.MAV_MODE_FLAG;
-import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
-import org.mavlink.messages.lquac.msg_serial_control;
-import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkReader2;
@@ -62,7 +55,6 @@ import com.comino.msp.model.segment.Status;
 
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 
@@ -116,7 +108,6 @@ public class MAVSerialComm4 implements IMAVComm {
 		serialPort = new SerialPort(port);
 		parser = new MAVLinkToModelParser(model, this);
 		this.reader = new MAVLinkReader2(3, false);
-
 	}
 
 	/* (non-Javadoc)
@@ -137,7 +128,7 @@ public class MAVSerialComm4 implements IMAVComm {
 				Thread.sleep(1000);
 			} catch (Exception e) {	}
 		}
-		System.out.println("Serial port "+this.getClass().getSimpleName()+" opened: "+port);
+		System.out.println("Serial port "+this.getClass().getSimpleName()+" opened: "+port+" with "+baudrate+" baud");
 		return true;
 	}
 
@@ -178,26 +169,39 @@ public class MAVSerialComm4 implements IMAVComm {
 			serialPort.openPort();
 			serialPort.setParams(baudRate, dataBits, stopBits, parity);
 
+
+			Thread worker = new Thread(() -> {
+				while(serialPort.isOpened()) {
+					try {
+						LockSupport.park(this);
+						while((msg=reader.getNextMessage())!=null)
+							parser.parseMessage(msg);
+					} catch(Exception e) {
+						System.err.println(e.getMessage());
+					}
+				}
+			});
+			worker.setName("Serial Worker");
+			worker.start();
+
 			int eventMask = SerialPort.MASK_RXCHAR;
 			try {
 				serialPort.addEventListener((serialEvent) -> {
-
 					try {
 						switch (serialEvent.getEventType()) {
 						case SerialPortEvent.RXCHAR:
+							int len = serialPort.getInputBufferBytesCount();
+							if(len> 0) {
+								rxBuffer.put(serialPort.readBytes());
+								rxBuffer.flip();
+								while(rxBuffer.hasRemaining())
+									reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x000000FF);
+								rxBuffer.compact();
 
-							rxBuffer.put(serialPort.readBytes());
-
-							rxBuffer.flip();
-							while(rxBuffer.hasRemaining())
-								reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
-							rxBuffer.compact();
-
-							while((msg=reader.getNextMessage())!=null)
-								parser.parseMessage(msg);
-
+								if(reader.nbUnreadMessages()>0)
+									LockSupport.unpark(worker);
+							}
 							break;
-
 						}
 					} catch (Exception e) {
 						System.err.println(e.getMessage());
@@ -248,18 +252,15 @@ public class MAVSerialComm4 implements IMAVComm {
 	@Override
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
 		parser.addStatusChangeListener(listener);
-
 	}
 
 	@Override
 	public void addMAVMessageListener(IMAVMessageListener listener) {
 		parser.addMAVMessagekListener(listener);
-
 	}
 
 	@Override
 	public void writeMessage(LogMessage m) {
-
 
 	}
 
@@ -274,23 +275,19 @@ public class MAVSerialComm4 implements IMAVComm {
 		return reader.getLostPackages();
 	}
 
-
-
+	@Override
+	public int getTotalPackageCount() {
+		return reader.getTotalPackages();
+	}
 
 
 	public static void main(String[] args) {
 		IMAVComm comm = new MAVSerialComm4(new DataModel(),921600);
 		comm.open();
 
-
 		long time = System.currentTimeMillis();
 
-
 		try {
-
-
-			ModelCollectorService colService = new ModelCollectorService(comm.getModel());
-			colService.start();
 
 
 			//	while(System.currentTimeMillis()< (time+30000)) {
@@ -298,46 +295,16 @@ public class MAVSerialComm4 implements IMAVComm {
 			while(true) {
 
 
-				//				msg_command_long cmd = new msg_command_long(255,1);
-				//				cmd.target_system = 1;
-				//				cmd.target_component = 1;
-				//				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
-				//				cmd.confirmation = 0;
-				//
-				//				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
-				//				cmd.param2 = 2;
-				//
-				//
-				//				try {
-				//					comm.write(cmd);
-				//					System.out.println("Execute: "+cmd.toString());
-				//				} catch (IOException e1) {
-				//					System.err.println(e1.getMessage());
-				//				}
+				//				comm.getMavLinkMessageMap().forEach((a,b) -> {
+				//					System.out.println(b);
+				//				});
 
-				comm.getMavLinkMessageMap().forEach((a,b) -> {
-					System.out.println(b);
-				});
-
-				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
-				if(msg!=null)
-					System.out.println(msg.custom_mode);
-				//				//		comm.getModel().state.print("NED:");
-				System.out.println("REM="+comm.getModel().battery.p+" VOLT="+comm.getModel().battery.b0+" CURRENT="+comm.getModel().battery.c0);
-				System.out.println("ANGLEX="+comm.getModel().attitude.p+" ANGLEY="+comm.getModel().attitude.r+" "+comm.getModel().sys.toString());
+				//				System.out.println("REM="+comm.getModel().battery.p+" VOLT="+comm.getModel().battery.b0+" CURRENT="+comm.getModel().battery.c0);
+				//				System.out.println("ANGLEX="+comm.getModel().attitude.p+" ANGLEY="+comm.getModel().attitude.r+" "+comm.getModel().sys.toString());
 				Thread.sleep(2000);
+				System.out.println("Lost: "+comm.getErrorCount()+" of "+comm.getTotalPackageCount());
 			}
 
-			//			colService.stop();
-			//			comm.close();
-			//
-			//			System.out.println(colService.getModelList().size()+" models collected");
-
-
-			//			for(int i=0;i<colService.getModelList().size();i++) {
-			//				DataModel m = colService.getModelList().get(i);
-			//				System.out.println(m.attitude.aX);
-			//			}
 
 
 		} catch (Exception e) {
@@ -350,6 +317,7 @@ public class MAVSerialComm4 implements IMAVComm {
 
 
 	}
+
 
 
 }

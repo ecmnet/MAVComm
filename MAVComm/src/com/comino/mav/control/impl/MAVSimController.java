@@ -141,11 +141,6 @@ public class MAVSimController extends MAVController implements IMAVController {
 		public void run() {
 			model.battery.b0 = 12.75f - count/500f;
 
-			model.base.latitude = 48;
-			model.base.longitude = 11;
-			model.base.altitude = 520;
-			model.base.numsat = 9;
-
 			count++;
 			if(model.state.l_z > -5.0f)
 				model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
@@ -168,9 +163,11 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 			model.sys.setStatus(Status.MSP_LANDED, true);
 
-			model.gps.latitude = 47.37174f;
-			model.gps.longitude = 8.54226f;
-			model.gps.numsat = 8;
+			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, true);
+			model.gps.latitude = model.base.latitude+(float)Math.random()*0.0000003f;
+			model.gps.longitude = model.base.longitude+(float)Math.random()*0.0000003f;
+			model.gps.fixtype = model.base.fixtype;
+			model.gps.numsat = model.base.numsat;
 
 			model.slam.pd = MSPMathUtils.toRad(count % 360);
 			model.slam.pv = 1 + (float)Math.random()*0.3f;

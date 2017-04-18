@@ -43,6 +43,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Map;
 import java.util.Properties;
 
 public class MSPConfig {
@@ -67,7 +68,6 @@ public class MSPConfig {
 		this.fileName = filename;
 		this.prop = new Properties();
 		System.out.println();
-		System.out.println("Initializing ("+filename+")...");
 		refreshProperties();
 		this.version = prop.getProperty("build","tmp");
 	}
@@ -79,21 +79,22 @@ public class MSPConfig {
 
 	public void flushToDisk() throws IOException {
 		URL url = getClass().getClassLoader().getResource(fileName);
-		FileOutputStream file;
-		file = new FileOutputStream(url.getFile());
+		FileOutputStream file = new FileOutputStream(url.getFile());
 		prop.store(file,new Date().toString());
 		file.close();
 	}
 
 	public MSPConfig refreshProperties() {
+		String path = System.getProperty("user.dir")+"/"+fileName;
+		System.out.println("Initializing ("+fileName+")...");
 		try {
-			InputStream propStream = new FileInputStream("/home/up/"+fileName);
+			InputStream propStream = new FileInputStream(path);
 			if(propStream!=null) {
 				prop.load(propStream);
 			    propStream.close();
 			}
-		} catch(IOException io ) {
-			System.err.println("Configuration file'"+fileName+"' not found.");
+		} catch(Exception io ) {
+			System.err.println("Configuration file'"+path+"' not found.");
 		}
 		return this;
 	}

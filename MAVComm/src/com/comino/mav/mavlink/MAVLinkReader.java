@@ -1,4 +1,4 @@
-package org.mavlink;
+package com.comino.mav.mavlink;
 
 
 
@@ -10,6 +10,9 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Vector;
 
+import org.mavlink.IMAVLinkCRC;
+import org.mavlink.IMAVLinkMessage;
+import org.mavlink.MAVLinkCRC;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAVLinkMessageFactory;
 
@@ -310,6 +313,14 @@ public class MAVLinkReader {
 		}
 
 		return validData;
+	}
+
+	public int getLostPackages() {
+		return lostBytes;
+	}
+
+	public int getTotalPackages() {
+		return packets.size();
 	}
 
 	/**

@@ -41,7 +41,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -51,6 +50,7 @@ import org.mavlink.messages.lquac.msg_serial_control;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
@@ -130,7 +130,7 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 					e.printStackTrace();
 				}
             }
-            LockSupport.parkNanos(100000000);
+            LockSupport.parkNanos(10000000);
 		}
 	}
 
@@ -284,6 +284,12 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 
 
 
+	}
+
+	@Override
+	public int getTotalPackageCount() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 
