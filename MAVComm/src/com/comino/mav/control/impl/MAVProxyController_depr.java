@@ -46,11 +46,11 @@ import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
+import com.comino.mav.comm.proxy.MAVUdpProxyNIO;
 import com.comino.mav.comm.serial.MAVSerialComm4;
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.mav.mavlink.proxy.MAVUdpProxyNIO;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;

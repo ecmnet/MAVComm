@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 
-package com.comino.mav.mavlink.proxy;
+package com.comino.mav.comm.proxy;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -90,7 +90,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 		listeners = new HashMap<Class<?>,List<IMAVLinkListener>>();
 
-		System.out.println("Proxy (NIO2): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
+		System.out.println("Proxy (NIO3): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
 
 	}
 

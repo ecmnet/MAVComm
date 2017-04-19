@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 
-package com.comino.mav.mavlink.proxy;
+package com.comino.mav.comm.proxy;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
