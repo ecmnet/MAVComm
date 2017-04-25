@@ -109,6 +109,8 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
 					channel.socket().setTrafficClass(0x10);
+					channel.socket().setBroadcast(true);
+					channel.socket().setSendBufferSize(256*1024);
 					channel.configureBlocking(false);
 
 				} catch (IOException e) {
@@ -203,20 +205,19 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 					if (key.isReadable()) {
 						try {
 							if(channel.isConnected() && channel.receive(rxBuffer)!=null) {
-								if(rxBuffer.position()>12) {
+								if(rxBuffer.position()>0) {
 									rxBuffer.flip();
 									while(rxBuffer.hasRemaining())
 										reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
+
 									while((msg=reader.getNextMessage())!=null) {
 										listener_list = listeners.get(msg.getClass());
 										if(listener_list!=null) {
 											for(IMAVLinkListener listener : listener_list)
 												listener.received(msg);
 										}
-										 {
 											if(comm.isConnected())
 												comm.write(msg);
-										}
 									}
 									rxBuffer.compact();
 								}
