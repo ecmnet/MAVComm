@@ -54,7 +54,6 @@ public class Hud extends Segment {
 	public float s    	= Float.NaN;	// ground speed
 	public float vs     = Float.NaN;    // vertical speed
 	public float as     = Float.NaN;    // airspeed
-	public float th     = Float.NaN;	// throttle (0..1)
 
 
 	public void set(Hud a) {
@@ -70,7 +69,6 @@ public class Hud extends Segment {
 		bc      = a.bc;
 		as      = a.as;
 		ap      = a.ap;
-		th      = a.th;
 
 	}
 
@@ -96,7 +94,6 @@ public class Hud extends Segment {
 		bc      = 0;
 		as      = 0;
 		ap      = 0;
-		th      = 0;
 	}
 
 }
