@@ -58,8 +58,9 @@ public class SerialAMA0 {
 	}
 
 	public void open() {
+		try {
 		DLibrary.INSTANCE.openAMA0(921600);
-		//DLibrary.INSTANCE.openAMA0(57600);
+		} catch(Exception e) { e.printStackTrace(); }
 		System.out.println("SerialAMA0 opened");
 	}
 

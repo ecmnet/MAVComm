@@ -96,7 +96,7 @@ public class MAVController implements IMAVController, Runnable {
 		collector = new ModelCollectorService(model);
 	}
 
-	public void enableFileLogging(boolean enable, String directory_name) {
+	public String enableFileLogging(boolean enable, String directory_name) {
 		this.file_log_enabled = enable;
 		if(enable) {
 			if(directory_name==null)
@@ -108,21 +108,21 @@ public class MAVController implements IMAVController, Runnable {
 				else {
 					file_log_enabled = false;
 					System.out.println("No logging to file: Could not create directory "+directory_name);
-					return;
+					return null;
 				}
 			}
 			// create file, if it does not exist
 			SimpleDateFormat sdfFile = new SimpleDateFormat("yyyy-MM-dd_HHmmss");
-			this.filename = directory_name +"/msplog_"+sdfFile.format(new Date());
+			this.filename = directory_name +"/msplog_"+sdfFile.format(new Date())+".log";
 			System.out.println("Logging to: "+filename);
 
 			try {
-				FileOutputStream fos_log  = new FileOutputStream(filename + ".log");
+				FileOutputStream fos_log  = new FileOutputStream(filename);
 				ps_log = new PrintStream(fos_log);
 			} catch (FileNotFoundException e) {
 				System.out.println("No logging to file: Error creating log file.");
 				file_log_enabled = false;
-				return;
+				return null;
 			}
 
 			addMAVMessageListener((msg) -> {
@@ -130,7 +130,9 @@ public class MAVController implements IMAVController, Runnable {
 			});
 
 			ExecutorService.get().schedule(this, 10, TimeUnit.SECONDS);
+			return this.filename;
 		}
+		return null;
 	}
 
 

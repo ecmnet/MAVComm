@@ -83,7 +83,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	private static MAVUdpCommNIO3 com = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(512*1024);
 
 	public static MAVUdpCommNIO3 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
@@ -115,6 +115,8 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			channel = DatagramChannel.open();
 			channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
+			channel.socket().setBroadcast(true);
+			channel.socket().setReceiveBufferSize(512*1024);
 			channel.connect(peerPort);
 			channel.configureBlocking(false);
 			selector = Selector.open();

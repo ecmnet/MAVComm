@@ -97,7 +97,8 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 	private MAVHighSpeedSerialComm2(DataModel model, int baudrate) {
 		this.model = model; int i=0;
 		System.out.println("Searching ports... ");
-		SerialAMA0 ama0 = new SerialAMA0();
+		ama0 = new SerialAMA0();
+		port = "AMA0";
 
 		parser = new MAVLinkToModelParser(model, this);
 		this.reader = new MAVLinkReader2(3, false);
@@ -113,24 +114,31 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 		ama0.open();
 		System.out.println("Serial (HighSpeed2) port opened: "+port);
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
+		new Thread(this).start();
 		return true;
 	}
 
 	@Override
 	public void run() {
+		int len=0;
 		while(isRunning) {
-            if(ama0.getInputBufferBytesCount()>0) {
-            byte[] b = ama0.readBytes(ama0.getInputBufferBytesCount());
-            for(int i=0;i<b.length;i++)
-            	reader.readMavLinkMessageFromBuffer(b[i] & 0x00FF);
-            while(reader.nbUnreadMessages()>0)
-				try {
-					parser.parseMessage(reader.getNextMessage());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			len = ama0.getInputBufferBytesCount();
+            if(len>0) {
+            	rxBuffer.put(ama0.readBytes(len),0,len);
+
+
+            	rxBuffer.flip();
+				while(rxBuffer.hasRemaining())
+					reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
+				rxBuffer.compact();
+
+				while((msg=reader.getNextMessage())!=null)
+					try {
+						parser.parseMessage(msg);
+					} catch (IOException e) {
+					}
             }
-            LockSupport.parkNanos(100000000);
+            LockSupport.parkNanos(1000000);
 		}
 	}
 
@@ -228,8 +236,7 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 		try {
 
 
-			ModelCollectorService colService = new ModelCollectorService(comm.getModel());
-			colService.start();
+//			3
 
 
 			//	while(System.currentTimeMillis()< (time+30000)) {
@@ -237,29 +244,29 @@ public class MAVHighSpeedSerialComm2 implements IMAVComm, Runnable {
 			while(true) {
 
 
-				msg_command_long cmd = new msg_command_long(255,1);
-				cmd.target_system = 1;
-				cmd.target_component = 1;
-				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
-				cmd.confirmation = 0;
-
-				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
-				cmd.param2 = 2;
-
-
-				try {
-					comm.write(cmd);
-					System.out.println("Execute: "+cmd.toString());
-				} catch (IOException e1) {
-					System.err.println(e1.getMessage());
-				}
+//				msg_command_long cmd = new msg_command_long(255,1);
+//				cmd.target_system = 1;
+//				cmd.target_component = 1;
+//				cmd.command = MAV_CMD.MAV_CMD_DO_SET_MODE;
+//				cmd.confirmation = 0;
+//
+//				cmd.param1 = MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+//				cmd.param2 = 2;
+//
+//
+//				try {
+//					comm.write(cmd);
+//					System.out.println("Execute: "+cmd.toString());
+//				} catch (IOException e1) {
+//					System.err.println(e1.getMessage());
+//				}
 
 				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
 				if(msg!=null)
 					System.out.println(msg.custom_mode);
 				//				//		comm.getModel().state.print("NED:");
 				//	System.out.println("REM="+comm.model.battery.p+" VOLT="+comm.model.battery.b0+" CURRENT="+comm.model.battery.c0);
-				//   System.out.println("ANGLEX="+comm.model.attitude.aX+" ANGLEY="+comm.model.attitude.aY+" "+comm.model.sys.toString());
+				  System.out.println("ANGLEX="+comm.getModel().attitude.p+" ANGLEY="+comm.getModel().attitude.r+" "+comm.getModel().sys.toString());
 				Thread.sleep(2000);
 			}
 

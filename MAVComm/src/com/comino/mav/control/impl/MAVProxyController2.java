@@ -99,7 +99,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
 			    comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
 			else
-				comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
+				 comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
+		//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
 			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
 
@@ -260,8 +261,8 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 
 	@Override
-	public void enableFileLogging(boolean enable, String directory) {
-
+	public String enableFileLogging(boolean enable, String directory) {
+       return null;
 	}
 
 

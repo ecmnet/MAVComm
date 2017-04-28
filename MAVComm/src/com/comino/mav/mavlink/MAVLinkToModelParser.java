@@ -223,6 +223,7 @@ public class MAVLinkToModelParser {
 				model.hud.s  = hud.groundspeed;
 				model.hud.vs = hud.climb;
 				model.hud.as = hud.airspeed;
+				model.hud.th = hud.throttle/100f;
 			}
 		});
 

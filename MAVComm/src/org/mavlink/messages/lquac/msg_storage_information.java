@@ -24,7 +24,7 @@ public class msg_storage_information extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_STORAGE_INFORMATION;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 26;
+    payload_length = 27;
 }
 
   /**
@@ -52,9 +52,13 @@ public class msg_storage_information extends MAVLinkMessage {
    */
   public float write_speed;
   /**
-   * Storage ID if there are multiple
+   * Storage ID (1 for first, 2 for second, etc.)
    */
   public int storage_id;
+  /**
+   * Number of storage devices
+   */
+  public int storage_count;
   /**
    * Status of storage (0 not available, 1 unformatted, 2 formatted)
    */
@@ -70,13 +74,14 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   read_speed = (float)dis.readFloat();
   write_speed = (float)dis.readFloat();
   storage_id = (int)dis.readUnsignedByte()&0x00FF;
+  storage_count = (int)dis.readUnsignedByte()&0x00FF;
   status = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+26];
+  byte[] buffer = new byte[12+27];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -95,19 +100,20 @@ public byte[] encode() throws IOException {
   dos.writeFloat(read_speed);
   dos.writeFloat(write_speed);
   dos.writeByte(storage_id&0x00FF);
+  dos.writeByte(storage_count&0x00FF);
   dos.writeByte(status&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 26);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 27);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[36] = crcl;
-  buffer[37] = crch;
+  buffer[37] = crcl;
+  buffer[38] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_STORAGE_INFORMATION : " +   "  time_boot_ms="+time_boot_ms+  "  total_capacity="+total_capacity+  "  used_capacity="+used_capacity+  "  available_capacity="+available_capacity+  "  read_speed="+read_speed+  "  write_speed="+write_speed+  "  storage_id="+storage_id+  "  status="+status;}
+return "MAVLINK_MSG_ID_STORAGE_INFORMATION : " +   "  time_boot_ms="+time_boot_ms+  "  total_capacity="+total_capacity+  "  used_capacity="+used_capacity+  "  available_capacity="+available_capacity+  "  read_speed="+read_speed+  "  write_speed="+write_speed+  "  storage_id="+storage_id+  "  storage_count="+storage_count+  "  status="+status;}
 }

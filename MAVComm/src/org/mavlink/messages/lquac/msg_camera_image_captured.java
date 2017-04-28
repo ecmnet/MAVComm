@@ -60,7 +60,7 @@ public class msg_camera_image_captured extends MAVLinkMessage {
    */
   public long image_index;
   /**
-   * Camera ID if there are multiple
+   * Camera ID (1 for first, 2 for second, etc.)
    */
   public int camera_id;
   /**

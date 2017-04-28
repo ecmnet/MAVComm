@@ -50,14 +50,13 @@
 		<jar destfile="${dis.dir}/mavcomm.jar" basedir="${build.dir}">
 			<manifest>
 		<!--		<attribute name="Main-Class" value="com.comino.msp.main.StartUp" /> -->
-				<attribute name="Main-Class" value="com.comino.mav.comm.serial.MAVSerialComm4" />
+				<attribute name="Main-Class" value="com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm2" />
 				<attribute name="Built-By" value="${user.name}" />
 
 				<attribute name="Class-Path" value="jna-4.1.0.jar
 									    	        jssc.jar
-
 					                                gson-2.4.jar
-
+                                                    libAMA0.so
 					                                resources/"
 				/>
 

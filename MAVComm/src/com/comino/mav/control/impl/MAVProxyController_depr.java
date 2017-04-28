@@ -360,8 +360,8 @@ public class MAVProxyController_depr implements IMAVMSPController {
 
 
 	@Override
-	public void enableFileLogging(boolean enable, String directory) {
-
+	public String enableFileLogging(boolean enable, String directory) {
+       return null;
 	}
 
 }

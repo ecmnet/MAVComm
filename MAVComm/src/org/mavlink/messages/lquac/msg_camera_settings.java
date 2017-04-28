@@ -24,7 +24,7 @@ public class msg_camera_settings extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_CAMERA_SETTINGS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 28;
+    payload_length = 32;
 }
 
   /**
@@ -36,7 +36,7 @@ public class msg_camera_settings extends MAVLinkMessage {
    */
   public float aperture;
   /**
-   * Shutter speed in s
+   * Shutter speed in seconds
    */
   public float shutter_speed;
   /**
@@ -44,41 +44,45 @@ public class msg_camera_settings extends MAVLinkMessage {
    */
   public float iso_sensitivity;
   /**
-   * Color temperature in degrees Kelvin
+   * Exposure Value
+   */
+  public float ev;
+  /**
+   * Color temperature in degrees Kelvin. (0: Auto WB)
    */
   public float white_balance;
   /**
-   * Camera ID if there are multiple
+   * Camera ID (1 for first, 2 for second, etc.)
    */
   public int camera_id;
   /**
-   * Aperture locked (0: auto, 1: locked)
+   * 0: full auto 1: full manual 2: aperture priority 3: shutter priority
    */
-  public int aperture_locked;
+  public int exposure_mode;
   /**
-   * Shutter speed locked (0: auto, 1: locked)
-   */
-  public int shutter_speed_locked;
-  /**
-   * ISO sensitivity locked (0: auto, 1: locked)
-   */
-  public int iso_sensitivity_locked;
-  /**
-   * Color temperature locked (0: auto, 1: locked)
-   */
-  public int white_balance_locked;
-  /**
-   * Reserved for a camera mode ID
+   * Reserved for a camera mode ID. (0: Photo 1: Video)
    */
   public int mode_id;
   /**
-   * Reserved for a color mode ID
+   * Audio recording enabled (0: off 1: on)
+   */
+  public int audio_recording;
+  /**
+   * Reserved for a color mode ID (Neutral, Vivid, etc.)
    */
   public int color_mode_id;
   /**
-   * Reserved for image format ID
+   * Reserved for image format ID (Jpeg/Raw/Jpeg+Raw)
    */
   public int image_format_id;
+  /**
+   * Reserved for image quality ID (Compression)
+   */
+  public int image_quality_id;
+  /**
+   * Reserved for metering mode ID (Average, Center, Spot, etc.)
+   */
+  public int metering_mode_id;
 /**
  * Decode message with raw data
  */
@@ -87,21 +91,22 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   aperture = (float)dis.readFloat();
   shutter_speed = (float)dis.readFloat();
   iso_sensitivity = (float)dis.readFloat();
+  ev = (float)dis.readFloat();
   white_balance = (float)dis.readFloat();
   camera_id = (int)dis.readUnsignedByte()&0x00FF;
-  aperture_locked = (int)dis.readUnsignedByte()&0x00FF;
-  shutter_speed_locked = (int)dis.readUnsignedByte()&0x00FF;
-  iso_sensitivity_locked = (int)dis.readUnsignedByte()&0x00FF;
-  white_balance_locked = (int)dis.readUnsignedByte()&0x00FF;
+  exposure_mode = (int)dis.readUnsignedByte()&0x00FF;
   mode_id = (int)dis.readUnsignedByte()&0x00FF;
+  audio_recording = (int)dis.readUnsignedByte()&0x00FF;
   color_mode_id = (int)dis.readUnsignedByte()&0x00FF;
   image_format_id = (int)dis.readUnsignedByte()&0x00FF;
+  image_quality_id = (int)dis.readUnsignedByte()&0x00FF;
+  metering_mode_id = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+28];
+  byte[] buffer = new byte[12+32];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -117,27 +122,28 @@ public byte[] encode() throws IOException {
   dos.writeFloat(aperture);
   dos.writeFloat(shutter_speed);
   dos.writeFloat(iso_sensitivity);
+  dos.writeFloat(ev);
   dos.writeFloat(white_balance);
   dos.writeByte(camera_id&0x00FF);
-  dos.writeByte(aperture_locked&0x00FF);
-  dos.writeByte(shutter_speed_locked&0x00FF);
-  dos.writeByte(iso_sensitivity_locked&0x00FF);
-  dos.writeByte(white_balance_locked&0x00FF);
+  dos.writeByte(exposure_mode&0x00FF);
   dos.writeByte(mode_id&0x00FF);
+  dos.writeByte(audio_recording&0x00FF);
   dos.writeByte(color_mode_id&0x00FF);
   dos.writeByte(image_format_id&0x00FF);
+  dos.writeByte(image_quality_id&0x00FF);
+  dos.writeByte(metering_mode_id&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 28);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 32);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[38] = crcl;
-  buffer[39] = crch;
+  buffer[42] = crcl;
+  buffer[43] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_SETTINGS : " +   "  time_boot_ms="+time_boot_ms+  "  aperture="+aperture+  "  shutter_speed="+shutter_speed+  "  iso_sensitivity="+iso_sensitivity+  "  white_balance="+white_balance+  "  camera_id="+camera_id+  "  aperture_locked="+aperture_locked+  "  shutter_speed_locked="+shutter_speed_locked+  "  iso_sensitivity_locked="+iso_sensitivity_locked+  "  white_balance_locked="+white_balance_locked+  "  mode_id="+mode_id+  "  color_mode_id="+color_mode_id+  "  image_format_id="+image_format_id;}
+return "MAVLINK_MSG_ID_CAMERA_SETTINGS : " +   "  time_boot_ms="+time_boot_ms+  "  aperture="+aperture+  "  shutter_speed="+shutter_speed+  "  iso_sensitivity="+iso_sensitivity+  "  ev="+ev+  "  white_balance="+white_balance+  "  camera_id="+camera_id+  "  exposure_mode="+exposure_mode+  "  mode_id="+mode_id+  "  audio_recording="+audio_recording+  "  color_mode_id="+color_mode_id+  "  image_format_id="+image_format_id+  "  image_quality_id="+image_quality_id+  "  metering_mode_id="+metering_mode_id;}
 }

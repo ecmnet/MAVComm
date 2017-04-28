@@ -64,7 +64,7 @@ public class msg_camera_capture_status extends MAVLinkMessage {
    */
   public int video_resolution_v;
   /**
-   * Camera ID if there are multiple
+   * Camera ID (1 for first, 2 for second, etc.)
    */
   public int camera_id;
   /**
