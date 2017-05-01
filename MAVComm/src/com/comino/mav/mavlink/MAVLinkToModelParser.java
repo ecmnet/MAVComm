@@ -186,7 +186,7 @@ public class MAVLinkToModelParser {
 				model.vision.fps= mocap.fps;
 				model.vision.tms= System.nanoTime()/1000;
 				if(model.vision.errors < 5) {
-					mocap_tms = System.nanoTime()/1000;
+					mocap_tms = System.currentTimeMillis();
 					model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true );
 				}
 			}
@@ -538,7 +538,7 @@ public class MAVLinkToModelParser {
 				model.state.g_vy = pos.vy/100f;
 				model.state.g_vz = pos.vz/100f;
 
-				gpos_tms = System.nanoTime()/1000;
+				gpos_tms = System.currentTimeMillis();
 				model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, true);
 
 			}
@@ -854,10 +854,10 @@ public class MAVLinkToModelParser {
 		}
 
 		// if no global position was published within the last second:
-		if((System.currentTimeMillis() - gpos_tms*1000)>1000)
+		if((System.currentTimeMillis() - gpos_tms)>1000)
 			model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
 
-		if((System.currentTimeMillis() - mocap_tms*1000)>1000) {
+		if((System.currentTimeMillis() - mocap_tms)>1000) {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
 		}
 

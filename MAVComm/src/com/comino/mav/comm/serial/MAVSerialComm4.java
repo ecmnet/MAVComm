@@ -36,18 +36,10 @@ package com.comino.mav.comm.serial;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.Map;
 
-import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.MAV_MODE_FLAG;
-import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_heartbeat;
-import org.mavlink.messages.lquac.msg_serial_control;
-import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkReader2;
@@ -59,10 +51,11 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.ExecutorService;
 
+import javafx.application.Platform;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
-import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import jssc.SerialPortList;
 
@@ -84,7 +77,7 @@ public class MAVSerialComm4 implements IMAVComm {
 	private static IMAVComm com = null;
 	MAVLinkMessage msg = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(1024);
 
 	private int baudrate = 921600;
 
@@ -113,9 +106,9 @@ public class MAVSerialComm4 implements IMAVComm {
 		else
 			port ="/dev/tty.SLAB_USBtoUART";
 
-		serialPort = new SerialPort(port);
-		parser = new MAVLinkToModelParser(model, this);
-		this.reader = new MAVLinkReader2(3, false);
+		this.serialPort = new SerialPort(port);
+		this.parser     = new MAVLinkToModelParser(model, this);
+		this.reader     = new MAVLinkReader2(3, false);
 
 	}
 
@@ -124,6 +117,9 @@ public class MAVSerialComm4 implements IMAVComm {
 	 */
 	@Override
 	public boolean open() {
+
+		if(serialPort.isOpened())
+			return true;
 
 		while(!open(port ,baudrate,8,1,0)) {
 			try {
@@ -185,16 +181,24 @@ public class MAVSerialComm4 implements IMAVComm {
 					try {
 						switch (serialEvent.getEventType()) {
 						case SerialPortEvent.RXCHAR:
-
 							rxBuffer.put(serialPort.readBytes());
 
 							rxBuffer.flip();
-							while(rxBuffer.hasRemaining())
-								reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
+							while(rxBuffer.hasRemaining()) {
+								reader.readMavLinkMessageFromBuffer(rxBuffer.get());
+							}
 							rxBuffer.compact();
 
-							while((msg=reader.getNextMessage())!=null)
-								parser.parseMessage(msg);
+							if(reader.nbUnreadMessages()>0) {
+								ExecutorService.get().execute(() -> {
+									while((msg=reader.getNextMessage())!=null)
+										try {
+											parser.parseMessage(msg);
+										} catch (IOException e) {
+											System.err.println(e.getMessage());
+										}
+								});
+							}
 
 							break;
 

@@ -21,11 +21,12 @@ public class MAVLinkReader2 {
 	private static final byte MAVLINK_IFLAG_SIGNED = 0x01;
 
 	private static int MAVLINK_SIGNATURE_BLOCK_LEN = 13;
-	private static int MAVLINK_HEADER_LEN = 9;
+//	private static int MAVLINK_HEADER_LEN = 9;
 	private static int MAVLINK_MAX_PAYLOAD_SIZE = 255;
 
 
 	enum t_parser_state  {
+		MAVLINK_PARSE_STATE_UNINIT,
 		MAVLINK_PARSE_STATE_IDLE,
 		MAVLINK_PARSE_STATE_GOT_STX,
 		MAVLINK_PARSE_STATE_GOT_LENGTH,
@@ -54,10 +55,7 @@ public class MAVLinkReader2 {
 	private t_parser_state state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 
 	private RxMsg rxmsg      = new RxMsg();
-	private RxMsg rxmsg_last = new RxMsg();
 
-
-	private DataInputStream dis = null;
 
 	//public final static int RECEIVED_OFFSET = 10;
 
@@ -83,7 +81,6 @@ public class MAVLinkReader2 {
 
 	public MAVLinkReader2(int id, boolean noCRCCheck) {
 		this.noCRCCheck = noCRCCheck;
-		this.dis = null;
 		for (int i = 0; i < lastPacket.length; i++) {
 			lastPacket[i] = -1;
 		}
@@ -131,10 +128,11 @@ public class MAVLinkReader2 {
 	public  boolean readMavLinkMessageFromBuffer(int v) {
 		try {
 
-			int c = (v & 0x00FF);
+			short c = (short)(v & 0x00000000FF);
 			//	System.out.println(state+":"+byteToHex(c));
 
 			switch(state) {
+			case MAVLINK_PARSE_STATE_UNINIT:
 			case MAVLINK_PARSE_STATE_IDLE:
 				if((byte)c==IMAVLinkMessage.MAVPROT_PACKET_START_V20) {
 					rxmsg.clear();
@@ -149,6 +147,9 @@ public class MAVLinkReader2 {
 				}
 				break;
 			case MAVLINK_PARSE_STATE_GOT_STX:
+				if(c>MAVLINK_MAX_PAYLOAD_SIZE) {
+					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
+				}
 				rxmsg.len=c; lengthToRead=0;
 				rxmsg.crc = MAVLinkCRC.crc_accumulate((byte)c, rxmsg.crc);
 				if(rxmsg.start==IMAVLinkMessage.MAVPROT_PACKET_START_V10)
@@ -252,10 +253,13 @@ public class MAVLinkReader2 {
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
 						//System.out.println("added: "+rxmsg.packet+":"+msg);
-					} else
+					} else {
 						packet_lost++;
-				} else
+					}
+				} else {
+					//System.out.println("Lost: "+packet_lost+": "+rxmsg.msgId);
 					packet_lost++;
+				}
 				break;
 
 			case MAVLINK_PARSE_STATE_SIGNATURE_WAIT:
@@ -364,7 +368,7 @@ public class MAVLinkReader2 {
 		public int componentId;
 		public int msgId;
 		public int crc = MAVLinkCRC.crc_init();;
-		public byte[] rawData = new byte[MAVLINK_MAX_PAYLOAD_SIZE+MAVLINK_HEADER_LEN];
+		public byte[] rawData = new byte[256];
 		public byte[] signature = new byte[MAVLINK_SIGNATURE_BLOCK_LEN];
 
 		public mavlink_framing_t msg_received;
