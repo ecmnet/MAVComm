@@ -709,7 +709,6 @@ public class MAVLinkToModelParser {
 						(version.flight_sw_version >> (8*3)) & 0xFF,
 						(version.flight_sw_version >> (8*2)) & 0xFF,
 						(version.flight_sw_version >> (8*1)) & 0xFF);
-				System.out.println("Version: "+model.sys.version);
 			}
 		});
 

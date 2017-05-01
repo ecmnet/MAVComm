@@ -52,15 +52,15 @@ import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
+import com.fazecast.jSerialComm.SerialPort;
+import com.fazecast.jSerialComm.SerialPortDataListener;
+import com.fazecast.jSerialComm.SerialPortEvent;
 
-import javafx.application.Platform;
-import jssc.SerialPort;
-import jssc.SerialPortEvent;
-import jssc.SerialPortException;
 import jssc.SerialPortList;
 
 
-public class MAVSerialComm4 implements IMAVComm {
+
+public class MAVSerialComm5 implements IMAVComm {
 
 	//	private static final int BAUDRATE  = 57600
 
@@ -75,38 +75,40 @@ public class MAVSerialComm4 implements IMAVComm {
 	private MAVLinkReader2 reader;
 
 	private static IMAVComm com = null;
-	MAVLinkMessage msg = null;
-
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(1024);
+	private MAVLinkMessage  msg = null;
 
 	private int baudrate = 921600;
 
 	public static IMAVComm getInstance(DataModel model, int baudrate, boolean isUSB) {
 		if(com==null)
-			com = new MAVSerialComm4(model, baudrate);
+			com = new MAVSerialComm5(model, baudrate);
 		return com;
 	}
 
-	private MAVSerialComm4(DataModel model, int baudrate) {
+	private MAVSerialComm5(DataModel model, int baudrate) {
 		this.model = model; int i=0;
 		this.baudrate = baudrate;
-		System.out.println("Searching ports... ");
-		String[] list = SerialPortList.getPortNames();
+		System.out.print("Searching ports... ");
 
+		SerialPort[] ports = SerialPort.getCommPorts();
 
-		if(list.length>0) {
-			for(i=0;i<list.length;i++) {
-				if(list[i].contains("tty.SLAB") || list[i].contains("tty.usb") || list[i].contains("AMA0") || list[i].contains("S1")) {
+		if(ports.length>0) {
+			for(i=0;i<ports.length;i++) {
+				if(ports[i].getSystemPortName().contains("tty.SLAB")
+						|| ports[i].getSystemPortName().contains("tty.usb")
+						|| ports[i].getSystemPortName().contains("AMA0")) {
 					break;
 				}
 			}
 
-			port = list[i];
+			this.serialPort = ports[i];
 		}
 		else
-			port ="/dev/tty.SLAB_USBtoUART";
+			this.serialPort  =SerialPort.getCommPort("/dev/tty.SLAB_USBtoUART");
 
-		this.serialPort = new SerialPort(port);
+		this.port = serialPort.getSystemPortName();
+		System.out.println(port+" found");
+
 		this.parser     = new MAVLinkToModelParser(model, this);
 		this.reader     = new MAVLinkReader2(3, false);
 
@@ -118,17 +120,13 @@ public class MAVSerialComm4 implements IMAVComm {
 	@Override
 	public boolean open() {
 
-		if(serialPort.isOpened())
+		if(serialPort.isOpen())
 			return true;
 
 		while(!open(port ,baudrate,8,1,0)) {
 			try {
-				if(serialPort.isOpened()) {
-					try {
-						serialPort.closePort();
-					} catch (SerialPortException e) {
-
-					}
+				if(serialPort.isOpen()) {
+					serialPort.closePort();
 				}
 				Thread.sleep(1000);
 			} catch (Exception e) {	}
@@ -158,70 +156,57 @@ public class MAVSerialComm4 implements IMAVComm {
 	 */
 	@Override
 	public void close() {
-		try {
-			serialPort.closePort();
-		} catch (SerialPortException e) {
-
-		}
+		serialPort.closePort();
 	}
 
 	private boolean open(String portName, int baudRate, int dataBits, int stopBits, int parity) {
 
-		if(serialPort.isOpened())
+		byte[] buf = new byte[4096];
+
+		if(serialPort.isOpen())
 			return true;
 
 		try {
 			serialPort.openPort();
-			serialPort.setParams(baudRate, dataBits, stopBits, parity);
+			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
 
-			int eventMask = SerialPort.MASK_RXCHAR;
-			try {
-				serialPort.addEventListener((serialEvent) -> {
+			serialPort.addDataListener(new SerialPortDataListener() {
+				@Override
+				public int getListeningEvents() {
+					return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
+				}
 
-					try {
-						switch (serialEvent.getEventType()) {
-						case SerialPortEvent.RXCHAR:
-							rxBuffer.put(serialPort.readBytes());
+				@Override
+				public void serialEvent(SerialPortEvent event)
+				{
+					if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
+						return;
 
-							rxBuffer.flip();
-							while(rxBuffer.hasRemaining()) {
-								reader.readMavLinkMessageFromBuffer(rxBuffer.get());
+					int numRead = serialPort.bytesAvailable();
+					if(numRead>buf.length)
+						numRead = buf.length;
+					serialPort.readBytes(buf, numRead);
+					for(int i=0; i< numRead;i++)
+						reader.readMavLinkMessageFromBuffer(buf[i]);
+
+					if(reader.nbUnreadMessages()>0) {
+						while((msg=reader.getNextMessage())!=null) {
+							try {
+								parser.parseMessage(msg);
+							} catch (IOException e) {
+								e.printStackTrace();
 							}
-							rxBuffer.compact();
-
-							if(reader.nbUnreadMessages()>0) {
-								ExecutorService.get().execute(() -> {
-									while((msg=reader.getNextMessage())!=null)
-										try {
-											parser.parseMessage(msg);
-										} catch (IOException e) {
-											e.printStackTrace();
-										}
-								});
-							}
-
-							break;
-
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
 					}
-				}, eventMask);
-			} catch (SerialPortException e) {
-				e.printStackTrace();
-			}
+				}
+			});
 
 		} catch (Exception e2) {
-			try {
-				serialPort.closePort();
-			} catch (SerialPortException e) {
-				//e.printStackTrace();
-			}
-			//System.err.println(e2.getMessage());
+			e2.printStackTrace();
+			serialPort.closePort();
 			return false;
 		}
 
-		System.out.println("Connected to "+serialPort.getPortName());
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
 		return true;
 
@@ -233,7 +218,8 @@ public class MAVSerialComm4 implements IMAVComm {
 	@Override
 	public  void write(MAVLinkMessage msg) throws IOException {
 		try {
-			serialPort.writeBytes(msg.encode());
+			byte[] buffer = msg.encode();
+			serialPort.writeBytes(buffer,buffer.length);
 		} catch (Exception e) { }
 	}
 
@@ -246,7 +232,7 @@ public class MAVSerialComm4 implements IMAVComm {
 
 	@Override
 	public boolean isConnected() {
-		return (serialPort != null && serialPort.isOpened());
+		return (serialPort != null && serialPort.isOpen());
 	}
 
 	@Override
@@ -283,7 +269,7 @@ public class MAVSerialComm4 implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm4(new DataModel(),921600);
+		IMAVComm comm = new MAVSerialComm5(new DataModel(),921600);
 		comm.open();
 
 

@@ -2,11 +2,10 @@
 
 package com.comino.mav.mavlink;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.mavlink.IMAVLinkCRC;
 import org.mavlink.IMAVLinkMessage;
@@ -21,7 +20,7 @@ public class MAVLinkReader2 {
 	private static final byte MAVLINK_IFLAG_SIGNED = 0x01;
 
 	private static int MAVLINK_SIGNATURE_BLOCK_LEN = 13;
-//	private static int MAVLINK_HEADER_LEN = 9;
+	//	private static int MAVLINK_HEADER_LEN = 9;
 	private static int MAVLINK_MAX_PAYLOAD_SIZE = 255;
 
 
@@ -69,7 +68,7 @@ public class MAVLinkReader2 {
 	/**
 	 * MAVLink messages received
 	 */
-	private final Vector<MAVLinkMessage> packets = new Vector<MAVLinkMessage>();
+	private final ConcurrentLinkedDeque<MAVLinkMessage> packets = new ConcurrentLinkedDeque<MAVLinkMessage>();
 
 	private int lengthToRead = 0;
 	private boolean noCRCCheck = false;
@@ -118,14 +117,14 @@ public class MAVLinkReader2 {
 	public MAVLinkMessage getNextMessage() {
 		MAVLinkMessage msg = null;
 		if(packets.size()>0) {
-			msg = packets.remove(0);
+			msg = packets.pop();
 		}
 		return msg;
 	}
 
 
 
-	public  boolean readMavLinkMessageFromBuffer(int v) {
+	public synchronized boolean readMavLinkMessageFromBuffer(int v) {
 		try {
 
 			short c = (short)(v & 0x00000000FF);
@@ -201,13 +200,16 @@ public class MAVLinkReader2 {
 				state = t_parser_state.MAVLINK_PARSE_STATE_GOT_MSGID3;
 				break;
 			case MAVLINK_PARSE_STATE_GOT_MSGID3:
-				rxmsg.rawData[lengthToRead] = (byte)c;
-				rxmsg.crc = MAVLinkCRC.crc_accumulate((byte)c, rxmsg.crc);
-				if(++lengthToRead >= rxmsg.len)
-					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_PAYLOAD;
+				if(lengthToRead<rxmsg.rawData.length) {
+					rxmsg.rawData[lengthToRead] = (byte)c;
+					rxmsg.crc = MAVLinkCRC.crc_accumulate((byte)c, rxmsg.crc);
+					if(++lengthToRead >= rxmsg.len)
+						state = t_parser_state.MAVLINK_PARSE_STATE_GOT_PAYLOAD; }
+				else
+					state = t_parser_state.MAVLINK_PARSE_STATE_IDLE;
 				break;
 			case MAVLINK_PARSE_STATE_GOT_PAYLOAD:
-				rxmsg.rawData[lengthToRead+1] = 0x0000;
+			//	rxmsg.rawData[lengthToRead+1] = 0x0000;
 				try {
 					if (IMAVLinkCRC.MAVLINK_EXTRA_CRC)
 						rxmsg.crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[rxmsg.msgId], rxmsg.crc);
@@ -221,16 +223,17 @@ public class MAVLinkReader2 {
 				else
 					state = t_parser_state.MAVLINK_PARSE_STATE_GOT_CRC1;
 				break;
+
 			case MAVLINK_PARSE_STATE_GOT_BAD_CRC1:
 			case MAVLINK_PARSE_STATE_GOT_CRC1:
-				if ((state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != (rxmsg.crc >> 8 & 0x00FF)) && !noCRCCheck) {
+				if ((state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != ((rxmsg.crc >> 8) & 0x00FF)) && !noCRCCheck) {
 
 					// CRC workaraounds
-					if(rxmsg.msgId == 36 || rxmsg.msgId == 140)
+					if(rxmsg.msgId == 36 || rxmsg.msgId == 140 ||  rxmsg.msgId == 85 )
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
 					else {
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
-						//System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
+						//	System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
 					}
 				}
 				else
@@ -251,13 +254,14 @@ public class MAVLinkReader2 {
 					if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 						msg.isValid = true;
 						msg.packet = rxmsg.packet;
-						packets.addElement(msg);
-						//System.out.println("added: "+rxmsg.packet+":"+msg);
+						packets.push(msg);
+						//		System.out.println("added: "+rxmsg.packet+":"+msg);
 					} else {
 						packet_lost++;
+						//			System.out.println("Lost: "+packet_lost+": "+rxmsg.msgId);
 					}
 				} else {
-					//System.out.println("Lost: "+packet_lost+": "+rxmsg.msgId);
+					//		System.out.println("Lost: "+packet_lost+": "+rxmsg.msgId);
 					packet_lost++;
 				}
 				break;
@@ -273,7 +277,8 @@ public class MAVLinkReader2 {
 						MAVLinkMessage msg = MAVLinkMessageFactory.getMessage(rxmsg.msgId, rxmsg.sysId, rxmsg.componentId, rxmsg.rawData);
 						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 							msg.packet = rxmsg.packet;
-							packets.addElement(msg);
+							packets.push(msg);
+
 							//System.out.println("added: "+rxmsg.packet+":"+msg);
 						} else {
 							packet_lost++;

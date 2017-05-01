@@ -48,6 +48,7 @@ import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm2;
 import com.comino.mav.comm.proxy.MAVUdpProxyNIO3;
 import com.comino.mav.comm.serial.MAVSerialComm3;
 import com.comino.mav.comm.serial.MAVSerialComm4;
+import com.comino.mav.comm.serial.MAVSerialComm5;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
@@ -97,9 +98,9 @@ public class MAVProxyController2 implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
+			    comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
 			else
-				 comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
+		    	comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
 		//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
 			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
