@@ -46,7 +46,7 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm;
 import com.comino.mav.comm.highspeedserial.MAVHighSpeedSerialComm2;
 import com.comino.mav.comm.proxy.MAVUdpProxyNIO3;
-import com.comino.mav.comm.serial.MAVSerialComm3;
+import com.comino.mav.comm.serial.MAVSerialComm5;
 import com.comino.mav.comm.serial.MAVSerialComm4;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
@@ -97,9 +97,9 @@ public class MAVProxyController implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
+			    comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
 			else
-		    	comm = MAVSerialComm4.getInstance(model, BAUDRATE, false);
+		    	comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
 			comm.open();
 		//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
 			try {
