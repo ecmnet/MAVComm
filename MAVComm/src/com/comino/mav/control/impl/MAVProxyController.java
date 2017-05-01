@@ -57,11 +57,6 @@ import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
-/*
- * Direct high speed Proxy controller onboard companions connected with high speed
- * serial driver (currently RPi only)
- */
-
 public class MAVProxyController implements IMAVMSPController {
 
 	protected String peerAddress = null;
