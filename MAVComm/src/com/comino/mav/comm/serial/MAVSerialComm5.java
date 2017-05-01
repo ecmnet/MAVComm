@@ -35,7 +35,6 @@
 package com.comino.mav.comm.serial;
 
 import java.io.IOException;
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
@@ -51,7 +50,6 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.utils.ExecutorService;
 import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
@@ -167,6 +165,8 @@ public class MAVSerialComm5 implements IMAVComm {
 		try {
 
 			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
+			serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 500,200);
+
 			serialPort.addDataListener(new SerialPortDataListener() {
 				@Override
 				public int getListeningEvents() {
@@ -178,15 +178,18 @@ public class MAVSerialComm5 implements IMAVComm {
 				{
 					if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
 						return;
+
 					try {
 						int avail = serialPort.bytesAvailable();
-						int numRead = serialPort.readBytes(buf, avail);
-						for(int i=0; i< numRead;i++)
-							reader.readMavLinkMessageFromBuffer(buf[i]);
+						if(avail> 0) {
+							int numRead = serialPort.readBytes(buf, avail);
+							for(int i=0; i< numRead;i++)
+								reader.readMavLinkMessageFromBuffer(buf[i]);
 
-						if(reader.nbUnreadMessages()>0) {
-							while((msg=reader.getNextMessage())!=null)
-								parser.parseMessage(msg);
+							if(reader.nbUnreadMessages()>0) {
+								while((msg=reader.getNextMessage())!=null)
+									parser.parseMessage(msg);
+							}
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
