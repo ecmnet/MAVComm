@@ -39,7 +39,7 @@ import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.mav.control.impl.MAVProxyController2;
+import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.commander.MSPCommander;
 import com.comino.msp.model.segment.Grid;
@@ -58,9 +58,9 @@ public class StartUp implements Runnable {
 		System.out.println("MSPService version "+config.getVersion());
 
 		if(args.length>0)
-			control = new MAVProxyController2(true);
+			control = new MAVProxyController(true);
 		else
-			control = new MAVProxyController2(false);
+			control = new MAVProxyController(false);
 
 		MSPLogger.getInstance(control);
 
