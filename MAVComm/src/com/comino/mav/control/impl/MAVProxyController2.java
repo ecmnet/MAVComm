@@ -101,7 +101,13 @@ public class MAVProxyController2 implements IMAVMSPController {
 			    comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
 			else
 		    	comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
+			comm.open();
 		//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+
+			}
 			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
 
@@ -183,7 +189,7 @@ public class MAVProxyController2 implements IMAVMSPController {
 
 	@Override
 	public boolean connect() {
-		proxy.close();proxy.open(); comm.open();
+		comm.open(); proxy.close();proxy.open();
 		if(comm.isConnected())
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
 		return true;

@@ -128,7 +128,7 @@ public class MAVSerialComm5 implements IMAVComm {
 				if(serialPort.isOpen()) {
 					serialPort.closePort();
 				}
-				Thread.sleep(1000);
+				Thread.sleep(100);
 			} catch (Exception e) {	}
 		}
 		System.out.println("Serial port "+this.getClass().getSimpleName()+" opened: "+port);
@@ -167,9 +167,8 @@ public class MAVSerialComm5 implements IMAVComm {
 			return true;
 
 		try {
-			serialPort.openPort();
-			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
 
+			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
 			serialPort.addDataListener(new SerialPortDataListener() {
 				@Override
 				public int getListeningEvents() {
@@ -200,14 +199,13 @@ public class MAVSerialComm5 implements IMAVComm {
 					}
 				}
 			});
-
+			serialPort.openPort();
+			model.sys.setStatus(Status.MSP_CONNECTED, true);
 		} catch (Exception e2) {
 			e2.printStackTrace();
 			serialPort.closePort();
 			return false;
 		}
-
-		model.sys.setStatus(Status.MSP_CONNECTED, true);
 		return true;
 
 	}
@@ -217,10 +215,12 @@ public class MAVSerialComm5 implements IMAVComm {
 	 */
 	@Override
 	public  void write(MAVLinkMessage msg) throws IOException {
+		if(!serialPort.isOpen())
+			return;
 		try {
 			byte[] buffer = msg.encode();
 			serialPort.writeBytes(buffer,buffer.length);
-		} catch (Exception e) { }
+		} catch (Exception e) { e.printStackTrace(); }
 	}
 
 	@Override

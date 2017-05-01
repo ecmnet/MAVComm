@@ -100,7 +100,6 @@ public class MAVSerialComm4 implements IMAVComm {
 					break;
 				}
 			}
-
 			port = list[i];
 		}
 		else
