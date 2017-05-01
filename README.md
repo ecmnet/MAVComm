@@ -14,9 +14,9 @@ MAVComm supports any platform which is capable to run Java8 and can be connected
 
 It is currently tested with the following systems:
 
-- Raspberry PI 2/3  (requires  native high speed serial connection)
+- Raspberry PI 2/3  
 
-- [UP-Board](http://www.up-board.org) (no native lib for serial connection required)
+- [UP-Board](http://www.up-board.org) 
 
 
 
