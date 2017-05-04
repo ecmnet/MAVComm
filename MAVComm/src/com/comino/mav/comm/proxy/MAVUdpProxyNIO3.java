@@ -209,17 +209,16 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 									rxBuffer.flip();
 									while(rxBuffer.hasRemaining())
 										reader.readMavLinkMessageFromBuffer(rxBuffer.get() & 0x00FF);
-
+									rxBuffer.compact();
 									while((msg=reader.getNextMessage())!=null) {
 										listener_list = listeners.get(msg.getClass());
 										if(listener_list!=null) {
 											for(IMAVLinkListener listener : listener_list)
 												listener.received(msg);
 										}
-											if(comm.isConnected())
-												comm.write(msg);
+										if(comm.isConnected())
+											comm.write(msg);
 									}
-									rxBuffer.compact();
 								}
 							}
 						} catch(Exception io) { }
@@ -250,7 +249,6 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 		try {
 			write((MAVLinkMessage) o);
 		} catch (IOException e) {
-
 		}
 	}
 
