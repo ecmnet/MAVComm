@@ -303,7 +303,7 @@ public class MAVLinkReader {
 				lengthReceived = false;
 				lengthToRead = 0;
 				// restart buffer
-				lostBytes=0;
+				//lostBytes=0;
 				nbReceived = 0;
 			}
 		}

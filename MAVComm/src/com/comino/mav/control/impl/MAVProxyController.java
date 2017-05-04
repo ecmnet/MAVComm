@@ -44,7 +44,7 @@ import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.proxy.MAVUdpProxyNIO3;
-import com.comino.mav.comm.serial.MAVSerialComm5;
+import com.comino.mav.comm.serial.MAVSerialComm;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
@@ -89,9 +89,9 @@ public class MAVProxyController implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
+			    comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			else
-		    	comm = MAVSerialComm5.getInstance(model, BAUDRATE, false);
+		    	comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			comm.open();
 		//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
 			try {

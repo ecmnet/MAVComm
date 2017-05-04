@@ -117,6 +117,16 @@ public class MAVLinkReader2 {
 	 */
 
 
+	public MAVLinkMessage getNextMessage(byte buf[],int len) {
+		for(int i=0;i<len;i++)
+			readMavLinkMessageFromBuffer(buf[i]);
+
+		MAVLinkMessage msg = null;
+		if(packets.size()>0) {
+			msg = packets.remove(0);
+		}
+		return msg;
+	}
 
 	public MAVLinkMessage getNextMessage() {
 		MAVLinkMessage msg = null;

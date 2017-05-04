@@ -56,7 +56,7 @@ import com.fazecast.jSerialComm.SerialPortEvent;
 
 // TODO: Check stability
 
-public class MAVSerialComm5 implements IMAVComm {
+public class MAVSerialComm implements IMAVComm {
 
 	//	private static final int BAUDRATE  = 57600
 
@@ -77,11 +77,11 @@ public class MAVSerialComm5 implements IMAVComm {
 
 	public static IMAVComm getInstance(DataModel model, int baudrate, boolean isUSB) {
 		if(com==null)
-			com = new MAVSerialComm5(model, baudrate);
+			com = new MAVSerialComm(model, baudrate);
 		return com;
 	}
 
-	private MAVSerialComm5(DataModel model, int baudrate) {
+	private MAVSerialComm(DataModel model, int baudrate) {
 		this.model = model; int i=0;
 		this.baudrate = baudrate;
 		System.out.print("Searching ports... ");
@@ -92,7 +92,9 @@ public class MAVSerialComm5 implements IMAVComm {
 			for(i=0;i<ports.length;i++) {
 				if(ports[i].getSystemPortName().contains("tty.SLAB")
 						|| ports[i].getSystemPortName().contains("tty.usb")
-						|| ports[i].getSystemPortName().contains("AMA0")) {
+						|| ports[i].getSystemPortName().contains("ttyS1"))
+				//	    || ports[i].getSystemPortName().contains("ttyAMA0"))
+				{
 					break;
 				}
 			}
@@ -119,7 +121,7 @@ public class MAVSerialComm5 implements IMAVComm {
 		if(serialPort.isOpen())
 			return true;
 
-		while(!open(port ,baudrate,8,1,0)) {
+		while(!open(port ,baudrate,8,SerialPort.ONE_STOP_BIT,SerialPort.NO_PARITY)) {
 			try {
 				if(serialPort.isOpen()) {
 					serialPort.closePort();
@@ -163,9 +165,9 @@ public class MAVSerialComm5 implements IMAVComm {
 			return true;
 
 		try {
-
+			serialPort.openPort();
 			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
-			serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 500,200);
+			serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 200,200);
 
 			serialPort.addDataListener(new SerialPortDataListener() {
 				@Override
@@ -181,22 +183,15 @@ public class MAVSerialComm5 implements IMAVComm {
 
 					try {
 						int avail = serialPort.bytesAvailable();
-						if(avail> 0) {
+						if(avail > 0) {
 							int numRead = serialPort.readBytes(buf, avail);
-							for(int i=0; i< numRead;i++)
-								reader.readMavLinkMessageFromBuffer(buf[i]);
-
-							if(reader.nbUnreadMessages()>0) {
-								while((msg=reader.getNextMessage())!=null)
-									parser.parseMessage(msg);
-							}
+							parser.parseMessage(reader.getNextMessage(buf, numRead));
 						}
-					} catch (IOException e) {
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			});
-			serialPort.openPort();
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
 		} catch (Exception e2) {
 			e2.printStackTrace();
@@ -266,7 +261,7 @@ public class MAVSerialComm5 implements IMAVComm {
 
 
 	public static void main(String[] args) {
-		IMAVComm comm = new MAVSerialComm5(new DataModel(),921600);
+		IMAVComm comm = new MAVSerialComm(new DataModel(),921600);
 		comm.open();
 
 
@@ -302,17 +297,18 @@ public class MAVSerialComm5 implements IMAVComm {
 				//					System.err.println(e1.getMessage());
 				//				}
 
-				comm.getMavLinkMessageMap().forEach((a,b) -> {
-					System.out.println(b);
-				});
+//				comm.getMavLinkMessageMap().forEach((a,b) -> {
+//					System.out.println(b);
+//				});
 
 				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
 				if(msg!=null)
 					System.out.println(msg.custom_mode);
 				//				//		comm.getModel().state.print("NED:");
-				System.out.println("REM="+comm.getModel().battery.p+" VOLT="+comm.getModel().battery.b0+" CURRENT="+comm.getModel().battery.c0);
-				System.out.println("ANGLEX="+comm.getModel().attitude.p+" ANGLEY="+comm.getModel().attitude.r+" "+comm.getModel().sys.toString());
+//				System.out.println("REM="+comm.getModel().battery.p+" VOLT="+comm.getModel().battery.b0+" CURRENT="+comm.getModel().battery.c0);
+//				System.out.println("ANGLEX="+comm.getModel().attitude.p+" ANGLEY="+comm.getModel().attitude.r+" "+comm.getModel().sys.toString());
 				Thread.sleep(2000);
+				System.out.println(comm.getErrorCount());
 			}
 
 			//			colService.stop();
