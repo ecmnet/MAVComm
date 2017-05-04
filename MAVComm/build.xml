@@ -4,7 +4,7 @@
 	<property name="dis.dir" value="dis" />
 	<property name="res.dir" value="resources" />
 	<property name="build.dir" value="bin" />
-	<property name="deploy.dir" value="/Volumes/pi" />
+	<property name="deploy.dir" value="/Volumes/up" />
 	<property name="deploy2.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib" />
 	<property name="deploy3.dir" value="/Users/ecmnet/PixHawk/java/MAVSlam/MAVSlam/lib" />
 
@@ -101,15 +101,10 @@
 			</copy>
 	</target>
 
-	<target name="raspberry" description="Copy build to raspberry">
-		<copy todir="${deploy.dir}">
-			<fileset dir="${dis.dir}/" />
+	<target name="vehicle" description="Copy build to vehicle">
+		<copy todir="${deploy.dir}/slam/">
+			<fileset dir="${dis.dir}/"/>
 		</copy>
-		<buildnumber />
-		<echo>Current build number:${build.number}</echo>
-		<propertyfile file="${deploy.dir}/resources/msp.properties">
-			<entry key="build" value="${build.number}" />
-		</propertyfile>
 	</target>
 
 
