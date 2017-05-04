@@ -305,37 +305,10 @@
       <entry value="0" name="MAV_COMP_ID_ALL">
         <description/>
       </entry>
-      <entry value="220" name="MAV_COMP_ID_GPS">
-        <description/>
-      </entry>
-      <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
-        <description/>
-      </entry>
-      <entry value="195" name="MAV_COMP_ID_PATHPLANNER">
-        <description/>
-      </entry>
-      <entry value="180" name="MAV_COMP_ID_MAPPER">
+      <entry value="1" name="MAV_COMP_ID_AUTOPILOT1">
         <description/>
       </entry>
       <entry value="100" name="MAV_COMP_ID_CAMERA">
-        <description/>
-      </entry>
-      <entry value="200" name="MAV_COMP_ID_IMU">
-        <description/>
-      </entry>
-      <entry value="201" name="MAV_COMP_ID_IMU_2">
-        <description/>
-      </entry>
-      <entry value="202" name="MAV_COMP_ID_IMU_3">
-        <description/>
-      </entry>
-      <entry value="240" name="MAV_COMP_ID_UDP_BRIDGE">
-        <description/>
-      </entry>
-      <entry value="241" name="MAV_COMP_ID_UART_BRIDGE">
-        <description/>
-      </entry>
-      <entry value="250" name="MAV_COMP_ID_SYSTEM_CONTROL">
         <description/>
       </entry>
       <entry value="140" name="MAV_COMP_ID_SERVO1">
@@ -396,6 +369,39 @@
         <description>Generic autopilot peripheral component ID. Meant for devices that do not implement the parameter sub-protocol</description>
       </entry>
       <entry value="159" name="MAV_COMP_ID_QX1_GIMBAL">
+        <description/>
+      </entry>
+      <entry value="180" name="MAV_COMP_ID_MAPPER">
+        <description/>
+      </entry>
+      <entry value="190" name="MAV_COMP_ID_MISSIONPLANNER">
+        <description/>
+      </entry>
+      <entry value="195" name="MAV_COMP_ID_PATHPLANNER">
+        <description/>
+      </entry>
+      <entry value="200" name="MAV_COMP_ID_IMU">
+        <description/>
+      </entry>
+      <entry value="201" name="MAV_COMP_ID_IMU_2">
+        <description/>
+      </entry>
+      <entry value="202" name="MAV_COMP_ID_IMU_3">
+        <description/>
+      </entry>
+      <entry value="220" name="MAV_COMP_ID_GPS">
+        <description/>
+      </entry>
+      <entry value="221" name="MAV_COMP_ID_GPS2">
+        <description/>
+      </entry>
+      <entry value="240" name="MAV_COMP_ID_UDP_BRIDGE">
+        <description/>
+      </entry>
+      <entry value="241" name="MAV_COMP_ID_UART_BRIDGE">
+        <description/>
+      </entry>
+      <entry value="250" name="MAV_COMP_ID_SYSTEM_CONTROL">
         <description/>
       </entry>
     </enum>
@@ -1391,11 +1397,17 @@
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved</param>
       </entry>
+      <entry value="2002" name="MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE">
+        <description>WIP: Re-request a CAMERA_IMAGE_CAPTURE packet</description>
+        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
+        <param index="2">Sequence number for missing CAMERA_IMAGE_CAPTURE packet</param>
+        <param index="3">Reserved (all remaining params)</param>
+      </entry>
       <entry value="2003" name="MAV_CMD_DO_TRIGGER_CONTROL">
         <description>Enable or disable on-board camera triggering system.</description>
-        <param index="1">Trigger enable/disable (0 for disable, 1 for start)</param>
-        <param index="2">Shutter integration time (in ms)</param>
-        <param index="3">Reserved</param>
+        <param index="1">Trigger enable/disable (0 for disable, 1 for start), -1 to ignore</param>
+        <param index="2">Shutter integration time (in ms), -1 to ignore</param>
+        <param index="3">1 to reset the trigger sequence, -1/0 to ignore</param>
       </entry>
       <entry value="2500" name="MAV_CMD_VIDEO_START_CAPTURE">
         <description>WIP: Starts video capture (recording)</description>
@@ -1409,6 +1421,22 @@
         <description>WIP: Stop the current video capture (recording)</description>
         <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
         <param index="2">Reserved</param>
+      </entry>
+      <entry value="2502" name="MAV_CMD_VIDEO_START_STREAMING">
+        <description>WIP: Start video streaming</description>
+        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
+        <param index="2">Reserved</param>
+      </entry>
+      <entry value="2503" name="MAV_CMD_VIDEO_STOP_STREAMING">
+        <description>WIP: Stop the current video streaming</description>
+        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
+        <param index="2">Reserved</param>
+      </entry>
+      <entry value="2504" name="MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION">
+        <description>WIP: Request video stream information (VIDEO_STREAM_INFORMATION)</description>
+        <param index="1">Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)</param>
+        <param index="2">0: No Action 1: Request video stream information</param>
+        <param index="3">Reserved (all remaining params)</param>
       </entry>
       <entry value="2510" name="MAV_CMD_LOGGING_START">
         <description>Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)</description>
@@ -1816,6 +1844,9 @@
       </entry>
       <entry value="4" name="MAV_RESULT_FAILED">
         <description>Command executed, but failed</description>
+      </entry>
+      <entry value="5" name="MAV_RESULT_IN_PROGRESS">
+        <description>WIP: Command being executed</description>
       </entry>
     </enum>
     <enum name="MAV_MISSION_RESULT">
@@ -3000,6 +3031,8 @@
       <description>Report status of a command. Includes feedback wether the command was executed.</description>
       <field type="uint16_t" name="command" enum="MAV_CMD">Command ID, as defined by MAV_CMD enum.</field>
       <field type="uint8_t" name="result" enum="MAV_RESULT">See MAV_RESULT enum</field>
+      <extensions/>
+      <field type="uint8_t" name="progress">WIP: Needs to be set when MAV_RESULT is MAV_RESULT_IN_PROGRESS, values from 0 to 100 for progress percentage, 255 for unknown progress.</field>
     </message>
     <message id="81" name="MANUAL_SETPOINT">
       <description>Setpoint in roll, pitch, yaw and thrust from the operator</description>
@@ -4012,6 +4045,29 @@
       <field type="uint8_t" name="target_system">system ID of the target</field>
       <field type="uint8_t" name="target_component">component ID of the target</field>
       <field type="uint16_t" name="sequence">sequence number (must match the one in LOGGING_DATA_ACKED)</field>
+    </message>
+    <message id="269" name="VIDEO_STREAM_INFORMATION">
+      <description>WIP: Information about video stream</description>
+      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="uint8_t" name="status">Current status of video streaming (0: not running, 1: in progress)</field>
+      <field type="float" name="framerate" units="Hz">Frames per second</field>
+      <field type="uint16_t" name="resolution_h" units="pix">Resolution horizontal in pixels</field>
+      <field type="uint16_t" name="resolution_v" units="pix">Resolution vertical in pixels</field>
+      <field type="uint32_t" name="bitrate" units="b/s">Bit rate in bits per second</field>
+      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise</field>
+      <field type="char[230]" name="uri">Video stream URI</field>
+    </message>
+    <message id="270" name="SET_VIDEO_STREAM_SETTINGS">
+      <description>WIP: Message that sets video stream settings</description>
+      <field type="uint8_t" name="target_system">system ID of the target</field>
+      <field type="uint8_t" name="target_component">component ID of the target</field>
+      <field type="uint8_t" name="camera_id">Camera ID (1 for first, 2 for second, etc.)</field>
+      <field type="float" name="framerate" units="Hz">Frames per second (set to -1 for highest framerate possible)</field>
+      <field type="uint16_t" name="resolution_h" units="pix">Resolution horizontal in pixels (set to -1 for highest resolution possible)</field>
+      <field type="uint16_t" name="resolution_v" units="pix">Resolution vertical in pixels (set to -1 for highest resolution possible)</field>
+      <field type="uint32_t" name="bitrate" units="b/s">Bit rate in bits per second (set to -1 for auto)</field>
+      <field type="uint16_t" name="rotation" units="deg">Video image rotation clockwise (0-359 degrees)</field>
+      <field type="char[230]" name="uri">Video stream URI</field>
     </message>
   </messages>
 </mavlink>
