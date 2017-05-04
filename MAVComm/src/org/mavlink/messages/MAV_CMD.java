@@ -888,10 +888,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_IMAGE_STOP_CAPTURE = 2001;
     /**
+     * WIP: Re-request a CAMERA_IMAGE_CAPTURE packet
+     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 2 : Sequence number for missing CAMERA_IMAGE_CAPTURE packet
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE = 2002;
+    /**
      * Enable or disable on-board camera triggering system.
-     * PARAM 1 : Trigger enable/disable (0 for disable, 1 for start)
-     * PARAM 2 : Shutter integration time (in ms)
-     * PARAM 3 : Reserved
+     * PARAM 1 : Trigger enable/disable (0 for disable, 1 for start), -1 to ignore
+     * PARAM 2 : Shutter integration time (in ms), -1 to ignore
+     * PARAM 3 : 1 to reset the trigger sequence, -1/0 to ignore
      */
     public final static int MAV_CMD_DO_TRIGGER_CONTROL = 2003;
     /**
@@ -909,6 +916,25 @@ public interface MAV_CMD {
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_STOP_CAPTURE = 2501;
+    /**
+     * WIP: Start video streaming
+     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 2 : Reserved
+     */
+    public final static int MAV_CMD_VIDEO_START_STREAMING = 2502;
+    /**
+     * WIP: Stop the current video streaming
+     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 2 : Reserved
+     */
+    public final static int MAV_CMD_VIDEO_STOP_STREAMING = 2503;
+    /**
+     * WIP: Request video stream information (VIDEO_STREAM_INFORMATION)
+     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 2 : 0: No Action 1: Request video stream information
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION = 2504;
     /**
      * Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)
      * PARAM 1 : Format: 0: ULog

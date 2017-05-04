@@ -28,4 +28,8 @@ public interface MAV_RESULT {
      * Command executed, but failed
      */
     public final static int MAV_RESULT_FAILED = 4;
+    /**
+     * WIP: Command being executed
+     */
+    public final static int MAV_RESULT_IN_PROGRESS = 5;
 }

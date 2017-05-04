@@ -159,7 +159,9 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_RC_CHANNELS = 65;
   public static int MAVLINK_MSG_ID_GPS_INJECT_DATA = 123;
   public static int MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET = 139;
+  public static int MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION = 269;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET = 89;
   public static int MAVLINK_MSG_ID_RESOURCE_REQUEST = 142;
+  public static int MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS = 270;
   public static int MAVLINK_MSG_ID_MSP_MICRO_SLAM = 184;
 }

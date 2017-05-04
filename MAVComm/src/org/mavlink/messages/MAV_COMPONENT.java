@@ -15,47 +15,11 @@ public interface MAV_COMPONENT {
     /**
      * 
      */
-    public final static int MAV_COMP_ID_GPS = 220;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_MISSIONPLANNER = 190;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_PATHPLANNER = 195;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_MAPPER = 180;
+    public final static int MAV_COMP_ID_AUTOPILOT1 = 1;
     /**
      * 
      */
     public final static int MAV_COMP_ID_CAMERA = 100;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_IMU = 200;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_IMU_2 = 201;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_IMU_3 = 202;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_UDP_BRIDGE = 240;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_UART_BRIDGE = 241;
-    /**
-     * 
-     */
-    public final static int MAV_COMP_ID_SYSTEM_CONTROL = 250;
     /**
      * 
      */
@@ -136,4 +100,48 @@ public interface MAV_COMPONENT {
      * 
      */
     public final static int MAV_COMP_ID_QX1_GIMBAL = 159;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_MAPPER = 180;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_MISSIONPLANNER = 190;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_PATHPLANNER = 195;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_IMU = 200;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_IMU_2 = 201;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_IMU_3 = 202;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_GPS = 220;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_GPS2 = 221;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_UDP_BRIDGE = 240;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_UART_BRIDGE = 241;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_SYSTEM_CONTROL = 250;
 }

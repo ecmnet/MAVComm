@@ -155,8 +155,10 @@ import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
 import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
+import org.mavlink.messages.lquac.msg_video_stream_information;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
+import org.mavlink.messages.lquac.msg_set_video_stream_settings;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_setup_signing;
@@ -308,8 +310,10 @@ import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
 import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
+import org.mavlink.messages.lquac.msg_video_stream_information;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
+import org.mavlink.messages.lquac.msg_set_video_stream_settings;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 /**
  * Class MAVLinkMessageFactory
@@ -924,12 +928,20 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_set_actuator_control_target(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION:
+      msg = new msg_video_stream_information(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET:
       msg = new msg_local_position_ned_system_global_offset(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_RESOURCE_REQUEST:
       msg = new msg_resource_request(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS:
+      msg = new msg_set_video_stream_settings(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_MSP_MICRO_SLAM:
