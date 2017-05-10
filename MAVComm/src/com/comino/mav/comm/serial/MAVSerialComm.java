@@ -170,7 +170,7 @@ public class MAVSerialComm implements IMAVComm {
 			return true;
 
 		try {
-			serialPort.openPort();
+
 			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
 			serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000,1000);
 
@@ -198,7 +198,7 @@ public class MAVSerialComm implements IMAVComm {
 					}
 				}
 			});
-
+			serialPort.openPort();
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
 		} catch (Exception e2) {
 			e2.printStackTrace();

@@ -836,17 +836,21 @@ public class MAVLinkToModelParser {
 			model.sys.setStatus(Status.MSP_CONNECTED,true);
 			model.sys.tms = System.nanoTime()/1000;
 
-			if(mavListener!=null && mavListener.size()> 0) {
-				for(IMAVLinkListener mavlistener : mavListener)
-					mavlistener.received(msg);
-			}
+			try {
+				if(mavListener!=null && mavListener.size()> 0) {
+					for(IMAVLinkListener mavlistener : mavListener)
+						mavlistener.received(msg);
+				}
+			} catch(Exception e) { e.printStackTrace(); }
 
-			mavList.put(msg.getClass(),msg);
-			final List<IMAVLinkListener> listenerList = listeners.get(msg.getClass());
-			if(listenerList!=null && listenerList.size()> 0) {
-				for(IMAVLinkListener listener : listenerList)
-					listener.received(msg);
-			}
+			try {
+				mavList.put(msg.getClass(),msg);
+				final List<IMAVLinkListener> listenerList = listeners.get(msg.getClass());
+				if(listenerList!=null && listenerList.size()> 0) {
+					for(IMAVLinkListener listener : listenerList)
+						listener.received(msg);
+				}
+			} catch(Exception e) { e.printStackTrace(); }
 
 
 			if(model.sys.isStatus(Status.MSP_ARMED))
@@ -901,8 +905,10 @@ public class MAVLinkToModelParser {
 				final Status os = oldStatus.clone(); final Status ns = model.sys.clone();
 				public void run() {
 					//System.err.println("Notify"+os+"/"+ns);
-					for(IMSPStatusChangedListener listener : modeListener)
-						listener.update(os, ns);
+					try {
+						for(IMSPStatusChangedListener listener : modeListener)
+							listener.update(os, ns);
+					} catch(Exception e) { e.printStackTrace(); }
 				}
 			});
 

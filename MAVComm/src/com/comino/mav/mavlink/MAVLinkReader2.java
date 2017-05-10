@@ -24,7 +24,7 @@ public class MAVLinkReader2 {
 	private static int MAVLINK_MAX_PAYLOAD_SIZE = 255;
 
 
-	enum t_parser_state  {
+	private enum t_parser_state  {
 		MAVLINK_PARSE_STATE_IDLE,
 		MAVLINK_PARSE_STATE_GOT_STX,
 		MAVLINK_PARSE_STATE_GOT_LENGTH,
@@ -42,7 +42,7 @@ public class MAVLinkReader2 {
 		MAVLINK_PARSE_STATE_SIGNATURE_WAIT
 	};
 
-	enum mavlink_framing_t {
+	private enum mavlink_framing_t {
 		MAVLINK_FRAMING_INCOMPLETE,
 		MAVLINK_FRAMING_OK,
 		MAVLINK_FRAMING_BAD_CRC,

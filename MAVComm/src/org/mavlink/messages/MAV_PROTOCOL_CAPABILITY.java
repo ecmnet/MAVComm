@@ -72,4 +72,8 @@ public interface MAV_PROTOCOL_CAPABILITY {
      * Autopilot supports mission rally point protocol.
      */
     public final static int MAV_PROTOCOL_CAPABILITY_MISSION_RALLY = 32768;
+    /**
+     * Autopilot supports the flight information protocol.
+     */
+    public final static int MAV_PROTOCOL_CAPABILITY_FLIGHT_INFORMATION = 65536;
 }

@@ -438,7 +438,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_CHANGE_ALTITUDE = 186;
     /**
-     * Mission command to perform a landing. This is used as a marker in a mission to tell the autopilot where a sequence of mission items that represents a landing starts. It may also be sent via a COMMAND_LONG to trigger a landing, in which case the nearest (geographically) landing sequence in the mission will be used. The Latitude/Longitude is optional, and may be set to 0/0 if not needed. If specified then it will be used to help find the closest landing sequence.
+     * Mission command to perform a landing. This is used as a marker in a mission to tell the autopilot where a sequence of mission items that represents a landing starts. It may also be sent via a COMMAND_LONG to trigger a landing, in which case the nearest (geographically) landing sequence in the mission will be used. The Latitude/Longitude is optional, and may be set to 0 if not needed. If specified then it will be used to help find the closest landing sequence.
      * PARAM 1 : Empty
      * PARAM 2 : Empty
      * PARAM 3 : Empty
@@ -544,7 +544,7 @@ public interface MAV_CMD {
      * PARAM 4 : Focus Locking, Unlocking or Re-locking
      * PARAM 5 : Shooting Command
      * PARAM 6 : Command Identity
-     * PARAM 7 : Empty
+     * PARAM 7 : Test shot identifier. If set to 1, image will only be captured, but not counted towards internal frame count.
      */
     public final static int MAV_CMD_DO_DIGICAM_CONTROL = 203;
     /**
@@ -570,9 +570,9 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_MOUNT_CONTROL = 205;
     /**
-     * Mission command to set CAM_TRIGG_DIST for this flight
-     * PARAM 1 : Camera trigger distance (meters)
-     * PARAM 2 : Empty
+     * Mission command to set camera trigger distance for this flight. The camera is trigerred each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.
+     * PARAM 1 : Camera trigger distance (meters). -1 or 0 to ignore
+     * PARAM 2 : Camera shutter integration time (milliseconds). -1 or 0 to ignore
      * PARAM 3 : Empty
      * PARAM 4 : Empty
      * PARAM 5 : Empty
@@ -635,6 +635,17 @@ public interface MAV_CMD {
      * PARAM 7 : Empty
      */
     public final static int MAV_CMD_NAV_SET_YAW_SPEED = 213;
+    /**
+     * Mission command to set camera trigger interval for this flight. If triggering is enabled, the camera is triggered each time this interval expires. This command can also be used to set the shutter integration time for the camera.
+     * PARAM 1 : Camera trigger cycle time (milliseconds). -1 or 0 to ignore.
+     * PARAM 2 : Camera shutter integration time (milliseconds). Should be less than trigger cycle time. -1 or 0 to ignore.
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_DO_SET_CAM_TRIGG_INTERVAL = 214;
     /**
      * Mission command to control a camera or antenna mount, using a quaternion as reference.
      * PARAM 1 : q1 - quaternion param #1, w (1 in null-rotation)
@@ -830,12 +841,12 @@ public interface MAV_CMD {
     /**
      * WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for values you don't want to change.
      * PARAM 1 : Camera ID (1 for first, 2 for second, etc.)
-     * PARAM 2 : Camera mode (0: photo, 1: video)
-     * PARAM 3 : Audio recording enabled (0: off 1: on)
-     * PARAM 4 : Reserved for metering mode ID (Average, Center, Spot, etc.)
-     * PARAM 5 : Reserved for image format ID (Jpeg/Raw/Jpeg+Raw)
-     * PARAM 6 : Reserved for image quality ID (Compression)
-     * PARAM 7 : Reserved for color mode ID (Neutral, Vivid, etc.)
+     * PARAM 2 : Reserved for Flicker mode (0 for Auto)
+     * PARAM 3 : Reserved for metering mode ID (Average, Center, Spot, etc.)
+     * PARAM 4 : Reserved for image format ID (Jpeg/Raw/Jpeg+Raw)
+     * PARAM 5 : Reserved for image quality ID (Compression)
+     * PARAM 6 : Reserved for color mode ID (Neutral, Vivid, etc.)
+     * PARAM 7 : Reserved
      */
     public final static int MAV_CMD_SET_CAMERA_SETTINGS_2 = 524;
     /**
@@ -873,6 +884,14 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_RESET_CAMERA_SETTINGS = 529;
     /**
+     * WIP: Set camera running mode. Use NAN for values you don't want to change.
+     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 2 : Camera mode (0: photo mode, 1: video mode)
+     * PARAM 3 : Audio recording enabled (0: off 1: on)
+     * PARAM 4 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_SET_CAMERA_MODE = 530;
+    /**
      * WIP: Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture.
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : Duration between two consecutive pictures (in seconds)
@@ -897,8 +916,8 @@ public interface MAV_CMD {
     /**
      * Enable or disable on-board camera triggering system.
      * PARAM 1 : Trigger enable/disable (0 for disable, 1 for start), -1 to ignore
-     * PARAM 2 : Shutter integration time (in ms), -1 to ignore
-     * PARAM 3 : 1 to reset the trigger sequence, -1/0 to ignore
+     * PARAM 2 : 1 to reset the trigger sequence, -1 or 0 to ignore
+     * PARAM 3 : 1 to pause triggering, but without switching the camera off or retracting it. -1 to ignore
      */
     public final static int MAV_CMD_DO_TRIGGER_CONTROL = 2003;
     /**

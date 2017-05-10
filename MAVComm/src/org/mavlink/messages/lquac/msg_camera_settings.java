@@ -24,7 +24,7 @@ public class msg_camera_settings extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_CAMERA_SETTINGS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 32;
+    payload_length = 33;
 }
 
   /**
@@ -83,6 +83,10 @@ public class msg_camera_settings extends MAVLinkMessage {
    * Reserved for metering mode ID (Average, Center, Spot, etc.)
    */
   public int metering_mode_id;
+  /**
+   * Reserved for flicker mode ID (Auto, 60Hz, 50Hz, etc.)
+   */
+  public int flicker_mode_id;
 /**
  * Decode message with raw data
  */
@@ -101,12 +105,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   image_format_id = (int)dis.readUnsignedByte()&0x00FF;
   image_quality_id = (int)dis.readUnsignedByte()&0x00FF;
   metering_mode_id = (int)dis.readUnsignedByte()&0x00FF;
+  flicker_mode_id = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+32];
+  byte[] buffer = new byte[12+33];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -132,18 +137,19 @@ public byte[] encode() throws IOException {
   dos.writeByte(image_format_id&0x00FF);
   dos.writeByte(image_quality_id&0x00FF);
   dos.writeByte(metering_mode_id&0x00FF);
+  dos.writeByte(flicker_mode_id&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 32);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 33);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[42] = crcl;
-  buffer[43] = crch;
+  buffer[43] = crcl;
+  buffer[44] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_SETTINGS : " +   "  time_boot_ms="+time_boot_ms+  "  aperture="+aperture+  "  shutter_speed="+shutter_speed+  "  iso_sensitivity="+iso_sensitivity+  "  ev="+ev+  "  white_balance="+white_balance+  "  camera_id="+camera_id+  "  exposure_mode="+exposure_mode+  "  mode_id="+mode_id+  "  audio_recording="+audio_recording+  "  color_mode_id="+color_mode_id+  "  image_format_id="+image_format_id+  "  image_quality_id="+image_quality_id+  "  metering_mode_id="+metering_mode_id;}
+return "MAVLINK_MSG_ID_CAMERA_SETTINGS : " +   "  time_boot_ms="+time_boot_ms+  "  aperture="+aperture+  "  shutter_speed="+shutter_speed+  "  iso_sensitivity="+iso_sensitivity+  "  ev="+ev+  "  white_balance="+white_balance+  "  camera_id="+camera_id+  "  exposure_mode="+exposure_mode+  "  mode_id="+mode_id+  "  audio_recording="+audio_recording+  "  color_mode_id="+color_mode_id+  "  image_format_id="+image_format_id+  "  image_quality_id="+image_quality_id+  "  metering_mode_id="+metering_mode_id+  "  flicker_mode_id="+flicker_mode_id;}
 }
