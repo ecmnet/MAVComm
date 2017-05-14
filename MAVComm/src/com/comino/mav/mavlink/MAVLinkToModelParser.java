@@ -94,7 +94,7 @@ import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
 
-	private static int TIME_SYNC_CYCLE_MS 				= 100;
+	private static int TIME_SYNC_CYCLE_MS 				= 0;
 
 
 	private MAVLinkStream stream;
@@ -124,6 +124,9 @@ public class MAVLinkToModelParser {
 	private LogMessage lastMessage = null;
 
 	private Status oldStatus = new Status();
+
+
+	private long time_sync_cycle;
 
 	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
 
@@ -684,16 +687,18 @@ public class MAVLinkToModelParser {
 						sync_s.ts1 = sync.ts1;
 						link.write(sync_s);
 						return;
+
 					} else if (sync.tc1 > 0) {
 						long offset_ns = (sync.ts1 + now_ns - sync.tc1 * 2) / 2;
 						long dt = time_offset_ns - offset_ns;
+						System.out.println("TSC="+sync.ts1+"TC="+sync.tc1+"TO="+time_offset_ns);
 
 						if (Math.abs(dt) > 10000000) {
 							time_offset_ns = offset_ns;
 							System.out.println("[sys]  Clock skew detected: "+dt);
 						} else
 							time_offset_ns = (long)((0.6 * offset_ns) + 0.4 * time_offset_ns);
-						model.sys.t_offset_ms = time_offset_ns / 1000000;
+						model.sys.t_offset_ns = time_offset_ns;
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -880,14 +885,14 @@ public class MAVLinkToModelParser {
 			model.sys.tms = System.nanoTime()/1000;
 		}
 
-		//		if((System.currentTimeMillis() - time_offset_tms) > TIME_SYNC_CYCLE_MS
-		//				&& link.isSerial()) {
-		//			time_offset_tms = System.currentTimeMillis();
-		//			msg_timesync sync_s = new msg_timesync(1,1);
-		//			sync_s.tc1 = 0;
-		//			sync_s.ts1 = model.sys.getCurrentSyncTimeMS()*1000000;
-		//			link.write(sync_s);
-		//		}
+		if((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS
+				&& link.isSerial() && TIME_SYNC_CYCLE_MS>0) {
+			time_sync_cycle = System.currentTimeMillis();
+			msg_timesync sync_s = new msg_timesync(1,1);
+			sync_s.ts1 = System.nanoTime()/1000*1000;
+			sync_s.tc1 = 0;
+			link.write(sync_s);
+		}
 
 		if((System.nanoTime()/1000) > (model.imu.tms+500000) &&
 				model.sys.isStatus(Status.MSP_READY)) {

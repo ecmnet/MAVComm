@@ -40,6 +40,7 @@ import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
+import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkReader2;
@@ -308,12 +309,12 @@ public class MAVSerialComm implements IMAVComm {
 				//					System.out.println(b);
 				//				});
 
-				msg_heartbeat msg = 	(msg_heartbeat) comm.getMavLinkMessageMap().get(msg_heartbeat.class);
+				msg_timesync msg = 	(msg_timesync) comm.getMavLinkMessageMap().get(msg_timesync.class);
 				//				//		comm.getModel().state.print("NED:");
 				//				System.out.println("REM="+comm.getModel().battery.p+" VOLT="+comm.getModel().battery.b0+" CURRENT="+comm.getModel().battery.c0);
 				//				System.out.println("ANGLEX="+comm.getModel().attitude.p+" ANGLEY="+comm.getModel().attitude.r+" "+comm.getModel().sys.toString());
 				Thread.sleep(2000);
-				System.out.println("Errors: "+comm.getErrorCount()+" Unread: "+comm.getUnread());
+				System.out.println("Errors: "+comm.getErrorCount()+"Current Unix Time: "+(System.nanoTime()/1000*1000)+" "+msg);
 			}
 
 			//			colService.stop();
