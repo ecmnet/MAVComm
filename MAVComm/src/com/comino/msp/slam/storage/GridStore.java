@@ -34,21 +34,27 @@
 
 package com.comino.msp.slam.storage;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.comino.msp.main.StartUp;
 import com.comino.msp.model.DataModel;
 
 public class GridStore {
 
+	private static final String DIRECTORY_NAME = "/grid_store";
+
 	private static GridStore gridStore 	= null;
 
-	private String dir 					= null;
 	private DataModel model				= null;
+	private String    path              = null;
 
 
-	public static GridStore getInstance(String dir, DataModel model) {
+	public static GridStore getInstance(DataModel model) {
 		if(gridStore==null)
-			gridStore = new GridStore(dir, model);
+			gridStore = new GridStore(model);
 		return gridStore;
 	}
 
@@ -56,11 +62,19 @@ public class GridStore {
 		return gridStore;
 	}
 
-	public GridStore(String dir, DataModel model) {
-		this.dir   = dir;
+	public GridStore(DataModel model) {
 		this.model = model;
 
-		// TODO create directory if required
+		try {
+			String dirName = System.getProperty("user.home") + DIRECTORY_NAME;
+			File dir = new File(dirName);
+			if(!dir.exists())
+				dir.mkdir();
+			path = dir.getAbsolutePath();
+			System.out.println("GridStore directory set to "+path);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void store_current_grid() {
@@ -78,7 +92,16 @@ public class GridStore {
 	}
 
 	private List<String> getListOfSurroundingGridsNames(float max_distance_m) {
-		return null;
+		// Idea: scans all grids within a certain range by filename for access and returns a list of filenames
+		List<String> gridNames = new ArrayList<String>();
+
+		return gridNames;
+	}
+
+	public static void main(String[] args) {
+		DataModel m = new DataModel();
+		GridStore store = GridStore.getInstance(m);
+
 	}
 
 }
