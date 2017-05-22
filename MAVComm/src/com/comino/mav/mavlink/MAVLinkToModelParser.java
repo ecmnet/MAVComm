@@ -282,6 +282,9 @@ public class MAVLinkToModelParser {
 				model.raw.fX   = flow.integrated_x;
 				model.raw.fY   = flow.integrated_y;
 				model.raw.fq   = flow.quality;
+				model.raw.fgX  = flow.integrated_xgyro;
+				model.raw.fgY  = flow.integrated_ygyro;
+				model.raw.fgZ  = flow.integrated_zgyro;
 				model.raw.fd   = flow.distance;
 
 				model.raw.tms  = flow.time_usec;

@@ -46,6 +46,9 @@ public class Raw extends Segment {
 	public float fq		= Float.NaN;
 	public float fd		= Float.NaN;		// Flow distance
 	public float dicov	= Float.NaN;		// LIDAR covariance
+	public float fgX    = Float.NaN;	    // Flow Gyro
+	public float fgY    = Float.NaN;
+	public float fgZ    = Float.NaN;
 
 
 
@@ -55,6 +58,9 @@ public class Raw extends Segment {
 		di   	= a.di;
 		fq      = a.fq;
 		fd      = a.fd;
+		fgX     = a.fgX;
+		fgY     = a.fgY;
+		fgZ     = a.fgZ;
 		dicov   = a.dicov;
 
 	}
@@ -66,6 +72,9 @@ public class Raw extends Segment {
 		at.di		= di;
 		at.fq		= fq;
 		at.fd       = fd;
+		at.fgX      = fgX;
+		at.fgY      = fgY;
+		at.fgZ      = fgZ;
 		at.dicov    = dicov;
 
 		return at;
@@ -80,6 +89,9 @@ public class Raw extends Segment {
 		di   	= 0;
 		fq      = 0;
 		fd      = 0;
+		fgX     = 0;
+		fgY     = 0;
+		fgZ     = 0;
 		dicov   = 0;
 	}
 
