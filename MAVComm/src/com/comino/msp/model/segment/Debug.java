@@ -43,60 +43,34 @@ public class Debug extends Segment {
 	// positioning actual
 
 
-	public float	x=0;			//  x-position in m (Roll)
-	public float    y=0;			//  y-position in m (Pitch)
-	public float    z=0;			//  z-position in m (Altitude)
-	public float    h=0;			// heading in radiant
-
-	public float    vx=0;			// gative x speed in m/s
-	public float 	vy=0;			// gative y speed in m/s
-	public float	vz=0;			// gative z speed in m/s
-	public float	vh=0;			// gative heading speed in radiant/s
+	public float	v1=0;
+	public float    v2=0;
+	public float    v3=0;
+	public float    v4=0;
 
 
 
 	public Debug clone() {
 		Debug t = new Debug();
-		t.x		= x;
-		t.y		= y;
-		t.z		= z;
-		t.h		= h;
-		t.vx	= vx;
-		t.vy	= vy;
-		t.vz	= vz;
-		t.vh	= vh;
+		t.v1		= v1;
+		t.v2		= v2;
+		t.v3		= v3;
+		t.v4		= v4;
 
 		return t;
 	}
 
 	public void set(Debug t) {
 
-		x		= t.x;
-		y		= t.y;
-		z		= t.z;
-		h		= t.h;
-		vx		= t.vx;
-		vy		= t.vy;
-		vz		= t.vz;
-		vh		= t.vh;
+		v1		= t.v1;
+		v2		= t.v2;
+		v3		= t.v3;
+		v4		= t.v4;
 
 	}
 
 	public void clear() {
-
-		x		= 0;
-		y		= 0;
-		z		= 0;
-		h		= 0;
-		vx		= 0;
-		vy		= 0;
-		vz		= 0;
-		vh		= 0;
-	}
-
-	public void print(String header) {
-		System.out.printf("%s State: x= %3.2f y=%3.2f z=%3.2f h=%3.2f - vx= %3.2f vy=%3.2f vz=%3.2f vh=%3.2f \n",
-				header,x,y,z,h,vx,vy,vz,vh);
+      v1 = 0; v2 = 0; v3 = 0; v4 = 0;
 	}
 
 }
