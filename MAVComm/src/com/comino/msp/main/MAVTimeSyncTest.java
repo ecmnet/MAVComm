@@ -31,49 +31,79 @@
  *
  ****************************************************************************/
 
-
-package com.comino.mav.control;
-
-import java.util.Map;
+package com.comino.msp.main;
 
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.lquac.msg_timesync;
 
+import com.comino.mav.control.IMAVController;
+import com.comino.mav.control.impl.MAVUdpController;
+import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
-import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
-import com.comino.msp.model.DataModel;
-import com.comino.msp.model.collector.ModelCollectorService;
-import com.comino.msp.model.segment.LogMessage;
 
-public interface IMAVController {
+public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 
-	public boolean connect();
-	public boolean close();
+	private IMAVController control = null;
+	MSPConfig	           config  = null;
 
-	public boolean isSimulation();
-	public boolean isConnected();
+	public MAVTimeSyncTest(String[] args) {
 
-	public String enableFileLogging(boolean enable, String directory);
 
-	public int getErrorCount();
+	//		control = new MAVUdpController("172.168.178.1",14555,14550, false);
+         	control = new MAVUdpController("127.0.0.1",14556,14550, true);
+    //     	control.enableFileLogging(true, null);
+         	control.addMAVLinkListener(this);
 
-	public DataModel getCurrentModel();
+		while(!control.isConnected()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			control.connect();
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_LOGGING_STOP);
+		}
 
-	public String getConnectedAddress();
 
-	public ModelCollectorService getCollector();
+		MSPLogger.getInstance(control);
 
-	public void writeLogMessage(LogMessage m);
+		new Thread(this).start();
 
-	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap();
+	}
 
-	public boolean sendMAVLinkCmd(int command, float...params);
-	public boolean sendMAVLinkMessage(MAVLinkMessage msg);
-	public boolean sendMSPLinkCmd(int command, float...params);
+	public static void main(String[] args) {
+		new MAVTimeSyncTest(args);
 
-	public void addStatusChangeListener(IMSPStatusChangedListener listener);
-	public void addMAVLinkListener(IMAVLinkListener listener);
-	public void addMAVMessageListener(IMAVMessageListener listener);
+	}
 
+	@Override
+	public void run() {
+		while(true) {
+			try {
+				Thread.sleep(1000);
+
+				msg_timesync sync_s = new msg_timesync(255,1);
+				sync_s.tc1 = 0;
+				sync_s.ts1 = System.currentTimeMillis() * 1000000;
+				control.sendMAVLinkMessage(sync_s);
+
+//				if(control.isConnected())
+//				  System.out.println(control.getCurrentModel().hud.ag);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
+
+		}
+
+	}
+
+	@Override
+	public void received(Object o) {
+
+
+	}
 
 }

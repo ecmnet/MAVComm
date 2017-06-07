@@ -94,7 +94,7 @@ import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
 
-	private static int TIME_SYNC_CYCLE_MS 				= 0;
+	private static int TIME_SYNC_CYCLE_MS 				= 1000;
 
 
 	private MAVLinkStream stream;
@@ -682,7 +682,7 @@ public class MAVLinkToModelParser {
 					if(!link.isSerial())
 						return;
 
-					long now_ns = System.nanoTime();
+					long now_ns = System.currentTimeMillis() * 1000000;
 					msg_timesync sync = (msg_timesync)o;
 					if(sync.tc1==0) {
 						msg_timesync sync_s = new msg_timesync(1,1);
@@ -694,7 +694,7 @@ public class MAVLinkToModelParser {
 					} else if (sync.tc1 > 0) {
 						long offset_ns = (sync.ts1 + now_ns - sync.tc1 * 2) / 2;
 						long dt = time_offset_ns - offset_ns;
-						System.out.println("TSC="+sync.ts1+"TC="+sync.tc1+"TO="+time_offset_ns);
+						System.out.println("TS1="+sync.ts1+" TC="+sync.tc1+" TO="+time_offset_ns+" PX4="+model.sys.getMonotonicTime_us());
 
 						if (Math.abs(dt) > 10000000) {
 							time_offset_ns = offset_ns;
@@ -891,9 +891,9 @@ public class MAVLinkToModelParser {
 		if((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS
 				&& link.isSerial() && TIME_SYNC_CYCLE_MS>0) {
 			time_sync_cycle = System.currentTimeMillis();
-			msg_timesync sync_s = new msg_timesync(1,1);
-			sync_s.ts1 = System.nanoTime()/1000*1000;
+			msg_timesync sync_s = new msg_timesync(255,1);
 			sync_s.tc1 = 0;
+			sync_s.ts1 = System.currentTimeMillis() * 1000000;
 			link.write(sync_s);
 		}
 
