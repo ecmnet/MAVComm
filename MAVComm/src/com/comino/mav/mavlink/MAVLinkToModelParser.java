@@ -94,10 +94,10 @@ import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
 
+	// TODO: 080617:Correct model timestamps to monotic time
+
 	private static int TIME_SYNC_CYCLE_MS 				= 1000;
 
-
-	private MAVLinkStream stream;
 	private DataModel model;
 
 	private HashMap<Class<?>,MAVLinkMessage>	    mavList     = null;
@@ -111,7 +111,6 @@ public class MAVLinkToModelParser {
 
 	private List<IMSPStatusChangedListener> modeListener = null;
 
-	private boolean isRunning = false;
 	private long    startUpAt = 0;
 	private long    t_armed_start = 0;
 
@@ -431,7 +430,6 @@ public class MAVLinkToModelParser {
 		registerListener(msg_manual_control.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
-				msg_manual_control ctl = (msg_manual_control)o;
 				model.sys.setStatus(Status.MSP_JOY_ATTACHED,true);
 			}
 		});
@@ -783,15 +781,7 @@ public class MAVLinkToModelParser {
 
 
 	public void start(ByteChannel channel) {
-		System.err.println("Warning: Deprecated ParserWorker");
-		//		if(!isRunning) {
-		//			isRunning = true;
-		//			stream = new MAVLinkStream(channel);
-		//			Thread s = new Thread(new MAVLinkParserWorker());
-		//			s.setName("Mavlink parser worker");
-		//			s.setDaemon(true);
-		//			s.start();
-		//		}
+		System.err.println("Error: Deprecated ParserWorker");
 	}
 
 	public boolean isConnected() {
@@ -806,11 +796,6 @@ public class MAVLinkToModelParser {
 			}
 		}
 		return model.sys.isStatus(Status.MSP_CONNECTED);
-	}
-
-
-	public void stop() {
-		isRunning = false;
 	}
 
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
