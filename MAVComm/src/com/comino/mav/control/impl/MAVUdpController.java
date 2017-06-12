@@ -36,9 +36,6 @@ package com.comino.mav.control.impl;
 
 import java.util.concurrent.locks.LockSupport;
 
-import org.mavlink.messages.lquac.msg_system_time;
-import org.mavlink.messages.lquac.msg_timesync;
-
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
@@ -91,7 +88,6 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 				if(!comm.isConnected()) {
 					comm.close(); Thread.sleep(100); comm.open();
 				}
-
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		collector.stop();

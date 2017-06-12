@@ -61,6 +61,7 @@ public interface IMAVController {
 
 	public String getConnectedAddress();
 
+
 	public ModelCollectorService getCollector();
 
 	public void writeLogMessage(LogMessage m);

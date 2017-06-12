@@ -249,13 +249,13 @@ public class MAVLinkReader2 {
 						msg.isValid = true;
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
-					//	System.out.println("added: "+rxmsg.packet+":"+rxmsg);
+						//System.out.println("added: "+rxmsg.packet+":"+msg);
 					} else {
 						packet_lost++;
-				//		System.out.println("lost: "+rxmsg.packet+":"+rxmsg);
+						//System.out.println(rxmsg);
 					}
 				} else {
-				//	System.out.println("lost: "+rxmsg.packet+":"+rxmsg);
+					//System.out.println(rxmsg);
 					packet_lost++;
 				}
 				break;

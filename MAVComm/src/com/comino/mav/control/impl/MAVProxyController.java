@@ -41,7 +41,6 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_statustext;
-import org.mavlink.messages.lquac.msg_system_time;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.proxy.MAVUdpProxyNIO3;
@@ -182,9 +181,8 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public boolean connect() {
 		comm.open(); proxy.close();proxy.open();
-		if(comm.isConnected()) {
+		if(comm.isConnected())
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
-		}
 		return true;
 	}
 

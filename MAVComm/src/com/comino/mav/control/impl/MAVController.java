@@ -47,7 +47,6 @@ import java.util.concurrent.TimeUnit;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
-import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.udp.MAVUdpCommNIO;
@@ -247,6 +246,7 @@ public class MAVController implements IMAVController, Runnable {
 	}
 
 
+
 	@Override
 	public boolean close() {
 		collector.stop();
@@ -263,6 +263,7 @@ public class MAVController implements IMAVController, Runnable {
 			comm.addStatusChangeListener(listener);
 
 	}
+
 
 	@Override
 	public ModelCollectorService getCollector() {

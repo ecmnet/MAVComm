@@ -146,8 +146,8 @@ public class Status extends Segment {
 		return f;
 	}
 
-	public long getMonotonicTime_us() {
-		return (System.currentTimeMillis()*1000000 - t_offset_ns)/1000;
+	public long nanoTimeSync() {
+		return System.nanoTime() + t_offset_ns;
 	}
 
 	public void  setSensor(int box, boolean val) {

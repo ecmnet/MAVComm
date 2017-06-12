@@ -94,10 +94,10 @@ import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
 
-	// TODO: 080617:Correct model timestamps to monotic time
+	private static int TIME_SYNC_CYCLE_MS 				= 0;
 
-	private static int TIME_SYNC_CYCLE_MS 				= 1000;
 
+	private MAVLinkStream stream;
 	private DataModel model;
 
 	private HashMap<Class<?>,MAVLinkMessage>	    mavList     = null;
@@ -111,6 +111,7 @@ public class MAVLinkToModelParser {
 
 	private List<IMSPStatusChangedListener> modeListener = null;
 
+	private boolean isRunning = false;
 	private long    startUpAt = 0;
 	private long    t_armed_start = 0;
 
@@ -430,6 +431,7 @@ public class MAVLinkToModelParser {
 		registerListener(msg_manual_control.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
+				msg_manual_control ctl = (msg_manual_control)o;
 				model.sys.setStatus(Status.MSP_JOY_ATTACHED,true);
 			}
 		});
@@ -680,7 +682,7 @@ public class MAVLinkToModelParser {
 					if(!link.isSerial())
 						return;
 
-					long now_ns = System.currentTimeMillis() * 1000000;
+					long now_ns = System.nanoTime();
 					msg_timesync sync = (msg_timesync)o;
 					if(sync.tc1==0) {
 						msg_timesync sync_s = new msg_timesync(1,1);
@@ -692,7 +694,7 @@ public class MAVLinkToModelParser {
 					} else if (sync.tc1 > 0) {
 						long offset_ns = (sync.ts1 + now_ns - sync.tc1 * 2) / 2;
 						long dt = time_offset_ns - offset_ns;
-						System.out.println("TS1="+sync.ts1+" TC="+sync.tc1+" TO="+time_offset_ns+" PX4="+model.sys.getMonotonicTime_us());
+						System.out.println("TSC="+sync.ts1+"TC="+sync.tc1+"TO="+time_offset_ns);
 
 						if (Math.abs(dt) > 10000000) {
 							time_offset_ns = offset_ns;
@@ -781,7 +783,15 @@ public class MAVLinkToModelParser {
 
 
 	public void start(ByteChannel channel) {
-		System.err.println("Error: Deprecated ParserWorker");
+		System.err.println("Warning: Deprecated ParserWorker");
+		//		if(!isRunning) {
+		//			isRunning = true;
+		//			stream = new MAVLinkStream(channel);
+		//			Thread s = new Thread(new MAVLinkParserWorker());
+		//			s.setName("Mavlink parser worker");
+		//			s.setDaemon(true);
+		//			s.start();
+		//		}
 	}
 
 	public boolean isConnected() {
@@ -796,6 +806,11 @@ public class MAVLinkToModelParser {
 			}
 		}
 		return model.sys.isStatus(Status.MSP_CONNECTED);
+	}
+
+
+	public void stop() {
+		isRunning = false;
 	}
 
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
@@ -876,9 +891,9 @@ public class MAVLinkToModelParser {
 		if((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS
 				&& link.isSerial() && TIME_SYNC_CYCLE_MS>0) {
 			time_sync_cycle = System.currentTimeMillis();
-			msg_timesync sync_s = new msg_timesync(255,1);
+			msg_timesync sync_s = new msg_timesync(1,1);
+			sync_s.ts1 = System.nanoTime()/1000*1000;
 			sync_s.tc1 = 0;
-			sync_s.ts1 = System.currentTimeMillis() * 1000000;
 			link.write(sync_s);
 		}
 
