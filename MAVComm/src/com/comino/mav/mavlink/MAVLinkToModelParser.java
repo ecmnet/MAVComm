@@ -677,22 +677,24 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				try {
 
-					if(!link.isSerial())
-						return;
+//					if(!link.isSerial())
+//						return;
 
 					long now_ns = System.currentTimeMillis() * 1000000;
 					msg_timesync sync = (msg_timesync)o;
 					if(sync.tc1==0) {
-						msg_timesync sync_s = new msg_timesync(1,1);
-						sync_s.tc1 = now_ns;
-						sync_s.ts1 = sync.ts1;
+						msg_timesync sync_s = new msg_timesync(255,1);
+						sync_s.ts1 = now_ns;
+						sync_s.tc1 = 0;
 						link.write(sync_s);
+						System.out.println(model.sys.getMonotonicTime_us()/1e6);
+
 						return;
 
 					} else if (sync.tc1 > 0) {
 						long offset_ns = (sync.ts1 + now_ns - sync.tc1 * 2) / 2;
 						long dt = time_offset_ns - offset_ns;
-						System.out.println("TS1="+sync.ts1+" TC="+sync.tc1+" TO="+time_offset_ns+" PX4="+model.sys.getMonotonicTime_us());
+						System.out.println("TS1="+sync.ts1/1e9+" TC="+sync.tc1/1e9+" TO="+time_offset_ns/1e9+" PX4="+model.sys.getMonotonicTime_us()/1e6);
 
 						if (Math.abs(dt) > 10000000) {
 							time_offset_ns = offset_ns;

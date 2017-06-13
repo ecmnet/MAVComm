@@ -35,6 +35,7 @@ package com.comino.msp.main;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.lquac.msg_system_time;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVController;
@@ -51,7 +52,7 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 
 
 	//		control = new MAVUdpController("172.168.178.1",14555,14550, false);
-         	control = new MAVUdpController("127.0.0.1",14556,14550, true);
+		     control = new MAVUdpController("127.0.0.1",14557,14540, true);
     //     	control.enableFileLogging(true, null);
          	control.addMAVLinkListener(this);
 
@@ -80,14 +81,22 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 
 	@Override
 	public void run() {
+
+		msg_system_time time = new msg_system_time(255,1);
+		time.time_unix_usec = System.currentTimeMillis() * 1000;
+		time.time_boot_ms = 0;
+		control.sendMAVLinkMessage(time);
+
+		msg_timesync sync_s = new msg_timesync(255,1);
+		sync_s.tc1 = 0;
+		sync_s.ts1 = System.currentTimeMillis() * 1000000;
+		control.sendMAVLinkMessage(sync_s);
+
 		while(true) {
 			try {
 				Thread.sleep(1000);
 
-				msg_timesync sync_s = new msg_timesync(255,1);
-				sync_s.tc1 = 0;
-				sync_s.ts1 = System.currentTimeMillis() * 1000000;
-				control.sendMAVLinkMessage(sync_s);
+
 
 //				if(control.isConnected())
 //				  System.out.println(control.getCurrentModel().hud.ag);
@@ -102,6 +111,15 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 
 	@Override
 	public void received(Object o) {
+
+		if(o instanceof msg_system_time) {
+			msg_system_time stime = (msg_system_time)o;
+			long dt = stime.time_unix_usec -(System.currentTimeMillis()*1000);
+			System.err.println("SystemTimes: dt_usec = "+dt);
+		}
+
+//		if(o instanceof msg_timesync)
+//			System.err.println((System.currentTimeMillis()*1000)+": "+o);
 
 
 	}

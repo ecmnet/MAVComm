@@ -147,7 +147,7 @@ public class Status extends Segment {
 	}
 
 	public long getMonotonicTime_us() {
-		return (System.currentTimeMillis()*1000000 - t_offset_ns)/1000;
+		return System.currentTimeMillis()*1000 - t_offset_ns/1000;
 	}
 
 	public void  setSensor(int box, boolean val) {
