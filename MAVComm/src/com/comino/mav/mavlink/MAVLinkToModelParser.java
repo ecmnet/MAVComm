@@ -673,41 +673,41 @@ public class MAVLinkToModelParser {
 
 		});
 
-		registerListener(msg_timesync.class, new IMAVLinkListener() {
-
-			@Override
-			public void received(Object o) {
-				try {
-
-					if(!link.isSerial())
-						return;
-
-					long now_ns = System.nanoTime();
-					msg_timesync sync = (msg_timesync)o;
-					if(sync.tc1==0) {
-						msg_timesync sync_s = new msg_timesync(1,1);
-						sync_s.tc1 = now_ns;
-						sync_s.ts1 = sync.ts1;
-						link.write(sync_s);
-						return;
-
-					} else if (sync.tc1 > 0) {
-						long offset_ns = (sync.ts1 + now_ns - sync.tc1 * 2) / 2;
-						long dt = time_offset_ns - offset_ns;
-						System.out.println("TSC="+sync.ts1+"TC="+sync.tc1+"TO="+time_offset_ns);
-
-						if (Math.abs(dt) > 10000000) {
-							time_offset_ns = offset_ns;
-							System.out.println("[sys]  Clock skew detected: "+dt);
-						} else
-							time_offset_ns = (long)((0.6 * offset_ns) + 0.4 * time_offset_ns);
-						model.sys.t_offset_ns = time_offset_ns;
-					}
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		});
+//		registerListener(msg_timesync.class, new IMAVLinkListener() {
+//
+//			@Override
+//			public void received(Object o) {
+//				try {
+//
+//					if(!link.isSerial())
+//						return;
+//
+//					long now_ns = System.nanoTime();
+//					msg_timesync sync = (msg_timesync)o;
+//					if(sync.tc1==0) {
+//						msg_timesync sync_s = new msg_timesync(1,1);
+//						sync_s.tc1 = now_ns;
+//						sync_s.ts1 = sync.ts1;
+//						link.write(sync_s);
+//						return;
+//
+//					} else if (sync.tc1 > 0) {
+//						long offset_ns = (sync.ts1 + now_ns - sync.tc1 * 2) / 2;
+//						long dt = time_offset_ns - offset_ns;
+//						System.out.println("TSC="+sync.ts1+"TC="+sync.tc1+"TO="+time_offset_ns);
+//
+//						if (Math.abs(dt) > 10000000) {
+//							time_offset_ns = offset_ns;
+//							System.out.println("[sys]  Clock skew detected: "+dt);
+//						} else
+//							time_offset_ns = (long)((0.6 * offset_ns) + 0.4 * time_offset_ns);
+//						model.sys.t_offset_ns = time_offset_ns;
+//					}
+//				} catch (IOException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 
 		registerListener(msg_autopilot_version.class, new IMAVLinkListener() {
 			@Override
