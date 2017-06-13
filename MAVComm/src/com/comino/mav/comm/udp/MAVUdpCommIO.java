@@ -166,8 +166,7 @@ public class MAVUdpCommIO implements IMAVComm {
 	}
 
 	public void close() {
-		if(parser!=null)
-			parser.stop();
+
 		try {
 			if (channel != null && !isConnected) {
 				channel.close();
