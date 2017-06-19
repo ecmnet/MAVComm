@@ -112,14 +112,13 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void received(Object o) {
 
-		if(o instanceof msg_system_time) {
-			msg_system_time stime = (msg_system_time)o;
-			long dt = stime.time_unix_usec -(System.currentTimeMillis()*1000);
-			System.err.println("SystemTimes: dt_usec = "+dt);
-		}
+//		if(o instanceof msg_system_time) {
+//			msg_system_time stime = (msg_system_time)o;
+//			long dt = stime.time_unix_usec -(System.currentTimeMillis()*1000);
+//			System.err.println("SystemTimes: dt_usec = "+dt);
+//		}
 
-//		if(o instanceof msg_timesync)
-//			System.err.println((System.currentTimeMillis()*1000)+": "+o);
+
 
 
 	}
