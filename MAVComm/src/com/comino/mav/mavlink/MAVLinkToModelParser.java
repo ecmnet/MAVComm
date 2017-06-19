@@ -96,7 +96,7 @@ public class MAVLinkToModelParser {
 
 	// TODO: 080617:Correct model timestamps to monotic time
 
-	private static int     TIME_SYNC_CYCLE_MS 				= 100;
+	private static int     TIME_SYNC_CYCLE_MS 				= 1000;
 	private static double  OFFSET_AVG_ALPHA                 = 0.6d;
 
 	private DataModel model;
