@@ -146,7 +146,7 @@ public class Status extends Segment {
 		return f;
 	}
 
-	public long getMonotonicTime_us() {
+	public long getSynchronizedPX4Time_us() {
 		return System.currentTimeMillis()*1000 - t_offset_ns/1000;
 	}
 

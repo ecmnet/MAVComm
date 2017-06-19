@@ -82,20 +82,15 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void run() {
 
-		msg_system_time time = new msg_system_time(255,1);
-		time.time_unix_usec = System.currentTimeMillis() * 1000;
-		time.time_boot_ms = 0;
-		control.sendMAVLinkMessage(time);
-
 		msg_timesync sync_s = new msg_timesync(255,1);
 		sync_s.tc1 = 0;
-		sync_s.ts1 = System.currentTimeMillis() * 1000000;
+		sync_s.ts1 = control.getCurrentModel().sys.getSynchronizedPX4Time_us()*1000;
 		control.sendMAVLinkMessage(sync_s);
 
 		while(true) {
 			try {
 				Thread.sleep(1000);
-
+                System.out.println(control.getCurrentModel().sys.getSynchronizedPX4Time_us());
 
 
 //				if(control.isConnected())
@@ -114,8 +109,7 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 
 //		if(o instanceof msg_system_time) {
 //			msg_system_time stime = (msg_system_time)o;
-//			long dt = stime.time_unix_usec -(System.currentTimeMillis()*1000);
-//			System.err.println("SystemTimes: dt_usec = "+dt);
+//			System.err.println(stime.time_unix_usec);
 //		}
 
 

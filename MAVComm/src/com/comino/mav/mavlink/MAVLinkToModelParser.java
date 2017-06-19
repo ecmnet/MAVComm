@@ -96,7 +96,8 @@ public class MAVLinkToModelParser {
 
 	// TODO: 080617:Correct model timestamps to monotic time
 
-	private static int TIME_SYNC_CYCLE_MS 				= 100;
+	private static int     TIME_SYNC_CYCLE_MS 				= 100;
+	private static double  OFFSET_AVG_ALPHA                 = 0.6d;
 
 	private DataModel model;
 
@@ -681,7 +682,8 @@ public class MAVLinkToModelParser {
 //					if(!link.isSerial())
 //						return;
 
-					long now_ns = System.currentTimeMillis() * 1000000;
+
+					long now_ns = System.currentTimeMillis()*1000000L;
 					msg_timesync sync = (msg_timesync)o;
 
 					if(sync.tc1==0) {
@@ -692,20 +694,19 @@ public class MAVLinkToModelParser {
 						return;
 
 					} else if (sync.tc1 > 0) {
-						long offset_ns = ( sync.ts1 + now_ns - sync.tc1 * 2) / 2;
+						long offset_ns = ( sync.ts1 + now_ns - sync.tc1 * 2L) / 2L;
 						long dt = time_offset_ns - offset_ns;
-						System.out.println("TS1="+sync.ts1+" TC="+sync.tc1+" TO="+time_offset_ns+" OFS="+offset_ns+" PX4="+model.sys.getMonotonicTime_us()*1000);
-
-						if (Math.abs(dt)  > 10000000) {
+						//System.out.println("TS1="+sync.ts1+" TC="+sync.tc1+" TO="+time_offset_ns+" OFS="+offset_ns+" PX4="+now_ns+" DT="+Math.abs(dt/1e9d));
+						if (dt > 10000000L || dt < -10000000L) {
 							time_offset_ns = offset_ns;
-							System.out.println("[sys]  Clock skew detected: "+dt/1e9);
+							System.out.println("[sys]  Clock skew detected: "+time_offset_ns);
 						} else {
-							time_offset_ns = (long)(0.6f * offset_ns + 0.4f * time_offset_ns);
-							System.out.println("[sys] New timeoffset: "+time_offset_ns);
+							time_offset_ns = (long)(OFFSET_AVG_ALPHA * offset_ns + (1.0d - OFFSET_AVG_ALPHA) * time_offset_ns);
 						}
 						model.sys.t_offset_ns = time_offset_ns;
+				//	System.out.println("OFFSET="+model.sys.t_offset_ns+" PX4="+model.sys.getSynchronizedPX4Time_us());
 					}
-				} catch (IOException e) {
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
@@ -886,7 +887,7 @@ public class MAVLinkToModelParser {
 			time_sync_cycle = System.currentTimeMillis();
 			msg_timesync sync_s = new msg_timesync(255,1);
 			sync_s.tc1 = 0;
-			sync_s.ts1 = System.currentTimeMillis() * 1000000;
+			sync_s.ts1 = System.currentTimeMillis()*1000000L;
 			link.write(sync_s);
 		}
 
