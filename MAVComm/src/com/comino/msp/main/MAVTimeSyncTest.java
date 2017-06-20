@@ -35,8 +35,10 @@ package com.comino.msp.main;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.lquac.msg_highres_imu;
 import org.mavlink.messages.lquac.msg_system_time;
 import org.mavlink.messages.lquac.msg_timesync;
+import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
@@ -82,17 +84,21 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void run() {
 
-		msg_timesync sync_s = new msg_timesync(255,1);
-		sync_s.tc1 = 0;
-		sync_s.ts1 = control.getCurrentModel().sys.getSynchronizedPX4Time_us()*1000;
-		control.sendMAVLinkMessage(sync_s);
+//		msg_timesync sync_s = new msg_timesync(255,1);
+//		sync_s.tc1 = 0;
+//		sync_s.ts1 = control.getCurrentModel().sys.getSynchronizedPX4Time_us()*1000;
+//		control.sendMAVLinkMessage(sync_s);
 
 		while(true) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(100);
                 System.out.println(control.getCurrentModel().sys.getSynchronizedPX4Time_us());
 
 
+                msg_vision_position_estimate sms = new msg_vision_position_estimate(1,2);
+    			sms.usec = //control.getCurrentModel().sys.getSynchronizedPX4Time_us();
+    			sms.usec = System.currentTimeMillis()*1000;
+    			control.sendMAVLinkMessage(sms);
 //				if(control.isConnected())
 //				  System.out.println(control.getCurrentModel().hud.ag);
 			} catch (InterruptedException e) {
@@ -107,10 +113,15 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void received(Object o) {
 
-//		if(o instanceof msg_system_time) {
-//			msg_system_time stime = (msg_system_time)o;
-//			System.err.println(stime.time_unix_usec);
-//		}
+		if(o instanceof msg_vision_position_estimate) {
+			msg_vision_position_estimate stime = (msg_vision_position_estimate)o;
+			System.err.println(" -> "+stime.usec);
+		}
+
+		if(o instanceof msg_highres_imu) {
+			msg_highres_imu stime = (msg_highres_imu)o;
+			System.err.println(stime.time_usec);
+		}
 
 
 
