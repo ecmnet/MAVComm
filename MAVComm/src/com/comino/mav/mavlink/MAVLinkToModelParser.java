@@ -187,9 +187,9 @@ public class MAVLinkToModelParser {
 
 				model.vision.flags= (int)mocap.flags;
 				model.vision.fps= mocap.fps;
-				model.vision.tms= System.nanoTime()/1000;
+				model.vision.tms= mocap.tms;
 				if(model.vision.errors < 5) {
-					mocap_tms = System.nanoTime()/1000;
+					mocap_tms = System.currentTimeMillis()*1000;
 					model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true );
 				}
 			}
@@ -206,6 +206,7 @@ public class MAVLinkToModelParser {
 				model.vision.h= MSPMathUtils.fromRad(mocap.yaw);
 				model.vision.p= mocap.pitch;
 				model.vision.r= mocap.roll;
+				model.vision.tms = mocap.usec;
 			}
 		});
 
@@ -215,7 +216,6 @@ public class MAVLinkToModelParser {
 				msg_msp_status status = (msg_msp_status)o;
 				model.sys.load_m = status.load / 4f;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
-				model.sys.tms = System.nanoTime()/1000;
 			}
 		});
 
@@ -339,7 +339,7 @@ public class MAVLinkToModelParser {
 
 				model.hud.aX   = att.roll;
 				model.hud.aY   = att.pitch;
-				model.hud.tms  = System.nanoTime()/1000;
+				model.hud.tms  = System.currentTimeMillis()*1000;
 				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 
 				//System.out.println(att.toString());
@@ -375,7 +375,7 @@ public class MAVLinkToModelParser {
 				model.attitude.srr = att.body_roll_rate;
 				model.attitude.spr = att.body_pitch_rate;
 				model.attitude.syr = att.body_yaw_rate;
-				model.attitude.tms = System.nanoTime()/1000;
+				model.attitude.tms = System.currentTimeMillis()*1000;
 
 				//System.out.println(att.toString());
 			}
@@ -396,6 +396,7 @@ public class MAVLinkToModelParser {
 				model.gps.longitude = gps.lon/1e7f;
 				model.gps.altitude = (short)(gps.alt/1000);
 				model.gps.fixtype = (byte)gps.fix_type;
+				model.gps.tms = System.currentTimeMillis()*1000;
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat>3);
 				model.sys.setSensor(Status.MSP_RTK_AVAILABILITY, gps.fix_type>3);
 
@@ -474,7 +475,7 @@ public class MAVLinkToModelParser {
 
 				model.state.v = (float)Math.sqrt( ned.vx* ned.vx +  ned.vy* ned.vy);
 
-				model.state.tms = System.nanoTime()/1000;
+				model.state.tms = System.currentTimeMillis()*1000;
 
 			}
 		});
@@ -522,7 +523,7 @@ public class MAVLinkToModelParser {
 
 				model.target_state.c_frame = ned.coordinate_frame;
 
-				model.target_state.tms = System.nanoTime()/1000;
+				model.target_state.tms = System.currentTimeMillis()*1000;
 
 				model.sys.setStatus(Status.MSP_LPOS_AVAILABILITY, true);
 
@@ -543,7 +544,7 @@ public class MAVLinkToModelParser {
 				model.state.g_vy = pos.vy/100f;
 				model.state.g_vz = pos.vz/100f;
 
-				gpos_tms = System.nanoTime()/1000;
+				gpos_tms = System.currentTimeMillis()*1000;
 				model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, true);
 
 			}
@@ -570,8 +571,8 @@ public class MAVLinkToModelParser {
 				model.imu.abs_pressure = imu.abs_pressure;
 
 				model.sys.imu_temp = (int)imu.temperature;
-				model.imu.tms = System.nanoTime()/1000;
-				model.sys.tms = System.nanoTime()/1000;
+				model.imu.tms = System.currentTimeMillis()*1000;
+				model.sys.tms = System.currentTimeMillis()*1000;
 
 				model.sys.setStatus(Status.MSP_READY,true);
 				notifyStatusChange();
@@ -612,7 +613,7 @@ public class MAVLinkToModelParser {
 				model.rc.s3 = rc.chan4_raw < 65534 ? (short)rc.chan4_raw : 1500;
 				model.rc.tms = rc.time_boot_ms;
 
-				rc_tms = System.currentTimeMillis();
+				rc_tms = System.currentTimeMillis()*1000;
 
 				notifyStatusChange();
 
@@ -655,7 +656,7 @@ public class MAVLinkToModelParser {
 				model.sys.basemode = hb.base_mode;
 				model.sys.custommode = (int)(hb.custom_mode);
 
-				model.sys.tms = System.nanoTime()/1000;
+				model.sys.tms = System.currentTimeMillis()*1000;
 
 				notifyStatusChange();
 			}
@@ -699,7 +700,7 @@ public class MAVLinkToModelParser {
 						//System.out.println("TS1="+sync.ts1+" TC="+sync.tc1+" TO="+time_offset_ns+" OFS="+offset_ns+" PX4="+now_ns+" DT="+Math.abs(dt/1e9d));
 						if (dt > 10000000L || dt < -10000000L) {
 							time_offset_ns = offset_ns;
-							System.out.println("[sys]  Clock skew detected: "+time_offset_ns);
+							System.out.println("[sys]  Clock skew detected: "+dt);
 						} else {
 							time_offset_ns = (long)(OFFSET_AVG_ALPHA * offset_ns + (1.0d - OFFSET_AVG_ALPHA) * time_offset_ns);
 						}
@@ -732,6 +733,7 @@ public class MAVLinkToModelParser {
 				model.battery.p  = (short)sys.battery_remaining;
 				model.battery.b0 = sys.voltage_battery / 1000f;
 				model.battery.c0 = sys.current_battery / 100f;
+				model.battery.tms = System.currentTimeMillis()*1000;
 
 				model.sys.error1  = sys.errors_count1;
 				model.sys.load_p  = sys.load/10;
@@ -767,7 +769,7 @@ public class MAVLinkToModelParser {
 		System.out.println("MAVMSP parser: "+listeners.size()+" MAVLink messagetypes registered");
 
 		startUpAt = System.currentTimeMillis();
-		model.sys.tms = System.nanoTime()/1000;
+		model.sys.tms = System.currentTimeMillis()*1000;
 
 	}
 
@@ -832,7 +834,7 @@ public class MAVLinkToModelParser {
 
 		if(msg!=null) {
 			model.sys.setStatus(Status.MSP_CONNECTED,true);
-			model.sys.tms = System.nanoTime()/1000;
+			model.sys.tms =System.currentTimeMillis()*1000;
 
 			try {
 				if(mavListener!=null && mavListener.size()> 0) {
@@ -863,19 +865,19 @@ public class MAVLinkToModelParser {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
 		}
 
-		if((System.currentTimeMillis() - rc_tms)>1000) {
+		if((System.currentTimeMillis()*1000 - rc_tms)>1000000) {
 			model.sys.setStatus(Status.MSP_RC_ATTACHED, (false));
 			notifyStatusChange(); model.rc.rssi = 0;
 			rc_tms = System.currentTimeMillis();
 		}
 
-		if((System.nanoTime()/1000) > (model.sys.tms+100000000) &&
+		if((System.currentTimeMillis()*1000) > (model.sys.tms+100000) &&
 				model.sys.isStatus(Status.MSP_CONNECTED)) {
 			model.sys.setStatus(Status.MSP_CONNECTED, false);
 			model.sys.setStatus(Status.MSP_READY, false);
 			notifyStatusChange();
 			link.close(); link.open();
-			model.sys.tms = System.nanoTime()/1000;
+			model.sys.tms = System.currentTimeMillis()*1000;
 		}
 
 		if((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS
@@ -891,7 +893,7 @@ public class MAVLinkToModelParser {
 			link.write(sync_s);
 		}
 
-		if((System.nanoTime()/1000) > (model.imu.tms+500000) &&
+		if((System.currentTimeMillis()*1000) > (model.imu.tms+500) &&
 				model.sys.isStatus(Status.MSP_READY)) {
 			model.sys.setStatus(Status.MSP_READY, false);
 			notifyStatusChange();
@@ -906,7 +908,6 @@ public class MAVLinkToModelParser {
 			ExecutorService.get().execute( new Runnable() {
 				final Status os = oldStatus.clone(); final Status ns = model.sys.clone();
 				public void run() {
-					//System.err.println("Notify"+os+"/"+ns);
 					try {
 						for(IMSPStatusChangedListener listener : modeListener)
 							listener.update(os, ns);
