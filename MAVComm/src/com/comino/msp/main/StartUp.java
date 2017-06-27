@@ -105,7 +105,7 @@ public class StartUp implements Runnable {
 
 
 				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
-				grid.tms = System.nanoTime() / 1000;
+				grid.tms = System.currentTimeMillis()*1000;
 				grid.cx = 0.1f;
 				grid.cy = 0.2f;
 				grid.resolution = s.getResolution();
@@ -114,17 +114,6 @@ public class StartUp implements Runnable {
 
 				s.setBlock(f,0.1f, false);
 
-				Thread.sleep(200);
-
-				msg_msp_status msg = new msg_msp_status(2,1);
-//				msg.arch=" ".toCharArray();
-//				msg.version="1".toCharArray();
-                msg.uptime_ms = System.currentTimeMillis()/1000;
-				msg.unix_time_us = System.currentTimeMillis() * 1000;
-				control.sendMAVLinkMessage(msg);
-
-				if(!Float.isNaN(control.getCurrentModel().hud.h))
-				   System.out.println("Altitude:"+control.getCurrentModel().hud.h);
 
 			} catch (Exception e) {
 				control.close();
