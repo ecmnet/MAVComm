@@ -105,7 +105,7 @@ public class StartUp implements Runnable {
 
 
 				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
-				grid.tms = System.currentTimeMillis()*1000;
+				grid.tms = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
 				grid.cx = 0.1f;
 				grid.cy = 0.2f;
 				grid.resolution = s.getResolution();
