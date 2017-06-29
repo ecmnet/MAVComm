@@ -92,11 +92,11 @@ import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
 
-	private static final long TIMEOUT_VISION = 1000000;
-	private static final long TIMEOUT_READY = 50000;
-	private static final long TIMEOUT_CONNECTED = 2000000;
+	private static final long TIMEOUT_VISION      = 2000000;
+	private static final long TIMEOUT_READY       = 500000;
+	private static final long TIMEOUT_CONNECTED   = 5000000;
 	private static final long TIMEOUT_RC_ATTACHED = 5000000;
-	private static final long TIMEOUT_GPOS = 10000000;
+	private static final long TIMEOUT_GPOS        = 10000000;
 
 	private static int TIME_SYNC_CYCLE_MS = 1000;
 	private static double OFFSET_AVG_ALPHA = 0.6d;
@@ -202,7 +202,7 @@ public class MAVLinkToModelParser {
 				model.vision.h = MSPMathUtils.fromRad(mocap.yaw);
 				model.vision.p = mocap.pitch;
 				model.vision.r = mocap.roll;
-				model.vision.tms = mocap.usec;
+				model.vision.tms = model.sys.getSynchronizedPX4Time_us();
 			}
 		});
 
@@ -668,8 +668,8 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				try {
 
-					// if(!link.isSerial())
-					// return;
+					 if(!link.isSerial())
+					 return;
 
 					long now_ns = System.currentTimeMillis() * 1000000L;
 					msg_timesync sync = (msg_timesync) o;
@@ -690,6 +690,7 @@ public class MAVLinkToModelParser {
 						if (dt > 10000000L || dt < -10000000L) {
 							time_offset_ns = offset_ns;
 							System.out.println("[sys]  Clock skew detected: " + dt);
+							model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 						} else {
 							time_offset_ns = (long) (OFFSET_AVG_ALPHA * offset_ns
 									+ (1.0d - OFFSET_AVG_ALPHA) * time_offset_ns);
@@ -873,8 +874,8 @@ public class MAVLinkToModelParser {
 
 		if ((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS && TIME_SYNC_CYCLE_MS > 0) {
 
-			// if(!link.isSerial())
-			// return;
+			 if(!link.isSerial())
+			 return;
 
 			time_sync_cycle = System.currentTimeMillis();
 			msg_timesync sync_s = new msg_timesync(255, 1);
