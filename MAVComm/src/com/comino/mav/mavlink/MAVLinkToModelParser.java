@@ -93,7 +93,6 @@ import com.comino.msp.utils.MSPMathUtils;
 public class MAVLinkToModelParser {
 
 	private static final long TIMEOUT_VISION      = 2000000;
-	private static final long TIMEOUT_READY       = 500000;
 	private static final long TIMEOUT_CONNECTED   = 5000000;
 	private static final long TIMEOUT_RC_ATTACHED = 5000000;
 	private static final long TIMEOUT_GPOS        = 10000000;
@@ -136,6 +135,8 @@ public class MAVLinkToModelParser {
 		this.modeListener = new ArrayList<IMSPStatusChangedListener>();
 		this.mavListener = new ArrayList<IMAVLinkListener>();
 		this.msgListener = new ArrayList<IMAVMessageListener>();
+
+		model.sys.setStatus(Status.MSP_READY, true);
 
 		listeners = new HashMap<Class<?>, List<IMAVLinkListener>>();
 
@@ -860,16 +861,10 @@ public class MAVLinkToModelParser {
 		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {
 			//System.out.println("MSP=" + model.sys.getSynchronizedPX4Time_us() + " PX4=" + model.sys.tms);
 			model.sys.setStatus(Status.MSP_CONNECTED, false);
-			model.sys.setStatus(Status.MSP_READY, false);
 			notifyStatusChange();
 			link.close();
 			link.open();
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
-		}
-
-		if (checkTimeOut(model.imu.tms, TIMEOUT_READY) && model.sys.isStatus(Status.MSP_READY)) {
-			model.sys.setStatus(Status.MSP_READY, false);
-			notifyStatusChange();
 		}
 
 		if ((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS && TIME_SYNC_CYCLE_MS > 0) {
