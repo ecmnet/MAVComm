@@ -27,6 +27,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_MISSION_CURRENT = 42;
   public static int MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE = 102;
   public static int MAVLINK_MSG_ID_MISSION_CLEAR_ALL = 45;
+  public static int MAVLINK_MSG_ID_UAVCAN_NODE_STATUS = 310;
   public static int MAVLINK_MSG_ID_ATT_POS_MOCAP = 138;
   public static int MAVLINK_MSG_ID_COMMAND_ACK = 77;
   public static int MAVLINK_MSG_ID_HIL_GPS = 113;
@@ -63,6 +64,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_SAFETY_SET_ALLOWED_AREA = 54;
   public static int MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE = 101;
   public static int MAVLINK_MSG_ID_SCALED_PRESSURE3 = 143;
+  public static int MAVLINK_MSG_ID_PROTOCOL_VERSION = 300;
   public static int MAVLINK_MSG_ID_PING = 4;
   public static int MAVLINK_MSG_ID_HOME_POSITION = 242;
   public static int MAVLINK_MSG_ID_MISSION_ITEM = 39;
@@ -71,6 +73,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_HIGHRES_IMU = 105;
   public static int MAVLINK_MSG_ID_OPTICAL_FLOW = 100;
   public static int MAVLINK_MSG_ID_LANDING_TARGET = 149;
+  public static int MAVLINK_MSG_ID_UAVCAN_NODE_INFO = 311;
   public static int MAVLINK_MSG_ID_COMMAND_LONG = 76;
   public static int MAVLINK_MSG_ID_ATTITUDE_QUATERNION = 31;
   public static int MAVLINK_MSG_ID_SCALED_IMU2 = 116;

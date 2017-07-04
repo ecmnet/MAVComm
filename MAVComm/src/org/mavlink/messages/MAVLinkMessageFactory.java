@@ -26,6 +26,7 @@ import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_mission_current;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
 import org.mavlink.messages.lquac.msg_mission_clear_all;
+import org.mavlink.messages.lquac.msg_uavcan_node_status;
 import org.mavlink.messages.lquac.msg_att_pos_mocap;
 import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_hil_gps;
@@ -62,6 +63,7 @@ import org.mavlink.messages.lquac.msg_scaled_pressure2;
 import org.mavlink.messages.lquac.msg_safety_set_allowed_area;
 import org.mavlink.messages.lquac.msg_global_vision_position_estimate;
 import org.mavlink.messages.lquac.msg_scaled_pressure3;
+import org.mavlink.messages.lquac.msg_protocol_version;
 import org.mavlink.messages.lquac.msg_ping;
 import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_mission_item;
@@ -69,6 +71,7 @@ import org.mavlink.messages.lquac.msg_raw_imu;
 import org.mavlink.messages.lquac.msg_highres_imu;
 import org.mavlink.messages.lquac.msg_optical_flow;
 import org.mavlink.messages.lquac.msg_landing_target;
+import org.mavlink.messages.lquac.msg_uavcan_node_info;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_attitude_quaternion;
 import org.mavlink.messages.lquac.msg_scaled_imu2;
@@ -178,6 +181,7 @@ import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_mission_current;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
 import org.mavlink.messages.lquac.msg_mission_clear_all;
+import org.mavlink.messages.lquac.msg_uavcan_node_status;
 import org.mavlink.messages.lquac.msg_att_pos_mocap;
 import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_hil_gps;
@@ -214,6 +218,7 @@ import org.mavlink.messages.lquac.msg_scaled_pressure2;
 import org.mavlink.messages.lquac.msg_safety_set_allowed_area;
 import org.mavlink.messages.lquac.msg_global_vision_position_estimate;
 import org.mavlink.messages.lquac.msg_scaled_pressure3;
+import org.mavlink.messages.lquac.msg_protocol_version;
 import org.mavlink.messages.lquac.msg_ping;
 import org.mavlink.messages.lquac.msg_home_position;
 import org.mavlink.messages.lquac.msg_mission_item;
@@ -222,6 +227,7 @@ import org.mavlink.messages.lquac.msg_msp_vision;
 import org.mavlink.messages.lquac.msg_highres_imu;
 import org.mavlink.messages.lquac.msg_optical_flow;
 import org.mavlink.messages.lquac.msg_landing_target;
+import org.mavlink.messages.lquac.msg_uavcan_node_info;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_attitude_quaternion;
 import org.mavlink.messages.lquac.msg_scaled_imu2;
@@ -400,6 +406,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_mission_clear_all(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_UAVCAN_NODE_STATUS:
+      msg = new msg_uavcan_node_status(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_ATT_POS_MOCAP:
       msg = new msg_att_pos_mocap(sysId, componentId);
       msg.decode(dis);
@@ -544,6 +554,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_scaled_pressure3(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_PROTOCOL_VERSION:
+      msg = new msg_protocol_version(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_PING:
       msg = new msg_ping(sysId, componentId);
       msg.decode(dis);
@@ -574,6 +588,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_LANDING_TARGET:
       msg = new msg_landing_target(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_UAVCAN_NODE_INFO:
+      msg = new msg_uavcan_node_info(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_COMMAND_LONG:

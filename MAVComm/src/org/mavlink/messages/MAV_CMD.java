@@ -808,13 +808,19 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_SET_MESSAGE_INTERVAL = 511;
     /**
+     * Request MAVLink protocol version compatibility
+     * PARAM 1 : 1: Request supported protocol versions by all nodes on the network
+     * PARAM 2 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_PROTOCOL_VERSION = 519;
+    /**
      * Request autopilot capabilities
      * PARAM 1 : 1: Request autopilot version
      * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES = 520;
     /**
-     * WIP: Request camera information (CAMERA_INFORMATION)
+     * WIP: Request camera information (CAMERA_INFORMATION).
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No action 1: Request camera capabilities
      * PARAM 3 : Reserved (all remaining params)
@@ -828,7 +834,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_CAMERA_SETTINGS = 522;
     /**
-     * WIP: Set the camera settings part 1 (CAMERA_SETTINGS). Use NAN for values you don't want to change.
+     * WIP: Set the camera settings part 1 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.
      * PARAM 1 : Camera ID (1 for first, 2 for second, etc.)
      * PARAM 2 : Aperture (1/value)
      * PARAM 3 : Shutter speed in seconds
@@ -839,7 +845,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_SET_CAMERA_SETTINGS_1 = 523;
     /**
-     * WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for values you don't want to change.
+     * WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.
      * PARAM 1 : Camera ID (1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved for Flicker mode (0 for Auto)
      * PARAM 3 : Reserved for metering mode ID (Average, Center, Spot, etc.)
@@ -857,7 +863,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_STORAGE_INFORMATION = 525;
     /**
-     * WIP: Format a storage medium
+     * WIP: Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent.
      * PARAM 1 : Storage ID (1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No action 1: Format storage
      * PARAM 3 : Reserved (all remaining params)
@@ -884,7 +890,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_RESET_CAMERA_SETTINGS = 529;
     /**
-     * WIP: Set camera running mode. Use NAN for values you don't want to change.
+     * WIP: Set camera running mode. Use NAN for reserved values and values you don't want to change.
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : Camera mode (0: photo mode, 1: video mode)
      * PARAM 3 : Audio recording enabled (0: off 1: on)
@@ -892,12 +898,19 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_SET_CAMERA_MODE = 530;
     /**
-     * WIP: Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture.
+     * WIP: Set the camera settings part 3 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.
+     * PARAM 1 : Camera ID (1 for first, 2 for second, etc.)
+     * PARAM 2 : Photo resolution ID (4000x3000, 2560x1920, etc., -1 for maximum possible)
+     * PARAM 3 : Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc., -1 for maximum possible)
+     * PARAM 4 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_SET_CAMERA_SETTINGS_3 = 531;
+    /**
+     * WIP: Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : Duration between two consecutive pictures (in seconds)
      * PARAM 3 : Number of images to capture total - 0 for unlimited capture
-     * PARAM 4 : Resolution horizontal in pixels (set to -1 for highest resolution possible)
-     * PARAM 5 : Resolution vertical in pixels (set to -1 for highest resolution possible)
+     * PARAM 4 : Reserved
      */
     public final static int MAV_CMD_IMAGE_START_CAPTURE = 2000;
     /**
@@ -907,7 +920,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_IMAGE_STOP_CAPTURE = 2001;
     /**
-     * WIP: Re-request a CAMERA_IMAGE_CAPTURE packet
+     * WIP: Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : Sequence number for missing CAMERA_IMAGE_CAPTURE packet
      * PARAM 3 : Reserved (all remaining params)
@@ -921,16 +934,14 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_TRIGGER_CONTROL = 2003;
     /**
-     * WIP: Starts video capture (recording)
+     * WIP: Starts video capture (recording). Use NAN for reserved values.
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : Frames per second, set to -1 for highest framerate possible.
-     * PARAM 3 : Resolution horizontal in pixels (set to -1 for highest resolution possible)
-     * PARAM 4 : Resolution vertical in pixels (set to -1 for highest resolution possible)
-     * PARAM 5 : Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise time in Hz)
+     * PARAM 2 : Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)
+     * PARAM 3 : Reserved
      */
     public final static int MAV_CMD_VIDEO_START_CAPTURE = 2500;
     /**
-     * WIP: Stop the current video capture (recording)
+     * WIP: Stop the current video capture (recording). Use NAN for reserved values.
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved
      */
@@ -1026,7 +1037,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_FENCE_RETURN_POINT = 5000;
     /**
-     * Fence vertex for an inclusion polygon. The vehicle must stay within this area. Minimum of 3 vertices required.
+     * Fence vertex for an inclusion polygon (the polygon must not be self-intersecting). The vehicle must stay within this area. Minimum of 3 vertices required.
      * PARAM 1 : Polygon vertex count
      * PARAM 2 : Reserved
      * PARAM 3 : Reserved
@@ -1037,7 +1048,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_FENCE_POLYGON_VERTEX_INCLUSION = 5001;
     /**
-     * Fence vertex for an exclusion polygon. The vehicle must stay outside this area. Minimum of 3 vertices required.
+     * Fence vertex for an exclusion polygon (the polygon must not be self-intersecting). The vehicle must stay outside this area. Minimum of 3 vertices required.
      * PARAM 1 : Polygon vertex count
      * PARAM 2 : Reserved
      * PARAM 3 : Reserved
@@ -1047,6 +1058,28 @@ public interface MAV_CMD {
      * PARAM 7 : Reserved
      */
     public final static int MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION = 5002;
+    /**
+     * Circular fence area. The vehicle must stay inside this area.
+     * PARAM 1 : radius in meters
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Reserved
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Reserved
+     */
+    public final static int MAV_CMD_NAV_FENCE_CIRCLE_INCLUSION = 5003;
+    /**
+     * Circular fence area. The vehicle must stay outside this area.
+     * PARAM 1 : radius in meters
+     * PARAM 2 : Reserved
+     * PARAM 3 : Reserved
+     * PARAM 4 : Reserved
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Reserved
+     */
+    public final static int MAV_CMD_NAV_FENCE_CIRCLE_EXCLUSION = 5004;
     /**
      * Rally point. You can have multiple rally points defined.
      * PARAM 1 : Reserved
@@ -1058,6 +1091,17 @@ public interface MAV_CMD {
      * PARAM 7 : Altitude
      */
     public final static int MAV_CMD_NAV_RALLY_POINT = 5100;
+    /**
+     * Commands the vehicle to respond with a sequence of messages UAVCAN_NODE_INFO, one message per every UAVCAN node that is online. Note that some of the response messages can be lost, which the receiver can detect easily by checking whether every received UAVCAN_NODE_STATUS has a matching message UAVCAN_NODE_INFO received earlier; if not, this command should be sent again in order to request re-transmission of the node information messages.
+     * PARAM 1 : Reserved (set to 0)
+     * PARAM 2 : Reserved (set to 0)
+     * PARAM 3 : Reserved (set to 0)
+     * PARAM 4 : Reserved (set to 0)
+     * PARAM 5 : Reserved (set to 0)
+     * PARAM 6 : Reserved (set to 0)
+     * PARAM 7 : Reserved (set to 0)
+     */
+    public final static int MAV_CMD_UAVCAN_GET_NODE_INFO = 5200;
     /**
      * Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.
      * PARAM 1 : Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.

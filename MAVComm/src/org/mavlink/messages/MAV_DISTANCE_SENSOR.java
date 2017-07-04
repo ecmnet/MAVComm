@@ -20,4 +20,12 @@ public interface MAV_DISTANCE_SENSOR {
      * Infrared rangefinder, e.g. Sharp units
      */
     public final static int MAV_DISTANCE_SENSOR_INFRARED = 2;
+    /**
+     * Radar type, e.g. uLanding units
+     */
+    public final static int MAV_DISTANCE_SENSOR_RADAR = 3;
+    /**
+     * Broken or unknown type, e.g. analog units
+     */
+    public final static int MAV_DISTANCE_SENSOR_UNKNOWN = 4;
 }
