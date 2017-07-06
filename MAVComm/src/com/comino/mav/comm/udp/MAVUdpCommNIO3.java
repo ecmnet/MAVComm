@@ -163,8 +163,8 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 			while(isConnected) {
 
-				if(selector.select(500)==0)
-					throw new IOException("Timeout");
+				if(selector.select(1500)==0)
+					throw new IOException("UDP NIO Timeout");
 
 				selectedKeys = selector.selectedKeys().iterator();
 
@@ -191,7 +191,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			}
 
 		} catch(Exception e) {
-			System.err.print(".");
+			System.err.println(e.getMessage());
 			errors++;
 			rxBuffer.clear();
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
