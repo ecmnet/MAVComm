@@ -24,7 +24,7 @@ public class msg_landing_target extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_LANDING_TARGET;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 30;
+    payload_length = 60;
 }
 
   /**
@@ -52,6 +52,22 @@ public class msg_landing_target extends MAVLinkMessage {
    */
   public float size_y;
   /**
+   * X Position of the landing target on MAV_FRAME
+   */
+  public float x;
+  /**
+   * Y Position of the landing target on MAV_FRAME
+   */
+  public float y;
+  /**
+   * Z Position of the landing target on MAV_FRAME
+   */
+  public float z;
+  /**
+   * Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
+   */
+  public float[] q = new float[4];
+  /**
    * The ID of the target if multiple targets are present
    */
   public int target_num;
@@ -59,6 +75,14 @@ public class msg_landing_target extends MAVLinkMessage {
    * MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.
    */
   public int frame;
+  /**
+   * LANDING_TARGET_TYPE enum specifying the type of landing target
+   */
+  public int type;
+  /**
+   * Boolean indicating known position (1) or default unkown position (0), for validation of positioning of the landing target
+   */
+  public int position_valid;
 /**
  * Decode message with raw data
  */
@@ -69,14 +93,22 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   distance = (float)dis.readFloat();
   size_x = (float)dis.readFloat();
   size_y = (float)dis.readFloat();
+  x = (float)dis.readFloat();
+  y = (float)dis.readFloat();
+  z = (float)dis.readFloat();
+  for (int i=0; i<4; i++) {
+    q[i] = (float)dis.readFloat();
+  }
   target_num = (int)dis.readUnsignedByte()&0x00FF;
   frame = (int)dis.readUnsignedByte()&0x00FF;
+  type = (int)dis.readUnsignedByte()&0x00FF;
+  position_valid = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+30];
+  byte[] buffer = new byte[12+60];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -94,20 +126,28 @@ public byte[] encode() throws IOException {
   dos.writeFloat(distance);
   dos.writeFloat(size_x);
   dos.writeFloat(size_y);
+  dos.writeFloat(x);
+  dos.writeFloat(y);
+  dos.writeFloat(z);
+  for (int i=0; i<4; i++) {
+    dos.writeFloat(q[i]);
+  }
   dos.writeByte(target_num&0x00FF);
   dos.writeByte(frame&0x00FF);
+  dos.writeByte(type&0x00FF);
+  dos.writeByte(position_valid&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 30);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 60);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[40] = crcl;
-  buffer[41] = crch;
+  buffer[70] = crcl;
+  buffer[71] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_LANDING_TARGET : " +   "  time_usec="+time_usec+  "  angle_x="+angle_x+  "  angle_y="+angle_y+  "  distance="+distance+  "  size_x="+size_x+  "  size_y="+size_y+  "  target_num="+target_num+  "  frame="+frame;}
+return "MAVLINK_MSG_ID_LANDING_TARGET : " +   "  time_usec="+time_usec+  "  angle_x="+angle_x+  "  angle_y="+angle_y+  "  distance="+distance+  "  size_x="+size_x+  "  size_y="+size_y+  "  x="+x+  "  y="+y+  "  z="+z+  "  q="+q+  "  target_num="+target_num+  "  frame="+frame+  "  type="+type+  "  position_valid="+position_valid;}
 }

@@ -225,12 +225,15 @@ public class MAVLinkReader2 {
 
 					// CRC workaraounds
 					if(rxmsg.msgId == 36 || rxmsg.msgId == 140 || rxmsg.msgId == 74 || rxmsg.msgId == 83 || rxmsg.msgId == 30
-						|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 )
+						|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 || rxmsg.msgId == 24
+						|| rxmsg.msgId == 242)
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
 					else {
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
 						//System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
 					}
+
+
 				}
 				else
 					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;

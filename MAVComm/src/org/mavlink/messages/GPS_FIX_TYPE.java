@@ -40,4 +40,8 @@ public interface GPS_FIX_TYPE {
      * Static fixed, typically used for base stations
      */
     public final static int GPS_FIX_TYPE_STATIC = 7;
+    /**
+     * PPP, 3D position.
+     */
+    public final static int GPS_FIX_TYPE_PPP = 8;
 }

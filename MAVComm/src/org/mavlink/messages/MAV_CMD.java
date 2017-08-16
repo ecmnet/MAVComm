@@ -571,9 +571,9 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_MOUNT_CONTROL = 205;
     /**
      * Mission command to set camera trigger distance for this flight. The camera is trigerred each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.
-     * PARAM 1 : Camera trigger distance (meters). -1 or 0 to ignore
+     * PARAM 1 : Camera trigger distance (meters). 0 to stop triggering.
      * PARAM 2 : Camera shutter integration time (milliseconds). -1 or 0 to ignore
-     * PARAM 3 : Empty
+     * PARAM 3 : Trigger camera once immediately. (0 = no trigger, 1 = trigger)
      * PARAM 4 : Empty
      * PARAM 5 : Empty
      * PARAM 6 : Empty
@@ -821,49 +821,25 @@ public interface MAV_CMD {
     public final static int MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES = 520;
     /**
      * WIP: Request camera information (CAMERA_INFORMATION).
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : 0: No action 1: Request camera capabilities
-     * PARAM 3 : Reserved (all remaining params)
+     * PARAM 1 : 0: No action 1: Request camera capabilities
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_CAMERA_INFORMATION = 521;
     /**
-     * WIP: Request camera settings (CAMERA_SETTINGS)
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : 0: No Action 1: Request camera settings
-     * PARAM 3 : Reserved (all remaining params)
+     * WIP: Request camera settings (CAMERA_SETTINGS).
+     * PARAM 1 : 0: No Action 1: Request camera settings
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_CAMERA_SETTINGS = 522;
     /**
-     * WIP: Set the camera settings part 1 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.
-     * PARAM 1 : Camera ID (1 for first, 2 for second, etc.)
-     * PARAM 2 : Aperture (1/value)
-     * PARAM 3 : Shutter speed in seconds
-     * PARAM 4 : ISO sensitivity
-     * PARAM 5 : AE mode (Auto Exposure) (0: full auto 1: full manual 2: aperture priority 3: shutter priority)
-     * PARAM 6 : EV value (when in auto exposure)
-     * PARAM 7 : White balance (color temperature in K) (0: Auto WB)
-     */
-    public final static int MAV_CMD_SET_CAMERA_SETTINGS_1 = 523;
-    /**
-     * WIP: Set the camera settings part 2 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.
-     * PARAM 1 : Camera ID (1 for first, 2 for second, etc.)
-     * PARAM 2 : Reserved for Flicker mode (0 for Auto)
-     * PARAM 3 : Reserved for metering mode ID (Average, Center, Spot, etc.)
-     * PARAM 4 : Reserved for image format ID (Jpeg/Raw/Jpeg+Raw)
-     * PARAM 5 : Reserved for image quality ID (Compression)
-     * PARAM 6 : Reserved for color mode ID (Neutral, Vivid, etc.)
-     * PARAM 7 : Reserved
-     */
-    public final static int MAV_CMD_SET_CAMERA_SETTINGS_2 = 524;
-    /**
-     * WIP: Request storage information (STORAGE_INFORMATION)
+     * WIP: Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.
      * PARAM 1 : Storage ID (0 for all, 1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No Action 1: Request storage information
      * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_STORAGE_INFORMATION = 525;
     /**
-     * WIP: Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent.
+     * WIP: Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.
      * PARAM 1 : Storage ID (1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No action 1: Format storage
      * PARAM 3 : Reserved (all remaining params)
@@ -871,9 +847,8 @@ public interface MAV_CMD {
     public final static int MAV_CMD_STORAGE_FORMAT = 526;
     /**
      * WIP: Request camera capture status (CAMERA_CAPTURE_STATUS)
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : 0: No Action 1: Request camera capture status
-     * PARAM 3 : Reserved (all remaining params)
+     * PARAM 1 : 0: No Action 1: Request camera capture status
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS = 527;
     /**
@@ -883,47 +858,36 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_FLIGHT_INFORMATION = 528;
     /**
-     * WIP: Reset all camera settings to Factory Default (CAMERA_SETTINGS)
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : 0: No Action 1: Reset all settings
-     * PARAM 3 : Reserved (all remaining params)
+     * WIP: Reset all camera settings to Factory Default
+     * PARAM 1 : 0: No Action 1: Reset all settings
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_RESET_CAMERA_SETTINGS = 529;
     /**
-     * WIP: Set camera running mode. Use NAN for reserved values and values you don't want to change.
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : Camera mode (0: photo mode, 1: video mode)
-     * PARAM 3 : Audio recording enabled (0: off 1: on)
-     * PARAM 4 : Reserved (all remaining params)
+     * Set camera running mode. Use NAN for reserved values.
+     * PARAM 1 : Reserved (Set to 0)
+     * PARAM 2 : Camera mode (see CAMERA_MODE enum)
+     * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_SET_CAMERA_MODE = 530;
     /**
-     * WIP: Set the camera settings part 3 (CAMERA_SETTINGS). Use NAN for reserved values and values you don't want to change.
-     * PARAM 1 : Camera ID (1 for first, 2 for second, etc.)
-     * PARAM 2 : Photo resolution ID (4000x3000, 2560x1920, etc., -1 for maximum possible)
-     * PARAM 3 : Video resolution and rate ID (4K 60 Hz, 4K 30 Hz, HD 60 Hz, HD 30 Hz, etc., -1 for maximum possible)
-     * PARAM 4 : Reserved (all remaining params)
-     */
-    public final static int MAV_CMD_SET_CAMERA_SETTINGS_3 = 531;
-    /**
-     * WIP: Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.
+     * PARAM 1 : Reserved (Set to 0)
      * PARAM 2 : Duration between two consecutive pictures (in seconds)
      * PARAM 3 : Number of images to capture total - 0 for unlimited capture
-     * PARAM 4 : Reserved
+     * PARAM 4 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_IMAGE_START_CAPTURE = 2000;
     /**
-     * WIP: Stop image capture sequence
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : Reserved
+     * Stop image capture sequence Use NAN for reserved values.
+     * PARAM 1 : Reserved (Set to 0)
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_IMAGE_STOP_CAPTURE = 2001;
     /**
      * WIP: Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : Sequence number for missing CAMERA_IMAGE_CAPTURE packet
-     * PARAM 3 : Reserved (all remaining params)
+     * PARAM 1 : Sequence number for missing CAMERA_IMAGE_CAPTURE packet
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE = 2002;
     /**
@@ -934,16 +898,16 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_TRIGGER_CONTROL = 2003;
     /**
-     * WIP: Starts video capture (recording). Use NAN for reserved values.
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * Starts video capture (recording). Use NAN for reserved values.
+     * PARAM 1 : Reserved (Set to 0)
      * PARAM 2 : Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)
-     * PARAM 3 : Reserved
+     * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_VIDEO_START_CAPTURE = 2500;
     /**
-     * WIP: Stop the current video capture (recording). Use NAN for reserved values.
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
-     * PARAM 2 : Reserved
+     * Stop the current video capture (recording). Use NAN for reserved values.
+     * PARAM 1 : Reserved (Set to 0)
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_VIDEO_STOP_CAPTURE = 2501;
     /**
@@ -1025,6 +989,17 @@ public interface MAV_CMD {
      * PARAM 6 : Unscaled target longitude of center of circle in CIRCLE_MODE
      */
     public final static int MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE = 4001;
+    /**
+     * WIP: Delay mission state machine until gate has been reached.
+     * PARAM 1 : Geometry: 0: orthogonal to path between previous and next waypoint.
+     * PARAM 2 : Altitude: 0: ignore altitude
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Altitude
+     */
+    public final static int MAV_CMD_CONDITION_GATE = 4501;
     /**
      * Fence return point. There can only be one fence return point.
      * PARAM 1 : Reserved

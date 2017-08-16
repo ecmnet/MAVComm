@@ -24,7 +24,7 @@ public class msg_camera_information extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_CAMERA_INFORMATION;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 91;
+    payload_length = 235;
 }
 
   /**
@@ -32,7 +32,7 @@ public class msg_camera_information extends MAVLinkMessage {
    */
   public long time_boot_ms;
   /**
-   * Version of the camera firmware
+   * Version of the camera firmware (v << 24 & 0xff = Dev, v << 16 & 0xff = Patch, v << 8 & 0xff = Minor, v & 0xff = Major)
    */
   public long firmware_version;
   /**
@@ -48,6 +48,10 @@ public class msg_camera_information extends MAVLinkMessage {
    */
   public float sensor_size_v;
   /**
+   * CAMERA_CAP_FLAGS enum flags (bitmap) describing camera capabilities.
+   */
+  public long flags;
+  /**
    * Image resolution in pixels horizontal
    */
   public int resolution_h;
@@ -56,13 +60,9 @@ public class msg_camera_information extends MAVLinkMessage {
    */
   public int resolution_v;
   /**
-   * Camera ID (1 for first, 2 for second, etc.)
+   * Camera definition version (iteration)
    */
-  public int camera_id;
-  /**
-   * Number of cameras
-   */
-  public int camera_count;
+  public int cam_definition_version;
   /**
    * Name of the camera vendor
    */
@@ -75,6 +75,26 @@ public class msg_camera_information extends MAVLinkMessage {
    * Reserved for a lens ID
    */
   public int lens_id;
+  /**
+   * Camera definition URI (if any, otherwise only basic functions will be available).
+   */
+  public char[] cam_definition_uri = new char[140];
+  public void setCam_definition_uri(String tmp) {
+    int len = Math.min(tmp.length(), 140);
+    for (int i=0; i<len; i++) {
+      cam_definition_uri[i] = tmp.charAt(i);
+    }
+    for (int i=len; i<140; i++) {
+      cam_definition_uri[i] = 0;
+    }
+  }
+  public String getCam_definition_uri() {
+    String result="";
+    for (int i=0; i<140; i++) {
+      if (cam_definition_uri[i] != 0) result=result+cam_definition_uri[i]; else break;
+    }
+    return result;
+  }
 /**
  * Decode message with raw data
  */
@@ -84,10 +104,10 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   focal_length = (float)dis.readFloat();
   sensor_size_h = (float)dis.readFloat();
   sensor_size_v = (float)dis.readFloat();
+  flags = (int)dis.readInt()&0x00FFFFFFFF;
   resolution_h = (int)dis.readUnsignedShort()&0x00FFFF;
   resolution_v = (int)dis.readUnsignedShort()&0x00FFFF;
-  camera_id = (int)dis.readUnsignedByte()&0x00FF;
-  camera_count = (int)dis.readUnsignedByte()&0x00FF;
+  cam_definition_version = (int)dis.readUnsignedShort()&0x00FFFF;
   for (int i=0; i<32; i++) {
     vendor_name[i] = (int)dis.readUnsignedByte()&0x00FF;
   }
@@ -95,12 +115,15 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
     model_name[i] = (int)dis.readUnsignedByte()&0x00FF;
   }
   lens_id = (int)dis.readUnsignedByte()&0x00FF;
+  for (int i=0; i<140; i++) {
+    cam_definition_uri[i] = (char)dis.readByte();
+  }
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+91];
+  byte[] buffer = new byte[12+235];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -117,10 +140,10 @@ public byte[] encode() throws IOException {
   dos.writeFloat(focal_length);
   dos.writeFloat(sensor_size_h);
   dos.writeFloat(sensor_size_v);
+  dos.writeInt((int)(flags&0x00FFFFFFFF));
   dos.writeShort(resolution_h&0x00FFFF);
   dos.writeShort(resolution_v&0x00FFFF);
-  dos.writeByte(camera_id&0x00FF);
-  dos.writeByte(camera_count&0x00FF);
+  dos.writeShort(cam_definition_version&0x00FFFF);
   for (int i=0; i<32; i++) {
     dos.writeByte(vendor_name[i]&0x00FF);
   }
@@ -128,18 +151,21 @@ public byte[] encode() throws IOException {
     dos.writeByte(model_name[i]&0x00FF);
   }
   dos.writeByte(lens_id&0x00FF);
+  for (int i=0; i<140; i++) {
+    dos.writeByte(cam_definition_uri[i]);
+  }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 91);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 235);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[101] = crcl;
-  buffer[102] = crch;
+  buffer[245] = crcl;
+  buffer[246] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_INFORMATION : " +   "  time_boot_ms="+time_boot_ms+  "  firmware_version="+firmware_version+  "  focal_length="+focal_length+  "  sensor_size_h="+sensor_size_h+  "  sensor_size_v="+sensor_size_v+  "  resolution_h="+resolution_h+  "  resolution_v="+resolution_v+  "  camera_id="+camera_id+  "  camera_count="+camera_count+  "  vendor_name="+vendor_name+  "  model_name="+model_name+  "  lens_id="+lens_id;}
+return "MAVLINK_MSG_ID_CAMERA_INFORMATION : " +   "  time_boot_ms="+time_boot_ms+  "  firmware_version="+firmware_version+  "  focal_length="+focal_length+  "  sensor_size_h="+sensor_size_h+  "  sensor_size_v="+sensor_size_v+  "  flags="+flags+  "  resolution_h="+resolution_h+  "  resolution_v="+resolution_v+  "  cam_definition_version="+cam_definition_version+  "  vendor_name="+vendor_name+  "  model_name="+model_name+  "  lens_id="+lens_id+  "  cam_definition_uri="+getCam_definition_uri();}
 }

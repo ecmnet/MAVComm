@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_camera_image_captured
- * WIP: Information about a captured image
+ * Information about a captured image
  **/
 public class msg_camera_image_captured extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED = 263;

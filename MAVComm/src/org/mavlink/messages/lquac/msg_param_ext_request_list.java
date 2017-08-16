@@ -1,5 +1,5 @@
 /**
- * Generated class : msg_camera_settings
+ * Generated class : msg_param_ext_request_list
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
@@ -11,42 +11,42 @@ import java.io.IOException;
 import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
- * Class msg_camera_settings
- * WIP: Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS.
+ * Class msg_param_ext_request_list
+ * Request all parameters of this component. After this request, all parameters are emitted.
  **/
-public class msg_camera_settings extends MAVLinkMessage {
-  public static final int MAVLINK_MSG_ID_CAMERA_SETTINGS = 260;
-  private static final long serialVersionUID = MAVLINK_MSG_ID_CAMERA_SETTINGS;
-  public msg_camera_settings() {
+public class msg_param_ext_request_list extends MAVLinkMessage {
+  public static final int MAVLINK_MSG_ID_PARAM_EXT_REQUEST_LIST = 321;
+  private static final long serialVersionUID = MAVLINK_MSG_ID_PARAM_EXT_REQUEST_LIST;
+  public msg_param_ext_request_list() {
     this(1,1);
 }
-  public msg_camera_settings(int sysId, int componentId) {
-    messageType = MAVLINK_MSG_ID_CAMERA_SETTINGS;
+  public msg_param_ext_request_list(int sysId, int componentId) {
+    messageType = MAVLINK_MSG_ID_PARAM_EXT_REQUEST_LIST;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 5;
+    payload_length = 2;
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * System ID
    */
-  public long time_boot_ms;
+  public int target_system;
   /**
-   * Camera mode (CAMERA_MODE)
+   * Component ID
    */
-  public int mode_id;
+  public int target_component;
 /**
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
-  time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
-  mode_id = (int)dis.readUnsignedByte()&0x00FF;
+  target_system = (int)dis.readUnsignedByte()&0x00FF;
+  target_component = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+5];
+  byte[] buffer = new byte[12+2];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -58,20 +58,20 @@ public byte[] encode() throws IOException {
   dos.writeByte(messageType & 0x00FF);
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
-  dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
-  dos.writeByte(mode_id&0x00FF);
+  dos.writeByte(target_system&0x00FF);
+  dos.writeByte(target_component&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 5);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 2);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[15] = crcl;
-  buffer[16] = crch;
+  buffer[12] = crcl;
+  buffer[13] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_SETTINGS : " +   "  time_boot_ms="+time_boot_ms+  "  mode_id="+mode_id;}
+return "MAVLINK_MSG_ID_PARAM_EXT_REQUEST_LIST : " +   "  target_system="+target_system+  "  target_component="+target_component;}
 }

@@ -24,7 +24,7 @@ public class msg_camera_capture_status extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 19;
+    payload_length = 18;
 }
 
   /**
@@ -44,15 +44,11 @@ public class msg_camera_capture_status extends MAVLinkMessage {
    */
   public float available_capacity;
   /**
-   * Camera ID (1 for first, 2 for second, etc.)
-   */
-  public int camera_id;
-  /**
-   * Current status of image capturing (0: not running, 1: interval capture in progress)
+   * Current status of image capturing (0: idle, 1: capture in progress, 2: interval set but idle, 3: interval set and capture in progress)
    */
   public int image_status;
   /**
-   * Current status of video capturing (0: not running, 1: capture in progress)
+   * Current status of video capturing (0: idle, 1: capture in progress)
    */
   public int video_status;
 /**
@@ -63,7 +59,6 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   image_interval = (float)dis.readFloat();
   recording_time_ms = (int)dis.readInt()&0x00FFFFFFFF;
   available_capacity = (float)dis.readFloat();
-  camera_id = (int)dis.readUnsignedByte()&0x00FF;
   image_status = (int)dis.readUnsignedByte()&0x00FF;
   video_status = (int)dis.readUnsignedByte()&0x00FF;
 }
@@ -71,7 +66,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+19];
+  byte[] buffer = new byte[12+18];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -87,21 +82,20 @@ public byte[] encode() throws IOException {
   dos.writeFloat(image_interval);
   dos.writeInt((int)(recording_time_ms&0x00FFFFFFFF));
   dos.writeFloat(available_capacity);
-  dos.writeByte(camera_id&0x00FF);
   dos.writeByte(image_status&0x00FF);
   dos.writeByte(video_status&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 19);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 18);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[29] = crcl;
-  buffer[30] = crch;
+  buffer[28] = crcl;
+  buffer[29] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS : " +   "  time_boot_ms="+time_boot_ms+  "  image_interval="+image_interval+  "  recording_time_ms="+recording_time_ms+  "  available_capacity="+available_capacity+  "  camera_id="+camera_id+  "  image_status="+image_status+  "  video_status="+video_status;}
+return "MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS : " +   "  time_boot_ms="+time_boot_ms+  "  image_interval="+image_interval+  "  recording_time_ms="+recording_time_ms+  "  available_capacity="+available_capacity+  "  image_status="+image_status+  "  video_status="+video_status;}
 }

@@ -32,9 +32,11 @@ import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_hil_gps;
 import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
+import org.mavlink.messages.lquac.msg_param_ext_value;
 import org.mavlink.messages.lquac.msg_log_erase;
 import org.mavlink.messages.lquac.msg_high_latency;
 import org.mavlink.messages.lquac.msg_distance_sensor;
+import org.mavlink.messages.lquac.msg_param_ext_request_read;
 import org.mavlink.messages.lquac.msg_camera_image_captured;
 import org.mavlink.messages.lquac.msg_button_change;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
@@ -44,7 +46,9 @@ import org.mavlink.messages.lquac.msg_mission_request;
 import org.mavlink.messages.lquac.msg_global_position_int;
 import org.mavlink.messages.lquac.msg_autopilot_version;
 import org.mavlink.messages.lquac.msg_logging_data;
+import org.mavlink.messages.lquac.msg_param_ext_request_list;
 import org.mavlink.messages.lquac.msg_vicon_position_estimate;
+import org.mavlink.messages.lquac.msg_param_ext_set;
 import org.mavlink.messages.lquac.msg_auth_key;
 import org.mavlink.messages.lquac.msg_hil_controls;
 import org.mavlink.messages.lquac.msg_mission_write_partial_list;
@@ -55,10 +59,12 @@ import org.mavlink.messages.lquac.msg_hil_state;
 import org.mavlink.messages.lquac.msg_file_transfer_protocol;
 import org.mavlink.messages.lquac.msg_encapsulated_data;
 import org.mavlink.messages.lquac.msg_mission_count;
+import org.mavlink.messages.lquac.msg_param_ext_ack;
 import org.mavlink.messages.lquac.msg_set_mode;
 import org.mavlink.messages.lquac.msg_vibration;
 import org.mavlink.messages.lquac.msg_storage_information;
 import org.mavlink.messages.lquac.msg_system_time;
+import org.mavlink.messages.lquac.msg_wifi_config_ap;
 import org.mavlink.messages.lquac.msg_scaled_pressure2;
 import org.mavlink.messages.lquac.msg_safety_set_allowed_area;
 import org.mavlink.messages.lquac.msg_global_vision_position_estimate;
@@ -187,9 +193,11 @@ import org.mavlink.messages.lquac.msg_command_ack;
 import org.mavlink.messages.lquac.msg_hil_gps;
 import org.mavlink.messages.lquac.msg_log_request_list;
 import org.mavlink.messages.lquac.msg_log_request_data;
+import org.mavlink.messages.lquac.msg_param_ext_value;
 import org.mavlink.messages.lquac.msg_log_erase;
 import org.mavlink.messages.lquac.msg_high_latency;
 import org.mavlink.messages.lquac.msg_distance_sensor;
+import org.mavlink.messages.lquac.msg_param_ext_request_read;
 import org.mavlink.messages.lquac.msg_camera_image_captured;
 import org.mavlink.messages.lquac.msg_button_change;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
@@ -199,7 +207,9 @@ import org.mavlink.messages.lquac.msg_mission_request;
 import org.mavlink.messages.lquac.msg_global_position_int;
 import org.mavlink.messages.lquac.msg_autopilot_version;
 import org.mavlink.messages.lquac.msg_logging_data;
+import org.mavlink.messages.lquac.msg_param_ext_request_list;
 import org.mavlink.messages.lquac.msg_vicon_position_estimate;
+import org.mavlink.messages.lquac.msg_param_ext_set;
 import org.mavlink.messages.lquac.msg_auth_key;
 import org.mavlink.messages.lquac.msg_hil_controls;
 import org.mavlink.messages.lquac.msg_mission_write_partial_list;
@@ -210,10 +220,12 @@ import org.mavlink.messages.lquac.msg_hil_state;
 import org.mavlink.messages.lquac.msg_file_transfer_protocol;
 import org.mavlink.messages.lquac.msg_encapsulated_data;
 import org.mavlink.messages.lquac.msg_mission_count;
+import org.mavlink.messages.lquac.msg_param_ext_ack;
 import org.mavlink.messages.lquac.msg_set_mode;
 import org.mavlink.messages.lquac.msg_vibration;
 import org.mavlink.messages.lquac.msg_storage_information;
 import org.mavlink.messages.lquac.msg_system_time;
+import org.mavlink.messages.lquac.msg_wifi_config_ap;
 import org.mavlink.messages.lquac.msg_scaled_pressure2;
 import org.mavlink.messages.lquac.msg_safety_set_allowed_area;
 import org.mavlink.messages.lquac.msg_global_vision_position_estimate;
@@ -430,6 +442,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_log_request_data(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_PARAM_EXT_VALUE:
+      msg = new msg_param_ext_value(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_LOG_ERASE:
       msg = new msg_log_erase(sysId, componentId);
       msg.decode(dis);
@@ -440,6 +456,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_DISTANCE_SENSOR:
       msg = new msg_distance_sensor(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_PARAM_EXT_REQUEST_READ:
+      msg = new msg_param_ext_request_read(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED:
@@ -478,8 +498,16 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_logging_data(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_PARAM_EXT_REQUEST_LIST:
+      msg = new msg_param_ext_request_list(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE:
       msg = new msg_vicon_position_estimate(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_PARAM_EXT_SET:
+      msg = new msg_param_ext_set(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_AUTH_KEY:
@@ -522,6 +550,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_mission_count(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_PARAM_EXT_ACK:
+      msg = new msg_param_ext_ack(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_SET_MODE:
       msg = new msg_set_mode(sysId, componentId);
       msg.decode(dis);
@@ -536,6 +568,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_SYSTEM_TIME:
       msg = new msg_system_time(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_WIFI_CONFIG_AP:
+      msg = new msg_wifi_config_ap(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_SCALED_PRESSURE2:

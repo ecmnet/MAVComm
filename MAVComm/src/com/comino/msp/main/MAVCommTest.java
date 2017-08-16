@@ -35,6 +35,8 @@ package com.comino.msp.main;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.MAV_TYPE;
+import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
@@ -56,8 +58,8 @@ public class MAVCommTest implements Runnable, IMAVLinkListener {
 
 
 		if(args.length>0)
-			control = new MAVUdpController("172.168.178.1",14555,14550, false);
-	//	control = new MAVUdpController("127.0.0.1",14556,14550, true);
+	//		control = new MAVUdpController("172.168.178.1",14555,14550, false);
+		control = new MAVUdpController("127.0.0.1",14556,14550, true);
 		else
 		  System.exit(-1);
 
@@ -89,8 +91,10 @@ public class MAVCommTest implements Runnable, IMAVLinkListener {
 		while(true) {
 			try {
 				Thread.sleep(1000);
-//				if(control.isConnected())
-//				  System.out.println(control.getCurrentModel().hud.ag);
+                msg_heartbeat beat = new msg_heartbeat(255,1);
+                beat.type = MAV_TYPE.MAV_TYPE_GCS;
+                control.sendMAVLinkMessage(beat);
+                System.err.println(beat);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -103,7 +107,8 @@ public class MAVCommTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void received(Object o) {
 		MAVLinkMessage m = (MAVLinkMessage)o;
-	     System.out.println(m.sysId+"-"+m.componentId+" "+control.getErrorCount()+":"+o);
+    if(m.messageType>200)
+	    System.out.println(m.messageType+"-"+m.componentId+" "+control.getErrorCount()+":"+o);
 
 	}
 

@@ -40,4 +40,8 @@ public interface MAV_STATE {
      * System just initialized its power-down sequence, will shut down now.
      */
     public final static int MAV_STATE_POWEROFF = 7;
+    /**
+     * System is terminating itself.
+     */
+    public final static int MAV_STATE_FLIGHT_TERMINATION = 8;
 }

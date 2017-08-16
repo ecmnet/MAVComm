@@ -23,6 +23,26 @@ public interface MAV_COMPONENT {
     /**
      * 
      */
+    public final static int MAV_COMP_ID_CAMERA2 = 101;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_CAMERA3 = 102;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_CAMERA4 = 103;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_CAMERA5 = 104;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_CAMERA6 = 105;
+    /**
+     * 
+     */
     public final static int MAV_COMP_ID_SERVO1 = 140;
     /**
      * 

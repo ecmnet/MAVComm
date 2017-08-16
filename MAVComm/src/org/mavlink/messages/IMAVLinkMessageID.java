@@ -33,9 +33,11 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_HIL_GPS = 113;
   public static int MAVLINK_MSG_ID_LOG_REQUEST_LIST = 117;
   public static int MAVLINK_MSG_ID_LOG_REQUEST_DATA = 119;
+  public static int MAVLINK_MSG_ID_PARAM_EXT_VALUE = 322;
   public static int MAVLINK_MSG_ID_LOG_ERASE = 121;
   public static int MAVLINK_MSG_ID_HIGH_LATENCY = 234;
   public static int MAVLINK_MSG_ID_DISTANCE_SENSOR = 132;
+  public static int MAVLINK_MSG_ID_PARAM_EXT_REQUEST_READ = 320;
   public static int MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED = 263;
   public static int MAVLINK_MSG_ID_BUTTON_CHANGE = 257;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV = 64;
@@ -45,7 +47,9 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GLOBAL_POSITION_INT = 33;
   public static int MAVLINK_MSG_ID_AUTOPILOT_VERSION = 148;
   public static int MAVLINK_MSG_ID_LOGGING_DATA = 266;
+  public static int MAVLINK_MSG_ID_PARAM_EXT_REQUEST_LIST = 321;
   public static int MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE = 104;
+  public static int MAVLINK_MSG_ID_PARAM_EXT_SET = 323;
   public static int MAVLINK_MSG_ID_AUTH_KEY = 7;
   public static int MAVLINK_MSG_ID_HIL_CONTROLS = 91;
   public static int MAVLINK_MSG_ID_MISSION_WRITE_PARTIAL_LIST = 38;
@@ -56,10 +60,12 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL = 110;
   public static int MAVLINK_MSG_ID_ENCAPSULATED_DATA = 131;
   public static int MAVLINK_MSG_ID_MISSION_COUNT = 44;
+  public static int MAVLINK_MSG_ID_PARAM_EXT_ACK = 324;
   public static int MAVLINK_MSG_ID_SET_MODE = 11;
   public static int MAVLINK_MSG_ID_VIBRATION = 241;
   public static int MAVLINK_MSG_ID_STORAGE_INFORMATION = 261;
   public static int MAVLINK_MSG_ID_SYSTEM_TIME = 2;
+  public static int MAVLINK_MSG_ID_WIFI_CONFIG_AP = 299;
   public static int MAVLINK_MSG_ID_SCALED_PRESSURE2 = 137;
   public static int MAVLINK_MSG_ID_SAFETY_SET_ALLOWED_AREA = 54;
   public static int MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE = 101;

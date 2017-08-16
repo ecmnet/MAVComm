@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_storage_information
- * WIP: Information about a storage medium
+ * WIP: Information about a storage medium.
  **/
 public class msg_storage_information extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_STORAGE_INFORMATION = 261;
