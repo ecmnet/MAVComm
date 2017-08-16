@@ -36,6 +36,9 @@ package com.comino.mav.control.impl;
 
 import java.util.concurrent.locks.LockSupport;
 
+import org.mavlink.messages.MAV_TYPE;
+import org.mavlink.messages.lquac.msg_heartbeat;
+
 import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
@@ -88,6 +91,9 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 				if(!comm.isConnected()) {
 					comm.close(); Thread.sleep(100); comm.open();
 				}
+				msg_heartbeat beat = new msg_heartbeat(255,1);
+				beat.type = MAV_TYPE.MAV_TYPE_GCS;
+				comm.write(beat);
 			} catch (Exception e) { e.printStackTrace(); }
 		}
 		collector.stop();
