@@ -94,7 +94,7 @@ public class MAVCommTest implements Runnable, IMAVLinkListener {
                 msg_heartbeat beat = new msg_heartbeat(255,1);
                 beat.type = MAV_TYPE.MAV_TYPE_GCS;
                 control.sendMAVLinkMessage(beat);
-                System.err.println(beat);
+
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -107,7 +107,7 @@ public class MAVCommTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void received(Object o) {
 		MAVLinkMessage m = (MAVLinkMessage)o;
-    if(m.messageType>200)
+    if(m.messageType==253)
 	    System.out.println(m.messageType+"-"+m.componentId+" "+control.getErrorCount()+":"+o);
 
 	}

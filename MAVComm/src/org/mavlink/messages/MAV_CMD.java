@@ -71,7 +71,7 @@ public interface MAV_CMD {
      * PARAM 4 : Desired yaw angle. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
-     * PARAM 7 : Altitude
+     * PARAM 7 : Altitude (ground level)
      */
     public final static int MAV_CMD_NAV_LAND = 21;
     /**
@@ -198,7 +198,7 @@ public interface MAV_CMD {
     /**
      * Takeoff from ground using VTOL mode
      * PARAM 1 : Empty
-     * PARAM 2 : Empty
+     * PARAM 2 : Front transition heading, see VTOL_TRANSITION_HEADING enum.
      * PARAM 3 : Empty
      * PARAM 4 : Yaw angle in degrees. NaN for unchanged.
      * PARAM 5 : Latitude
@@ -210,11 +210,11 @@ public interface MAV_CMD {
      * Land using VTOL mode
      * PARAM 1 : Empty
      * PARAM 2 : Empty
-     * PARAM 3 : Empty
+     * PARAM 3 : Approach altitude (with the same reference as the Altitude field). NaN if unspecified.
      * PARAM 4 : Yaw angle in degrees. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
-     * PARAM 7 : Altitude
+     * PARAM 7 : Altitude (ground level)
      */
     public final static int MAV_CMD_NAV_VTOL_LAND = 85;
     /**
@@ -1000,6 +1000,11 @@ public interface MAV_CMD {
      * PARAM 7 : Altitude
      */
     public final static int MAV_CMD_CONDITION_GATE = 4501;
+    /**
+     * Request authorization to arm the vehicle to a external entity, the arm authorizer is resposible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+     * PARAM 1 : Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle
+     */
+    public final static int MAV_CMD_ARM_AUTHORIZATION_REQUEST = 3001;
     /**
      * Fence return point. There can only be one fence return point.
      * PARAM 1 : Reserved

@@ -24,9 +24,13 @@ public class msg_command_ack extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_COMMAND_ACK;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 4;
+    payload_length = 10;
 }
 
+  /**
+   * WIP: Additional parameter of the result, example: which parameter of MAV_CMD_NAV_WAYPOINT caused it to be denied.
+   */
+  public long result_param2;
   /**
    * Command ID, as defined by MAV_CMD enum.
    */
@@ -36,22 +40,33 @@ public class msg_command_ack extends MAVLinkMessage {
    */
   public int result;
   /**
-   * WIP: Needs to be set when MAV_RESULT is MAV_RESULT_IN_PROGRESS, values from 0 to 100 for progress percentage, 255 for unknown progress.
+   * WIP: Also used as result_param1, it can be set with a enum containing the errors reasons of why the command was denied or the progress percentage or 255 if unknown the progress when result is MAV_RESULT_IN_PROGRESS.
    */
   public int progress;
+  /**
+   * WIP: System which requested the command to be executed
+   */
+  public int target_system;
+  /**
+   * WIP: Component which requested the command to be executed
+   */
+  public int target_component;
 /**
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
+  result_param2 = (int)dis.readInt();
   command = (int)dis.readUnsignedShort()&0x00FFFF;
   result = (int)dis.readUnsignedByte()&0x00FF;
   progress = (int)dis.readUnsignedByte()&0x00FF;
+  target_system = (int)dis.readUnsignedByte()&0x00FF;
+  target_component = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+4];
+  byte[] buffer = new byte[12+10];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -63,21 +78,24 @@ public byte[] encode() throws IOException {
   dos.writeByte(messageType & 0x00FF);
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
+  dos.writeInt((int)(result_param2&0x00FFFFFFFF));
   dos.writeShort(command&0x00FFFF);
   dos.writeByte(result&0x00FF);
   dos.writeByte(progress&0x00FF);
+  dos.writeByte(target_system&0x00FF);
+  dos.writeByte(target_component&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 4);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 10);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[14] = crcl;
-  buffer[15] = crch;
+  buffer[20] = crcl;
+  buffer[21] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_COMMAND_ACK : " +   "  command="+command+  "  result="+result+  "  progress="+progress;}
+return "MAVLINK_MSG_ID_COMMAND_ACK : " +   "  result_param2="+result_param2+  "  command="+command+  "  result="+result+  "  progress="+progress+  "  target_system="+target_system+  "  target_component="+target_component;}
 }
