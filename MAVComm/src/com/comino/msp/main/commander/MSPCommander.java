@@ -46,6 +46,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.offboard.OffboardPositionUpdater;
 import com.comino.msp.model.DataModel;
+import com.comino.msp.model.segment.Status;
 
 public class MSPCommander {
 
@@ -88,7 +89,8 @@ public class MSPCommander {
 	private void restartCompanion(msg_msp_command cmd) {
 		MSPLogger.getInstance().writeLocalMsg("Companion rebooted",
 				MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
-		executeConsoleCommand("reboot");
+		if(model.sys.isStatus(Status.MSP_LANDED))
+		      executeConsoleCommand("reboot");
 	}
 
 	private void enableOffboardUpdater(msg_msp_command cmd) {
