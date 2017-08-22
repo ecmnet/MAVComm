@@ -52,6 +52,10 @@ public class MSPMathUtils {
 		return distance;
 	}
 
+	public static float getLocalDistance(float x1, float y1, float z1, float x2, float y2, float z2 ) {
+		return (float)Math.sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1)+(z2-z1)*(z2-z1));
+	}
+
 	public static float[] eulerAnglesByQuaternion(float euler[], float[] q) {
 		euler[0] = (float)Math.atan2(2.0 * (q[0] * q[1] + q[2] * q[3]), 1.0 - 2.0 * (q[1] * q[1] + q[2] * q[2]));
 		euler[1] = (float)Math.asin(2 * (q[0] * q[2] - q[3] * q[1]));

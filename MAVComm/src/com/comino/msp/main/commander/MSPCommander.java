@@ -76,8 +76,8 @@ public class MSPCommander {
 				switch(cmd.command) {
 				case MSP_CMD.MSP_CMD_RESTART:
 					restartCompanion(cmd); break;
-					//				case MSP_CMD.MSP_CMD_OFFBOARD:
-					//					enableOffboardUpdater(cmd); break;
+				case MSP_CMD.MSP_CMD_OFFBOARD:
+					enableOffboardUpdater(cmd); break;
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
 					setOffboardPosition(cmd); break;
 				}
@@ -92,15 +92,11 @@ public class MSPCommander {
 	}
 
 	private void enableOffboardUpdater(msg_msp_command cmd) {
-		if((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE && !offboard.isRunning())
-			offboard.start();
-		else
-			offboard.stop();
-
+		offboard.enableProperty().set((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
 	}
 
 	private void setOffboardPosition(msg_msp_command cmd) {
-		if(offboard.isRunning()) {
+		if(offboard.enableProperty().get()) {
 			if(cmd.param1!=Float.NaN)
 				offboard.setNEDX(cmd.param1);
 			if(cmd.param2!=Float.NaN)
