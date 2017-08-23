@@ -60,12 +60,18 @@ public class OffboardPositionUpdater implements Runnable {
 	private float x_pos = 0f;
 	private float y_pos = 0f;
 
+	private float z_vel = 0f;
+	private float x_vel = 0f;
+	private float y_vel = 0f;
+
 	private float yaw = 0f;
 
 	private MSPLogger logger;
 	private DataModel model;
 
 	private boolean target_set = false;
+
+	private boolean circlemode;
 
 	public OffboardPositionUpdater(IMAVController control) {
 		this.control = control;
@@ -74,29 +80,44 @@ public class OffboardPositionUpdater implements Runnable {
 
 		enableProperty.addListener((e,o,n) -> {
 
-			this.x_pos = model.state.l_x;
-			this.y_pos = model.state.l_y;
-			this.z_pos = model.state.l_z;
-			this.yaw   = model.state.h;
+			if(n.booleanValue()) {
 
-			target_set = false;
+				this.x_pos = model.state.l_x;
+				this.y_pos = model.state.l_y;
+				this.z_pos = model.state.l_z;
+				this.yaw   = model.state.h;
 
-			new Thread(this).start();
+				new Thread(this).start();
 
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException k) { }
-			control.getCurrentModel().sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, true);
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException k) { }
+				control.getCurrentModel().sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, true);
 
-			if(!control.getCurrentModel().sys.isStatus(Status.MSP_MODE_OFFBOARD))
-				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+				if(!control.getCurrentModel().sys.isStatus(Status.MSP_MODE_OFFBOARD))
+					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+			}
 		});
 	}
 
 	public BooleanProperty enableProperty() {
 		return enableProperty;
+	}
+
+	public void setExperimentalCirleMode(boolean circle) {
+		enableProperty.set(circle);
+		target_set = true;
+		this.circlemode = circle;
+	}
+
+	public void jumpBack(float distance) {
+		enableProperty.set(true);
+		this.x_pos = model.state.l_x+distance;
+		this.y_pos = model.state.l_y;
+		target_set = true;
+
 	}
 
 	public void setNEDZ(float z) {
@@ -127,12 +148,12 @@ public class OffboardPositionUpdater implements Runnable {
 	@Override
 	public void run() {
 
-		float distance;
+		float distance; float ci=0;
 
 		if(!enableProperty.get())
 			return;
 
-		logger.writeLocalMsg("[msp] Offboard control",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+		logger.writeLocalMsg("[msp] Offboard running",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
 		while(enableProperty.get()) {
 
@@ -140,9 +161,13 @@ public class OffboardPositionUpdater implements Runnable {
 			cmd.target_component = 1;
 			cmd.target_system = 1;
 			cmd.type_mask = 0b000101111111000;
+			cmd.type_mask = 0b000101111000000;
 			cmd.x =  x_pos;
 			cmd.y =  y_pos;
 			cmd.z =  z_pos;
+			cmd.vx =  x_vel;
+			cmd.vy =  y_vel;
+			cmd.vz =  z_vel;
 			cmd.yaw = (float)(MSPMathUtils.toRad(yaw));
 			cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
@@ -150,18 +175,28 @@ public class OffboardPositionUpdater implements Runnable {
 				enableProperty.set(false);
 
 			try {
-				Thread.sleep(250);
+				Thread.sleep(100);
 			} catch (InterruptedException e) { }
 
 			distance = MSPMathUtils.getLocalDistance(model.state.l_x, model.state.l_y,model.state.l_z, x_pos, y_pos, z_pos);
 			if(distance<RADIUS && target_set) {
-				System.out.println(distance+"m");
-				logger.writeLocalMsg("[msp] Offboard: Target reached",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
-				enableProperty.set(false);
+				if(!circlemode) {
+					System.out.println(distance+"m");
+					logger.writeLocalMsg("[msp] Offboard: Target reached",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+					enableProperty.set(false); }
+				else {
+					ci = ci + 0.1f;
+					target_set = true;
+					x_vel = (float)Math.sin(2*ci)/2.0f;
+					y_vel = (float)Math.cos(ci)/2.0f;
+					x_pos = x_vel;
+					y_pos = y_vel;
+				}
 			}
 		}
 		control.getCurrentModel().sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
 
+		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
 		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
