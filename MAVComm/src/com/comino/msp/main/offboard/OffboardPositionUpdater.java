@@ -66,6 +66,9 @@ public class OffboardPositionUpdater implements Runnable {
 
 	private float yaw = 0f;
 
+	private float x_ci = 0f;
+	private float y_ci = 0f;
+
 	private MSPLogger logger;
 	private DataModel model;
 
@@ -107,16 +110,24 @@ public class OffboardPositionUpdater implements Runnable {
 	}
 
 	public void setExperimentalCirleMode(boolean circle) {
-		enableProperty.set(circle);
-		target_set = true;
+		enableProperty.set(true);
 		this.circlemode = circle;
+		target_set = true;
+		if(circle) {
+			this.x_ci = model.state.l_x;
+			this.y_ci = model.state.l_y;
+		} else {
+			this.x_pos = x_ci;
+			this.y_pos = y_ci;
+		}
 	}
 
 	public void jumpBack(float distance) {
 		enableProperty.set(true);
-		this.x_pos = model.state.l_x+distance;
-		this.y_pos = model.state.l_y;
+		this.x_pos = model.state.l_x-distance*(float)Math.cos(model.attitude.y);
+		this.y_pos = model.state.l_y-distance*(float)Math.sin(model.attitude.y);
 		target_set = true;
+		logger.writeLocalMsg("[msp] Offboard JumpBack",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 
 	}
 
@@ -160,7 +171,7 @@ public class OffboardPositionUpdater implements Runnable {
 			msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 			cmd.target_component = 1;
 			cmd.target_system = 1;
-			cmd.type_mask = 0b000101111111000;
+			//	cmd.type_mask = 0b000101111111000;
 			cmd.type_mask = 0b000101111000000;
 			cmd.x =  x_pos;
 			cmd.y =  y_pos;
@@ -178,21 +189,23 @@ public class OffboardPositionUpdater implements Runnable {
 				Thread.sleep(100);
 			} catch (InterruptedException e) { }
 
-			distance = MSPMathUtils.getLocalDistance(model.state.l_x, model.state.l_y,model.state.l_z, x_pos, y_pos, z_pos);
-			if(distance<RADIUS && target_set) {
-				if(!circlemode) {
+			if(!circlemode) {
+				distance = MSPMathUtils.getLocalDistance(model.state.l_x, model.state.l_y,model.state.l_z, x_pos, y_pos, z_pos);
+				if(distance<RADIUS && target_set) {
+
 					System.out.println(distance+"m");
 					logger.writeLocalMsg("[msp] Offboard: Target reached",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 					enableProperty.set(false); }
-				else {
-					ci = ci + 0.1f;
-					target_set = true;
-					x_vel = (float)Math.sin(2*ci)/2.0f;
-					y_vel = (float)Math.cos(ci)/2.0f;
-					x_pos = x_vel;
-					y_pos = y_vel;
-				}
 			}
+			else {
+				ci = ci + 0.1f;
+				target_set = true;
+				x_pos = (float)Math.sin(ci)/2.0f+x_ci;
+				y_pos = (float)Math.cos(ci)/2.0f+y_ci;
+				x_vel = 0;//(float)Math.cos(ci)/20.0f;
+				y_vel = 0;//(float)Math.sin(ci)/20.0f;
+			}
+
 		}
 		control.getCurrentModel().sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
 
