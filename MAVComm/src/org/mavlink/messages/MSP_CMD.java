@@ -44,4 +44,11 @@ public interface MSP_CMD {
      * PARAM 1 : component command
      */
     public final static int MSP_CMD_MICROSLAM = 75;
+    /**
+     * Control microslam system
+     * PARAM 1 : component command
+     * PARAM 2 : autocontrol mode
+     * PARAM 3 : mode parameter
+     */
+    public final static int MSP_CMD_AUTOMODE = 76;
 }

@@ -37,9 +37,13 @@
                   <description>Control microslam system</description>
                   <param index="1">component command</param>
               </entry>
+              <entry value="76" name="MSP_CMD_AUTOMODE">
+                  <description>Control microslam system</description>
+                  <param index="1">component command</param>
+                  <param index="2">autocontrol mode</param>
+                  <param index="3">mode parameter</param>
+              </entry>
             </enum>
-
-
 
             <enum name="MSP_COMPONENT_CTRL">
               <description>Component control</description>
@@ -54,6 +58,16 @@
               </entry>
                <entry value="3" name="CLEAR">
                   <description>clear component data</description>
+              </entry>
+           </enum>
+
+           <enum name="MSP_AUTOCONTROL_MODE">
+              <description>Auto-Control mode</description>
+              <entry value="0" name="OBSTACLE_JUMPBACK">
+                  <description>JumpBack mode</description>
+              </entry>
+              <entry value="1" name="CIRCLE_MODE">
+                  <description>Circles at center with diameter (param2)</description>
               </entry>
            </enum>
       </enums>

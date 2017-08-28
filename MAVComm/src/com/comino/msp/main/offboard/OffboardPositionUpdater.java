@@ -123,11 +123,13 @@ public class OffboardPositionUpdater implements Runnable {
 	}
 
 	public void jumpBack(float distance) {
-		enableProperty.set(true);
-		this.x_pos = model.state.l_x-distance*(float)Math.cos(model.attitude.y);
-		this.y_pos = model.state.l_y-distance*(float)Math.sin(model.attitude.y);
-		target_set = true;
-		logger.writeLocalMsg("[msp] Offboard JumpBack",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+		if(!enableProperty.get()) {
+			enableProperty.set(true);
+			this.x_pos = model.state.l_x-distance*(float)Math.cos(model.attitude.y);
+			this.y_pos = model.state.l_y-distance*(float)Math.sin(model.attitude.y);
+			target_set = true;
+			logger.writeLocalMsg("[msp] Offboard JumpBack",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+		}
 
 	}
 

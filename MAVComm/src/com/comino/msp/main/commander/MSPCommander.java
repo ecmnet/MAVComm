@@ -66,6 +66,10 @@ public class MSPCommander {
 		offboard = new OffboardPositionUpdater(control);
 	}
 
+	public  OffboardPositionUpdater getOffBoardUpdater() {
+		return offboard;
+	}
+
 	private void registerCommands() {
 
 		// register MSP commands here
