@@ -80,6 +80,7 @@
                <field type="uint64_t"      name="uptime_ms">Boot time ms</field>
                <field type="uint32_t"      name="com_error">AMA0 communication errors</field>
                <field type="uint32_t"      name="status">MSP Statusflags</field>
+               <field type="uint32_t"      name="autopilot_mode">Autopilot mode</field>
                <field type="char[16]"      name="version">MSP software build</field>
                <field type="char[10]"      name="arch">Companion architecture</field>
                <field type="uint64_t"      name="unix_time_us">Unix time us</field>

@@ -101,7 +101,7 @@ public class Status extends Segment {
 
 	private int     sensors    = 0;
 	private int     status     = 0;
-	private int     autopilot  = 0;
+	public  int     autopilot  = 0;
 
 	public int      error1     = 0;
 	public float    load_p     = Float.NaN;
