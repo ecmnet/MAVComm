@@ -11,7 +11,7 @@ public interface MSP_AUTOCONTROL_MODE {
     /**
      * JumpBack mode
      */
-    public final static int OBSTACLE_JUMPBACK = 0;
+    public final static int JUMPBACK = 0;
     /**
      * Circles at center with diameter (param2)
      */

@@ -38,10 +38,9 @@
                   <param index="1">component command</param>
               </entry>
               <entry value="76" name="MSP_CMD_AUTOMODE">
-                  <description>Control microslam system</description>
+                  <description>Set Autopilot mode</description>
                   <param index="1">component command</param>
-                  <param index="2">autocontrol mode</param>
-                  <param index="3">mode parameter</param>
+                  <param index="2">autopilot mode</param>
               </entry>
             </enum>
 
@@ -63,7 +62,7 @@
 
            <enum name="MSP_AUTOCONTROL_MODE">
               <description>Auto-Control mode</description>
-              <entry value="0" name="OBSTACLE_JUMPBACK">
+              <entry value="0" name="JUMPBACK">
                   <description>JumpBack mode</description>
               </entry>
               <entry value="1" name="CIRCLE_MODE">

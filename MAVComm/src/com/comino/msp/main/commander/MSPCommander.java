@@ -80,11 +80,17 @@ public class MSPCommander {
 				msg_msp_command cmd = (msg_msp_command)o;
 				switch(cmd.command) {
 				case MSP_CMD.MSP_CMD_RESTART:
-					restartCompanion(cmd); break;
+					restartCompanion(cmd);
+					break;
 				case MSP_CMD.MSP_CMD_OFFBOARD:
-					enableOffboardUpdater(cmd); break;
+					enableOffboardUpdater(cmd);
+					break;
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
-					setOffboardPosition(cmd); break;
+					setOffboardPosition(cmd);
+					break;
+				case MSP_CMD.MSP_CMD_AUTOMODE:
+					model.sys.setAutopilotMode((int)(cmd.param2), (int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
+					break;
 				}
 			}
 		});

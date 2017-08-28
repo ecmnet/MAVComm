@@ -92,7 +92,6 @@ public class Status extends Segment {
 	public static final  int MSP_RTK_AVAILABILITY    		=10;
 
 
-
 	private static final String[] sensor_names = {
 
 		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
@@ -102,6 +101,7 @@ public class Status extends Segment {
 
 	private int     sensors    = 0;
 	private int     status     = 0;
+	private int     autopilot  = 0;
 
 	public int      error1     = 0;
 	public float    load_p     = Float.NaN;
@@ -133,6 +133,7 @@ public class Status extends Segment {
 		basemode = s.basemode;
 		custommode = s.custommode;
 		px4_status = s.px4_status;
+		autopilot  = s.autopilot;
 
 		t_armed_ms = s.t_armed_ms;
 		t_boot_ms  = s.t_boot_ms;
@@ -179,6 +180,20 @@ public class Status extends Segment {
 		return true;
 	}
 
+	public void  setAutopilotMode(int box, boolean val) {
+		if(val)
+			autopilot = (int) (autopilot | (1<<box));
+		else
+			autopilot = (int) (autopilot & ~(1<<box));
+	}
+
+	public boolean isAutopilotMode(int ...box) {
+		for(int b : box)
+		  if((autopilot & (1<<b))==0)
+            return false;
+		return true;
+	}
+
 	public boolean isStatusChanged(Status old, int ...box) {
 		return !old.isStatus(box) && isStatus(box);
 	}
@@ -212,7 +227,7 @@ public class Status extends Segment {
 
 
 	public boolean isEqual(Status m) {
-		return (status == m.status) && ( basemode == m.basemode );
+		return (status == m.status) && ( basemode == m.basemode ) && (autopilot == m.autopilot);
 	}
 
 
