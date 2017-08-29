@@ -34,8 +34,11 @@
 
 package com.comino.msp.main;
 
+import java.lang.management.MemoryMXBean;
+import java.lang.management.OperatingSystemMXBean;
+
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
-import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -43,14 +46,16 @@ import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.main.commander.MSPCommander;
 import com.comino.msp.model.segment.Grid;
-import com.comino.msp.model.segment.Slam;
+import com.comino.msp.model.segment.Status;
 
 public class StartUp implements Runnable {
 
 	private IMAVMSPController    control = null;
 	private MSPConfig	          config = null;
 
-	private MSPCommander commander = null;;
+	private MSPCommander commander = null;
+	private OperatingSystemMXBean osBean;
+	private MemoryMXBean mxBean;;
 
 	public StartUp(String[] args) {
 
@@ -66,7 +71,19 @@ public class StartUp implements Runnable {
 
 		commander = new MSPCommander(control);
 
+		osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
+
 		// Start services if required
+
+		control.addStatusChangeListener((o,n) -> {
+			if(n.isAutopilotModeChanged(o, MSP_AUTOCONTROL_MODE.CIRCLE_MODE)) {
+				if(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE))
+					System.err.println("CircleMode triggered");
+				else
+					System.err.println("CircleMode switched off");
+			}
+		});
 
 		control.start();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
@@ -109,10 +126,22 @@ public class StartUp implements Runnable {
 				grid.cx = 0.1f;
 				grid.cy = 0.2f;
 				grid.resolution = s.getResolution();
-			    s.toArray(grid.data);
+				s.toArray(grid.data);
 				control.sendMAVLinkMessage(grid);
 
 				s.setBlock(f,0.1f, false);
+
+				msg_msp_status msg = new msg_msp_status(2,1);
+				msg.load = (int)(osBean.getSystemLoadAverage()*100);
+				msg.autopilot_mode =control.getCurrentModel().sys.autopilot;
+				msg.memory = (int)(mxBean.getHeapMemoryUsage().getUsed() * 100 /mxBean.getHeapMemoryUsage().getMax());
+				msg.com_error = control.getErrorCount();
+				msg.uptime_ms = System.currentTimeMillis() - tms;
+				msg.status = control.getCurrentModel().sys.getStatus();
+				msg.setVersion(config.getVersion());
+				msg.setArch(osBean.getArch());
+				msg.unix_time_us = System.currentTimeMillis() * 1000;
+				control.sendMAVLinkMessage(msg);
 
 
 			} catch (Exception e) {
