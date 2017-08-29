@@ -166,6 +166,10 @@ public class Status extends Segment {
 		return true;
 	}
 
+	public boolean isSensorChanged(Status old, int ...box) {
+		return old.isSensorAvailable(box) ^ isSensorAvailable(box);
+	}
+
 	public void  setStatus(int box, boolean val) {
 		if(val)
 			status = (int) (status | (1<<box));
@@ -194,8 +198,12 @@ public class Status extends Segment {
 		return true;
 	}
 
+	public boolean isAutopilotModeChanged(Status old, int ...box) {
+		return old.isAutopilotMode(box) ^ isAutopilotMode(box);
+	}
+
 	public boolean isStatusChanged(Status old, int ...box) {
-		return !old.isStatus(box) && isStatus(box);
+		return !old.isStatus(box) ^ isStatus(box);
 	}
 
 
