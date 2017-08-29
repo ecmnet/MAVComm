@@ -203,7 +203,7 @@ public class Status extends Segment {
 	}
 
 	public boolean isStatusChanged(Status old, int ...box) {
-		return !old.isStatus(box) ^ isStatus(box);
+		return old.isStatus(box) ^ isStatus(box);
 	}
 
 
