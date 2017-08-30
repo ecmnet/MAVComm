@@ -110,6 +110,10 @@ public class OffboardPositionUpdater implements Runnable {
 	}
 
 	public void setExperimentalCirleMode(boolean circle) {
+		if(model.state.l_z>-1) {
+			logger.writeLocalMsg("[msp] Circlemode rejected",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			return;
+		}
 		enableProperty.set(true);
 		this.circlemode = circle;
 		target_set = true;

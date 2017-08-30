@@ -78,10 +78,12 @@ public class StartUp implements Runnable {
 
 		control.addStatusChangeListener((o,n) -> {
 			if(n.isAutopilotModeChanged(o, MSP_AUTOCONTROL_MODE.CIRCLE_MODE)) {
-				if(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE))
-					System.err.println("CircleMode triggered");
-				else
-					System.err.println("CircleMode switched off");
+				System.err.println("Circle mode enabled: "+n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
+				commander.getOffBoardUpdater().setExperimentalCirleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
+			}
+
+			if(n.isStatusChanged(o, Status.MSP_MODE_RTL)) {
+				System.err.println("RTL mode "+n.isStatus(Status.MSP_MODE_RTL));
 			}
 		});
 
