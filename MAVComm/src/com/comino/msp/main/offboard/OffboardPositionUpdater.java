@@ -37,6 +37,7 @@ import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
@@ -81,6 +82,12 @@ public class OffboardPositionUpdater implements Runnable {
 		this.model   = control.getCurrentModel();
 		this.logger  = MSPLogger.getInstance();
 
+		control.addStatusChangeListener((o,n) -> {
+			if(n.isAutopilotModeChanged(o, MSP_AUTOCONTROL_MODE.CIRCLE_MODE)) {
+				setExperimentalCirleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
+			}
+		});
+
 		enableProperty.addListener((e,o,n) -> {
 
 			if(n.booleanValue()) {
@@ -110,19 +117,27 @@ public class OffboardPositionUpdater implements Runnable {
 	}
 
 	public void setExperimentalCirleMode(boolean circle) {
-		if(model.state.l_z>-1) {
+
+		if(circle==circlemode)
+			return;
+
+		if(model.hud.al<1.0f || !model.sys.isStatus(Status.MSP_MODE_POSITION)) {
 			logger.writeLocalMsg("[msp] Circlemode rejected",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
 			return;
 		}
+
 		enableProperty.set(true);
 		this.circlemode = circle;
 		target_set = true;
 		if(circle) {
 			this.x_ci = model.state.l_x;
 			this.y_ci = model.state.l_y;
+			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		} else {
 			this.x_pos = x_ci;
 			this.y_pos = y_ci;
+			logger.writeLocalMsg("[msp] Circlemode left. Returning to center",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 	}
 
@@ -132,7 +147,7 @@ public class OffboardPositionUpdater implements Runnable {
 			this.x_pos = model.state.l_x-distance*(float)Math.cos(model.attitude.y);
 			this.y_pos = model.state.l_y-distance*(float)Math.sin(model.attitude.y);
 			target_set = true;
-			logger.writeLocalMsg("[msp] Offboard JumpBack",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 		}
 
 	}
