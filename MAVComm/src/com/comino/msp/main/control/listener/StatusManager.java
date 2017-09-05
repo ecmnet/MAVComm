@@ -68,13 +68,15 @@ public class StatusManager implements Runnable {
 			for (StatusListenerEntry entry : list) {
 				switch(entry.type) {
 				case TYPE_CHANGE:
-					if(entry.mask == MASK_ALL) {
+					if(entry.mask == MASK_ALL)
 						entry.listener.update(status_old, status_current);
+					else {
+						// TODO: Mask driven change
 					}
 					entry.last_triggered = System.currentTimeMillis();
 				break;
 				case TYPE_TIMEOUT:
-
+					// TODO: Timeout driven change
 				break;
 				}
 			}
@@ -82,7 +84,6 @@ public class StatusManager implements Runnable {
 			e.printStackTrace();
 		}
 		status_old.set(status_current);
-
 	}
 
 	private class StatusListenerEntry {
