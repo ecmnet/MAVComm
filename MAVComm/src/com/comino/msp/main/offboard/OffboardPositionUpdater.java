@@ -86,7 +86,15 @@ public class OffboardPositionUpdater implements Runnable {
 			if(n.isAutopilotModeChanged(o, MSP_AUTOCONTROL_MODE.CIRCLE_MODE)) {
 				setExperimentalCirleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
 			}
+			if(n.isStatusChanged(o,Status.MSP_LANDED) && n.isStatus(Status.MSP_LANDED)) {
+				enableProperty.set(false);
+				x_pos = 0; y_pos = 0; z_pos = 0; yaw = 0;
+				x_vel = 0; y_vel = 0; z_vel = 0;
+				x_ci  = 0; y_ci  = 0;
+
+			}
 		});
+
 
 		enableProperty.addListener((e,o,n) -> {
 
@@ -108,6 +116,9 @@ public class OffboardPositionUpdater implements Runnable {
 					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+			} else {
+				model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
+				logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 			}
 		});
 	}
@@ -121,7 +132,8 @@ public class OffboardPositionUpdater implements Runnable {
 		if(circle==circlemode)
 			return;
 
-		if(model.hud.al<1.0f || !model.sys.isStatus(Status.MSP_MODE_POSITION)) {
+		if(circle && model.hud.al<1.0f) {
+			System.err.println(model.hud.al);
 			logger.writeLocalMsg("[msp] Circlemode rejected",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
 			return;
@@ -185,9 +197,10 @@ public class OffboardPositionUpdater implements Runnable {
 		if(!enableProperty.get())
 			return;
 
-		logger.writeLocalMsg("[msp] Offboard running",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+		logger.writeLocalMsg("[msp] Offboard started",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
 		while(enableProperty.get()) {
+
 
 			msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 			cmd.target_component = 1;
@@ -210,6 +223,8 @@ public class OffboardPositionUpdater implements Runnable {
 				Thread.sleep(100);
 			} catch (InterruptedException e) { }
 
+
+
 			if(!circlemode) {
 				distance = MSPMathUtils.getLocalDistance(model.state.l_x, model.state.l_y,model.state.l_z, x_pos, y_pos, z_pos);
 				if(distance<RADIUS && target_set) {
@@ -228,7 +243,8 @@ public class OffboardPositionUpdater implements Runnable {
 			}
 
 		}
-		control.getCurrentModel().sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
+		model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
 
 		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 

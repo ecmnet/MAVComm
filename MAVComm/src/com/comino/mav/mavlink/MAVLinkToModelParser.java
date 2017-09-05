@@ -123,7 +123,8 @@ public class MAVLinkToModelParser {
 
 	private LogMessage lastMessage = null;
 
-	private Status oldStatus = new Status();
+	private Status status_old     = new Status();
+	private Status status_current = new Status();
 
 	private long time_sync_cycle;
 
@@ -783,7 +784,7 @@ public class MAVLinkToModelParser {
 
 	public boolean isConnected() {
 
-		if (!oldStatus.isEqual(model.sys)) {
+		if (!status_old.isEqual(model.sys)) {
 
 			notifyStatusChange();
 
@@ -891,26 +892,26 @@ public class MAVLinkToModelParser {
 
 	private void notifyStatusChange() {
 
-		if (!model.sys.isEqual(oldStatus) && (System.currentTimeMillis() - startUpAt) > 2000) {
+		status_current.set(model.sys);
+
+		if (!model.sys.isEqual(status_old) && (System.currentTimeMillis() - startUpAt) > 2000) {
 
 			ExecutorService.get().execute(new Runnable() {
-				final Status os = oldStatus.clone();
-				final Status ns = model.sys.clone();
 
 				public void run() {
 					try {
 						for (IMSPStatusChangedListener listener : modeListener)
-							listener.update(os, ns);
+							listener.update(status_old, status_current);
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			});
 
-			if (model.sys.isStatusChanged(oldStatus, Status.MSP_ARMED))
+			if (model.sys.isStatusChanged(status_old, Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
 
-			oldStatus.set(model.sys);
+			status_old.set(status_current);
 
 		}
 	}
