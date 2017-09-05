@@ -35,11 +35,9 @@
 package com.comino.mav.comm.serial;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.comm.IMAVComm;
@@ -47,7 +45,6 @@ import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -233,12 +230,6 @@ public class MAVSerialComm implements IMAVComm {
 	@Override
 	public boolean isConnected() {
 		return (serialPort != null && serialPort.isOpen());
-	}
-
-	@Override
-	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
-		parser.addStatusChangeListener(listener);
-
 	}
 
 	@Override

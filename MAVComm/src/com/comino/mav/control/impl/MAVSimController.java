@@ -47,7 +47,6 @@ import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
-import com.comino.msp.model.segment.Slam;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSPMathUtils;

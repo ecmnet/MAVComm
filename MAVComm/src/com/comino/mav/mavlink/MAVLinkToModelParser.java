@@ -83,12 +83,10 @@ import org.mavlink.messages.lquac.msg_vision_position_estimate;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
@@ -112,9 +110,6 @@ public class MAVLinkToModelParser {
 	private List<IMAVLinkListener> mavListener = null;
 	private List<IMAVMessageListener> msgListener = null;
 
-	private List<IMSPStatusChangedListener> modeListener = null;
-
-	private long startUpAt = 0;
 	private long t_armed_start = 0;
 
 	private long gpos_tms = 0;
@@ -122,9 +117,6 @@ public class MAVLinkToModelParser {
 	private long time_offset_ns = 0;
 
 	private LogMessage lastMessage = null;
-
-	private Status status_old     = new Status();
-	private Status status_current = new Status();
 
 	private long time_sync_cycle;
 
@@ -134,7 +126,6 @@ public class MAVLinkToModelParser {
 		this.link = link;
 		this.mavList = new HashMap<Class<?>, MAVLinkMessage>();
 
-		this.modeListener = new ArrayList<IMSPStatusChangedListener>();
 		this.mavListener = new ArrayList<IMAVLinkListener>();
 		this.msgListener = new ArrayList<IMAVMessageListener>();
 
@@ -216,7 +207,6 @@ public class MAVLinkToModelParser {
 				model.sys.load_m = status.load / 4f;
 				model.sys.autopilot = (int)status.autopilot_mode;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
-				notifyStatusChange();
 			}
 		});
 
@@ -573,7 +563,6 @@ public class MAVLinkToModelParser {
 				model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 
 				model.sys.setStatus(Status.MSP_READY, true);
-				notifyStatusChange();
 
 			}
 		});
@@ -607,8 +596,6 @@ public class MAVLinkToModelParser {
 				model.rc.s2  = rc.chan3_raw < 65534 ? (short) rc.chan3_raw : 1500;
 				model.rc.s3  = rc.chan4_raw < 65534 ? (short) rc.chan4_raw : 1500;
 				model.rc.tms = model.sys.getSynchronizedPX4Time_us();
-
-				notifyStatusChange();
 
 			}
 		});
@@ -651,8 +638,6 @@ public class MAVLinkToModelParser {
 
 				model.sys.basemode = hb.base_mode;
 				model.sys.custommode = (int) (hb.custom_mode);
-
-				notifyStatusChange();
 			}
 		});
 
@@ -673,8 +658,8 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				try {
 
-					 if(!link.isSerial())
-					 return;
+					if(!link.isSerial())
+						return;
 
 					long now_ns = System.currentTimeMillis() * 1000000L;
 					msg_timesync sync = (msg_timesync) o;
@@ -754,14 +739,11 @@ public class MAVLinkToModelParser {
 				model.sys.setStatus(Status.MSP_INAIR, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_IN_AIR);
 				model.sys.setStatus(Status.MSP_MODE_LANDING, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_LANDING);
 				model.sys.setStatus(Status.MSP_MODE_TAKEOFF, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_TAKEOFF);
-
-				notifyStatusChange();
 			}
 		});
 
 		System.out.println("MAVMSP parser: " + listeners.size() + " MAVLink messagetypes registered");
 
-		startUpAt = System.currentTimeMillis();
 		model.sys.tms = System.currentTimeMillis() * 1000;
 
 	}
@@ -783,21 +765,11 @@ public class MAVLinkToModelParser {
 	}
 
 	public boolean isConnected() {
-
-		if (!status_old.isEqual(model.sys)) {
-
-			notifyStatusChange();
-
-			if (!model.sys.isStatus(Status.MSP_CONNECTED)) {
-				model.clear();
-				return false;
-			}
+		if (!model.sys.isStatus(Status.MSP_CONNECTED)) {
+			model.clear();
+			return false;
 		}
 		return model.sys.isStatus(Status.MSP_CONNECTED);
-	}
-
-	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
-		modeListener.add(listener);
 	}
 
 	public void writeMessage(LogMessage m) {
@@ -859,14 +831,12 @@ public class MAVLinkToModelParser {
 
 		if (checkTimeOut(model.rc.tms, TIMEOUT_RC_ATTACHED)) {
 			model.sys.setStatus(Status.MSP_RC_ATTACHED, (false));
-			notifyStatusChange();
 			model.rc.rssi = 0;
 		}
 
 		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {
 			//System.out.println("MSP=" + model.sys.getSynchronizedPX4Time_us() + " PX4=" + model.sys.tms);
 			model.sys.setStatus(Status.MSP_CONNECTED, false);
-			notifyStatusChange();
 			link.close();
 			link.open();
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
@@ -874,8 +844,8 @@ public class MAVLinkToModelParser {
 
 		if ((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS && TIME_SYNC_CYCLE_MS > 0) {
 
-			 if(!link.isSerial())
-			 return;
+			if(!link.isSerial())
+				return;
 
 			time_sync_cycle = System.currentTimeMillis();
 			msg_timesync sync_s = new msg_timesync(255, 1);
@@ -890,45 +860,5 @@ public class MAVLinkToModelParser {
 		return model.sys.getSynchronizedPX4Time_us() > (tms + timeout);
 	}
 
-	private void notifyStatusChange() {
-
-		status_current.set(model.sys);
-
-		if (!model.sys.isEqual(status_old) && (System.currentTimeMillis() - startUpAt) > 2000) {
-
-			ExecutorService.get().execute(new Runnable() {
-
-				public void run() {
-					try {
-						for (IMSPStatusChangedListener listener : modeListener)
-							listener.update(status_old, status_current);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
-
-			if (model.sys.isStatusChanged(status_old, Status.MSP_ARMED))
-				t_armed_start = System.currentTimeMillis();
-
-			status_old.set(status_current);
-
-		}
-	}
-
-	// private synchronized void notifyStatusChange() {
-	// if(!oldStatus.isEqual(model.sys) && (System.currentTimeMillis() -
-	// startUpAt)>2000) {
-	//
-	// for(IMSPStatusChangedListener listener : modeListener)
-	// listener.update(oldStatus, model.sys);
-	//
-	// if(model.sys.isStatusChanged(oldStatus,Status.MSP_ARMED))
-	// t_armed_start = System.currentTimeMillis();
-	//
-	// oldStatus.set(model.sys);
-	//
-	// }
-	// }
 
 }

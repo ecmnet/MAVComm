@@ -37,7 +37,6 @@ package com.comino.msp.main;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
-import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
 

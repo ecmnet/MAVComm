@@ -35,11 +35,9 @@
 package com.comino.msp.slam.storage;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.comino.msp.main.StartUp;
 import com.comino.msp.model.DataModel;
 
 public class GridStore {

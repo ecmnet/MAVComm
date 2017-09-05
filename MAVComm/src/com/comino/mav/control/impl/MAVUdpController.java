@@ -34,12 +34,9 @@
 
 package com.comino.mav.control.impl;
 
-import java.util.concurrent.locks.LockSupport;
-
 import org.mavlink.messages.MAV_TYPE;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
-import com.comino.mav.comm.udp.MAVUdpCommNIO2;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
 
