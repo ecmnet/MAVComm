@@ -48,7 +48,7 @@ public class ExecutorService {
 	{
 
 		schedThPoolExec.prestartAllCoreThreads();
-		schedThPoolExec.setKeepAliveTime(0, TimeUnit.SECONDS);
+		schedThPoolExec.setKeepAliveTime(2, TimeUnit.SECONDS);
 
 	}
 
