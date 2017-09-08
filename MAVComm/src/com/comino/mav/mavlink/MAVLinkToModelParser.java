@@ -110,8 +110,6 @@ public class MAVLinkToModelParser {
 	private List<IMAVLinkListener> mavListener = null;
 	private List<IMAVMessageListener> msgListener = null;
 
-	private long t_armed_start = 0;
-
 	private long gpos_tms = 0;
 
 	private long time_offset_ns = 0;
@@ -818,8 +816,6 @@ public class MAVLinkToModelParser {
 				e.printStackTrace();
 			}
 
-			if (model.sys.isStatus(Status.MSP_ARMED))
-				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 		}
 
 		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS))

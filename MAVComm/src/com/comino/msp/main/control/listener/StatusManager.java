@@ -21,6 +21,8 @@ public class StatusManager implements Runnable {
 	private Status status_old 				 = null;
 	private List<StatusListenerEntry>  list  = null;
 
+	private long t_armed_start			     = 0;
+
 
 	public StatusManager(DataModel model) {
 		this.model = model;
@@ -32,25 +34,26 @@ public class StatusManager implements Runnable {
 	}
 
 
-	private void addListener(byte type, int mask, int timeout_ms, IMSPStatusChangedListener listener) {
+	private void addListener(byte type, int mask, int timeout_ms, IMSPStatusChangedListener listener, boolean state) {
 		StatusListenerEntry entry = new StatusListenerEntry();
 		entry.listener    = listener;
 		entry.type        = type;
 		entry.mask        = mask;
 		entry.timeout_ms  = timeout_ms;
+		entry.state       = state;
 		list.add(entry);
 	}
 
 	public void addListener(int mask, int timeout_ms, IMSPStatusChangedListener listener) {
-		addListener(TYPE_TIMEOUT, mask, timeout_ms, listener);
+		addListener(TYPE_TIMEOUT, mask, timeout_ms, listener, true);
 	}
 
 	public void addListener(int mask, IMSPStatusChangedListener listener) {
-		addListener(TYPE_CHANGE, mask, 0, listener);
+		addListener(TYPE_CHANGE, mask, 0, listener, true);
 	}
 
 	public void addListener(IMSPStatusChangedListener listener) {
-		addListener(TYPE_CHANGE, MASK_ALL, 0, listener);
+		addListener(TYPE_CHANGE, MASK_ALL, 0, listener, true);
 	}
 
 	public void removeAll() {
@@ -60,8 +63,14 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
+		if (model.sys.isStatus(Status.MSP_ARMED))
+			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+
 		if(model.sys.isEqual(status_old))
 			return;
+
+		if(model.sys.isStatusChanged(status_old, Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))
+			t_armed_start = System.currentTimeMillis();
 
 		status_current.set(model.sys);
 		try {
@@ -93,5 +102,6 @@ public class StatusManager implements Runnable {
 		public byte                         type     = TYPE_CHANGE;
 		public long                   last_triggered = 0;
 		public int                        timeout_ms = 0;
+		public boolean                      state    = false;
 	}
 }
