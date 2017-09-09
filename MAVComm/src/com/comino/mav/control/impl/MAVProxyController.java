@@ -267,6 +267,11 @@ public class MAVProxyController implements IMAVMSPController {
        return null;
 	}
 
+	@Override
+	public StatusManager getStatusManager() {
+		return status_manager;
+	}
+
 
 	@Override
 	public boolean start() {

@@ -94,7 +94,7 @@ public class Status extends Segment {
 
 	private static final String[] sensor_names = {
 
-		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
+			"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
 
 	};
 
@@ -161,8 +161,8 @@ public class Status extends Segment {
 
 	public boolean isSensorAvailable(int ...box) {
 		for(int b : box)
-		  if((sensors & (1<<b))==0)
-            return false;
+			if((sensors & (1<<b))==0)
+				return false;
 		return true;
 	}
 
@@ -179,8 +179,8 @@ public class Status extends Segment {
 
 	public boolean isStatus(int ...box) {
 		for(int b : box)
-		  if((status & (1<<b))==0)
-            return false;
+			if((status & (1<<b))==0)
+				return false;
 		return true;
 	}
 
@@ -193,17 +193,22 @@ public class Status extends Segment {
 
 	public boolean isAutopilotMode(int ...box) {
 		for(int b : box)
-		  if((autopilot & (1<<b))==0)
-            return false;
+			if((autopilot & (1<<b))==0)
+				return false;
 		return true;
 	}
 
-	public boolean isAutopilotModeChanged(Status old, int ...box) {
-		return old.isAutopilotMode(box) ^ isAutopilotMode(box);
+	public boolean isStatusChanged(Status old, int mask) {
+		if(mask != 0xFFFF) {
+			return ((old.status & mask) == mask) ^ ((status & mask) == mask);
+		}
+		return old.status != status;
 	}
 
-	public boolean isStatusChanged(Status old, int ...box) {
-		return old.isStatus(box) ^ isStatus(box);
+	public boolean isAutopilotModeChanged(Status old,int mask) {
+		if(mask != 0xFFFF)
+			return ((old.autopilot & mask) == mask) ^ ((autopilot & mask) == mask);
+		return old.autopilot != autopilot;
 	}
 
 

@@ -317,4 +317,10 @@ public class MAVController implements IMAVController, Runnable {
 	private void writeLogToFile(String msg) {
 		ps_log.println(sdf1.format(new Date())+": "+msg);
 	}
+
+
+	@Override
+	public StatusManager getStatusManager() {
+		return status_manager;
+	}
 }

@@ -10,8 +10,15 @@ import com.comino.msp.utils.ExecutorService;
 
 public class StatusManager implements Runnable {
 
-	public static final byte  TYPE_CHANGE    = 0;
-	public static final byte  TYPE_TIMEOUT   = 1;
+	public static final byte  TYPE_ALL             = 0;
+	public static final byte  TYPE_PX4_STATUS      = 1;
+	public static final byte  TYPE_MSP_STATUS      = 2;
+	public static final byte  TYPE_MSP_AUTOPILOT   = 3;
+
+	public static final byte  EDGE_BOTH            = 0;
+	public static final byte  EDGE_RISING          = 1;
+	public static final byte  EDGE_FALLING         = 2;
+
 
 	public static final int   MASK_ALL       = 0xFFFF;
 
@@ -34,26 +41,26 @@ public class StatusManager implements Runnable {
 	}
 
 
-	private void addListener(byte type, int mask, int timeout_ms, IMSPStatusChangedListener listener, boolean state) {
+	private void addListener(byte type, int box, int timeout_ms, int state, IMSPStatusChangedListener listener) {
 		StatusListenerEntry entry = new StatusListenerEntry();
 		entry.listener    = listener;
 		entry.type        = type;
-		entry.mask        = mask;
+		entry.mask        = 1 << box;
 		entry.timeout_ms  = timeout_ms;
 		entry.state       = state;
 		list.add(entry);
 	}
 
-	public void addListener(int mask, int timeout_ms, IMSPStatusChangedListener listener) {
-		addListener(TYPE_TIMEOUT, mask, timeout_ms, listener, true);
+	public void addListener(byte type, int mask, int timeout_ms, IMSPStatusChangedListener listener) {
+		addListener(type, mask, timeout_ms, EDGE_BOTH, listener);
 	}
 
-	public void addListener(int mask, IMSPStatusChangedListener listener) {
-		addListener(TYPE_CHANGE, mask, 0, listener, true);
+	public void addListener(byte type, int mask, IMSPStatusChangedListener listener) {
+		addListener(TYPE_PX4_STATUS, mask, 0, EDGE_BOTH, listener);
 	}
 
 	public void addListener(IMSPStatusChangedListener listener) {
-		addListener(TYPE_CHANGE, MASK_ALL, 0, listener, true);
+		addListener(TYPE_ALL, MASK_ALL, 0, EDGE_BOTH, listener);
 	}
 
 	public void removeAll() {
@@ -76,17 +83,26 @@ public class StatusManager implements Runnable {
 		try {
 			for (StatusListenerEntry entry : list) {
 				switch(entry.type) {
-				case TYPE_CHANGE:
-					if(entry.mask == MASK_ALL)
+				case TYPE_ALL:
+					entry.listener.update(status_old, status_current);
+					break;
+				case TYPE_PX4_STATUS:
+					if(status_current.isStatusChanged(status_old, entry.mask)) {
 						entry.listener.update(status_old, status_current);
-					else {
-						// TODO: Mask driven change
+						entry.last_triggered = System.currentTimeMillis();
 					}
-					entry.last_triggered = System.currentTimeMillis();
-				break;
-				case TYPE_TIMEOUT:
-					// TODO: Timeout driven change
-				break;
+					break;
+				case TYPE_MSP_STATUS:
+
+					// TODO:
+
+					break;
+				case TYPE_MSP_AUTOPILOT:
+					if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
+						entry.listener.update(status_old, status_current);
+						entry.last_triggered = System.currentTimeMillis();
+					}
+					break;
 				}
 			}
 		} catch (Exception e) {
@@ -99,9 +115,9 @@ public class StatusManager implements Runnable {
 
 		public IMSPStatusChangedListener	listener = null;
 		public int							mask     = MASK_ALL;
-		public byte                         type     = TYPE_CHANGE;
+		public byte                         type     = TYPE_PX4_STATUS;
 		public long                   last_triggered = 0;
 		public int                        timeout_ms = 0;
-		public boolean                      state    = false;
+		public int                          state    = EDGE_BOTH;
 	}
 }
