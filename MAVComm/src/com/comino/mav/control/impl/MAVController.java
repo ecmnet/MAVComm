@@ -50,10 +50,10 @@ import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.control.IMAVController;
+import com.comino.msp.main.control.StatusManager;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
-import com.comino.msp.main.control.listener.StatusManager;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;

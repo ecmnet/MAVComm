@@ -1,9 +1,10 @@
-package com.comino.msp.main.control.listener;
+package com.comino.msp.main.control;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
