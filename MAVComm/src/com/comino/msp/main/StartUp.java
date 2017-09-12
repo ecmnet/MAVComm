@@ -75,14 +75,6 @@ public class StartUp implements Runnable {
 
 		// Start services if required
 
-		control.addStatusChangeListener((o,n) -> {
-
-
-			if(n.isStatusChanged(o, Status.MSP_MODE_RTL)) {
-				System.err.println("RTL mode "+n.isStatus(Status.MSP_MODE_RTL));
-			}
-		});
-
 		control.start();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
 		Thread worker = new Thread(this);

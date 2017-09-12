@@ -21,7 +21,7 @@ public class StatusManager implements Runnable {
 	public static final byte  EDGE_FALLING         = 2;
 
 
-	public static final int   MASK_ALL       = 0xFFFF;
+	public static final int   MASK_ALL       = 0xFFFFFFFF;
 
 	public DataModel model                   = null;
 
@@ -42,26 +42,31 @@ public class StatusManager implements Runnable {
 	}
 
 
-	private void addListener(byte type, int box, int timeout_ms, int state, IMSPStatusChangedListener listener) {
+	private void addListener(byte type, int mask, int timeout_ms, int state, IMSPStatusChangedListener listener) {
 		StatusListenerEntry entry = new StatusListenerEntry();
 		entry.listener    = listener;
 		entry.type        = type;
-		entry.mask        = 1 << box;
+		entry.mask        = mask;
 		entry.timeout_ms  = timeout_ms;
 		entry.state       = state;
 		list.add(entry);
+		System.out.println("Registering: "+type+" -> "+listener.getClass().getName());
 	}
 
-	public void addListener(byte type, int mask, int timeout_ms, IMSPStatusChangedListener listener) {
-		addListener(type, mask, timeout_ms, EDGE_BOTH, listener);
+	public void addListener(byte type, int box, int timeout_ms, IMSPStatusChangedListener listener) {
+		addListener(type, 1 << box, timeout_ms, EDGE_BOTH, listener);
 	}
 
-	public void addListener(byte type, int mask, IMSPStatusChangedListener listener) {
-		addListener(TYPE_PX4_STATUS, mask, 0, EDGE_BOTH, listener);
+	public void addListener(byte type, int box, IMSPStatusChangedListener listener) {
+		addListener(type, 1 << box, 0, EDGE_BOTH, listener);
+	}
+
+	public void addListener(int box, IMSPStatusChangedListener listener) {
+		addListener(TYPE_PX4_STATUS, 1 << box, 0, EDGE_BOTH, listener);
 	}
 
 	public void addListener(IMSPStatusChangedListener listener) {
-		addListener(TYPE_ALL, MASK_ALL, 0, EDGE_BOTH, listener);
+		addListener(TYPE_PX4_STATUS, MASK_ALL, 0, EDGE_BOTH, listener);
 	}
 
 	public void removeAll() {
@@ -83,10 +88,8 @@ public class StatusManager implements Runnable {
 		status_current.set(model.sys);
 		try {
 			for (StatusListenerEntry entry : list) {
+
 				switch(entry.type) {
-				case TYPE_ALL:
-					entry.listener.update(status_old, status_current);
-					break;
 				case TYPE_PX4_STATUS:
 					if(status_current.isStatusChanged(status_old, entry.mask)) {
 						entry.listener.update(status_old, status_current);

@@ -98,21 +98,16 @@ public class Status extends Segment {
 
 	};
 
+	public  int     autopilot  = 0;
+	public int     px4_status  = 0;
 
 	private int     sensors    = 0;
 	private int     status     = 0;
-	public  int     autopilot  = 0;
 
 	public int      error1     = 0;
 	public float    load_p     = Float.NaN;
 	public float   drops_p     = Float.NaN;
 	public float   imu_temp	   = Float.NaN;
-
-	public int		basemode   = 0;
-	public int		custommode = 0;
-
-	public int     px4_status  = 0;
-
 
 	public float	load_m	   = Float.NaN;	  	//MSP
 	public float    t_armed_ms = Float.NaN;
@@ -130,8 +125,8 @@ public class Status extends Segment {
 		load_m   = s.load_m;
 		drops_p  = s.drops_p;
 		imu_temp = s.imu_temp;
-		basemode = s.basemode;
-		custommode = s.custommode;
+//		basemode = s.basemode;
+//		custommode = s.custommode;
 		px4_status = s.px4_status;
 		autopilot  = s.autopilot;
 
@@ -199,16 +194,11 @@ public class Status extends Segment {
 	}
 
 	public boolean isStatusChanged(Status old, int mask) {
-		if(mask != 0xFFFF) {
-			return ((old.status & mask) == mask) ^ ((status & mask) == mask);
-		}
-		return old.status != status;
+			return ((old.status & mask) != (status & mask));
 	}
 
 	public boolean isAutopilotModeChanged(Status old,int mask) {
-		if(mask != 0xFFFF)
-			return ((old.autopilot & mask) == mask) ^ ((autopilot & mask) == mask);
-		return old.autopilot != autopilot;
+		return ((old.autopilot & mask) != (autopilot & mask));
 	}
 
 
@@ -240,7 +230,7 @@ public class Status extends Segment {
 
 
 	public boolean isEqual(Status m) {
-		return (status == m.status) && ( basemode == m.basemode ) && (autopilot == m.autopilot);
+		return (status == m.status)	&& (autopilot == m.autopilot);
 	}
 
 
