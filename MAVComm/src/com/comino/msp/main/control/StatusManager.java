@@ -37,8 +37,9 @@ public class StatusManager implements Runnable {
 		this.status_current = new Status();
 		this.status_old     = new Status();
 		this.list  = new ArrayList<StatusListenerEntry>();
-		ExecutorService.get().scheduleAtFixedRate(this, 2000, 10, TimeUnit.MILLISECONDS);
+		ExecutorService.get().scheduleAtFixedRate(this, 2000, 100, TimeUnit.MILLISECONDS);
 		System.out.println("StatusManager started");
+
 	}
 
 
@@ -50,7 +51,6 @@ public class StatusManager implements Runnable {
 		entry.timeout_ms  = timeout_ms;
 		entry.state       = state;
 		list.add(entry);
-		System.out.println("Registering: "+type+" -> "+listener.getClass().getName());
 	}
 
 	public void addListener(byte type, int box, int timeout_ms, IMSPStatusChangedListener listener) {
@@ -79,18 +79,20 @@ public class StatusManager implements Runnable {
 		if (model.sys.isStatus(Status.MSP_ARMED))
 			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
-		if(model.sys.isEqual(status_old))
+		status_current.set(model.sys);
+
+		if(status_old.isEqual(status_current))
 			return;
 
 		if(model.sys.isStatusChanged(status_old, Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))
 			t_armed_start = System.currentTimeMillis();
 
-		status_current.set(model.sys);
 		try {
 			for (StatusListenerEntry entry : list) {
 
 				switch(entry.type) {
 				case TYPE_PX4_STATUS:
+				//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
 					if(status_current.isStatusChanged(status_old, entry.mask)) {
 						entry.listener.update(status_old, status_current);
 						entry.last_triggered = System.currentTimeMillis();

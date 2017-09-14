@@ -220,6 +220,8 @@ public class Status extends Segment {
 		t_armed_ms    = 0;
 		t_boot_ms     = 0;
 		px4_status    = 0;
+		status        = 0;
+		autopilot     = 0;
 
 	}
 
