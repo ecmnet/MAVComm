@@ -43,6 +43,7 @@ import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.main.control.StatusManager;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSPMathUtils;
@@ -82,19 +83,14 @@ public class OffboardPositionUpdater implements Runnable {
 		this.model   = control.getCurrentModel();
 		this.logger  = MSPLogger.getInstance();
 
-		control.addStatusChangeListener((o,n) -> {
-			if(n.isAutopilotModeChanged(o, MSP_AUTOCONTROL_MODE.CIRCLE_MODE)) {
-				setExperimentalCirleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
-			}
-			if(n.isStatusChanged(o,Status.MSP_LANDED) && n.isStatus(Status.MSP_LANDED)) {
-				enableProperty.set(false);
-				x_pos = 0; y_pos = 0; z_pos = 0; yaw = 0;
-				x_vel = 0; y_vel = 0; z_vel = 0;
-				x_ci  = 0; y_ci  = 0;
-
-			}
+		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT,MSP_AUTOCONTROL_MODE.CIRCLE_MODE,(o,n) -> {
+			setExperimentalCirleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
 		});
 
+		control.getStatusManager().addListener(Status.MSP_LANDED,(o,n) -> {
+			if(n.isStatus(Status.MSP_LANDED))
+			    enableProperty.set(false);
+		});
 
 		enableProperty.addListener((e,o,n) -> {
 
@@ -116,9 +112,6 @@ public class OffboardPositionUpdater implements Runnable {
 					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-			} else {
-				model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
-				logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 			}
 		});
 	}

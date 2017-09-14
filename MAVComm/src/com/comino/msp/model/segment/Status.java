@@ -94,25 +94,20 @@ public class Status extends Segment {
 
 	private static final String[] sensor_names = {
 
-		"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
+			"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
 
 	};
 
+	public  int     autopilot  = 0;
+	public int     px4_status  = 0;
 
 	private int     sensors    = 0;
 	private int     status     = 0;
-	public  int     autopilot  = 0;
 
 	public int      error1     = 0;
 	public float    load_p     = Float.NaN;
 	public float   drops_p     = Float.NaN;
 	public float   imu_temp	   = Float.NaN;
-
-	public int		basemode   = 0;
-	public int		custommode = 0;
-
-	public int     px4_status  = 0;
-
 
 	public float	load_m	   = Float.NaN;	  	//MSP
 	public float    t_armed_ms = Float.NaN;
@@ -130,8 +125,8 @@ public class Status extends Segment {
 		load_m   = s.load_m;
 		drops_p  = s.drops_p;
 		imu_temp = s.imu_temp;
-		basemode = s.basemode;
-		custommode = s.custommode;
+//		basemode = s.basemode;
+//		custommode = s.custommode;
 		px4_status = s.px4_status;
 		autopilot  = s.autopilot;
 
@@ -161,8 +156,8 @@ public class Status extends Segment {
 
 	public boolean isSensorAvailable(int ...box) {
 		for(int b : box)
-		  if((sensors & (1<<b))==0)
-            return false;
+			if((sensors & (1<<b))==0)
+				return false;
 		return true;
 	}
 
@@ -179,8 +174,8 @@ public class Status extends Segment {
 
 	public boolean isStatus(int ...box) {
 		for(int b : box)
-		  if((status & (1<<b))==0)
-            return false;
+			if((status & (1<<b))==0)
+				return false;
 		return true;
 	}
 
@@ -193,17 +188,17 @@ public class Status extends Segment {
 
 	public boolean isAutopilotMode(int ...box) {
 		for(int b : box)
-		  if((autopilot & (1<<b))==0)
-            return false;
+			if((autopilot & (1<<b))==0)
+				return false;
 		return true;
 	}
 
-	public boolean isAutopilotModeChanged(Status old, int ...box) {
-		return old.isAutopilotMode(box) ^ isAutopilotMode(box);
+	public boolean isStatusChanged(Status old, int mask) {
+			return ((old.status & mask) != (status & mask));
 	}
 
-	public boolean isStatusChanged(Status old, int ...box) {
-		return old.isStatus(box) ^ isStatus(box);
+	public boolean isAutopilotModeChanged(Status old,int mask) {
+		return ((old.autopilot & mask) != (autopilot & mask));
 	}
 
 
@@ -225,6 +220,8 @@ public class Status extends Segment {
 		t_armed_ms    = 0;
 		t_boot_ms     = 0;
 		px4_status    = 0;
+		status        = 0;
+		autopilot     = 0;
 
 	}
 
@@ -235,7 +232,7 @@ public class Status extends Segment {
 
 
 	public boolean isEqual(Status m) {
-		return (status == m.status) && ( basemode == m.basemode ) && (autopilot == m.autopilot);
+		return (status == m.status)	&& (autopilot == m.autopilot);
 	}
 
 

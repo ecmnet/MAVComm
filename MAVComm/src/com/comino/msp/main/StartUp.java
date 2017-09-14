@@ -37,7 +37,6 @@ package com.comino.msp.main;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
-import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
 
@@ -75,14 +74,6 @@ public class StartUp implements Runnable {
 		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
 
 		// Start services if required
-
-		control.addStatusChangeListener((o,n) -> {
-
-
-			if(n.isStatusChanged(o, Status.MSP_MODE_RTL)) {
-				System.err.println("RTL mode "+n.isStatus(Status.MSP_MODE_RTL));
-			}
-		});
 
 		control.start();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");

@@ -49,6 +49,7 @@ import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.main.control.StatusManager;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
@@ -71,6 +72,8 @@ public class MAVProxyController implements IMAVMSPController {
 
 	private static final int BAUDRATE  = 921600;
 
+	private StatusManager status_manager = null;
+
 	public static IMAVController getInstance() {
 		return controller;
 	}
@@ -79,6 +82,7 @@ public class MAVProxyController implements IMAVMSPController {
 	public MAVProxyController(boolean sitl) {
 		controller = this;
 		model = new DataModel();
+		status_manager = new StatusManager(model);
 
 		if(sitl) {
 			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14556, 14550);
@@ -212,7 +216,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
-		comm.addStatusChangeListener(listener);
+		status_manager.addListener(listener);
 
 	}
 
@@ -261,6 +265,11 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public String enableFileLogging(boolean enable, String directory) {
        return null;
+	}
+
+	@Override
+	public StatusManager getStatusManager() {
+		return status_manager;
 	}
 
 

@@ -38,6 +38,7 @@ import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 
+import com.comino.msp.main.control.StatusManager;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
@@ -75,6 +76,8 @@ public interface IMAVController {
 	public void addStatusChangeListener(IMSPStatusChangedListener listener);
 	public void addMAVLinkListener(IMAVLinkListener listener);
 	public void addMAVMessageListener(IMAVMessageListener listener);
+
+	public StatusManager getStatusManager();
 
 
 }

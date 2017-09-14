@@ -49,10 +49,8 @@ import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.comm.udp.MAVUdpCommNIO;
-import com.comino.mav.comm.udp.MAVUdpCommNIO2;
-import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
+import com.comino.msp.main.control.StatusManager;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
 import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
@@ -81,6 +79,8 @@ public class MAVController implements IMAVController, Runnable {
 
 	private boolean file_log_enabled  = false;
 
+	private StatusManager status_manager = null;
+
 	private String           filename;
 	private SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 	private PrintStream      ps_log;
@@ -93,6 +93,7 @@ public class MAVController implements IMAVController, Runnable {
 	public MAVController() {
 		controller = this;
 		model = new DataModel();
+		status_manager = new StatusManager(model);
 		collector = new ModelCollectorService(model);
 	}
 
@@ -257,10 +258,10 @@ public class MAVController implements IMAVController, Runnable {
 	}
 
 
+
 	@Override
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
-		if(comm!=null)
-			comm.addStatusChangeListener(listener);
+		status_manager.addListener(listener);
 
 	}
 
@@ -315,5 +316,11 @@ public class MAVController implements IMAVController, Runnable {
 
 	private void writeLogToFile(String msg) {
 		ps_log.println(sdf1.format(new Date())+": "+msg);
+	}
+
+
+	@Override
+	public StatusManager getStatusManager() {
+		return status_manager;
 	}
 }

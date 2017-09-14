@@ -2,9 +2,6 @@
 
 package com.comino.mav.mavlink;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
 

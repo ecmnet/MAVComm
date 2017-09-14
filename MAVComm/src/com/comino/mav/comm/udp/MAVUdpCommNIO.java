@@ -49,7 +49,6 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
@@ -152,12 +151,6 @@ public class MAVUdpCommNIO implements IMAVComm {
 	@Override
 	public void addMAVLinkListener(IMAVLinkListener listener) {
 		parser.addMAVLinkListener(listener);
-
-	}
-
-	@Override
-	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
-		parser.addStatusChangeListener(listener);
 
 	}
 
