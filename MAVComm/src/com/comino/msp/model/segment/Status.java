@@ -99,7 +99,7 @@ public class Status extends Segment {
 	};
 
 	public  int     autopilot  = 0;
-	public int     px4_status  = 0;
+	public  int     px4_status  = 0;
 
 	private int     sensors    = 0;
 	private int     status     = 0;
@@ -109,9 +109,10 @@ public class Status extends Segment {
 	public float   drops_p     = Float.NaN;
 	public float   imu_temp	   = Float.NaN;
 
-	public float	load_m	   = Float.NaN;	  	//MSP
+	public float	    load_m	   = Float.NaN;	  	//MSP
 	public float    t_armed_ms = Float.NaN;
 	public float    t_boot_ms  = Float.NaN;
+	public byte     wifi_quality = 0;
 
 	public long     t_offset_ns = 0;
 	public String   version    = "";
@@ -125,13 +126,12 @@ public class Status extends Segment {
 		load_m   = s.load_m;
 		drops_p  = s.drops_p;
 		imu_temp = s.imu_temp;
-//		basemode = s.basemode;
-//		custommode = s.custommode;
 		px4_status = s.px4_status;
 		autopilot  = s.autopilot;
 
 		t_armed_ms = s.t_armed_ms;
 		t_boot_ms  = s.t_boot_ms;
+	 wifi_quality  = s. wifi_quality;
 
 		t_offset_ns = s.t_offset_ns;
 	}
@@ -214,7 +214,7 @@ public class Status extends Segment {
 	public void clear() {
 		load_m	  	  = 0;
 		load_p	  	  = 0;
-		imu_temp	  = 0;
+		imu_temp	      = 0;
 		drops_p   	  = 0;
 		error1        = 0;
 		t_armed_ms    = 0;
@@ -222,6 +222,7 @@ public class Status extends Segment {
 		px4_status    = 0;
 		status        = 0;
 		autopilot     = 0;
+		wifi_quality  = 0;
 
 	}
 
