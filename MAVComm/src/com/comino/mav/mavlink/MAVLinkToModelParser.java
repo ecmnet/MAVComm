@@ -205,7 +205,7 @@ public class MAVLinkToModelParser {
 				model.sys.load_m = status.load / 4f;
 				model.sys.autopilot = (int)status.autopilot_mode;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
-				model.sys.wifi_quality = (byte)status.wifi_quality;
+				model.sys.wifi_quality = status.wifi_quality/100f;
 			}
 		});
 

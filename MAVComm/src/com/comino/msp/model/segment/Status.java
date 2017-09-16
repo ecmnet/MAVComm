@@ -109,10 +109,10 @@ public class Status extends Segment {
 	public float   drops_p     = Float.NaN;
 	public float   imu_temp	   = Float.NaN;
 
-	public float	    load_m	   = Float.NaN;	  	//MSP
-	public float    t_armed_ms = Float.NaN;
-	public float    t_boot_ms  = Float.NaN;
-	public byte     wifi_quality = 0;
+	public float	    load_m	      = Float.NaN;	  	//MSP
+	public float    t_armed_ms    = Float.NaN;
+	public float    t_boot_ms     = Float.NaN;
+	public float     wifi_quality = Float.NaN;
 
 	public long     t_offset_ns = 0;
 	public String   version    = "";
@@ -131,7 +131,7 @@ public class Status extends Segment {
 
 		t_armed_ms = s.t_armed_ms;
 		t_boot_ms  = s.t_boot_ms;
-	 wifi_quality  = s. wifi_quality;
+		wifi_quality  = s. wifi_quality;
 
 		t_offset_ns = s.t_offset_ns;
 	}
@@ -194,7 +194,7 @@ public class Status extends Segment {
 	}
 
 	public boolean isStatusChanged(Status old, int mask) {
-			return ((old.status & mask) != (status & mask));
+		return ((old.status & mask) != (status & mask));
 	}
 
 	public boolean isAutopilotModeChanged(Status old,int mask) {
