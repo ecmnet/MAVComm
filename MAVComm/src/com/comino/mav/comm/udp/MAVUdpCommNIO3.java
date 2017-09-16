@@ -81,7 +81,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	private static MAVUdpCommNIO3 com = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(32*1024);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(48*1024);
 
 	public static MAVUdpCommNIO3 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
@@ -159,7 +159,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 			try {
 
-				if(selector.select(1500)==0)
+				if(selector.select(2500)==0)
 					throw new IOException("UDP NIO Timeout");
 
 				selectedKeys = selector.selectedKeys().iterator();
