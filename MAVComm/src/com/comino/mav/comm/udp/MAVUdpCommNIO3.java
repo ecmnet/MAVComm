@@ -128,14 +128,10 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			t.setDaemon(true);
 			t.start();
 			isConnected = true;
-			System.out.println();
 
 
 		} catch(Exception e) {
-			try {
-				channel.disconnect();
-				channel.close();
-			} catch (IOException e1) { }
+			close();
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
 			isConnected = false;
 			return false;
@@ -148,18 +144,20 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 	public void run() {
 		SelectionKey key = null;
 		Iterator<?> selectedKeys = null; MAVLinkMessage msg = null;
-		try {
 
-			System.out.print(".");
-			if(channel.isConnected()) {
-				msg_heartbeat hb = new msg_heartbeat(255,1);
-				hb.isValid = true;
-				write(hb);
-			} else
-				isConnected = false;
+		if(channel.isConnected()) {
+			msg_heartbeat hb = new msg_heartbeat(255,1);
+			hb.isValid = true;
+			try {
+			write(hb);
+			} catch(Exception e) { }
+		} else
+			isConnected = false;
 
 
-			while(isConnected) {
+		while(isConnected) {
+
+			try {
 
 				if(selector.select(1500)==0)
 					throw new IOException("UDP NIO Timeout");
@@ -186,16 +184,13 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 						}
 					}
 				}
+			} catch(Exception e) {
+				errors++;
+				rxBuffer.clear();
+				model.sys.setStatus(Status.MSP_CONNECTED,false);
+				isConnected = false;
 			}
-
-		} catch(Exception e) {
-			System.err.println(e.getMessage());
-			errors++;
-			rxBuffer.clear();
-			model.sys.setStatus(Status.MSP_CONNECTED,false);
-			isConnected = false;
 		}
-
 	}
 
 	@Override
@@ -245,12 +240,12 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	public void close() {
 		try {
-			if(selector!=null && selector.isOpen())
+			if(selector!=null )
 				selector.close();
-			if (channel != null && channel.isOpen()) {
-				channel.disconnect();
-				channel.close();
+			if (channel != null ) {
+				channel.socket().close();
 			}
+			LockSupport.parkNanos(10000000);
 		} catch(Exception e) { }
 	}
 
