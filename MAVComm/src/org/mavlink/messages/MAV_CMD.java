@@ -553,19 +553,19 @@ public interface MAV_CMD {
      * PARAM 2 : stabilize roll? (1 = yes, 0 = no)
      * PARAM 3 : stabilize pitch? (1 = yes, 0 = no)
      * PARAM 4 : stabilize yaw? (1 = yes, 0 = no)
-     * PARAM 5 : Empty
-     * PARAM 6 : Empty
-     * PARAM 7 : Empty
+     * PARAM 5 : roll input (0 = angle, 1 = angular rate)
+     * PARAM 6 : pitch input (0 = angle, 1 = angular rate)
+     * PARAM 7 : yaw input (0 = angle, 1 = angular rate)
      */
     public final static int MAV_CMD_DO_MOUNT_CONFIGURE = 204;
     /**
      * Mission command to control a camera or antenna mount
-     * PARAM 1 : pitch (WIP: DEPRECATED: or lat in degrees) depending on mount mode.
-     * PARAM 2 : roll (WIP: DEPRECATED: or lon in degrees) depending on mount mode.
-     * PARAM 3 : yaw (WIP: DEPRECATED: or alt in meters) depending on mount mode.
-     * PARAM 4 : WIP: alt in meters depending on mount mode.
-     * PARAM 5 : WIP: latitude in degrees * 1E7, set if appropriate mount mode.
-     * PARAM 6 : WIP: longitude in degrees * 1E7, set if appropriate mount mode.
+     * PARAM 1 : pitch depending on mount mode (degrees or degrees/second depending on pitch input).
+     * PARAM 2 : roll depending on mount mode (degrees or degrees/second depending on roll input).
+     * PARAM 3 : yaw depending on mount mode (degrees or degrees/second depending on yaw input).
+     * PARAM 4 : alt in meters depending on mount mode.
+     * PARAM 5 : latitude in degrees * 1E7, set if appropriate mount mode.
+     * PARAM 6 : longitude in degrees * 1E7, set if appropriate mount mode.
      * PARAM 7 : MAV_MOUNT_MODE enum value
      */
     public final static int MAV_CMD_DO_MOUNT_CONTROL = 205;
