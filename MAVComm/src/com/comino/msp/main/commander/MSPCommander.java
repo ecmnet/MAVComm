@@ -37,14 +37,17 @@ package com.comino.msp.main.commander;
 import java.io.IOException;
 
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.IMAVMSPController;
+import com.comino.msp.execution.flightcontrol.FlightGestureControl;
+import com.comino.msp.execution.offboard.OffboardPositionUpdater;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.main.control.StatusManager;
 import com.comino.msp.main.control.listener.IMAVLinkListener;
-import com.comino.msp.main.offboard.OffboardPositionUpdater;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 
@@ -52,6 +55,7 @@ public class MSPCommander {
 
 	private IMAVMSPController        control = null;
 	private OffboardPositionUpdater offboard = null;
+	private FlightGestureControl    gestures = null;
 	private DataModel                  model = null;
 
 	public MSPCommander(IMAVMSPController control) {
@@ -64,6 +68,7 @@ public class MSPCommander {
 		System.out.println("Commander initialized");
 
 		offboard = new OffboardPositionUpdater(control);
+		gestures = new FlightGestureControl(model, offboard);
 	}
 
 	public  OffboardPositionUpdater getOffBoardUpdater() {
@@ -94,6 +99,11 @@ public class MSPCommander {
 				}
 			}
 		});
+
+		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT,MSP_AUTOCONTROL_MODE.CIRCLE_MODE,(o,n) -> {
+			gestures.enableCircleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
+		});
+
 	}
 
 	private void restartCompanion(msg_msp_command cmd) {
@@ -108,16 +118,7 @@ public class MSPCommander {
 	}
 
 	private void setOffboardPosition(msg_msp_command cmd) {
-		if(offboard.enableProperty().get()) {
-			if(cmd.param1!=Float.NaN)
-				offboard.setNEDX(cmd.param1);
-			if(cmd.param2!=Float.NaN)
-				offboard.setNEDY(cmd.param2);
-			if(cmd.param3!=Float.NaN)
-				offboard.setNEDZ(cmd.param3);
-			if(cmd.param4!=Float.NaN)
-				offboard.setYaw(cmd.param4);
-		}
+		gestures.setTargetAndExecute(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
 	}
 
 

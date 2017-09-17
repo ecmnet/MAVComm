@@ -31,7 +31,10 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.main.offboard;
+package com.comino.msp.execution.offboard;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
@@ -42,64 +45,54 @@ import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
+import com.comino.msp.execution.IOffboardListener;
 import com.comino.msp.log.MSPLogger;
-import com.comino.msp.main.control.StatusManager;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.utils.MSPMathUtils;
+import com.comino.msp.utils.MSPConvertUtils;
 
+import georegression.struct.se.Se3_F32;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 public class OffboardPositionUpdater implements Runnable {
 
-	private static final float RADIUS = 0.1f;
+	public static final int MODE_SINGLE_TARGET 	= 0;
+	public static final int MODE_MULTI_TARGET 	= 1;
 
-	private IMAVController control = null;
-	private BooleanProperty enableProperty = new SimpleBooleanProperty();
+	private float acceptance_radius = 0.1f;
 
-	private float z_pos = -1.0f;
-	private float x_pos = 0f;
-	private float y_pos = 0f;
+	private IMAVController              control        = null;
+	private BooleanProperty             enableProperty = null;
+	private List<IOffboardListener>     listeners      = null;
 
-	private float z_vel = 0f;
-	private float x_vel = 0f;
-	private float y_vel = 0f;
+	private final Se3_F32 currentPos          = new Se3_F32();
+	private final Se3_F32 nextTargetPos       = new Se3_F32();
 
-	private float yaw = 0f;
-
-	private float x_ci = 0f;
-	private float y_ci = 0f;
 
 	private MSPLogger logger;
 	private DataModel model;
 
-	private boolean target_set = false;
+	private int mode = MODE_SINGLE_TARGET;
 
-	private boolean circlemode;
 
 	public OffboardPositionUpdater(IMAVController control) {
-		this.control = control;
-		this.model   = control.getCurrentModel();
-		this.logger  = MSPLogger.getInstance();
-
-		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT,MSP_AUTOCONTROL_MODE.CIRCLE_MODE,(o,n) -> {
-			setExperimentalCirleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
-		});
+		this.control        = control;
+		this.model          = control.getCurrentModel();
+		this.enableProperty = new SimpleBooleanProperty();
+		this.logger         = MSPLogger.getInstance();
+		this.listeners      = new ArrayList<IOffboardListener>();
 
 		control.getStatusManager().addListener(Status.MSP_LANDED,(o,n) -> {
 			if(n.isStatus(Status.MSP_LANDED))
-			    enableProperty.set(false);
+				enableProperty.set(false);
 		});
 
 		enableProperty.addListener((e,o,n) -> {
 
-			if(n.booleanValue()) {
+			if(n.booleanValue() && !nextTargetPos.T.isIdentical(0, 0, 0)) {
 
-				this.x_pos = model.state.l_x;
-				this.y_pos = model.state.l_y;
-				this.z_pos = model.state.l_z;
-				this.yaw   = model.state.h;
+				MSPConvertUtils.convertModelToSe3_F32(model, nextTargetPos);
 
 				new Thread(this).start();
 
@@ -120,72 +113,32 @@ public class OffboardPositionUpdater implements Runnable {
 		return enableProperty;
 	}
 
-	public void setExperimentalCirleMode(boolean circle) {
+	public void addListener(IOffboardListener listener) {
+		this.listeners.add(listener);
+	}
 
-		if(circle==circlemode)
-			return;
+	public void removeListeners() {
+		this.listeners.clear();
+	}
 
-		if(circle && model.hud.al<1.0f) {
-			System.err.println(model.hud.al);
-			logger.writeLocalMsg("[msp] Circlemode rejected",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-			model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
-			return;
+	public void setNextTarget(Se3_F32 nextTarget, int mode) {
+		if(!nextTarget.T.isIdentical(0, 0, 0)) {
+			this.nextTargetPos.set(nextTarget);
+			this.mode = mode;
+			this.enableProperty.set(true);
 		}
+	}
 
+	public void setNextTarget(Se3_F32 nextTarget) {
+		setNextTarget(nextTarget,MODE_SINGLE_TARGET);
 		enableProperty.set(true);
-		this.circlemode = circle;
-		target_set = true;
-		if(circle) {
-			this.x_ci = model.state.l_x;
-			this.y_ci = model.state.l_y;
-			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
-		} else {
-			this.x_pos = x_ci;
-			this.y_pos = y_ci;
-			logger.writeLocalMsg("[msp] Circlemode left. Returning to center",MAV_SEVERITY.MAV_SEVERITY_INFO);
-		}
-	}
-
-	public void jumpBack(float distance) {
-		if(!enableProperty.get()) {
-			enableProperty.set(true);
-			this.x_pos = model.state.l_x-distance*(float)Math.cos(model.attitude.y);
-			this.y_pos = model.state.l_y-distance*(float)Math.sin(model.attitude.y);
-			target_set = true;
-			logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-		}
-
-	}
-
-	public void setNEDZ(float z) {
-		this.z_pos = z;
-		System.out.printf("Offboard Set: X: %2.1f Y: %2.1f Z: %2.1f\n",x_pos, y_pos,z_pos);
-		target_set = true;
-	}
-
-	public void setNEDX(float x) {
-		this.x_pos = x;
-		System.out.printf("Offboard Set: X: %2.1f Y: %2.1f Z: %2.1f\n",x_pos, y_pos,z_pos);
-		target_set = true;
-	}
-
-	public void setNEDY(float y) {
-		this.y_pos = y;
-		System.out.printf("Offboard Set: X: %2.1f Y: %2.1f Z: %2.1f\n",x_pos, y_pos,z_pos);
-		target_set = true;
-	}
-
-	public void setYaw(float yaw_deg) {
-		this.yaw = yaw_deg;
-		System.out.printf("Offboard Set: YAW: %2f°\n",yaw);
-		target_set = true;
 	}
 
 
 	@Override
 	public void run() {
 
-		float distance; float ci=0;
+		float distance; float[] tmp_attitude = new float[3];
 
 		if(!enableProperty.get())
 			return;
@@ -194,56 +147,58 @@ public class OffboardPositionUpdater implements Runnable {
 
 		while(enableProperty.get()) {
 
+			MSPConvertUtils.convertModelToSe3_F32(model, currentPos);
 
 			msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 			cmd.target_component = 1;
 			cmd.target_system = 1;
 			//	cmd.type_mask = 0b000101111111000;
 			cmd.type_mask = 0b000101111000000;
-			cmd.x =  x_pos;
-			cmd.y =  y_pos;
-			cmd.z =  z_pos;
-			cmd.vx =  x_vel;
-			cmd.vy =  y_vel;
-			cmd.vz =  z_vel;
-			cmd.yaw = (float)(MSPMathUtils.toRad(yaw));
+
+			// TODO: better: set Mask accordingly
+			if(nextTargetPos.getX()!=Float.NaN) cmd.x = nextTargetPos.getX(); else cmd.x = currentPos.getX();
+			if(nextTargetPos.getY()!=Float.NaN) cmd.y = nextTargetPos.getY(); else cmd.y = currentPos.getY();
+			if(nextTargetPos.getZ()!=Float.NaN) cmd.z = nextTargetPos.getZ(); else cmd.z = currentPos.getZ();
+
+			cmd.yaw = MSPConvertUtils.ConvertSe3_F32ToYaw(nextTargetPos,tmp_attitude);
 			cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
 			if(!control.sendMAVLinkMessage(cmd))
 				enableProperty.set(false);
 
 			try {
-				Thread.sleep(100);
+				Thread.sleep(10);
 			} catch (InterruptedException e) { }
 
 
-
-			if(!circlemode) {
-				distance = MSPMathUtils.getLocalDistance(model.state.l_x, model.state.l_y,model.state.l_z, x_pos, y_pos, z_pos);
-				if(distance<RADIUS && target_set) {
-
-					System.out.println(distance+"m");
-					logger.writeLocalMsg("[msp] Offboard: Target reached",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+			distance = nextTargetPos.getT().distance(currentPos.T);
+			if(distance < acceptance_radius) {
+				fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
+				if(mode==MODE_SINGLE_TARGET) {
 					enableProperty.set(false); }
 			}
-			else {
-				ci = ci + 0.1f;
-				target_set = true;
-				x_pos = (float)Math.sin(ci)/2.0f+x_ci;
-				y_pos = (float)Math.cos(ci)/2.0f+y_ci;
-				x_vel = 0;//(float)Math.cos(ci)/20.0f;
-				y_vel = 0;//(float)Math.sin(ci)/20.0f;
-			}
-
 		}
+
+
 		model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
 
 		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
-		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+	//	if(model.sys.isStatus(Status.MSP_RC_ATTACHED) || model.sys.isStatus(Status.MSP_JOY_ATTACHED)) {
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+//		} else {
+//			logger.writeLocalMsg("[msp] No RC connected: Landing after offboard",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
+//		}
 	}
+
+	private void fireAction(int action_type) {
+		for(IOffboardListener listener : listeners)
+			listener.action(currentPos, action_type);
+	}
+
 
 }
