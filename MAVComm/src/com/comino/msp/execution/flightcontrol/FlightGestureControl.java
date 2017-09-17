@@ -61,9 +61,11 @@ public class FlightGestureControl {
 			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 		else {
-			offboard.setNextTarget(circleCenter);
 			offboard.removeListeners();
-			logger.writeLocalMsg("[msp] Circlemode stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			offboard.addListener((Se3_F32 p,int t) -> {
+				logger.writeLocalMsg("[msp] Circlemode stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			});
+			offboard.setNextTarget(circleCenter);
 		}
 	}
 
