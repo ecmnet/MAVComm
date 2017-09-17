@@ -143,6 +143,11 @@ public class OffboardPositionUpdater implements Runnable {
 		if(!enableProperty.get())
 			return;
 
+		if(listeners.size()==0) {
+			logger.writeLocalMsg("[msp] Offboard rejected. No listeners.",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+			return;
+		}
+
 		logger.writeLocalMsg("[msp] Offboard started",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
 		while(enableProperty.get()) {
@@ -193,6 +198,8 @@ public class OffboardPositionUpdater implements Runnable {
 //			logger.writeLocalMsg("[msp] No RC connected: Landing after offboard",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 //			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
 //		}
+
+		listeners.clear();
 	}
 
 	private void fireAction(int action_type) {
