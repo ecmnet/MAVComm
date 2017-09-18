@@ -200,14 +200,10 @@ public class OffboardPositionUpdater implements Runnable {
 
 		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
-		//	if(model.sys.isStatus(Status.MSP_RC_ATTACHED) || model.sys.isStatus(Status.MSP_JOY_ATTACHED)) {
+
 		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-		//		} else {
-		//			logger.writeLocalMsg("[msp] No RC connected: Landing after offboard",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
-		//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
-		//		}
 
 		listeners.clear();
 	}
