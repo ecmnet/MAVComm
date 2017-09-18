@@ -53,11 +53,11 @@ public class FlightGestureControl {
 			offboard.addListener((Se3_F32 p,int t) -> {
 				inc = inc+0.1f;
 			    circleTarget.set(circleCenter);
-	            circleDelta.set((float)Math.sin(inc), (float)Math.cos(inc), (float)Math.sin(inc)/3f);
+	            circleDelta.set((float)Math.sin(inc)/2f, (float)Math.cos(inc)/2f, (float)Math.sin(inc)/3f);
 	            circleTarget.T.plusIP(circleDelta);
-	            offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_TARGET);
+	            offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_NOCHECK);
 			});
-			offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_TARGET);
+			offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_NOCHECK);
 			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 		else {
