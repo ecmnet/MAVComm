@@ -59,6 +59,7 @@ public class OffboardPositionUpdater implements Runnable {
 
 	public static final int MODE_SINGLE_TARGET 	= 0;
 	public static final int MODE_MULTI_TARGET 	= 1;
+	public static final int MODE_MULTI_NOCHECK 	= 2;
 
 	private float acceptance_radius = 0.1f;
 
@@ -171,16 +172,25 @@ public class OffboardPositionUpdater implements Runnable {
 			if(!control.sendMAVLinkMessage(cmd))
 				enableProperty.set(false);
 
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) { }
+			try { Thread.sleep(20); 	} catch (InterruptedException e) { }
 
 
-			distance = nextTargetPos.getT().distance(currentPos.T);
-			if(distance < acceptance_radius) {
+			switch(mode) {
+			case MODE_SINGLE_TARGET:
+				distance = nextTargetPos.getT().distance(currentPos.T);
+				if(distance < acceptance_radius) {
+					fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
+					enableProperty.set(false);
+				}
+				break;
+			case MODE_MULTI_TARGET:
+				distance = nextTargetPos.getT().distance(currentPos.T);
+				if(distance < acceptance_radius)
+					fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
+				break;
+			case MODE_MULTI_NOCHECK:
 				fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
-				if(mode==MODE_SINGLE_TARGET) {
-					enableProperty.set(false); }
+				try { Thread.sleep(200); 	} catch (InterruptedException e) { }
 			}
 		}
 
@@ -190,14 +200,14 @@ public class OffboardPositionUpdater implements Runnable {
 
 		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
-	//	if(model.sys.isStatus(Status.MSP_RC_ATTACHED) || model.sys.isStatus(Status.MSP_JOY_ATTACHED)) {
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-//		} else {
-//			logger.writeLocalMsg("[msp] No RC connected: Landing after offboard",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
-//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
-//		}
+		//	if(model.sys.isStatus(Status.MSP_RC_ATTACHED) || model.sys.isStatus(Status.MSP_JOY_ATTACHED)) {
+		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+		//		} else {
+		//			logger.writeLocalMsg("[msp] No RC connected: Landing after offboard",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+		//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
+		//		}
 
 		listeners.clear();
 	}
