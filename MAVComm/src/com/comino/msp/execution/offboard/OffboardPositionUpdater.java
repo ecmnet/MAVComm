@@ -190,7 +190,7 @@ public class OffboardPositionUpdater implements Runnable {
 				break;
 			case MODE_MULTI_NOCHECK:
 				fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
-				try { Thread.sleep(200); 	} catch (InterruptedException e) { }
+				try { Thread.sleep(100); } catch (InterruptedException e) { }
 			}
 		}
 
