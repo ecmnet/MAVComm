@@ -174,22 +174,21 @@ public class OffboardPositionUpdater implements Runnable {
 
 			try { Thread.sleep(20); 	} catch (InterruptedException e) { }
 
+			distance = nextTargetPos.getT().distance(currentPos.T);
 
 			switch(mode) {
 			case MODE_SINGLE_TARGET:
-				distance = nextTargetPos.getT().distance(currentPos.T);
 				if(distance < acceptance_radius) {
-					fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
+					fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
 					enableProperty.set(false);
 				}
 				break;
 			case MODE_MULTI_TARGET:
-				distance = nextTargetPos.getT().distance(currentPos.T);
 				if(distance < acceptance_radius)
-					fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
+					fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
 				break;
 			case MODE_MULTI_NOCHECK:
-				fireAction(IOffboardListener.TYPE_NEXT_TARGET_REACHED);
+				fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
 				try { Thread.sleep(100); } catch (InterruptedException e) { }
 			}
 		}
@@ -208,9 +207,9 @@ public class OffboardPositionUpdater implements Runnable {
 		listeners.clear();
 	}
 
-	private void fireAction(int action_type) {
+	private void fireAction(float distance,int action_type) {
 		for(IOffboardListener listener : listeners)
-			listener.action(currentPos, action_type);
+			listener.action(currentPos, distance, action_type);
 	}
 
 

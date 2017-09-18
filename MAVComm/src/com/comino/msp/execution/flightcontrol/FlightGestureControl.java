@@ -50,7 +50,7 @@ public class FlightGestureControl {
             circleDelta.set((float)Math.sin(inc), (float)Math.cos(inc), 0);
             circleTarget.T.plusIP(circleDelta);
 
-			offboard.addListener((Se3_F32 p,int t) -> {
+			offboard.addListener((Se3_F32 p,float d, int t) -> {
 				inc = inc+0.1f;
 			    circleTarget.set(circleCenter);
 	            circleDelta.set((float)Math.sin(inc)/2f, (float)Math.cos(inc)/2f, (float)Math.sin(inc)/3f);
@@ -62,7 +62,7 @@ public class FlightGestureControl {
 		}
 		else {
 			offboard.removeListeners();
-			offboard.addListener((Se3_F32 p,int t) -> {
+			offboard.addListener((Se3_F32 p,float d, int t) -> {
 				logger.writeLocalMsg("[msp] Circlemode stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			});
 			offboard.setNextTarget(circleCenter);
