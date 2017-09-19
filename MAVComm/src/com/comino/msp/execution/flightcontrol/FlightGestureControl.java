@@ -7,6 +7,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.utils.MSPConvertUtils;
 
+import georegression.geometry.ConvertRotation3D_F32;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.se.Se3_F32;
 
@@ -38,23 +39,24 @@ public class FlightGestureControl {
 	public void jumpback(int distance) {
 		Se3_F32 target = new Se3_F32();
 		MSPConvertUtils.convertModelXYToSe3_F32(model, target);
-		// TODO: Add math here to execute jumpback
+		target.T.set(target.T.x-distance*(float)Math.cos(model.attitude.y), target.T.y-distance*(float)Math.sin(model.attitude.y), 0);
 		offboard.setNextTarget(target);
 	}
 
 	public void enableCircleMode(boolean enable) {
 		if(enable) {
-			inc = 0;
+			inc = model.attitude.y;
 			MSPConvertUtils.convertModelXYToSe3_F32(model, circleCenter);
             circleTarget.set(circleCenter);
             circleDelta.set((float)Math.sin(inc), (float)Math.cos(inc), 0);
             circleTarget.T.plusIP(circleDelta);
 
 			offboard.addListener((Se3_F32 p,float d, int t) -> {
-				inc = inc+0.1f;
+			    inc = inc+0.1f;
 			    circleTarget.set(circleCenter);
 	            circleDelta.set((float)Math.sin(inc)/2f, (float)Math.cos(inc)/2f, (float)Math.sin(inc)/3f);
 	            circleTarget.T.plusIP(circleDelta);
+	            ConvertRotation3D_F32.rotZ(-inc, circleTarget.R);
 	            offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_NOCHECK);
 			});
 			offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_NOCHECK);
