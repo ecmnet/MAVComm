@@ -70,7 +70,6 @@ public class OffboardPositionUpdater implements Runnable {
 	private final Se3_F32 currentPos          = new Se3_F32();
 	private final Se3_F32 nextTargetPos       = new Se3_F32();
 
-
 	private MSPLogger logger;
 	private DataModel model;
 
