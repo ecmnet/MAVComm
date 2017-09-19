@@ -21,7 +21,7 @@ public class MSPConvertUtils {
 
 	public static void convertToSe3_F32(float x, float y, float z, float r, float p, float yw, Se3_F32 state) {
 		state.setTranslation(x, y, z);
-		ConvertRotation3D_F32.eulerToMatrix(EulerType.ZXY, r, p, y, state.getRotation());
+		ConvertRotation3D_F32.eulerToMatrix(EulerType.XYZ, r, p, y, state.getRotation());
 	}
 
 	public static float ConvertSe3_F32ToYaw(Se3_F32 state) {
@@ -30,7 +30,7 @@ public class MSPConvertUtils {
 	}
 
 	public static float ConvertSe3_F32ToYaw(Se3_F32 state, float[] v) {
-		ConvertRotation3D_F32.matrixToEuler(state.R, EulerType.ZXY, v);
+		ConvertRotation3D_F32.matrixToEuler(state.R, EulerType.XYZ, v);
 		return v[YAW];
 	}
 
