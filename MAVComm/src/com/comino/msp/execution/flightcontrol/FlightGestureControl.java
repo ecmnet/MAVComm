@@ -36,10 +36,10 @@ public class FlightGestureControl {
 		offboard.setNextTarget(target);
 	}
 
-	public void jumpback(int distance) {
+	public void jumpback(float distance) {
 		Se3_F32 target = new Se3_F32();
 		MSPConvertUtils.convertModelXYToSe3_F32(model, target);
-		target.T.set(target.T.x-distance*(float)Math.cos(model.attitude.y), target.T.y-distance*(float)Math.sin(model.attitude.y), 0);
+		target.T.set(target.T.x-distance*(float)Math.cos(model.attitude.y), target.T.y-distance*(float)Math.sin(model.attitude.y), target.T.z);
 		offboard.setNextTarget(target);
 	}
 
