@@ -142,7 +142,6 @@ public class OffboardPositionUpdater implements Runnable {
 	public void setNextTarget() {
 		if(list.isEmpty())
 			return;
-		System.out.println(list.size()+" waypoints in list");
 		this.mode = MODE_MULTI_LIST;
 		this.enableProperty.set(true);
 	}
