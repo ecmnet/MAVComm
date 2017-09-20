@@ -104,6 +104,11 @@ public class MSPCommander {
 			gestures.enableCircleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
 		});
 
+		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT,MSP_AUTOCONTROL_MODE.WAYPOINT_MODE,(o,n) -> {
+			if(!o.isAutopilotMode(MSP_AUTOCONTROL_MODE.WAYPOINT_MODE))
+				gestures.waypoint_example();
+		});
+
 	}
 
 	private void restartCompanion(msg_msp_command cmd) {

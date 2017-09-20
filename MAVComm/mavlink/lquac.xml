@@ -68,6 +68,9 @@
               <entry value="1" name="CIRCLE_MODE">
                   <description>Circles at center with diameter (param2)</description>
               </entry>
+              <entry value="2" name="WAYPOINT_MODE">
+                  <description>Executes a list of waypoints defined in MSP (param2)</description>
+              </entry>
            </enum>
       </enums>
 

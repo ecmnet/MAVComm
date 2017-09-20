@@ -16,4 +16,8 @@ public interface MSP_AUTOCONTROL_MODE {
      * Circles at center with diameter (param2)
      */
     public final static int CIRCLE_MODE = 1;
+    /**
+     * Executes a list of waypoints defined in MSP (param2)
+     */
+    public final static int WAYPOINT_MODE = 2;
 }

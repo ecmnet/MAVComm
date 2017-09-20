@@ -94,7 +94,7 @@ public class StartUp implements Runnable {
 	@Override
 	public void run() {
 		long tms = System.currentTimeMillis();
-		Grid s = new Grid();
+//		Grid s = new Grid();
 		while(true) {
 			try {
 				Thread.sleep(200);
@@ -104,22 +104,22 @@ public class StartUp implements Runnable {
 					control.connect();
 				}
 
-				float f = (float)(Math.random()-0.5);
-
-				s.setBlock(f,0.1f);
-				s.setBlock(0.3f,1.0f);
-				s.setBlock(-0.8f,-1.5f);
-
-
-				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
-				grid.tms = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
-				grid.cx = 0.1f;
-				grid.cy = 0.2f;
-				grid.resolution = s.getResolution();
-				s.toArray(grid.data);
-				control.sendMAVLinkMessage(grid);
-
-				s.setBlock(f,0.1f, false);
+//				float f = (float)(Math.random()-0.5);
+//
+//				s.setBlock(f,0.1f);
+//				s.setBlock(0.3f,1.0f);
+//				s.setBlock(-0.8f,-1.5f);
+//
+//
+//				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
+//				grid.tms = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
+//				grid.cx = 0.1f;
+//				grid.cy = 0.2f;
+//				grid.resolution = s.getResolution();
+//				s.toArray(grid.data);
+//				control.sendMAVLinkMessage(grid);
+//
+//				s.setBlock(f,0.1f, false);
 
 				msg_msp_status msg = new msg_msp_status(2,1);
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);

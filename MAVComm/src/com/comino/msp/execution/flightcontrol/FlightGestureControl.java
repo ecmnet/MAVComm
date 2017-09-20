@@ -1,6 +1,7 @@
 package com.comino.msp.execution.flightcontrol;
 
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 
 import com.comino.msp.execution.offboard.OffboardPositionUpdater;
 import com.comino.msp.log.MSPLogger;
@@ -69,6 +70,20 @@ public class FlightGestureControl {
 			});
 			offboard.setNextTarget(circleCenter);
 		}
+	}
+
+	public void waypoint_example() {
+		Se3_F32 target = new Se3_F32();
+		MSPConvertUtils.convertModelXYToSe3_F32(model, target);
+		target.T.x = target.T.x+0.5f;
+		offboard.addToList(target.copy());
+		target.T.y = target.T.y+0.5f;
+		offboard.addToList(target.copy());
+		target.T.x = target.T.x-0.5f;
+		offboard.addToList(target.copy());
+		target.T.y = target.T.y-0.5f;
+		offboard.addToList(target.copy());
+		offboard.setNextTarget();
 	}
 
 }

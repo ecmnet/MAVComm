@@ -34,5 +34,17 @@ public class MSPConvertUtils {
 		return v[YAW];
 	}
 
+	public static float getDirectionFromTargetXY(DataModel model,Se3_F32 state) {
+
+		float dx = state.T.getX() - model.state.l_x;
+		float dy = state.T.getY() - model.state.l_y;
+
+		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
+		   return (float)Math.atan(dy/dx);
+		if((dx < 0 && dy > 0) || (dx < 0 && dy < 0))
+			return (float)(Math.atan(dy/dx)+Math.PI);
+
+		return 0;
+	}
 
 }

@@ -34,6 +34,7 @@
 package com.comino.msp.execution.offboard;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.mavlink.messages.MAV_CMD;
@@ -41,6 +42,7 @@ import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
@@ -60,6 +62,8 @@ public class OffboardPositionUpdater implements Runnable {
 	public static final int MODE_SINGLE_TARGET 	= 0;
 	public static final int MODE_MULTI_TARGET 	= 1;
 	public static final int MODE_MULTI_NOCHECK 	= 2;
+	public static final int MODE_MULTI_LIST    	= 3;
+
 
 	private float acceptance_radius = 0.1f;
 
@@ -69,6 +73,8 @@ public class OffboardPositionUpdater implements Runnable {
 
 	private final Se3_F32 currentPos          = new Se3_F32();
 	private final Se3_F32 nextTargetPos       = new Se3_F32();
+
+	private final LinkedList<Se3_F32>  list  = new LinkedList<Se3_F32>();
 
 	private MSPLogger logger;
 	private DataModel model;
@@ -90,7 +96,7 @@ public class OffboardPositionUpdater implements Runnable {
 
 		enableProperty.addListener((e,o,n) -> {
 
-			if(n.booleanValue() && !nextTargetPos.T.isIdentical(0, 0, 0)) {
+			if(n.booleanValue()) {
 
 				MSPConvertUtils.convertModelToSe3_F32(model, nextTargetPos);
 
@@ -131,20 +137,33 @@ public class OffboardPositionUpdater implements Runnable {
 
 	public void setNextTarget(Se3_F32 nextTarget) {
 		setNextTarget(nextTarget,MODE_SINGLE_TARGET);
-		enableProperty.set(true);
+	}
+
+	public void setNextTarget() {
+		if(list.isEmpty())
+			return;
+		System.out.println(list.size()+" waypoints in list");
+		this.mode = MODE_MULTI_LIST;
+		this.enableProperty.set(true);
+	}
+
+
+	public void addToList(Se3_F32 target) {
+		if(!target.T.isIdentical(0, 0, 0))
+			list.add(target);
 	}
 
 
 	@Override
 	public void run() {
 
-		float distance; float[] tmp_attitude = new float[3];
+		float distance; float[] tmp_attitude = new float[3]; long tms = 0;
 
 		if(!enableProperty.get())
 			return;
 
-		if(listeners.size()==0) {
-			logger.writeLocalMsg("[msp] Offboard rejected. No listeners.",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+		if(listeners.size()==0 && list.isEmpty()) {
+			logger.writeLocalMsg("[msp] Offboard rejected. No listeners or list.",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 			return;
 		}
 
@@ -153,6 +172,8 @@ public class OffboardPositionUpdater implements Runnable {
 		while(enableProperty.get()) {
 
 			MSPConvertUtils.convertModelToSe3_F32(model, currentPos);
+
+			distance = nextTargetPos.getT().distance(currentPos.T);
 
 			msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 			cmd.target_component = 1;
@@ -173,7 +194,6 @@ public class OffboardPositionUpdater implements Runnable {
 
 			try { Thread.sleep(20); 	} catch (InterruptedException e) { }
 
-			distance = nextTargetPos.getT().distance(currentPos.T);
 
 			switch(mode) {
 			case MODE_SINGLE_TARGET:
@@ -189,6 +209,24 @@ public class OffboardPositionUpdater implements Runnable {
 			case MODE_MULTI_NOCHECK:
 				fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
 				try { Thread.sleep(100); } catch (InterruptedException e) { }
+				break;
+			case MODE_MULTI_LIST:
+				if(distance < acceptance_radius) {
+					if(!list.isEmpty())
+						nextTargetPos.set(list.pop());
+					else {
+						fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
+						model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.WAYPOINT_MODE, false);
+						enableProperty.set(false);
+					}
+				}
+				break;
+			}
+
+
+			if((System.currentTimeMillis() - tms)>100) {
+				publishSLAM(model.hud.s,nextTargetPos);
+				tms = System.currentTimeMillis();
 			}
 		}
 
@@ -203,11 +241,25 @@ public class OffboardPositionUpdater implements Runnable {
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 
 		listeners.clear();
+
+		publishSLAM(0,null);
 	}
 
 	private void fireAction(float distance,int action_type) {
 		for(IOffboardListener listener : listeners)
 			listener.action(currentPos, distance, action_type);
+	}
+
+	private void publishSLAM(float speed, Se3_F32 target) {
+		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+		if(target!=null) {
+			slam.px = target.getX();
+			slam.py = target.getY();
+			// TODO: get direction properly
+			slam.pd = MSPConvertUtils.getDirectionFromTargetXY(model, nextTargetPos);
+		}
+		slam.pv = speed*2.0f;
+		control.sendMAVLinkMessage(slam);
 	}
 
 
