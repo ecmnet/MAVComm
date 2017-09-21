@@ -33,9 +33,7 @@
 
 package com.comino.msp.execution.offboard;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
@@ -69,7 +67,7 @@ public class OffboardPositionUpdater implements Runnable {
 
 	private IMAVController              control        = null;
 	private BooleanProperty             enableProperty = null;
-	private List<IOffboardListener>     listeners      = null;
+	private IOffboardListener             listener     = null;
 
 	private final Se3_F32 currentPos          = new Se3_F32();
 	private final Se3_F32 nextTargetPos       = new Se3_F32();
@@ -87,7 +85,6 @@ public class OffboardPositionUpdater implements Runnable {
 		this.model          = control.getCurrentModel();
 		this.enableProperty = new SimpleBooleanProperty();
 		this.logger         = MSPLogger.getInstance();
-		this.listeners      = new ArrayList<IOffboardListener>();
 
 		control.getStatusManager().addListener(Status.MSP_LANDED,(o,n) -> {
 			if(n.isStatus(Status.MSP_LANDED))
@@ -118,11 +115,7 @@ public class OffboardPositionUpdater implements Runnable {
 	}
 
 	public void addListener(IOffboardListener listener) {
-		this.listeners.add(listener);
-	}
-
-	public void removeListeners() {
-		this.listeners.clear();
+		this.listener = listener;
 	}
 
 	public void setNextTarget(Se3_F32 nextTarget, int mode) {
@@ -160,15 +153,8 @@ public class OffboardPositionUpdater implements Runnable {
 
 		float distance; float[] tmp_attitude = new float[3]; long tms = 0;
 
-
 		if(!enableProperty.get())
 			return;
-
-		if(listeners.size()==0 && worklist.isEmpty()) {
-			logger.writeLocalMsg("[msp] Offboard rejected. No listeners or list.",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
-			enableProperty.set(false);
-			return;
-		}
 
 		logger.writeLocalMsg("[msp] Offboard started",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
@@ -211,7 +197,7 @@ public class OffboardPositionUpdater implements Runnable {
 				break;
 			case MODE_MULTI_NOCHECK:
 				if((System.currentTimeMillis() - tms)>100)
-				  fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
+					fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
 				break;
 			case MODE_MULTI_LIST:
 				if(distance < acceptance_radius) {
@@ -232,7 +218,7 @@ public class OffboardPositionUpdater implements Runnable {
 			}
 		}
 
-		worklist.clear(); listeners.clear();
+		worklist.clear();
 
 		model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
@@ -248,7 +234,7 @@ public class OffboardPositionUpdater implements Runnable {
 	}
 
 	private void fireAction(float distance,int action_type) {
-		for(IOffboardListener listener : listeners)
+		if(listener!=null)
 			listener.action(currentPos, distance, action_type);
 	}
 
