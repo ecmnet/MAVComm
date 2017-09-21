@@ -84,12 +84,12 @@ public class Status extends Segment {
 
 	// High level services
 
-	public static final  int MSP_MSP_AVAILABILITY    		= 5;
+	public static final  int MSP_MSP_AVAILABILITY    		    = 5;
 	public static final  int MSP_OPCV_AVAILABILITY    		= 6;
 	public static final  int MSP_SYSM_AVAILABILITY    		= 7;
 	public static final  int MSP_SLAM_AVAILABILITY    		= 8;
 	public static final  int MSP_BASE_AVAILABILITY    		= 9;
-	public static final  int MSP_RTK_AVAILABILITY    		=10;
+	public static final  int MSP_RTK_AVAILABILITY    		    =10;
 
 
 	private static final String[] sensor_names = {

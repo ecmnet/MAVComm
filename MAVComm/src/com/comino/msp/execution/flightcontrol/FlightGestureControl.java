@@ -3,6 +3,7 @@ package com.comino.msp.execution.flightcontrol;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 
+import com.comino.msp.execution.IOffboardListener;
 import com.comino.msp.execution.offboard.OffboardPositionUpdater;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -64,7 +65,6 @@ public class FlightGestureControl {
 			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 		else {
-			offboard.removeListeners();
 			offboard.addListener((Se3_F32 p,float d, int t) -> {
 				logger.writeLocalMsg("[msp] Circlemode stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			});
@@ -83,7 +83,8 @@ public class FlightGestureControl {
 		offboard.addToList(target.copy());
 		target.T.y = target.T.y-0.5f;
 		offboard.addToList(target.copy());
-		offboard.setNextTarget();
+		offboard.executeList();
+
 	}
 
 }

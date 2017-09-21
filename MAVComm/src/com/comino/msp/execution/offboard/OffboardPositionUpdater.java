@@ -59,10 +59,10 @@ import javafx.beans.property.SimpleBooleanProperty;
 
 public class OffboardPositionUpdater implements Runnable {
 
-	public static final int MODE_SINGLE_TARGET 	= 0;
-	public static final int MODE_MULTI_TARGET 	= 1;
-	public static final int MODE_MULTI_NOCHECK 	= 2;
-	public static final int MODE_MULTI_LIST    	= 3;
+	public static final int MODE_SINGLE_TARGET 	= 1; // switches to POSHOLD after target reached
+	public static final int MODE_MULTI_TARGET 	= 2; // does not switch off offboard
+	public static final int MODE_MULTI_NOCHECK 	= 3; // sends new target each 100ms
+	public static final int MODE_MULTI_LIST    	= 4; // works list of targets
 
 
 	private float acceptance_radius = 0.1f;
@@ -74,12 +74,12 @@ public class OffboardPositionUpdater implements Runnable {
 	private final Se3_F32 currentPos          = new Se3_F32();
 	private final Se3_F32 nextTargetPos       = new Se3_F32();
 
-	private final LinkedList<Se3_F32>  list  = new LinkedList<Se3_F32>();
+	private final LinkedList<Se3_F32>  worklist  = new LinkedList<Se3_F32>();
 
 	private MSPLogger logger;
 	private DataModel model;
 
-	private int mode = MODE_SINGLE_TARGET;
+	private int mode = 0;
 
 
 	public OffboardPositionUpdater(IMAVController control) {
@@ -97,8 +97,6 @@ public class OffboardPositionUpdater implements Runnable {
 		enableProperty.addListener((e,o,n) -> {
 
 			if(n.booleanValue()) {
-
-				MSPConvertUtils.convertModelToSe3_F32(model, nextTargetPos);
 
 				new Thread(this).start();
 
@@ -139,9 +137,13 @@ public class OffboardPositionUpdater implements Runnable {
 		setNextTarget(nextTarget,MODE_SINGLE_TARGET);
 	}
 
-	public void setNextTarget() {
-		if(list.isEmpty())
+	public void executeList() {
+		if(enableProperty.get()) {
+			logger.writeLocalMsg("[msp] Offboard rejected. Already running",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 			return;
+		}
+
+		this.nextTargetPos.set(worklist.pop());
 		this.mode = MODE_MULTI_LIST;
 		this.enableProperty.set(true);
 	}
@@ -149,7 +151,7 @@ public class OffboardPositionUpdater implements Runnable {
 
 	public void addToList(Se3_F32 target) {
 		if(!target.T.isIdentical(0, 0, 0))
-			list.add(target);
+			worklist.add(target);
 	}
 
 
@@ -158,11 +160,13 @@ public class OffboardPositionUpdater implements Runnable {
 
 		float distance; float[] tmp_attitude = new float[3]; long tms = 0;
 
+
 		if(!enableProperty.get())
 			return;
 
-		if(listeners.size()==0 && list.isEmpty()) {
+		if(listeners.size()==0 && worklist.isEmpty()) {
 			logger.writeLocalMsg("[msp] Offboard rejected. No listeners or list.",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+			enableProperty.set(false);
 			return;
 		}
 
@@ -191,7 +195,7 @@ public class OffboardPositionUpdater implements Runnable {
 			if(!control.sendMAVLinkMessage(cmd))
 				enableProperty.set(false);
 
-			try { Thread.sleep(20); 	} catch (InterruptedException e) { }
+			try { Thread.sleep(50); 	} catch (InterruptedException e) { }
 
 
 			switch(mode) {
@@ -206,16 +210,15 @@ public class OffboardPositionUpdater implements Runnable {
 					fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
 				break;
 			case MODE_MULTI_NOCHECK:
-				fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
-				try { Thread.sleep(100); } catch (InterruptedException e) { }
+				if((System.currentTimeMillis() - tms)>100)
+				  fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
 				break;
 			case MODE_MULTI_LIST:
 				if(distance < acceptance_radius) {
-					if(!list.isEmpty())
-						nextTargetPos.set(list.pop());
+					if(!worklist.isEmpty())
+						nextTargetPos.set(worklist.pop());
 					else {
-						fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
-						model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.WAYPOINT_MODE, false);
+						fireAction(distance,IOffboardListener.TYPE_LIST_COMPLETED);
 						enableProperty.set(false);
 					}
 				}
@@ -229,17 +232,17 @@ public class OffboardPositionUpdater implements Runnable {
 			}
 		}
 
+		worklist.clear(); listeners.clear();
 
 		model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.WAYPOINT_MODE, false);
 
 		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
 		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-
-		listeners.clear();
 
 		publishSLAM(0,null);
 	}
@@ -254,7 +257,6 @@ public class OffboardPositionUpdater implements Runnable {
 		if(target!=null) {
 			slam.px = target.getX();
 			slam.py = target.getY();
-			// TODO: get direction properly
 			slam.pd = MSPConvertUtils.getDirectionFromTargetXY(model, nextTargetPos);
 		}
 		slam.pv = speed*2.0f;
