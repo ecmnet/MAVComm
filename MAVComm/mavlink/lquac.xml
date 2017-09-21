@@ -134,6 +134,7 @@
                <field type="float"         name="py" >Planned path Y</field>
                <field type="float"         name="pd" >Planned direction</field>
                <field type="float"         name="pv" >Planned speed</field>
+               <field type="uint32_t"      name="wpcount">Counter of waypoints</field>
                <field type="uint64_t"      name="tms">Timestamp</field>
            </message>
       </messages>

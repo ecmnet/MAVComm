@@ -151,7 +151,7 @@ public class OffboardPositionUpdater implements Runnable {
 	@Override
 	public void run() {
 
-		float distance; float[] tmp_attitude = new float[3]; long tms = 0;
+		float distance;  long tms = 0;
 
 		if(!enableProperty.get())
 			return;
@@ -164,22 +164,7 @@ public class OffboardPositionUpdater implements Runnable {
 
 			distance = nextTargetPos.getT().distance(currentPos.T);
 
-			msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
-			cmd.target_component = 1;
-			cmd.target_system = 1;
-			//	cmd.type_mask = 0b000101111111000;
-			cmd.type_mask = 0b000101111000000;
-
-			// TODO: better: set Mask accordingly
-			if(nextTargetPos.getX()!=Float.NaN) cmd.x = nextTargetPos.getX(); else cmd.x = currentPos.getX();
-			if(nextTargetPos.getY()!=Float.NaN) cmd.y = nextTargetPos.getY(); else cmd.y = currentPos.getY();
-			if(nextTargetPos.getZ()!=Float.NaN) cmd.z = nextTargetPos.getZ(); else cmd.z = currentPos.getZ();
-
-			cmd.yaw = MSPConvertUtils.ConvertSe3_F32ToYaw(nextTargetPos,tmp_attitude);
-			cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
-
-			if(!control.sendMAVLinkMessage(cmd))
-				enableProperty.set(false);
+			sendPositionControlToVehice(nextTargetPos,currentPos);
 
 			try { Thread.sleep(50); 	} catch (InterruptedException e) { }
 
@@ -196,7 +181,7 @@ public class OffboardPositionUpdater implements Runnable {
 					fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
 				break;
 			case MODE_MULTI_NOCHECK:
-				if((System.currentTimeMillis() - tms)>100)
+				if((System.currentTimeMillis() - tms) > 100)
 					fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
 				break;
 			case MODE_MULTI_LIST:
@@ -210,7 +195,6 @@ public class OffboardPositionUpdater implements Runnable {
 				}
 				break;
 			}
-
 
 			if((System.currentTimeMillis() - tms)>100) {
 				publishSLAM(model.hud.s,nextTargetPos);
@@ -233,6 +217,26 @@ public class OffboardPositionUpdater implements Runnable {
 		publishSLAM(0,null);
 	}
 
+	private void sendPositionControlToVehice( Se3_F32 target, Se3_F32 current) {
+
+		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
+		cmd.target_component = 1;
+		cmd.target_system = 1;
+		//	cmd.type_mask = 0b000101111111000;
+		cmd.type_mask = 0b000101111000000;
+
+		// TODO: better: set Mask accordingly
+		if(nextTargetPos.getX()!=Float.NaN) cmd.x = target.getX(); else cmd.x = current.getX();
+		if(nextTargetPos.getY()!=Float.NaN) cmd.y = target.getY(); else cmd.y = current.getY();
+		if(nextTargetPos.getZ()!=Float.NaN) cmd.z = target.getZ(); else cmd.z = current.getZ();
+
+	//	cmd.yaw = MSPConvertUtils.getDirectionFromTargetXY(model,target);
+		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
+
+		if(!control.sendMAVLinkMessage(cmd))
+			enableProperty.set(false);
+	}
+
 	private void fireAction(float distance,int action_type) {
 		if(listener!=null)
 			listener.action(currentPos, distance, action_type);
@@ -244,6 +248,7 @@ public class OffboardPositionUpdater implements Runnable {
 			slam.px = target.getX();
 			slam.py = target.getY();
 			slam.pd = MSPConvertUtils.getDirectionFromTargetXY(model, nextTargetPos);
+			slam.wpcount = worklist.size();
 		}
 		slam.pv = speed*2.0f;
 		control.sendMAVLinkMessage(slam);

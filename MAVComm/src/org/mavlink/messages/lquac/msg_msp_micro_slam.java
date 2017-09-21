@@ -24,7 +24,7 @@ public class msg_msp_micro_slam extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_MICRO_SLAM;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 24;
+    payload_length = 28;
 }
 
   /**
@@ -47,6 +47,10 @@ public class msg_msp_micro_slam extends MAVLinkMessage {
    * Planned speed
    */
   public float pv;
+  /**
+   * Counter of waypoints
+   */
+  public long wpcount;
 /**
  * Decode message with raw data
  */
@@ -56,12 +60,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   py = (float)dis.readFloat();
   pd = (float)dis.readFloat();
   pv = (float)dis.readFloat();
+  wpcount = (int)dis.readInt()&0x00FFFFFFFF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+24];
+  byte[] buffer = new byte[12+28];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -78,18 +83,19 @@ public byte[] encode() throws IOException {
   dos.writeFloat(py);
   dos.writeFloat(pd);
   dos.writeFloat(pv);
+  dos.writeInt((int)(wpcount&0x00FFFFFFFF));
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 24);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 28);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[34] = crcl;
-  buffer[35] = crch;
+  buffer[38] = crcl;
+  buffer[39] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_MICRO_SLAM : " +   "  tms="+tms+  "  px="+px+  "  py="+py+  "  pd="+pd+  "  pv="+pv;}
+return "MAVLINK_MSG_ID_MSP_MICRO_SLAM : " +   "  tms="+tms+  "  px="+px+  "  py="+py+  "  pd="+pd+  "  pv="+pv+  "  wpcount="+wpcount;}
 }
