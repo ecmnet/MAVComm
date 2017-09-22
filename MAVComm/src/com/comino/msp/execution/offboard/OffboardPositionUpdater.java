@@ -250,7 +250,7 @@ public class OffboardPositionUpdater implements Runnable {
 			slam.pd = MSPConvertUtils.getDirectionFromTargetXY(model, nextTargetPos);
 			slam.wpcount = worklist.size();
 		}
-		slam.pv = speed*2.0f;
+		slam.pv = speed;
 		control.sendMAVLinkMessage(slam);
 	}
 
