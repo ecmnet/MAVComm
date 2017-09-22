@@ -31,12 +31,12 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.main.control.listener;
 
-import com.comino.msp.model.segment.LogMessage;
+package com.comino.msp.execution.control.listener;
 
-public interface IMAVMessageListener {
 
-	public void messageReceived(LogMessage currentMessage);
+public interface IMAVLinkListener {
+
+	public void received(Object o);
 
 }

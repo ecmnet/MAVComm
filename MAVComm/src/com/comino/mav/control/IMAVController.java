@@ -38,10 +38,10 @@ import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 
-import com.comino.msp.main.control.StatusManager;
-import com.comino.msp.main.control.listener.IMAVLinkListener;
-import com.comino.msp.main.control.listener.IMAVMessageListener;
-import com.comino.msp.main.control.listener.IMSPStatusChangedListener;
+import com.comino.msp.execution.control.StatusManager;
+import com.comino.msp.execution.control.listener.IMAVLinkListener;
+import com.comino.msp.execution.control.listener.IMAVMessageListener;
+import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;

@@ -51,7 +51,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkReader2;
-import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.execution.control.listener.IMAVLinkListener;
 
 
 public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {

@@ -42,8 +42,8 @@ import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
+import com.comino.msp.execution.commander.MSPCommander;
 import com.comino.msp.log.MSPLogger;
-import com.comino.msp.main.commander.MSPCommander;
 import com.comino.msp.model.segment.Grid;
 import com.comino.msp.model.segment.Status;
 

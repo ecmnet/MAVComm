@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 
-package com.comino.msp.main.commander;
+package com.comino.msp.execution.commander;
 
 import java.io.IOException;
 
@@ -43,11 +43,11 @@ import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.IMAVMSPController;
+import com.comino.msp.execution.control.StatusManager;
+import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.flightcontrol.FlightGestureControl;
 import com.comino.msp.execution.offboard.OffboardPositionUpdater;
 import com.comino.msp.log.MSPLogger;
-import com.comino.msp.main.control.StatusManager;
-import com.comino.msp.main.control.listener.IMAVLinkListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 
@@ -106,7 +106,7 @@ public class MSPCommander {
 
 		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT,MSP_AUTOCONTROL_MODE.WAYPOINT_MODE,(o,n) -> {
 			if(!o.isAutopilotMode(MSP_AUTOCONTROL_MODE.WAYPOINT_MODE))
-				gestures.waypoint_example();
+				gestures.waypoint_example(0.5f);
 		});
 
 	}

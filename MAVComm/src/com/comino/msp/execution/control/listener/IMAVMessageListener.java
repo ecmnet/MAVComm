@@ -31,13 +31,12 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.main.control.listener;
+package com.comino.msp.execution.control.listener;
 
-import com.comino.msp.model.segment.Status;
+import com.comino.msp.model.segment.LogMessage;
 
-public interface IMSPStatusChangedListener {
+public interface IMAVMessageListener {
 
-   public void update(Status oldStatus, Status newStatus);
-
+	public void messageReceived(LogMessage currentMessage);
 
 }

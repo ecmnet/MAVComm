@@ -72,16 +72,16 @@ public class FlightGestureControl {
 		}
 	}
 
-	public void waypoint_example() {
+	public void waypoint_example(float length) {
 		Se3_F32 target = new Se3_F32();
 		MSPConvertUtils.convertModelXYToSe3_F32(model, target);
-		target.T.x = target.T.x+0.5f;
+		target.T.x = target.T.x+length;
 		offboard.addToList(target.copy());
-		target.T.y = target.T.y+0.5f;
+		target.T.y = target.T.y+length;
 		offboard.addToList(target.copy());
-		target.T.x = target.T.x-0.5f;
+		target.T.x = target.T.x-length;
 		offboard.addToList(target.copy());
-		target.T.y = target.T.y-0.5f;
+		target.T.y = target.T.y-length;
 		offboard.addToList(target.copy());
 		offboard.executeList();
 

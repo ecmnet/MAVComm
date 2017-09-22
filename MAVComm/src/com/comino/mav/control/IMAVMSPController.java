@@ -34,7 +34,7 @@
 
 package com.comino.mav.control;
 
-import com.comino.msp.main.control.listener.IMAVLinkListener;
+import com.comino.msp.execution.control.listener.IMAVLinkListener;
 
 public interface IMAVMSPController extends IMAVController {
 

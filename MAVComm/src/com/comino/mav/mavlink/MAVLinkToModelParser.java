@@ -81,8 +81,8 @@ import org.mavlink.messages.lquac.msg_vibration;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.msp.main.control.listener.IMAVLinkListener;
-import com.comino.msp.main.control.listener.IMAVMessageListener;
+import com.comino.msp.execution.control.listener.IMAVLinkListener;
+import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
