@@ -46,7 +46,7 @@ import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.flightcontrol.FlightGestureControl;
-import com.comino.msp.execution.offboard.OffboardPositionUpdater;
+import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
@@ -54,7 +54,7 @@ import com.comino.msp.model.segment.Status;
 public class MSPCommander {
 
 	private IMAVMSPController        control = null;
-	private OffboardPositionUpdater offboard = null;
+	private OffboardManager offboard = null;
 	private FlightGestureControl    gestures = null;
 	private DataModel                  model = null;
 
@@ -67,11 +67,12 @@ public class MSPCommander {
 
 		System.out.println("Commander initialized");
 
-		offboard = new OffboardPositionUpdater(control);
+		offboard = OffboardManager.getInstance(control);
+
 		gestures = new FlightGestureControl(model, offboard);
 	}
 
-	public  OffboardPositionUpdater getOffBoardUpdater() {
+	public  OffboardManager getOffBoardUpdater() {
 		return offboard;
 	}
 

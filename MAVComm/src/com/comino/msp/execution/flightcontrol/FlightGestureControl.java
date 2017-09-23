@@ -4,7 +4,7 @@ import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 
 import com.comino.msp.execution.IOffboardListener;
-import com.comino.msp.execution.offboard.OffboardPositionUpdater;
+import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.utils.MSPConvertUtils;
@@ -15,7 +15,7 @@ import georegression.struct.se.Se3_F32;
 
 public class FlightGestureControl {
 
-	private OffboardPositionUpdater offboard = null;
+	private OffboardManager offboard = null;
 	private DataModel               model    = null;
 	private MSPLogger               logger   = null;
 
@@ -26,7 +26,7 @@ public class FlightGestureControl {
 	private Vector3D_F32 circleDelta = new Vector3D_F32();
 
 
-	public FlightGestureControl(DataModel model, OffboardPositionUpdater offboard) {
+	public FlightGestureControl(DataModel model, OffboardManager offboard) {
 		this.offboard = offboard;
 		this.model    = model;
 		this.logger   = MSPLogger.getInstance();
@@ -46,6 +46,7 @@ public class FlightGestureControl {
 	}
 
 	public void enableCircleMode(boolean enable) {
+		final float radius = 3f;
 		if(enable) {
 			inc = model.attitude.y;
 			MSPConvertUtils.convertModelXYToSe3_F32(model, circleCenter);
@@ -56,12 +57,12 @@ public class FlightGestureControl {
 			offboard.addListener((Se3_F32 p,float d, int t) -> {
 			    inc = inc+0.1f;
 			    circleTarget.set(circleCenter);
-	            circleDelta.set((float)Math.sin(inc)/2f, (float)Math.cos(inc)/2f, (float)Math.sin(inc)/3f);
+	            circleDelta.set((float)Math.sin(inc)*radius, (float)Math.cos(inc)*radius, 0);
 	            circleTarget.T.plusIP(circleDelta);
 	            ConvertRotation3D_F32.rotZ(-inc, circleTarget.R);
-	            offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_NOCHECK);
+	            offboard.setNextTarget(circleTarget, OffboardManager.MODE_MULTI_NOCHECK);
 			});
-			offboard.setNextTarget(circleTarget, OffboardPositionUpdater.MODE_MULTI_NOCHECK);
+			offboard.setNextTarget(circleTarget, OffboardManager.MODE_MULTI_NOCHECK);
 			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 		else {
