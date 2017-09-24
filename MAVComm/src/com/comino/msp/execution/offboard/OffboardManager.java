@@ -124,6 +124,7 @@ public class OffboardManager implements Runnable {
 	public void abort() {
 		this.listener = null;
 		enableProperty.set(false);
+		logger.writeLocalMsg("[msp] Autopilot terminated manually",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 	}
 
 	public void addListener(IOffboardListener listener) {
