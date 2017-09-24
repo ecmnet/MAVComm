@@ -111,7 +111,9 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 					channel.socket().setSendBufferSize(256*1024);
 					channel.configureBlocking(false);
 
-				} catch (IOException e) {
+					Thread.sleep(100);
+
+				} catch (Exception e) {
 					continue;
 				}
 				channel.connect(peerPort);
@@ -120,7 +122,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				Thread t = new Thread(this);
 				t.setName("Proxy worker");
 				t.start();
-				System.out.println();
+
 
 				return true;
 			} catch(Exception e) {
@@ -182,8 +184,10 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				msg_heartbeat hb = new msg_heartbeat(255,1);
 				hb.isValid = true;
 				comm.write(hb);
-			} else
+			} else {
 				isConnected = false;
+				return;
+			}
 
 			while(isConnected) {
 

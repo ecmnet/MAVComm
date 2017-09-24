@@ -88,44 +88,49 @@ public class MSPCommander {
 				case MSP_CMD.MSP_CMD_RESTART:
 					restartCompanion(cmd);
 					break;
-				case MSP_CMD.MSP_CMD_OFFBOARD:
-					enableOffboardUpdater(cmd);
-					break;
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
 					setOffboardPosition(cmd);
 					break;
 				case MSP_CMD.MSP_CMD_AUTOMODE:
-					model.sys.setAutopilotMode((int)(cmd.param2), (int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
+					setAutopilotMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
 					break;
 				}
 			}
 		});
-
-		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT,MSP_AUTOCONTROL_MODE.CIRCLE_MODE,(o,n) -> {
-			gestures.enableCircleMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE));
-		});
-
-		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT,MSP_AUTOCONTROL_MODE.WAYPOINT_MODE,(o,n) -> {
-			if(!o.isAutopilotMode(MSP_AUTOCONTROL_MODE.WAYPOINT_MODE))
-				gestures.waypoint_example(0.5f);
-		});
-
 	}
+
+	private void setAutopilotMode(int mode, float param, boolean enable) {
+		model.sys.setAutopilotMode(mode, enable);
+		switch(mode) {
+		  case MSP_AUTOCONTROL_MODE.ABORT:
+			offboard.abort();
+			break;
+		  case MSP_AUTOCONTROL_MODE.CIRCLE_MODE:
+			if(param == 0) param = 0.75f;
+			gestures.enableCircleMode(enable, param);
+			break;
+
+		  case MSP_AUTOCONTROL_MODE.WAYPOINT_MODE:
+			if(enable)
+				gestures.waypoint_example(0.5f);
+			break;
+		}
+	}
+
 
 	private void restartCompanion(msg_msp_command cmd) {
 		MSPLogger.getInstance().writeLocalMsg("Companion rebooted",
 				MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
 		if(model.sys.isStatus(Status.MSP_LANDED))
-		      executeConsoleCommand("reboot");
+			executeConsoleCommand("reboot");
 	}
 
-	private void enableOffboardUpdater(msg_msp_command cmd) {
-		offboard.enableProperty().set((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
-	}
 
 	private void setOffboardPosition(msg_msp_command cmd) {
 		gestures.setTargetAndExecute(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
 	}
+
+
 
 
 	// -----------------------------------------------------------------------------------------------helper

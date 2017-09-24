@@ -275,7 +275,6 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean start() {
-
 		return false;
 	}
 

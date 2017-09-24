@@ -41,6 +41,7 @@
                   <description>Set Autopilot mode</description>
                   <param index="1">component command</param>
                   <param index="2">autopilot mode</param>
+                  <param index="3">mode parameter</param>
               </entry>
             </enum>
 
@@ -62,13 +63,16 @@
 
            <enum name="MSP_AUTOCONTROL_MODE">
               <description>Auto-Control mode</description>
-              <entry value="0" name="JUMPBACK">
+               <entry value="0" name="ABORT">
+                  <description>Abort request: Terminates any autopilot action and returns to POSHOLD</description>
+              </entry>
+              <entry value="1" name="JUMPBACK">
                   <description>JumpBack mode</description>
               </entry>
-              <entry value="1" name="CIRCLE_MODE">
-                  <description>Circles at center with diameter (param2)</description>
+              <entry value="2" name="CIRCLE_MODE">
+                  <description>Circles at center with diameter (param3)</description>
               </entry>
-              <entry value="2" name="WAYPOINT_MODE">
+              <entry value="3" name="WAYPOINT_MODE">
                   <description>Executes a list of waypoints defined in MSP (param2)</description>
               </entry>
            </enum>

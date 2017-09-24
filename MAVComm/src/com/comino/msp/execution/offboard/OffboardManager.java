@@ -121,8 +121,9 @@ public class OffboardManager implements Runnable {
 		System.out.println("OffboardManager instantiated");
 	}
 
-	public BooleanProperty enableProperty() {
-		return enableProperty;
+	public void abort() {
+		this.listener = null;
+		enableProperty.set(false);
 	}
 
 	public void addListener(IOffboardListener listener) {
@@ -167,7 +168,7 @@ public class OffboardManager implements Runnable {
 
 		logger.writeLocalMsg("[msp] Offboard started",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
-		while(enableProperty.get()) {
+		while(enableProperty.get() && checkStickInputs()) {
 
 			MSPConvertUtils.convertModelToSe3_F32(model, currentPos);
 
@@ -225,8 +226,7 @@ public class OffboardManager implements Runnable {
 		worklist.clear();
 
 		model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
-		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.CIRCLE_MODE, false);
-		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.WAYPOINT_MODE, false);
+		model.sys.autopilot = 0;
 
 		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 
@@ -272,6 +272,14 @@ public class OffboardManager implements Runnable {
 
 		if(!control.sendMAVLinkMessage(cmd))
 			enableProperty.set(false);
+	}
+
+	private boolean checkStickInputs() {
+		if(control.isSimulation())
+			return true;
+
+		// TODO: Check stick inputs for safety: Moved sticks lead to POSHOLD mode
+		return true;
 	}
 
 	private void fireAction(float distance,int action_type) {

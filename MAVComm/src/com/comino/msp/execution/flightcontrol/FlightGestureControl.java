@@ -45,8 +45,7 @@ public class FlightGestureControl {
 		offboard.setNextTarget(target);
 	}
 
-	public void enableCircleMode(boolean enable) {
-		final float radius = 3f;
+	public void enableCircleMode(boolean enable, float radius) {
 		if(enable) {
 			inc = model.attitude.y;
 			MSPConvertUtils.convertModelXYToSe3_F32(model, circleCenter);

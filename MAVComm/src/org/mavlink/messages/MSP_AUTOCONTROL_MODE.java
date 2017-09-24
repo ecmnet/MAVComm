@@ -9,15 +9,19 @@ package org.mavlink.messages;
  **/
 public interface MSP_AUTOCONTROL_MODE {
     /**
+     * Abort request: Terminates any autopilot action and returns to POSHOLD
+     */
+    public final static int ABORT = 0;
+    /**
      * JumpBack mode
      */
-    public final static int JUMPBACK = 0;
+    public final static int JUMPBACK = 1;
     /**
-     * Circles at center with diameter (param2)
+     * Circles at center with diameter (param3)
      */
-    public final static int CIRCLE_MODE = 1;
+    public final static int CIRCLE_MODE = 2;
     /**
      * Executes a list of waypoints defined in MSP (param2)
      */
-    public final static int WAYPOINT_MODE = 2;
+    public final static int WAYPOINT_MODE = 3;
 }

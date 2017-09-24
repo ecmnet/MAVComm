@@ -48,6 +48,7 @@ public interface MSP_CMD {
      * Set Autopilot mode
      * PARAM 1 : component command
      * PARAM 2 : autopilot mode
+     * PARAM 3 : mode parameter
      */
     public final static int MSP_CMD_AUTOMODE = 76;
 }
