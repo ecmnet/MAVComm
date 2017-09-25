@@ -51,7 +51,7 @@ public class State extends Segment {
 
 	// positioning actual
 
-	public float	l_x=Float.NaN;		//  x-position in m (Roll)
+	public float		l_x=Float.NaN;		//  x-position in m (Roll)
 	public float    l_y=Float.NaN;		//  y-position in m (Pitch)
 	public float    l_z=Float.NaN;		//  z-position in m (Altitude)
 
@@ -59,18 +59,18 @@ public class State extends Segment {
 
 	public float    l_vx=Float.NaN;		//  x speed in m/s
 	public float 	l_vy=Float.NaN;		//  y speed in m/s
-	public float	l_vz=Float.NaN;		//  z speed in m/s
+	public float		l_vz=Float.NaN;		//  z speed in m/s
 
-	public float	vh=Float.NaN;		//  heading speed in radiant/s
-	public float	v=Float.NaN;		//  ground speed in m/s
+	public float		vh=Float.NaN;		//  heading speed in radiant/s
+	public float		v=Float.NaN;		//  ground speed in m/s
 
 	public float    l_ax=Float.NaN;		//  x acceleration in m/s^2
 	public float 	l_ay=Float.NaN;		//  y acceleration in m/s^2
-	public float	l_az=Float.NaN;		//  z acceleration in m/s^2
+	public float		l_az=Float.NaN;		//  z acceleration in m/s^2
 
-	public float	ah=Float.NaN;		// gative heading speed in radiant/s^2
+	public float		ah=Float.NaN;		// gative heading speed in radiant/s^2
 
-	public float	g_lon	= Float.NaN;
+	public float		g_lon	= Float.NaN;
 	public float    g_lat 	= Float.NaN;
 	public float    g_alt	= Float.NaN;
 	public float    g_vx	= Float.NaN;

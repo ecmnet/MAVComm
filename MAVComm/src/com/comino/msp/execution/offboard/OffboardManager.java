@@ -73,10 +73,10 @@ public class OffboardManager implements Runnable {
 	private BooleanProperty             enableProperty = null;
 	private IOffboardListener             listener     = null;
 
-	private final Se3_F32 currentPos          = new Se3_F32();
-	private final Se3_F32 nextTarget          = new Se3_F32();
+	private final APSetPoint currentPos       = new APSetPoint();
+	private final APSetPoint nextTarget       = new APSetPoint();
 
-	private final LinkedList<Se3_F32>  worklist  = new LinkedList<Se3_F32>();
+	private final LinkedList<APSetPoint>  worklist  = new LinkedList<APSetPoint>();
 
 	private MSPLogger logger;
 	private DataModel model;
@@ -131,13 +131,13 @@ public class OffboardManager implements Runnable {
 		this.listener = listener;
 	}
 
-	public void setNextTarget(Se3_F32 nextTarget, int mode) {
-			this.nextTarget.set(nextTarget);
-			this.mode = mode;
-			this.enableProperty.set(true);
+	public void setNextTarget(APSetPoint nextTarget, int mode) {
+		this.nextTarget.set(nextTarget);
+		this.mode = mode;
+		this.enableProperty.set(true);
 	}
 
-	public void setNextTarget(Se3_F32 nextTarget) {
+	public void setNextTarget(APSetPoint nextTarget) {
 		setNextTarget(nextTarget,MODE_SINGLE_TARGET);
 	}
 
@@ -153,8 +153,8 @@ public class OffboardManager implements Runnable {
 	}
 
 
-	public void addToList(Se3_F32 target) {
-		if(!target.T.isIdentical(0, 0, 0))
+	public void addToPositionList(APSetPoint target) {
+		if(!target.position.isIdentical(0, 0, 0))
 			worklist.add(target);
 	}
 
@@ -171,14 +171,14 @@ public class OffboardManager implements Runnable {
 
 		while(enableProperty.get() && checkStickInputs()) {
 
-			MSPConvertUtils.convertModelToSe3_F32(model, currentPos);
+			currentPos.set(model);
 
 			try { Thread.sleep(50); 	} catch (InterruptedException e) { }
 
 
 			switch(mode) {
 			case MODE_SINGLE_TARGET:
-				distance = nextTarget.getT().distance(currentPos.T);
+				distance = nextTarget.position.distance(currentPos.position);
 				sendPositionControlToVehice(nextTarget,currentPos);
 				if(distance < acceptance_radius) {
 					fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
@@ -186,19 +186,19 @@ public class OffboardManager implements Runnable {
 				}
 				break;
 			case MODE_MULTI_TARGET:
-				distance = nextTarget.getT().distance(currentPos.T);
+				distance = nextTarget.position.distance(currentPos.position);
 				sendPositionControlToVehice(nextTarget,currentPos);
 				if(distance < acceptance_radius)
 					fireAction(distance,IOffboardListener.TYPE_NEXT_TARGET_REACHED);
 				break;
 			case MODE_MULTI_NOCHECK:
-				distance = nextTarget.getT().distance(currentPos.T);
+				distance = nextTarget.position.distance(currentPos.position);
 				sendPositionControlToVehice(nextTarget,currentPos);
 				if((System.currentTimeMillis() - tms) > 100)
 					fireAction(distance,IOffboardListener.TYPE_CONTINUOUS);
 				break;
 			case MODE_MULTI_LIST:
-				distance = nextTarget.getT().distance(currentPos.T);
+				distance = nextTarget.position.distance(currentPos.position);
 				sendPositionControlToVehice(nextTarget,currentPos);
 				if(distance < acceptance_radius) {
 					if(!worklist.isEmpty())
@@ -214,12 +214,17 @@ public class OffboardManager implements Runnable {
 				if((System.currentTimeMillis() - tms) > 100)
 					fireAction(0,IOffboardListener.TYPE_CONTINUOUS);
 				break;
+
+			case MODE_MULTI_SPEED_LIST:
+
+
+				break;
 			}
 
 			if((System.currentTimeMillis() - tms)>100) {
 				// Don't publish for speed modes
 				if(mode < MODE_MULTI_SPEED)
-				   publishSLAM(model.hud.s,nextTarget);
+					publishSLAM(nextTarget);
 				tms = System.currentTimeMillis();
 			}
 		}
@@ -235,10 +240,10 @@ public class OffboardManager implements Runnable {
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 
-		publishSLAM(0,null);
+		publishSLAM(null);
 	}
 
-	private void sendPositionControlToVehice( Se3_F32 target, Se3_F32 current) {
+	private void sendPositionControlToVehice( APSetPoint target, APSetPoint current) {
 
 		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 		cmd.target_component = 1;
@@ -246,18 +251,18 @@ public class OffboardManager implements Runnable {
 		cmd.type_mask = 0b000101111111000;
 
 		// TODO: better: set Mask accordingly
-		if(nextTarget.getX()!=Float.NaN) cmd.x = target.getX(); else cmd.x = current.getX();
-		if(nextTarget.getY()!=Float.NaN) cmd.y = target.getY(); else cmd.y = current.getY();
-		if(nextTarget.getZ()!=Float.NaN) cmd.z = target.getZ(); else cmd.z = current.getZ();
+		if(target.position.x!=Float.NaN) cmd.x = target.position.x; else cmd.x = current.position.x;
+		if(target.position.y!=Float.NaN) cmd.y = target.position.y; else cmd.y = current.position.y;
+		if(target.position.z!=Float.NaN) cmd.z = target.position.z; else cmd.z = current.position.z;
 
-	//	cmd.yaw = MSPConvertUtils.getDirectionFromTargetXY(model,target);
+		//	cmd.yaw = MSPConvertUtils.getDirectionFromTargetXY(model,target);
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
 		if(!control.sendMAVLinkMessage(cmd))
 			enableProperty.set(false);
 	}
 
-	private void sendSpeedControlToVehice( Se3_F32 target) {
+	private void sendSpeedControlToVehice( APSetPoint target) {
 
 		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 		cmd.target_component = 1;
@@ -265,9 +270,9 @@ public class OffboardManager implements Runnable {
 		cmd.type_mask = 0b000101111000111;
 
 		// TODO: better: set Mask accordingly
-		if(nextTarget.getX()!=Float.NaN) cmd.vx = target.getX(); else cmd.vx = 0;
-		if(nextTarget.getY()!=Float.NaN) cmd.vy = target.getY(); else cmd.vy = 0;
-		if(nextTarget.getZ()!=Float.NaN) cmd.vz = target.getZ(); else cmd.vz = 0;
+		if(target.speed.x!=Float.NaN) cmd.x = target.speed.x; else cmd.x = 0;
+		if(target.speed.y!=Float.NaN) cmd.y = target.speed.y; else cmd.y = 0;
+		if(target.speed.z!=Float.NaN) cmd.z = target.speed.z; else cmd.z = 0;
 
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
@@ -288,15 +293,15 @@ public class OffboardManager implements Runnable {
 			listener.action(currentPos, distance, action_type);
 	}
 
-	private void publishSLAM(float speed, Se3_F32 target) {
+	private void publishSLAM(APSetPoint target) {
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 		if(target!=null) {
-			slam.px = target.getX();
-			slam.py = target.getY();
+			slam.px = target.position.getX();
+			slam.py = target.position.getY();
 			slam.pd = MSPConvertUtils.getDirectionFromTargetXY(model, nextTarget);
 			slam.wpcount = worklist.size();
+			slam.pv = target.getSpeed();
 		}
-		slam.pv = speed;
 		control.sendMAVLinkMessage(slam);
 	}
 

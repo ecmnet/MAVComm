@@ -1,6 +1,7 @@
 package com.comino.msp.execution;
 
-import georegression.struct.se.Se3_F32;
+import com.comino.msp.execution.offboard.APSetPoint;
+
 
 public interface IOffboardListener {
 
@@ -9,6 +10,6 @@ public interface IOffboardListener {
 	public final static int  TYPE_CONTINUOUS          = 2;
 	public final static int  TYPE_LIST_COMPLETED      = 3;
 
-	public void action( Se3_F32 current, float distance, int action_type);
+	public void action( APSetPoint current, float distance, int action_type);
 
 }

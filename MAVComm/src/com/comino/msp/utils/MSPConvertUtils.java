@@ -1,5 +1,6 @@
 package com.comino.msp.utils;
 
+import com.comino.msp.execution.offboard.APSetPoint;
 import com.comino.msp.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;
@@ -34,10 +35,10 @@ public class MSPConvertUtils {
 		return v[YAW];
 	}
 
-	public static float getDirectionFromTargetXY(DataModel model,Se3_F32 state) {
+	public static float getDirectionFromTargetXY(DataModel model,APSetPoint state) {
 
-		float dx = state.T.getX() - model.state.l_x;
-		float dy = state.T.getY() - model.state.l_y;
+		float dx = state.position.getX() - model.state.l_x;
+		float dy = state.position.getY() - model.state.l_y;
 
 		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
 		   return (float)Math.atan(dy/dx);

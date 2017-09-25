@@ -112,7 +112,7 @@ public class MSPCommander {
 
 		  case MSP_AUTOCONTROL_MODE.WAYPOINT_MODE:
 			if(enable)
-				gestures.waypoint_example(0.5f);
+				gestures.waypoint_example(10.5f);
 			break;
 		}
 	}
