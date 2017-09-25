@@ -9,6 +9,7 @@ public class APSetPoint {
 	public Vector3D_F32 speed;
 	public Vector3D_F32 position;
 	public float        yaw;
+	public int          mode;
 
 	public APSetPoint() {
 		this.speed 		= new Vector3D_F32(Float.NaN, Float.NaN, Float.NaN);
@@ -26,6 +27,11 @@ public class APSetPoint {
 		this.speed 		= new Vector3D_F32();
 		this.position 	= position.copy();
 		this.yaw         = 0;
+	}
+
+	public APSetPoint(Vector3D_F32 position, int mode) {
+		this(position);
+		this.mode 		= mode;
 	}
 
 	public APSetPoint(float x, float y, float z, float yaw) {
@@ -59,6 +65,10 @@ public class APSetPoint {
 		APSetPoint c = new APSetPoint();
 		c.set(this);
 		return c;
+	}
+
+	public String toString() {
+		return position.toString() + " / " + speed.toString();
 	}
 
 }

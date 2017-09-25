@@ -201,8 +201,9 @@ public class OffboardManager implements Runnable {
 				distance = nextTarget.position.distance(currentPos.position);
 				sendPositionControlToVehice(nextTarget,currentPos);
 				if(distance < acceptance_radius) {
-					if(!worklist.isEmpty())
+					if(!worklist.isEmpty()) {
 						nextTarget.set(worklist.pop());
+					}
 					else {
 						fireAction(distance,IOffboardListener.TYPE_LIST_COMPLETED);
 						enableProperty.set(false);
@@ -241,6 +242,10 @@ public class OffboardManager implements Runnable {
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 
 		publishSLAM(null);
+	}
+
+	public int getWorkListSize() {
+		return worklist.size();
 	}
 
 	private void sendPositionControlToVehice( APSetPoint target, APSetPoint current) {

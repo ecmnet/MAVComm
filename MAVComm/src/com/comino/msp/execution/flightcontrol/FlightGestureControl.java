@@ -1,10 +1,13 @@
 package com.comino.msp.execution.flightcontrol;
 
+import java.util.List;
+
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 
 import com.comino.msp.execution.IOffboardListener;
 import com.comino.msp.execution.offboard.APSetPoint;
+import com.comino.msp.execution.offboard.APSetPointUtils;
 import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -71,15 +74,24 @@ public class FlightGestureControl {
 	}
 
 	public void waypoint_example(float length) {
-		APSetPoint target = new APSetPoint(model);
+		APSetPoint target  = new APSetPoint(model);
+		APSetPoint current = new APSetPoint(model);
 		target.position.x = target.position.x+length;
-		offboard.addToPositionList(target.copy());
+
+        List<APSetPoint> list = APSetPointUtils.interpolatePositionLinear(20,current,target);
+        for(APSetPoint p : list) {
+		   offboard.addToPositionList(p);
+        }
+
+
+
 		target.position.y = target.position.y+length;
 		offboard.addToPositionList(target.copy());
 		target.position.x = target.position.x-length;
 		offboard.addToPositionList(target.copy());
 		target.position.y = target.position.y-length;
 		offboard.addToPositionList(target.copy());
+		System.err.println("Size: "+offboard.getWorkListSize());
 		offboard.executeList();
 
 	}

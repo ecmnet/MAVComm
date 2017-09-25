@@ -1,5 +1,8 @@
 package com.comino.msp.utils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.comino.msp.execution.offboard.APSetPoint;
 import com.comino.msp.model.DataModel;
 
@@ -49,10 +52,19 @@ public class MSP3DUtils {
 		return 0;
 	}
 
-	public static void interpolateLinear(float where, Vector3D_F32 start, Vector3D_F32 end, Vector3D_F32 result) {
+	public static Vector3D_F32 interpolateLinear(float where, Vector3D_F32 start, Vector3D_F32 end, Vector3D_F32 result) {
 		result.x = where * ( end.x - start.x);
 		result.y = where * ( end.y - start.y);
 		result.z = where * ( end.z - start.z);
+		return result;
+	}
+
+	public List<Vector3D_F32> interpolateLinear (int steps,Vector3D_F32 start, Vector3D_F32 end) {
+		List<Vector3D_F32> result = new ArrayList<Vector3D_F32>();
+		float delta = end.distance(start) / steps;
+		for(int i = 1; i< steps; i++)
+			result.add(interpolateLinear(i*delta, start, end, new Vector3D_F32()));
+		return result;
 	}
 
 }
