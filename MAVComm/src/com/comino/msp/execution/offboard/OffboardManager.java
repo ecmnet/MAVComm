@@ -49,7 +49,7 @@ import com.comino.msp.execution.IOffboardListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.utils.MSPConvertUtils;
+import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.se.Se3_F32;
 import javafx.beans.property.BooleanProperty;
@@ -298,7 +298,7 @@ public class OffboardManager implements Runnable {
 		if(target!=null) {
 			slam.px = target.position.getX();
 			slam.py = target.position.getY();
-			slam.pd = MSPConvertUtils.getDirectionFromTargetXY(model, nextTarget);
+			slam.pd = MSP3DUtils.getDirectionFromTargetXY(model, nextTarget);
 			slam.wpcount = worklist.size();
 			slam.pv = target.getSpeed();
 		}

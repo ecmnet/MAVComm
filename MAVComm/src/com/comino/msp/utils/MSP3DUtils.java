@@ -5,9 +5,10 @@ import com.comino.msp.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;
 import georegression.struct.EulerType;
+import georegression.struct.point.Vector3D_F32;
 import georegression.struct.se.Se3_F32;
 
-public class MSPConvertUtils {
+public class MSP3DUtils {
 
 	public static final int ROLL  = 0;
 	public static final int PITCH = 1;
@@ -46,6 +47,12 @@ public class MSPConvertUtils {
 			return (float)(Math.atan(dy/dx)+Math.PI);
 
 		return 0;
+	}
+
+	public static void interpolateLinear(float where, Vector3D_F32 start, Vector3D_F32 end, Vector3D_F32 result) {
+		result.x = where * ( end.x - start.x);
+		result.y = where * ( end.y - start.y);
+		result.z = where * ( end.z - start.z);
 	}
 
 }
