@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 
-package com.comino.msp.main;
+package com.comino.main;
 
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;

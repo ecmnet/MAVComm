@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.main;
+package com.comino.main;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;

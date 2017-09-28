@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.main;
+package com.comino.main;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_highres_imu;

@@ -1,4 +1,4 @@
-package com.comino.msp.main;
+package com.comino.main;
 
 import java.io.IOException;
 
