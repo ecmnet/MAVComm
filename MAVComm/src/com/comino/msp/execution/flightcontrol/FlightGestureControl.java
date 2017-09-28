@@ -51,16 +51,16 @@ public class FlightGestureControl {
 		if(enable) {
 			inc = model.attitude.y;
 			circleCenter.set(model);
-            circleTarget.set(circleCenter);
-            circleDelta.set((float)Math.sin(inc), (float)Math.cos(inc), 0);
-            circleTarget.position.plusIP(circleDelta);
+			circleTarget.set(circleCenter);
+			circleDelta.set((float)Math.sin(inc), (float)Math.cos(inc), 0);
+			circleTarget.position.plusIP(circleDelta);
 
 			offboard.addListener((APSetPoint p,float d, int t) -> {
-			    inc = inc+0.1f;
-			    circleTarget.set(circleCenter);
-	            circleDelta.set((float)Math.sin(inc)*radius, (float)Math.cos(inc)*radius, 0);
-	            circleTarget.position.plusIP(circleDelta);
-	            offboard.setNextTarget(circleTarget, OffboardManager.MODE_MULTI_NOCHECK);
+				inc = inc+0.1f;
+				circleTarget.set(circleCenter);
+				circleDelta.set((float)Math.sin(inc)*radius, (float)Math.cos(inc)*radius, 0);
+				circleTarget.position.plusIP(circleDelta);
+				offboard.setNextTarget(circleTarget, OffboardManager.MODE_MULTI_NOCHECK);
 			});
 			offboard.setNextTarget(circleTarget, OffboardManager.MODE_MULTI_NOCHECK);
 			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
@@ -75,23 +75,20 @@ public class FlightGestureControl {
 
 	public void waypoint_example(float length) {
 		APSetPoint target  = new APSetPoint(model);
-		APSetPoint current = new APSetPoint(model);
+		target.position.z = -8;
+		for(int z=0;z<5;z++) {
 		target.position.x = target.position.x+length;
-
-        List<APSetPoint> list = APSetPointUtils.interpolatePositionLinear(20,current,target);
-        for(APSetPoint p : list) {
-		   offboard.addToPositionList(p);
-        }
-
-
-
+		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,new APSetPoint(model),target));
 		target.position.y = target.position.y+length;
-		offboard.addToPositionList(target.copy());
+		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
 		target.position.x = target.position.x-length;
-		offboard.addToPositionList(target.copy());
+		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
 		target.position.y = target.position.y-length;
-		offboard.addToPositionList(target.copy());
-		System.err.println("Size: "+offboard.getWorkListSize());
+		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
+		}
+
+
+
 		offboard.executeList();
 
 	}

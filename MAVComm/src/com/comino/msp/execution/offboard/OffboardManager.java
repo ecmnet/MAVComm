@@ -34,6 +34,7 @@
 package com.comino.msp.execution.offboard;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
@@ -64,10 +65,10 @@ public class OffboardManager implements Runnable {
 	public static final int MODE_MULTI_NOCHECK 		= 3; // sends new target each 100ms
 	public static final int MODE_MULTI_LIST    		= 4; // works list of targets
 	public static final int MODE_MULTI_SPEED    		= 5; // sends new speed each 100ms
-	public static final int MODE_MULTI_SPEED_LIST   	= 6; // works list of targets
+	public static final int MODE_MULTI_COMBINED_LIST = 6; // works list of targets
 
 
-	private float acceptance_radius = 0.1f;
+	private float acceptance_radius = 0.2f;
 
 	private IMAVController              control        = null;
 	private BooleanProperty             enableProperty = null;
@@ -148,14 +149,24 @@ public class OffboardManager implements Runnable {
 		}
 
 		this.nextTarget.set(worklist.pop());
-		this.mode = MODE_MULTI_LIST;
+		this.mode = MODE_MULTI_COMBINED_LIST;
 		this.enableProperty.set(true);
 	}
 
 
-	public void addToPositionList(APSetPoint target) {
-		if(!target.position.isIdentical(0, 0, 0))
-			worklist.add(target);
+	public void addToList(APSetPoint target) {
+		if(enableProperty.get())
+			return;
+		worklist.add(target);
+	}
+
+	public void addAllToList(List<APSetPoint> list) {
+		for(APSetPoint p : list)
+			addToList(p);
+	}
+
+	public APSetPoint getLastAdded() {
+		return worklist.getLast();
 	}
 
 
@@ -163,6 +174,8 @@ public class OffboardManager implements Runnable {
 	public void run() {
 
 		float distance;  long tms = 0;
+
+		long step = System.currentTimeMillis();
 
 		if(!enableProperty.get())
 			return;
@@ -201,9 +214,8 @@ public class OffboardManager implements Runnable {
 				distance = nextTarget.position.distance(currentPos.position);
 				sendPositionControlToVehice(nextTarget,currentPos);
 				if(distance < acceptance_radius) {
-					if(!worklist.isEmpty()) {
+					if(!worklist.isEmpty())
 						nextTarget.set(worklist.pop());
-					}
 					else {
 						fireAction(distance,IOffboardListener.TYPE_LIST_COMPLETED);
 						enableProperty.set(false);
@@ -216,8 +228,36 @@ public class OffboardManager implements Runnable {
 					fireAction(0,IOffboardListener.TYPE_CONTINUOUS);
 				break;
 
-			case MODE_MULTI_SPEED_LIST:
-
+			case MODE_MULTI_COMBINED_LIST:
+				distance = nextTarget.position.distance(currentPos.position);
+				if(nextTarget.type == APSetPoint.TYPE_POSITION) {
+					sendPositionControlToVehice(nextTarget,currentPos);
+					if(distance < acceptance_radius) {
+						if(!worklist.isEmpty()) {
+							step = System.currentTimeMillis();
+							nextTarget.set(worklist.pop());
+							System.err.println(nextTarget);
+						}
+						else {
+							fireAction(distance,IOffboardListener.TYPE_LIST_COMPLETED);
+							enableProperty.set(false);
+						}
+					}
+				}
+				else {
+					sendSpeedControlToVehice(nextTarget);
+					if((System.currentTimeMillis() - step) > nextTarget.tms || distance < acceptance_radius) {
+						if(!worklist.isEmpty()) {
+							step = System.currentTimeMillis();
+							nextTarget.set(worklist.pop());
+							System.err.println(nextTarget);
+						}
+						else {
+							fireAction(distance,IOffboardListener.TYPE_LIST_COMPLETED);
+							enableProperty.set(false);
+						}
+					}
+				}
 
 				break;
 			}
@@ -254,6 +294,7 @@ public class OffboardManager implements Runnable {
 		cmd.target_component = 1;
 		cmd.target_system = 1;
 		cmd.type_mask = 0b000101111111000;
+//		cmd.type_mask = 0b000101111000000;
 
 		// TODO: better: set Mask accordingly
 		if(target.position.x!=Float.NaN) cmd.x = target.position.x; else cmd.x = current.position.x;
@@ -275,9 +316,9 @@ public class OffboardManager implements Runnable {
 		cmd.type_mask = 0b000101111000111;
 
 		// TODO: better: set Mask accordingly
-		if(target.speed.x!=Float.NaN) cmd.x = target.speed.x; else cmd.x = 0;
-		if(target.speed.y!=Float.NaN) cmd.y = target.speed.y; else cmd.y = 0;
-		if(target.speed.z!=Float.NaN) cmd.z = target.speed.z; else cmd.z = 0;
+		if(target.speed.x!=Float.NaN) cmd.vx = target.speed.x; else cmd.vx = 0;
+		if(target.speed.y!=Float.NaN) cmd.vy = target.speed.y; else cmd.vy = 0;
+		if(target.speed.z!=Float.NaN) cmd.vz = target.speed.z; else cmd.vz = 0;
 
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 

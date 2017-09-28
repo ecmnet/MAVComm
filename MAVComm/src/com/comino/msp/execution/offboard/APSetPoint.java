@@ -6,15 +6,21 @@ import georegression.struct.point.Vector3D_F32;
 
 public class APSetPoint {
 
+	public static final int TYPE_POSITION = 1;
+	public static final int TYPE_SPEED    = 2;
+
 	public Vector3D_F32 speed;
 	public Vector3D_F32 position;
 	public float        yaw;
-	public int          mode;
+	public int          type;
+	public long         tms;
 
 	public APSetPoint() {
 		this.speed 		= new Vector3D_F32(Float.NaN, Float.NaN, Float.NaN);
 		this.position 	= new Vector3D_F32();
 		this.yaw         = 0;
+		this.tms         = 0;
+		this.type        = TYPE_POSITION;
 	}
 
 	public APSetPoint(DataModel current) {
@@ -24,14 +30,30 @@ public class APSetPoint {
 
 	public APSetPoint(Vector3D_F32 position) {
 		this();
-		this.speed 		= new Vector3D_F32();
-		this.position 	= position.copy();
+		this.position.set(position);
 		this.yaw         = 0;
 	}
 
-	public APSetPoint(Vector3D_F32 position, int mode) {
-		this(position);
-		this.mode 		= mode;
+	public APSetPoint(Vector3D_F32 position, Vector3D_F32 speed, long tms) {
+		this.speed 		= new Vector3D_F32(speed);
+		this.position 	= new Vector3D_F32(position);
+		this.type = TYPE_SPEED;
+		this.tms  = tms;
+	}
+
+
+	public APSetPoint(Vector3D_F32 speed, long tms) {
+		this.speed 		= new Vector3D_F32(speed);
+		this.position 	= new Vector3D_F32();
+		this.type = TYPE_SPEED;
+		this.tms  = tms;
+	}
+
+	public APSetPoint(long tms) {
+		this.speed 		= new Vector3D_F32();
+		this.position 	= new Vector3D_F32();
+		this.type = TYPE_SPEED;
+		this.tms  = tms;
 	}
 
 	public APSetPoint(float x, float y, float z, float yaw) {
@@ -50,6 +72,8 @@ public class APSetPoint {
 		this.speed.set(setpoint.speed);
 		this.position.set(setpoint.position);
 		this.yaw  = setpoint.yaw;
+		this.type = setpoint.type;
+		this.tms  = setpoint.tms;
 	}
 
 	public boolean reached(Vector3D_F32 current, float distance) {
@@ -68,7 +92,7 @@ public class APSetPoint {
 	}
 
 	public String toString() {
-		return position.toString() + " / " + speed.toString();
+		return "["+type+"] "+position.toString() + " / " + speed.toString() + " at "+tms+"ms";
 	}
 
 }
