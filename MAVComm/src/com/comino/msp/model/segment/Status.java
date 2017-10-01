@@ -48,8 +48,8 @@ public class Status extends Segment {
 	public static final int MSP_READY						= 1;
 	public static final int MSP_ACTIVE						= 2;
 	public static final int MSP_RC_ATTACHED					= 3;
-	public static final int MSP_JOY_ATTACHED			    = 4;
-	public static final int MSP_OFFBOARD_UPDATER_STARTED    = 5;
+	public static final int MSP_JOY_ATTACHED			        = 4;
+	public static final int MSP_OFFBOARD_UPDATER_STARTED     = 5;
 
 	public static final int MSP_ARMED						= 8;
 	public static final int MSP_MODE_MANUAL			        = 9;
@@ -57,15 +57,15 @@ public class Status extends Segment {
 	public static final int MSP_MODE_ALTITUDE			    = 11;
 	public static final int MSP_MODE_POSITION			    = 12;
 	public static final int MSP_MODE_LOITER					= 13;
-	public static final int MSP_MODE_MISSION				= 14;
+	public static final int MSP_MODE_MISSION				    = 14;
 	public static final int MSP_MODE_OFFBOARD				= 15;
-	public static final int MSP_MODE_LANDING				= 16;
-	public static final int MSP_MODE_TAKEOFF				= 17;
+	public static final int MSP_MODE_LANDING				    = 16;
+	public static final int MSP_MODE_TAKEOFF				    = 17;
 
-	public static final int MSP_MODE_RTL					= 19;
+	public static final int MSP_MODE_RTL					    = 19;
 
-	public static final int MSP_GPOS_AVAILABILITY           = 20;
-	public static final int MSP_LPOS_AVAILABILITY           = 21;
+	public static final int MSP_GPOS_AVAILABILITY            = 20;
+	public static final int MSP_LPOS_AVAILABILITY            = 21;
 
 	public static final int MSP_LANDED						= 24;
 	public static final int MSP_INAIR						= 25;
@@ -238,7 +238,7 @@ public class Status extends Segment {
 
 
 	public String toString() {
-		return "Connected="+isStatus(Status.MSP_CONNECTED)+" Sensors="+getSensorString();
+		return "Status="+Integer.toBinaryString(status)+" Autopilot="+Integer.toBinaryString(autopilot);
 	}
 
 
