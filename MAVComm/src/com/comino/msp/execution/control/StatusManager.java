@@ -76,16 +76,17 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
-		if (model.sys.isStatus(Status.MSP_ARMED))
-			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
-
 		status_current.set(model.sys);
+
+		if (status_current.isStatus(Status.MSP_ARMED))
+			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
 		if(status_old.isEqual(status_current))
 			return;
 
-		if(model.sys.isStatusChanged(status_old, Status.MSP_ARMED) && model.sys.isStatus(Status.MSP_ARMED))
+		if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
 			t_armed_start = System.currentTimeMillis();
+
 
 		try {
 			for (StatusListenerEntry entry : list) {
