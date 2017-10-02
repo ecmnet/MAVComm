@@ -25,7 +25,7 @@ public interface MAV_MODE_FLAG {
      */
     public final static int MAV_MODE_FLAG_STABILIZE_ENABLED = 16;
     /**
-     * 0b00001000 guided mode enabled, system flies MISSIONs / mission items.
+     * 0b00001000 guided mode enabled, system flies waypoints / mission items.
      */
     public final static int MAV_MODE_FLAG_GUIDED_ENABLED = 8;
     /**

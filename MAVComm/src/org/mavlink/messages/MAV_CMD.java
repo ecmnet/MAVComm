@@ -9,21 +9,21 @@ package org.mavlink.messages;
  **/
 public interface MAV_CMD {
     /**
-     * Navigate to MISSION.
-     * PARAM 1 : Hold time in decimal seconds. (ignored by fixed wing, time to stay at MISSION for rotary wing)
-     * PARAM 2 : Acceptance radius in meters (if the sphere with this radius is hit, the MISSION counts as reached)
+     * Navigate to waypoint.
+     * PARAM 1 : Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)
+     * PARAM 2 : Acceptance radius in meters (if the sphere with this radius is hit, the waypoint counts as reached)
      * PARAM 3 : 0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.
-     * PARAM 4 : Desired yaw angle at MISSION (rotary wing). NaN for unchanged.
+     * PARAM 4 : Desired yaw angle at waypoint (rotary wing). NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
      */
     public final static int MAV_CMD_NAV_WAYPOINT = 16;
     /**
-     * Loiter around this MISSION an unlimited amount of time
+     * Loiter around this waypoint an unlimited amount of time
      * PARAM 1 : Empty
      * PARAM 2 : Empty
-     * PARAM 3 : Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise
+     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
      * PARAM 4 : Desired yaw angle.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
@@ -31,10 +31,10 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_LOITER_UNLIM = 17;
     /**
-     * Loiter around this MISSION for X turns
+     * Loiter around this waypoint for X turns
      * PARAM 1 : Turns
      * PARAM 2 : Empty
-     * PARAM 3 : Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise
+     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
      * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
@@ -42,10 +42,10 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_LOITER_TURNS = 18;
     /**
-     * Loiter around this MISSION for X seconds
+     * Loiter around this waypoint for X seconds
      * PARAM 1 : Seconds (decimal)
      * PARAM 2 : Empty
-     * PARAM 3 : Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise
+     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
      * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
@@ -111,7 +111,7 @@ public interface MAV_CMD {
      * Vehicle following, i.e. this waypoint represents the position of a moving vehicle
      * PARAM 1 : Following logic to use (e.g. loitering or sinusoidal following) - depends on specific autopilot implementation
      * PARAM 2 : Ground speed of vehicle to be followed
-     * PARAM 3 : Radius around MISSION, in meters. If positive loiter clockwise, else counter-clockwise
+     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
      * PARAM 4 : Desired yaw angle.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
@@ -165,7 +165,7 @@ public interface MAV_CMD {
     /**
      * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
-     * PARAM 2 : MISSION index/ target ID. (see MAV_ROI enum)
+     * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
      * PARAM 4 : Empty
      * PARAM 5 : x the location of the fixed ROI (see MAV_FRAME)
@@ -185,8 +185,8 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_PATHPLANNING = 81;
     /**
-     * Navigate to MISSION using a spline path.
-     * PARAM 1 : Hold time in decimal seconds. (ignored by fixed wing, time to stay at MISSION for rotary wing)
+     * Navigate to waypoint using a spline path.
+     * PARAM 1 : Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -517,7 +517,7 @@ public interface MAV_CMD {
     /**
      * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
-     * PARAM 2 : MISSION index/ target ID. (see MAV_ROI enum)
+     * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
      * PARAM 4 : Empty
      * PARAM 5 : x the location of the fixed ROI (see MAV_FRAME)

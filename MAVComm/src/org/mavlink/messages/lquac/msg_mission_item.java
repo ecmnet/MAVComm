@@ -61,7 +61,7 @@ public class msg_mission_item extends MAVLinkMessage {
    */
   public int seq;
   /**
-   * The scheduled action for the MISSION. see MAV_CMD in common.xml MAVLink specs
+   * The scheduled action for the waypoint. see MAV_CMD in common.xml MAVLink specs
    */
   public int command;
   /**
@@ -73,7 +73,7 @@ public class msg_mission_item extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * The coordinate system of the MISSION. see MAV_FRAME in mavlink_types.h
+   * The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h
    */
   public int frame;
   /**

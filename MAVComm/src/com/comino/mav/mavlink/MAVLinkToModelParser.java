@@ -635,6 +635,9 @@ public class MAVLinkToModelParser {
 				model.sys.setStatus(Status.MSP_MODE_TAKEOFF, MAV_CUST_MODE.is(hb.custom_mode,
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF));
 
+				//System.err.println(Long.toBinaryString(hb.custom_mode));
+
+
 			}
 		});
 

@@ -52,7 +52,7 @@ public class msg_distance_sensor extends MAVLinkMessage {
    */
   public int id;
   /**
-   * Direction the sensor faces from MAV_SENSOR_ORIENTATION enum.
+   * Direction the sensor faces from MAV_SENSOR_ORIENTATION enum. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270
    */
   public int orientation;
   /**

@@ -52,11 +52,11 @@ public class msg_nav_controller_output extends MAVLinkMessage {
    */
   public int nav_bearing;
   /**
-   * Bearing to current MISSION/target in degrees
+   * Bearing to current waypoint/target in degrees
    */
   public int target_bearing;
   /**
-   * Distance to active MISSION in meters
+   * Distance to active waypoint in meters
    */
   public int wp_dist;
 /**

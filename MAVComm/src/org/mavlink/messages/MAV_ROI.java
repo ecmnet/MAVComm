@@ -15,11 +15,11 @@ public interface MAV_ROI {
      */
     public final static int MAV_ROI_NONE = 0;
     /**
-     * Point toward next MISSION.
+     * Point toward next waypoint.
      */
     public final static int MAV_ROI_WPNEXT = 1;
     /**
-     * Point toward given MISSION.
+     * Point toward given waypoint.
      */
     public final static int MAV_ROI_WPINDEX = 2;
     /**

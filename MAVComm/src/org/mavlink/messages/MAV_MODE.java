@@ -38,11 +38,11 @@ public interface MAV_MODE {
      */
     public final static int MAV_MODE_GUIDED_ARMED = 216;
     /**
-     * System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs)
+     * System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints)
      */
     public final static int MAV_MODE_AUTO_DISARMED = 92;
     /**
-     * System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by MISSIONs)
+     * System is allowed to be active, under autonomous control and navigation (the trajectory is decided onboard and not pre-programmed by waypoints)
      */
     public final static int MAV_MODE_AUTO_ARMED = 220;
     /**
