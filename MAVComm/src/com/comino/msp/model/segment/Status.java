@@ -197,6 +197,12 @@ public class Status extends Segment {
 		return ((old.status & mask) != (status & mask));
 	}
 
+	public boolean isStatusChanged(Status old, int mask, boolean edge) {
+		if(edge)
+		  return ((old.status & mask) != (status & mask) && ((status & mask) == mask));
+		 return ((old.status & mask) != (status & mask) && ((status & mask) == 0));
+	}
+
 	public boolean isAutopilotModeChanged(Status old,int mask) {
 		return ((old.autopilot & mask) != (autopilot & mask));
 	}

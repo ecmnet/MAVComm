@@ -37,15 +37,27 @@ package com.comino.main;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
+import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_CMD;
+import org.mavlink.messages.MSP_COMPONENT_CTRL;
+import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.execution.commander.MSPCommander;
+import com.comino.msp.execution.control.StatusManager;
+import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Grid;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.vfh.VfhGrid;
+import com.comino.vfh.vfh2D.HistogramGrid2D;
+
+import georegression.struct.point.Point3D_F64;
 
 public class StartUp implements Runnable {
 
@@ -54,7 +66,9 @@ public class StartUp implements Runnable {
 
 	private MSPCommander commander = null;
 	private OperatingSystemMXBean osBean;
-	private MemoryMXBean mxBean;;
+	private MemoryMXBean mxBean;
+	private DataModel model;
+	HistogramGrid2D hist;
 
 	public StartUp(String[] args) {
 
@@ -66,6 +80,8 @@ public class StartUp implements Runnable {
 		else
 			control = new MAVProxyController(false);
 
+		model = control.getCurrentModel();
+
 		MSPLogger.getInstance(control);
 
 		commander = new MSPCommander(control);
@@ -75,11 +91,40 @@ public class StartUp implements Runnable {
 
 		// Start services if required
 
+
 		control.start();
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
 		Thread worker = new Thread(this);
 		worker.start();
 
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
+		    control.writeLogMessage(new LogMessage("[test] takeoff completed", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+		});
+
+		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_msp_command cmd = (msg_msp_command)o;
+				switch(cmd.command) {
+				case MSP_CMD.MSP_TRANSFER_MICROSLAM:
+					model.grid.invalidateTransfer();
+					control.writeLogMessage(new LogMessage("[sitl] map transfer request",
+							MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+					break;
+				case MSP_CMD.MSP_CMD_MICROSLAM:
+					switch((int)cmd.param1) {
+					case MSP_COMPONENT_CTRL.RESET:
+						hist.reset(model);
+						control.writeLogMessage(new LogMessage("[sitl] reset local map",
+								MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+						break;
+					}
+					break;
+				}
+			}
+		});
+
+		hist= new HistogramGrid2D(10,10,20,1.0f,model.grid.getResolution());
 	}
 
 
@@ -94,7 +139,9 @@ public class StartUp implements Runnable {
 	@Override
 	public void run() {
 		long tms = System.currentTimeMillis();
-//		Grid s = new Grid();
+
+
+
 		while(true) {
 			try {
 				Thread.sleep(200);
@@ -102,24 +149,28 @@ public class StartUp implements Runnable {
 					if(control.isConnected())
 						control.close();
 					control.connect();
+
+					Point3D_F64 p = new Point3D_F64();
+					p.set(5,5,0); System.err.println(hist.gridUpdate(p));
+					hist.transferGridToModel(model, 0, false);
+					//		System.out.println(hist.toString(0));
+					//	System.err.println(model.grid.toString());
 				}
 
-//				float f = (float)(Math.random()-0.5);
-//
-//				s.setBlock(f,0.1f);
-//				s.setBlock(0.3f,1.0f);
-//				s.setBlock(-0.8f,-1.5f);
-//
-//
-//				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
-//				grid.tms = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
-//				grid.cx = 0.1f;
-//				grid.cy = 0.2f;
-//				grid.resolution = s.getResolution();
-//				s.toArray(grid.data);
-//				control.sendMAVLinkMessage(grid);
-//
-//				s.setBlock(f,0.1f, false);
+
+
+				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
+				grid.resolution = 0;
+				grid.extension  = 0;
+				grid.cx  = model.grid.getIndicatorX();
+				grid.cy  = model.grid.getIndicatorY();
+				grid.tms  = System.nanoTime() / 1000;
+				grid.count = model.grid.count;
+
+				if(model.grid.toArray(grid.data)) {
+					control.sendMAVLinkMessage(grid);
+				}
+
 
 				msg_msp_status msg = new msg_msp_status(2,1);
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);
@@ -135,6 +186,7 @@ public class StartUp implements Runnable {
 
 
 			} catch (Exception e) {
+				e.printStackTrace();
 				control.close();
 			}
 		}

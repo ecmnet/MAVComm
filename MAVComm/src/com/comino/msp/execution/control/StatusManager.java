@@ -43,18 +43,18 @@ public class StatusManager implements Runnable {
 	}
 
 
-	private void addListener(byte type, int mask, int timeout_ms, int state, IMSPStatusChangedListener listener) {
+	private void addListener(byte type, int mask, int timeout_ms, int edge, IMSPStatusChangedListener listener) {
 		StatusListenerEntry entry = new StatusListenerEntry();
 		entry.listener    = listener;
 		entry.type        = type;
 		entry.mask        = mask;
 		entry.timeout_ms  = timeout_ms;
-		entry.state       = state;
+		entry.state       = edge;
 		list.add(entry);
 	}
 
-	public void addListener(byte type, int box, int timeout_ms, IMSPStatusChangedListener listener) {
-		addListener(type, 1 << box, timeout_ms, EDGE_BOTH, listener);
+	public void addListener(byte type, int box, int edge, IMSPStatusChangedListener listener) {
+		addListener(type, 1 << box, 0, edge, listener);
 	}
 
 	public void addListener(byte type, int box, IMSPStatusChangedListener listener) {
@@ -93,10 +93,26 @@ public class StatusManager implements Runnable {
 
 				switch(entry.type) {
 				case TYPE_PX4_STATUS:
-				//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
-					if(status_current.isStatusChanged(status_old, entry.mask)) {
-						entry.listener.update(status_old, status_current);
-						entry.last_triggered = System.currentTimeMillis();
+					//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
+					switch(entry.state) {
+					case EDGE_BOTH:
+						if(status_current.isStatusChanged(status_old, entry.mask)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+					  break;
+					case EDGE_RISING:
+						if(status_current.isStatusChanged(status_old, entry.mask, true)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+					  break;
+					case EDGE_FALLING:
+						if(status_current.isStatusChanged(status_old, entry.mask, false)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+					  break;
 					}
 					break;
 				case TYPE_MSP_STATUS:
