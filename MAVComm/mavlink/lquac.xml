@@ -73,7 +73,10 @@
                   <description>Circles at center with diameter (param3)</description>
               </entry>
               <entry value="3" name="WAYPOINT_MODE">
-                  <description>Executes a list of waypoints defined in MSP (param2)</description>
+                  <description>Executes a list of waypoints defined in MSP (param3)</description>
+              </entry>
+               <entry value="4" name="AUTO_MISSION">
+                  <description>Execute a MSP mission (param3)</description>
               </entry>
            </enum>
       </enums>

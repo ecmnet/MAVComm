@@ -21,7 +21,11 @@ public interface MSP_AUTOCONTROL_MODE {
      */
     public final static int CIRCLE_MODE = 2;
     /**
-     * Executes a list of waypoints defined in MSP (param2)
+     * Executes a list of waypoints defined in MSP (param3)
      */
     public final static int WAYPOINT_MODE = 3;
+    /**
+     * Execute a MSP mission (param3)
+     */
+    public final static int AUTO_MISSION = 4;
 }
