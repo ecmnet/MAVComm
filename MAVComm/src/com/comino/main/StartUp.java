@@ -98,7 +98,8 @@ public class StartUp implements Runnable {
 		worker.start();
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-		    control.writeLogMessage(new LogMessage("[test] takeoff completed", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+			System.err.println("TAKEOFF COMPLETED");
+		    control.writeLogMessage(new LogMessage("[sitl] takeoff completed", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 		});
 
 		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
