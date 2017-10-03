@@ -36,18 +36,16 @@ package com.comino.msp.execution.commander;
 
 import java.io.IOException;
 
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 
+import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.mav.mavlink.MAV_CUST_MODE;
-import com.comino.msp.execution.auopilot.FlightGestureControl;
-import com.comino.msp.execution.auopilot.offboard.OffboardManager;
+import com.comino.msp.execution.autopilot.Autopilot;
+import com.comino.msp.execution.autopilot.offboard.OffboardManager;
 import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
@@ -58,8 +56,7 @@ import com.comino.msp.model.segment.Status;
 public class MSPCommander {
 
 	private IMAVMSPController        control = null;
-	private OffboardManager offboard = null;
-	private FlightGestureControl    gestures = null;
+	private Autopilot              autopilot = null;
 	private DataModel                  model = null;
 
 	public MSPCommander(IMAVMSPController control) {
@@ -71,21 +68,7 @@ public class MSPCommander {
 
 		System.out.println("Commander initialized");
 
-		// After takeoff go to POSHOLD mode
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-		    control.writeLogMessage(new LogMessage("[msp] takeoff completed", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-		});
-
-		offboard = OffboardManager.getInstance(control);
-
-		gestures = new FlightGestureControl(model, offboard);
-	}
-
-	public  OffboardManager getOffBoardUpdater() {
-		return offboard;
+		autopilot = Autopilot.getInstance(control);
 	}
 
 	private void registerCommands() {
@@ -115,20 +98,20 @@ public class MSPCommander {
 		model.sys.setAutopilotMode(mode, enable);
 		switch(mode) {
 		case MSP_AUTOCONTROL_MODE.ABORT:
-			offboard.abort();
+			autopilot.abort();
 			break;
 		case MSP_AUTOCONTROL_MODE.CIRCLE_MODE:
 			if(param == 0) param = 0.75f;
-			gestures.enableCircleMode(enable, param);
+			autopilot.enableCircleMode(enable, param);
 			break;
 
 		case MSP_AUTOCONTROL_MODE.WAYPOINT_MODE:
 			if(enable)
-				gestures.waypoint_example(5f);
+				autopilot.waypoint_example(5f);
 			break;
 		case MSP_AUTOCONTROL_MODE.AUTO_MISSION:
 			if(enable)
-				gestures.waypoint_example(5f);
+				autopilot.waypoint_example(5f);
 			break;
 		}
 	}
@@ -143,7 +126,7 @@ public class MSPCommander {
 
 
 	private void setOffboardPosition(msg_msp_command cmd) {
-		gestures.setTargetAndExecute(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+		autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
 	}
 
 
