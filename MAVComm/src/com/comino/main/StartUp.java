@@ -97,11 +97,6 @@ public class StartUp implements Runnable {
 		Thread worker = new Thread(this);
 		worker.start();
 
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-			System.err.println("TAKEOFF COMPLETED");
-		    control.writeLogMessage(new LogMessage("[sitl] takeoff completed", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
-		});
-
 		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
@@ -150,12 +145,6 @@ public class StartUp implements Runnable {
 					if(control.isConnected())
 						control.close();
 					control.connect();
-
-					Point3D_F64 p = new Point3D_F64();
-					p.set(5,5,0); System.err.println(hist.gridUpdate(p));
-					hist.transferGridToModel(model, 0, false);
-					//		System.out.println(hist.toString(0));
-					//	System.err.println(model.grid.toString());
 				}
 
 
