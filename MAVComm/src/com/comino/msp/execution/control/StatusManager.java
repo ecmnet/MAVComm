@@ -37,7 +37,9 @@ public class StatusManager implements Runnable {
 		this.status_current = new Status();
 		this.status_old     = new Status();
 		this.list  = new ArrayList<StatusListenerEntry>();
-		ExecutorService.get().scheduleAtFixedRate(this, 2000, 100, TimeUnit.MILLISECONDS);
+		Thread t = new Thread(this);
+		t.setPriority(Thread.MIN_PRIORITY);
+		t.start();
 		System.out.println("StatusManager started");
 
 	}
@@ -76,62 +78,68 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
-		status_current.set(model.sys);
+		while(true) {
 
-		if (status_current.isStatus(Status.MSP_ARMED))
-			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+			try { Thread.sleep(50); } catch(Exception e) { }
 
-		if(status_old.isEqual(status_current))
-			return;
+			status_current.set(model.sys);
 
-		if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
-			t_armed_start = System.currentTimeMillis();
+			if (status_current.isStatus(Status.MSP_ARMED))
+				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+
+			if(status_old.isEqual(status_current))
+				continue;
+
+			if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
+				t_armed_start = System.currentTimeMillis();
 
 
-		try {
-			for (StatusListenerEntry entry : list) {
+			try {
+				for (StatusListenerEntry entry : list) {
 
-				switch(entry.type) {
-				case TYPE_PX4_STATUS:
-					//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
-					switch(entry.state) {
-					case EDGE_BOTH:
-						if(status_current.isStatusChanged(status_old, entry.mask)) {
+					switch(entry.type) {
+					case TYPE_PX4_STATUS:
+						//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
+						switch(entry.state) {
+						case EDGE_BOTH:
+							if(status_current.isStatusChanged(status_old, entry.mask)) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						case EDGE_RISING:
+							if(status_current.isStatusChanged(status_old, entry.mask, true)) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						case EDGE_FALLING:
+							if(status_current.isStatusChanged(status_old, entry.mask, false)) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						}
+						break;
+					case TYPE_MSP_STATUS:
+
+						// TODO:
+
+						break;
+					case TYPE_MSP_AUTOPILOT:
+						if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
 							entry.listener.update(status_old, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
-					  break;
-					case EDGE_RISING:
-						if(status_current.isStatusChanged(status_old, entry.mask, true)) {
-							entry.listener.update(status_old, status_current);
-							entry.last_triggered = System.currentTimeMillis();
-						}
-					  break;
-					case EDGE_FALLING:
-						if(status_current.isStatusChanged(status_old, entry.mask, false)) {
-							entry.listener.update(status_old, status_current);
-							entry.last_triggered = System.currentTimeMillis();
-						}
-					  break;
+						break;
 					}
-					break;
-				case TYPE_MSP_STATUS:
-
-					// TODO:
-
-					break;
-				case TYPE_MSP_AUTOPILOT:
-					if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
-						entry.listener.update(status_old, status_current);
-						entry.last_triggered = System.currentTimeMillis();
-					}
-					break;
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			status_old.set(status_current);
 		}
-		status_old.set(status_current);
+
 	}
 
 	private class StatusListenerEntry {
