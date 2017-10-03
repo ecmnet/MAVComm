@@ -3,7 +3,7 @@ package com.comino.msp.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.comino.msp.execution.offboard.APSetPoint;
+import com.comino.msp.execution.auopilot.offboard.APSetPoint;
 import com.comino.msp.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;

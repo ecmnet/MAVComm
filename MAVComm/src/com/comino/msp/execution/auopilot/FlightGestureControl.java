@@ -1,14 +1,13 @@
-package com.comino.msp.execution.flightcontrol;
+package com.comino.msp.execution.auopilot;
 
 import java.util.List;
 
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 
-import com.comino.msp.execution.IOffboardListener;
-import com.comino.msp.execution.offboard.APSetPoint;
-import com.comino.msp.execution.offboard.APSetPointUtils;
-import com.comino.msp.execution.offboard.OffboardManager;
+import com.comino.msp.execution.auopilot.offboard.APSetPoint;
+import com.comino.msp.execution.auopilot.offboard.APSetPointUtils;
+import com.comino.msp.execution.auopilot.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.utils.MSP3DUtils;
@@ -74,9 +73,13 @@ public class FlightGestureControl {
 	}
 
 	public void waypoint_example(float length) {
+
+//		APSetPoint start  = new APSetPoint(APSetPoint.TYPE_TAKEOFF);
+//		offboard.addToList(start);
+
 		APSetPoint target  = new APSetPoint(model);
 		target.position.z = -8;
-		for(int z=0;z<5;z++) {
+	//	for(int z=0;z<5;z++) {
 		target.position.x = target.position.x+length;
 		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,new APSetPoint(model),target));
 		target.position.y = target.position.y+length;
@@ -85,9 +88,9 @@ public class FlightGestureControl {
 		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
 		target.position.y = target.position.y-length;
 		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
-		}
-
-
+	//	}
+		APSetPoint land  = new APSetPoint(APSetPoint.TYPE_LAND);
+		offboard.addToList(land);
 
 		offboard.executeList();
 

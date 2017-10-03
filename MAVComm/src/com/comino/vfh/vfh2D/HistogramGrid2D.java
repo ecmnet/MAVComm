@@ -49,7 +49,7 @@ public class HistogramGrid2D {
 	private static final long OBLIVISION_TIME_MS = 10000;
 	private static final int  MAX_CERTAINITY     = 1000;
 
-	private VfhGrid grid     = null;
+	private VfhGrid vfhg     = null;
 	private VfhGrid window   = null;
 
 	private long        tms  = 0;
@@ -61,15 +61,16 @@ public class HistogramGrid2D {
 
 		centerx = cenx;
 		centery = ceny;
-		grid   = new VfhGrid(dimension, resolution);
+		vfhg   = new VfhGrid(dimension, resolution);
 		window = new VfhGrid(windowsize, resolution);
+		System.out.println("HistogramGricd2D initialized at ("+cenx+","+ceny+") with size "+dimension+" and resolution "+ resolution);
 	}
 
 	public void reset(DataModel model) {
-		grid.clear();
-		for (int i = 0; i < grid.dimension; ++i) {
-			for (int j = 0; j < grid.dimension; ++j) {
-				model.grid.setBlock(j*grid.resolution/100f-centerx,i*grid.resolution/100f-centery, false);
+		vfhg.clear();
+		for (int i = 0; i < vfhg.dimension; ++i) {
+			for (int j = 0; j < vfhg.dimension; ++j) {
+				model.grid.setBlock(j*vfhg.resolution/100f-centerx,i*vfhg.resolution/100f-centery, false);
 			}
 		}
 	}
@@ -84,12 +85,12 @@ public class HistogramGrid2D {
 	//       2. Mark surrounding cells with a default if distance is < limit
 	public boolean gridUpdate(float lpos_x, float lpos_y, Point3D_F64 obstacle) {
 
-		int new_x = (int)Math.floor((lpos_x+centerx+obstacle.x)*100f / grid.resolution);
-		int new_y = (int)Math.floor((lpos_y+centery+obstacle.y)*100f / grid.resolution);
+		int new_x = (int)Math.floor((lpos_x+centerx+obstacle.x)*100f / vfhg.resolution);
+		int new_y = (int)Math.floor((lpos_y+centery+obstacle.y)*100f / vfhg.resolution);
 
-		if (new_x < grid.dimension && new_y < grid.dimension && new_x > 0 && new_y > 0
-				&& grid.cells[new_y * grid.dimension + new_x]<MAX_CERTAINITY) {
-			grid.cells[new_y * grid.dimension + new_x] += 1;
+		if (new_x < vfhg.dimension && new_y < vfhg.dimension && new_x > 0 && new_y > 0
+				&& vfhg.cells[new_y * vfhg.dimension + new_x]<MAX_CERTAINITY) {
+			vfhg.cells[new_y * vfhg.dimension + new_x] += 1;
 			return true;
 		}
 		return false;
@@ -100,11 +101,11 @@ public class HistogramGrid2D {
 		window.clear(); int new_x  = 0; int new_y = 0;
 		for (int y = 0; y < window.dimension; y++) {
 			for (int x = 0; x < window.dimension;x++) {
-				new_x = x + (int)Math.floor((lpos_x+centerx)*100f / grid.resolution) - (window.dimension - 1) / 2;
-				new_y = y + (int)Math.floor((lpos_y+centery)*100f / grid.resolution) - (window.dimension - 1) / 2;
+				new_x = x + (int)Math.floor((lpos_x+centerx)*100f / vfhg.resolution) - (window.dimension - 1) / 2;
+				new_y = y + (int)Math.floor((lpos_y+centery)*100f / vfhg.resolution) - (window.dimension - 1) / 2;
 
-				if (new_x < grid.dimension && new_y < grid.dimension && new_x >= 0 && new_y >= 0) {
-					window.cells[y * window.dimension + x] = grid.cells[new_y * grid.dimension + new_x];
+				if (new_x < vfhg.dimension && new_y < vfhg.dimension && new_x >= 0 && new_y >= 0) {
+					window.cells[y * window.dimension + x] = vfhg.cells[new_y * vfhg.dimension + new_x];
 				}
 			}
 		}
@@ -112,18 +113,18 @@ public class HistogramGrid2D {
 	}
 
 	public void transferGridToModel(DataModel model, int threshold, boolean debug) {
-		for (int i = 0; i < grid.dimension; ++i) {
-			for (int j = 0; j < grid.dimension; ++j) {
+		for (int i = 0; i < vfhg.dimension; ++i) {
+			for (int j = 0; j < vfhg.dimension; ++j) {
 
-				if(grid.cells[i * grid.dimension + j] == 0)
+				if(vfhg.cells[i * vfhg.dimension + j] == 0)
 					continue;
 
-				if(grid.cells[i * grid.dimension + j] > threshold) {
-					model.grid.setBlock(j*grid.resolution/100f-centerx,i*grid.resolution/100f-centery, true);
+				if(vfhg.cells[i * vfhg.dimension + j] > threshold) {
+					model.grid.setBlock(j*vfhg.resolution/100f-centerx,i*vfhg.resolution/100f-centery, true);
 					//	System.out.println("ADD: "+(j*grid.resolution/100f-center_x)+ ":"+ (i*grid.resolution/100f-center_y));
 				}
 				else
-					model.grid.setBlock(j*grid.resolution/100f-centerx,i*grid.resolution/100f-centery, false);
+					model.grid.setBlock(j*vfhg.resolution/100f-centerx,i*vfhg.resolution/100f-centery, false);
 			}
 		}
 		if(debug)
@@ -131,23 +132,23 @@ public class HistogramGrid2D {
 	}
 
 	public String toString(int threshold) {
-		return grid.toString(threshold);
+		return vfhg.toString(threshold);
 	}
 
 
 	public void forget() {
 		if((System.currentTimeMillis()-tms)>OBLIVISION_TIME_MS) {
 			tms = System.currentTimeMillis();
-			for (int i = 0; i < grid.dimension; ++i)
-				for (int j = 0; j < grid.dimension; ++j)
-					if(grid.cells[i * grid.dimension + j] > 1)
-						grid.cells[i * grid.dimension + j] -= 1;
+			for (int i = 0; i < vfhg.dimension; ++i)
+				for (int j = 0; j < vfhg.dimension; ++j)
+					if(vfhg.cells[i * vfhg.dimension + j] > 1)
+						vfhg.cells[i * vfhg.dimension + j] -= 1;
 		}
 	}
 
 	public static void main(String[] args) {
-		Grid grid = new Grid(5,0.1f);
-		grid.setIndicator(0.1f, 0.1f);
+//		Grid grid = new Grid(5,0.1f);
+//		grid.setIndicator(0.1f, 0.1f);
 
 		HistogramGrid2D hist = new HistogramGrid2D(5,5,10,1f,0.1f);
 

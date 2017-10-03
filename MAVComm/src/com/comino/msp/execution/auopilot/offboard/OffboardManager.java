@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.execution.offboard;
+package com.comino.msp.execution.auopilot.offboard;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -46,7 +46,7 @@ import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
-import com.comino.msp.execution.IOffboardListener;
+import com.comino.msp.execution.auopilot.IOffboardListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
@@ -230,7 +230,9 @@ public class OffboardManager implements Runnable {
 
 			case MODE_MULTI_COMBINED_LIST:
 				distance = nextTarget.position.distance(currentPos.position);
-				if(nextTarget.type == APSetPoint.TYPE_POSITION) {
+
+				switch(nextTarget.type) {
+				case APSetPoint.TYPE_POSITION:
 					sendPositionControlToVehice(nextTarget,currentPos);
 					if(distance < acceptance_radius) {
 						if(!worklist.isEmpty()) {
@@ -243,8 +245,8 @@ public class OffboardManager implements Runnable {
 							enableProperty.set(false);
 						}
 					}
-				}
-				else {
+					break;
+				case APSetPoint.TYPE_SPEED:
 					sendSpeedControlToVehice(nextTarget);
 					if((System.currentTimeMillis() - step) > nextTarget.tms || distance < acceptance_radius) {
 						if(!worklist.isEmpty()) {
@@ -257,8 +259,35 @@ public class OffboardManager implements Runnable {
 							enableProperty.set(false);
 						}
 					}
+					break;
+				case APSetPoint.TYPE_TAKEOFF:
+//					if(model.sys.isStatus(Status.MSP_LANDED)) {
+//						control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_TAKEOFF, -1, 0, 0, Float.NaN, Float.NaN, Float.NaN,
+//								model.hud.ag+1);
+//						try { Thread.sleep(1000); } catch (InterruptedException e) {	}
+//
+//						if(!worklist.isEmpty()) {
+//							step = System.currentTimeMillis();
+//							nextTarget.set(worklist.pop());
+//							System.err.println(nextTarget);
+//						}
+//						else {
+//							fireAction(distance,IOffboardListener.TYPE_LIST_COMPLETED);
+//							enableProperty.set(false);
+//						}
+//					}
+					break;
+				case APSetPoint.TYPE_LAND:
+					if(!model.sys.isStatus(Status.MSP_LANDED) && !model.sys.isStatus(Status.MSP_LANDING)) {
+							control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+									MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+									MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_ALTCTL, 0 );
+							control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
+							enableProperty.set(false);
+							fireAction(distance,IOffboardListener.TYPE_LIST_COMPLETED);
+					}
+					break;
 				}
-
 				break;
 			}
 
@@ -288,13 +317,14 @@ public class OffboardManager implements Runnable {
 		return worklist.size();
 	}
 
+
 	private void sendPositionControlToVehice( APSetPoint target, APSetPoint current) {
 
 		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 		cmd.target_component = 1;
 		cmd.target_system = 1;
 		cmd.type_mask = 0b000101111111000;
-//		cmd.type_mask = 0b000101111000000;
+		//		cmd.type_mask = 0b000101111000000;
 
 		// TODO: better: set Mask accordingly
 		if(target.position.x!=Float.NaN) cmd.x = target.position.x; else cmd.x = current.position.x;

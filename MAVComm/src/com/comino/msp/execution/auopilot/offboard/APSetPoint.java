@@ -1,4 +1,4 @@
-package com.comino.msp.execution.offboard;
+package com.comino.msp.execution.auopilot.offboard;
 
 import com.comino.msp.model.DataModel;
 
@@ -8,6 +8,8 @@ public class APSetPoint {
 
 	public static final int TYPE_POSITION = 1;
 	public static final int TYPE_SPEED    = 2;
+	public static final int TYPE_TAKEOFF  = 3;
+	public static final int TYPE_LAND     = 4;
 
 	public Vector3D_F32 speed;
 	public Vector3D_F32 position;
@@ -21,6 +23,11 @@ public class APSetPoint {
 		this.yaw         = 0;
 		this.tms         = 0;
 		this.type        = TYPE_POSITION;
+	}
+
+	public  APSetPoint(int type) {
+		this();
+		this.type = type;
 	}
 
 	public APSetPoint(DataModel current) {

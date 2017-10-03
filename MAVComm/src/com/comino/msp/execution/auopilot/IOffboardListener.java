@@ -1,6 +1,6 @@
-package com.comino.msp.execution;
+package com.comino.msp.execution.auopilot;
 
-import com.comino.msp.execution.offboard.APSetPoint;
+import com.comino.msp.execution.auopilot.offboard.APSetPoint;
 
 
 public interface IOffboardListener {
