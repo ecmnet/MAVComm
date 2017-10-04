@@ -1,26 +1,19 @@
 package com.comino.msp.execution.autopilot;
 
-import java.util.List;
-
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
-import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
-import com.comino.msp.execution.autopilot.old.APSetPoint;
 import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.utils.MSP3DUtils;
 
-import georegression.geometry.ConvertRotation3D_F32;
 import georegression.struct.point.Vector3D_F32;
-import georegression.struct.se.Se3_F32;
 
 public class Autopilot {
 
@@ -73,7 +66,12 @@ public class Autopilot {
 		if(enable) {
 			offboard.setCurrentAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
-			control.writeLogMessage(new LogMessage("[msp] Offboard activated", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+			control.writeLogMessage(new LogMessage("[msp] OffboardUpdater activated", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+			}
 		} else {
 			if(model.sys.isStatus(Status.MSP_MODE_OFFBOARD)) {
 				model.sys.autopilot = 0;
@@ -82,7 +80,7 @@ public class Autopilot {
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 			}
 			offboard.stop();
-			control.writeLogMessage(new LogMessage("[msp] Offboard stopped", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+			control.writeLogMessage(new LogMessage("[msp] OffboardUpdater stopped", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 		}
 	}
 
@@ -135,10 +133,10 @@ public class Autopilot {
 
 	public void waypoint_example(float length) {
 
-		offboard.setCurrentAsTarget(); offboard.start(OffboardManager.MODE_POSITION);
-		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+//		offboard.setCurrentAsTarget(); offboard.start(OffboardManager.MODE_POSITION);
+//		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+//				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+//				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 
 		////		APSetPoint start  = new APSetPoint(APSetPoint.TYPE_TAKEOFF);
 		////		offboard.addToList(start);

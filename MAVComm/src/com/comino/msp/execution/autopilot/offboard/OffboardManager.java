@@ -2,6 +2,7 @@ package com.comino.msp.execution.autopilot.offboard;
 
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
@@ -77,7 +78,7 @@ public class OffboardManager implements Runnable {
 		already_fired = false;
 
 		logger.writeLocalMsg("[msp] Offboard started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
-		model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, true);
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, true);
 
 		while(enabled) {
 			switch(mode) {
@@ -101,7 +102,7 @@ public class OffboardManager implements Runnable {
 			try { Thread.sleep(50); 	} catch (InterruptedException e) { }
 		}
 		listener = null;
-		model.sys.setStatus(Status.MSP_OFFBOARD_UPDATER_STARTED, false);
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, false);
 		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		already_fired = false;
 	}
