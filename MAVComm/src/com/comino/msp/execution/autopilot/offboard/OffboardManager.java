@@ -56,7 +56,7 @@ public class OffboardManager implements Runnable {
 		already_fired = false;
 	}
 
-	public void setTarget(DataModel model) {
+	public void setCurrentAsTarget() {
 		target.set(model.state.l_x, model.state.l_y, model.state.l_z);
 		already_fired = false;
 	}
