@@ -205,6 +205,7 @@ public class MAVLinkToModelParser {
 				model.sys.load_m = status.load / 4f;
 				model.sys.autopilot = (int)status.autopilot_mode;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
+				model.sys.setStatus(Status.MSP_JOY_ATTACHED,status.status);
 				model.sys.wifi_quality = status.wifi_quality/100f;
 			}
 		});
@@ -416,13 +417,6 @@ public class MAVLinkToModelParser {
 				model.home_state.g_lon = ref.longitude / 10000000f;
 				model.home_state.g_alt = (int) ((ref.altitude + 500) / 1000f);
 
-			}
-		});
-
-		registerListener(msg_manual_control.class, new IMAVLinkListener() {
-			@Override
-			public void received(Object o) {
-				model.sys.setStatus(Status.MSP_JOY_ATTACHED, true);
 			}
 		});
 
@@ -737,7 +731,7 @@ public class MAVLinkToModelParser {
 				msg_extended_sys_state sys = (msg_extended_sys_state) o;
 				model.sys.setStatus(Status.MSP_LANDED, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_ON_GROUND);
 				model.sys.setStatus(Status.MSP_INAIR, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_IN_AIR);
-	//			model.sys.setStatus(Status.MSP_MODE_LANDING, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_LANDING);
+				//			model.sys.setStatus(Status.MSP_MODE_LANDING, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_LANDING);
 				model.sys.setStatus(Status.MSP_MODE_TAKEOFF, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_TAKEOFF);
 			}
 		});

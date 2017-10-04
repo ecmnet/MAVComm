@@ -172,6 +172,10 @@ public class Status extends Segment {
 			status = (int) (status & ~(1<<box));
 	}
 
+	public void setStatus(int box, long val) {
+		setStatus(box, (val & (1<<box))!=0);
+	}
+
 	public boolean isStatus(int ...box) {
 		for(int b : box)
 			if((status & (1<<b))==0)
