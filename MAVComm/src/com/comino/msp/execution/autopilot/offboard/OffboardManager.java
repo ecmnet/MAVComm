@@ -77,7 +77,7 @@ public class OffboardManager implements Runnable {
 
 		already_fired = false;
 
-		logger.writeLocalMsg("[msp] Offboard started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
+		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, true);
 
 		while(enabled) {
@@ -103,7 +103,7 @@ public class OffboardManager implements Runnable {
 		}
 		listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, false);
-		logger.writeLocalMsg("[msp] Offboard stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
+		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		already_fired = false;
 	}
 
