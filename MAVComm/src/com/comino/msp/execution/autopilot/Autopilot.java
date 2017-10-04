@@ -66,7 +66,6 @@ public class Autopilot {
 		if(enable) {
 			offboard.setCurrentAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
-			control.writeLogMessage(new LogMessage("[msp] OffboardUpdater activated", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
@@ -80,7 +79,6 @@ public class Autopilot {
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 			}
 			offboard.stop();
-			control.writeLogMessage(new LogMessage("[msp] OffboardUpdater stopped", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 		}
 	}
 
