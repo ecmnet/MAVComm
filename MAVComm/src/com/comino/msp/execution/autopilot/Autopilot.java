@@ -46,8 +46,8 @@ public class Autopilot {
 
 		// Auto-Takeoff: Switch to Offboard as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED) && !model.sys.isStatus(Status.MSP_JOY_ATTACHED)) {
-				offboard.setTarget(model);
+			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+				offboard.setCurrentAsTarget();
 				offboard.start(OffboardManager.MODE_POSITION);
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
@@ -56,14 +56,34 @@ public class Autopilot {
 			}
 		});
 
+		// Stop offboard updater as soon as landed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (o,n) -> {
 			offboard.stop();
+			model.sys.autopilot = 0;
 		});
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {
 		Vector3D_F32 target = new Vector3D_F32(x,y,z);
 		offboard.setTarget(target);
+		offboard.start(OffboardManager.MODE_POSITION);
+	}
+
+	public void offboardPosHold(boolean enable) {
+		if(enable) {
+			offboard.setCurrentAsTarget();
+			offboard.start(OffboardManager.MODE_POSITION);
+			control.writeLogMessage(new LogMessage("[msp] Offboard activated", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+		} else {
+			if(model.sys.isStatus(Status.MSP_MODE_OFFBOARD)) {
+				model.sys.autopilot = 0;
+				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+			}
+			offboard.stop();
+			control.writeLogMessage(new LogMessage("[msp] Offboard stopped", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+		}
 	}
 
 	public void abort() {
@@ -106,16 +126,16 @@ public class Autopilot {
 			logger.writeLocalMsg("[msp] Circlemode activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 		else {
+			offboard.setTarget(circleCenter);
 			offboard.addListener((m,d) -> {
 				logger.writeLocalMsg("[msp] Circlemode stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			});
-			offboard.setTarget(circleCenter);
 		}
 	}
 
 	public void waypoint_example(float length) {
 
-		offboard.setTarget(model); offboard.start(OffboardManager.MODE_POSITION);
+		offboard.setCurrentAsTarget(); offboard.start(OffboardManager.MODE_POSITION);
 		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );

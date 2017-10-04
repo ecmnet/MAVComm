@@ -28,4 +28,8 @@ public interface MSP_AUTOCONTROL_MODE {
      * Execute a MSP mission (param3)
      */
     public final static int AUTO_MISSION = 4;
+    /**
+     * Controls offboard updater
+     */
+    public final static int OFFBOARD_UPDATER = 31;
 }

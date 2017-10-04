@@ -78,6 +78,9 @@
                <entry value="4" name="AUTO_MISSION">
                   <description>Execute a MSP mission (param3)</description>
               </entry>
+               <entry value="31" name="OFFBOARD_UPDATER">
+                  <description>Controls offboard updater</description>
+              </entry>
            </enum>
       </enums>
 
