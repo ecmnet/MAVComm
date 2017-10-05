@@ -23,6 +23,7 @@ public class WayPointTracker implements Runnable {
 		this.list    = new TreeMap<Long,Vector4D_F32>();
 		this.freezed = new TreeMap<Long,Vector4D_F32>();
 		this.model = model;
+		System.out.println("WaypointTracker initialized with length "+MAX_WAYPOINTS*RATE_MS / 1000 +" seconds");
 	}
 
 	public Entry<Long, Vector4D_F32> getWaypoint(long ago_ms) {
@@ -37,11 +38,15 @@ public class WayPointTracker implements Runnable {
 
 	public long freeze() {
 		freezed.clear();
-		freezed.putAll(list);
-		return freezed.lastEntry().getKey();
+		if(list.size()>0) {
+			freezed.putAll(list);
+			return freezed.lastEntry().getKey();
+		}
+		return 0;
 	}
 
 	public void unfreeze() {
+		list.clear();
 		freezed.clear();
 	}
 
@@ -59,7 +64,6 @@ public class WayPointTracker implements Runnable {
 		if(!enabled) {
 			enabled = true;
 			new Thread(this).start();
-			System.out.println("WaypointTracker started with length "+MAX_WAYPOINTS*RATE_MS / 1000 +" seconds");
 		}
 	}
 
@@ -87,7 +91,7 @@ public class WayPointTracker implements Runnable {
 			if(!list.isEmpty())
 				distance = MSP3DUtils.distance3D(waypoint, list.lastEntry().getValue());
 
-			if(distance > 0.1f || Float.isNaN(distance)) {
+			if((distance > 0.1f || Float.isNaN(distance)) && freezed.isEmpty()) {
 				if(list.size()>=MAX_WAYPOINTS)
 					list.pollFirstEntry();
 				list.put(tms, waypoint);

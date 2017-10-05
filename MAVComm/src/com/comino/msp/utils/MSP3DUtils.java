@@ -21,6 +21,10 @@ public class MSP3DUtils {
 		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 	}
 
+	public static Vector4D_F32 getCurrentVector4D(DataModel model) {
+		return new Vector4D_F32(model.state.l_x,model.state.l_y, model.state.l_z,model.state.h);
+	}
+
 	public static void convertModelToSe3_F32(DataModel model, Se3_F32 state) {
 		convertToSe3_F32(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.r, model.attitude.p, model.attitude.y, state);
 	}

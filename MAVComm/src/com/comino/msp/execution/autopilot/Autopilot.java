@@ -15,6 +15,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
@@ -100,9 +101,21 @@ public class Autopilot {
 	}
 
 	public void jumpback(float distance) {
-		//		APSetPoint target = new APSetPoint(model);
-		//		target.position.set(target.position.x-distance*(float)Math.cos(model.attitude.y), target.position.y-distance*(float)Math.sin(model.attitude.y), target.position.z);
-		//		offboard.setTarget(target.position);
+		Vector4D_F32 current = MSP3DUtils.getCurrentVector4D(model);
+		tracker.freeze();
+		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+		offboardPosHold(true);
+		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+		offboard.addListener((m,d) -> {
+			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
+			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
+				offboard.setTarget(e.getValue());
+			else {
+				offboardPosHold(false);
+				tracker.unfreeze();
+			}
+		});
+
 	}
 
 	// Circle mode
@@ -139,16 +152,16 @@ public class Autopilot {
 	}
 
 	public void waypoint_example(float length) {
-           logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
-           tracker.freeze();
-           offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
-           offboard.addListener((m,d) -> {
-        	        Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-        	        if(e!=null)
-				   offboard.setTarget(e.getValue());
-        	        else
-        	        	 tracker.unfreeze();
-			});
+		logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
+		tracker.freeze();
+		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+		offboard.addListener((m,d) -> {
+			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
+			if(e!=null)
+				offboard.setTarget(e.getValue());
+			else
+				tracker.unfreeze();
+		});
 
 
 	}
