@@ -115,7 +115,7 @@ public class Autopilot {
 				circleTarget.set(circleCenter);
 				circleDelta.set((float)Math.sin(inc)*radius, (float)Math.cos(inc)*radius, 0);
 				circleTarget.plusIP(circleDelta);
-				offboard.setTarget(circleTarget);
+				offboard.setTarget(circleTarget,inc);
 			});
 			offboard.setTarget(circleTarget);
 			offboard.start(OffboardManager.MODE_POSITION);

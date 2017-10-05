@@ -3,12 +3,12 @@ package com.comino.msp.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.comino.msp.execution.autopilot.old.APSetPoint;
 import com.comino.msp.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;
 import georegression.struct.EulerType;
 import georegression.struct.point.Vector3D_F32;
+import georegression.struct.point.Vector4D_F32;
 import georegression.struct.se.Se3_F32;
 
 public class MSP3DUtils {
@@ -16,6 +16,10 @@ public class MSP3DUtils {
 	public static final int ROLL  = 0;
 	public static final int PITCH = 1;
 	public static final int YAW   = 2;
+
+	public static float distance3D(Vector4D_F32 t, Vector4D_F32 c) {
+		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
+	}
 
 	public static void convertModelToSe3_F32(DataModel model, Se3_F32 state) {
 		convertToSe3_F32(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.r, model.attitude.p, model.attitude.y, state);
@@ -39,10 +43,10 @@ public class MSP3DUtils {
 		return v[YAW];
 	}
 
-	public static float getDirectionFromTargetXY(DataModel model,APSetPoint state) {
+	public static float getXYDirection(Vector4D_F32 target,Vector4D_F32 current) {
 
-		float dx = state.position.getX() - model.state.l_x;
-		float dy = state.position.getY() - model.state.l_y;
+		float dx = target.getX() - current.getX();
+		float dy = target.getY() - current.getY();
 
 		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
 		   return (float)Math.atan(dy/dx);

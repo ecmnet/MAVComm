@@ -3,14 +3,16 @@ package com.comino.msp.execution.autopilot.offboard;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.point.Vector3D_F32;
+import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
@@ -24,11 +26,11 @@ public class OffboardManager implements Runnable {
 
 	private boolean					enabled				= false;
 	private int						mode					= 0;
-	private Vector3D_F32				target				= null;
-	private Vector3D_F32				current				= null;
+	private Vector4D_F32				target				= null;
+	private Vector4D_F32				current				= null;
 
-	private float		acceptance_radios_pos			= 0.2f;
-	private float		acceptance_radios_speed			= 0.05f;
+	private float		acceptance_radius_pos			= 0.2f;
+	private float		acceptance_radius_speed			= 0.05f;
 	private boolean     already_fired				    = false;
 
 
@@ -36,8 +38,8 @@ public class OffboardManager implements Runnable {
 		this.control        = control;
 		this.model          = control.getCurrentModel();
 		this.logger         = MSPLogger.getInstance();
-		this.target         = new Vector3D_F32();
-		this.current        = new Vector3D_F32();
+		this.target         = new Vector4D_F32();
+		this.current        = new Vector4D_F32();
 	}
 
 	public void start(int m) {
@@ -53,12 +55,22 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setTarget(Vector3D_F32 t) {
+		target.set(t.x,t.y,t.z,0);
+		already_fired = false;
+	}
+
+	public void setTarget(Vector3D_F32 t, float w) {
+		target.set(t.x,t.y,t.z,w);
+		already_fired = false;
+	}
+
+	public void setTarget(Vector4D_F32 t) {
 		target.set(t);
 		already_fired = false;
 	}
 
 	public void setCurrentAsTarget() {
-		target.set(model.state.l_x, model.state.l_y, model.state.l_z);
+		target.set(model.state.l_x, model.state.l_y, model.state.l_z, model.state.h);
 		already_fired = false;
 	}
 
@@ -83,23 +95,25 @@ public class OffboardManager implements Runnable {
 		while(enabled) {
 			switch(mode) {
 			case MODE_POSITION:
-				current.set(model.state.l_x, model.state.l_y, model.state.l_z);
-				sendPositionControlToVehice(target,current);
-				delta = target.distance(current);
-				if(delta < acceptance_radios_pos) {
+				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.state.h);
+				sendPositionControlToVehice(target);
+				delta = MSP3DUtils.distance3D(target,current);
+				if(delta < acceptance_radius_pos) {
 					fireAction(model, delta);
 				}
 				break;
 			case MODE_SPEED:
-				current.set(model.state.l_vx, model.state.l_vy, model.state.l_vz);
+				current.set(model.state.l_vx, model.state.l_vy, model.state.l_vz,model.state.vh);
 				sendSpeedControlToVehice(target);
-				delta = target.distance(current);
-				if(delta < acceptance_radios_speed) {
+				delta = MSP3DUtils.distance3D(target,current);
+				if(delta < acceptance_radius_speed) {
 					fireAction(model, delta);
 				}
 				break;
 			}
 			try { Thread.sleep(50); 	} catch (InterruptedException e) { }
+
+			publishSLAM(model.hud.s,target,current);
 		}
 		listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, false);
@@ -107,37 +121,45 @@ public class OffboardManager implements Runnable {
 		already_fired = false;
 	}
 
-	private void sendPositionControlToVehice(Vector3D_F32 target, Vector3D_F32 current) {
+	private void sendPositionControlToVehice(Vector4D_F32 target) {
 
 		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 		cmd.target_component = 1;
-		cmd.target_system = 1;
-		cmd.type_mask = 0b000101111111000;
-		//		cmd.type_mask = 0b000101111000000;
+		cmd.target_system    = 1;
+		cmd.type_mask        = 0b000101111111000;
 
-		// TODO: better: set Mask accordingly
-		if(target.x!=Float.NaN) cmd.x = target.x; else cmd.x = current.x;
-		if(target.y!=Float.NaN) cmd.y = target.y; else cmd.y = current.y;
-		if(target.z!=Float.NaN) cmd.z = target.z; else cmd.z = current.z;
+		cmd.x   = target.x;
+		cmd.y   = target.y;
+		cmd.z   = target.z;
+		cmd.yaw = target.w;
 
-		//	cmd.yaw = MSPConvertUtils.getDirectionFromTargetXY(model,target);
+		if(target.x==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000000001;
+		if(target.y==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000000010;
+		if(target.z==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000000100;
+		if(target.w==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000010000000000;
+
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
 		if(!control.sendMAVLinkMessage(cmd))
 			enabled = false;
 	}
 
-	private void sendSpeedControlToVehice(Vector3D_F32 target) {
+	private void sendSpeedControlToVehice(Vector4D_F32 target) {
 
 		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 		cmd.target_component = 1;
-		cmd.target_system = 1;
-		cmd.type_mask = 0b000101111000111;
+		cmd.target_system    = 1;
+		cmd.type_mask        = 0b000011111000111;
 
-		// TODO: better: set Mask accordingly
-		if(target.x!=Float.NaN) cmd.vx = target.x; else cmd.vx = 0;
-		if(target.y!=Float.NaN) cmd.vy = target.y; else cmd.vy = 0;
-		if(target.z!=Float.NaN) cmd.vz = target.z; else cmd.vz = 0;
+		cmd.vx       = target.x;
+		cmd.vy       = target.y;
+		cmd.vz       = target.z;
+		cmd.yaw_rate = target.w;
+
+		if(target.x==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000001000;
+		if(target.y==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000010000;
+		if(target.z==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000100000;
+		if(target.w==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000100000000000;
 
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
@@ -152,4 +174,14 @@ public class OffboardManager implements Runnable {
 		}
 	}
 
+	private void publishSLAM(float speed, Vector4D_F32 target, Vector4D_F32 current) {
+		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+		if(speed>0.05) {
+			slam.px = target.getX();
+			slam.py = target.getY();
+			slam.pd = MSP3DUtils.getXYDirection(target, current);
+			slam.pv = speed;
+		}
+		control.sendMAVLinkMessage(slam);
+	}
 }
