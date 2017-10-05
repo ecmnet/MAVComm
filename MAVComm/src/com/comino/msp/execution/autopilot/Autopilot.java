@@ -141,9 +141,9 @@ public class Autopilot {
 	public void waypoint_example(float length) {
            logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
            tracker.freeze();
-           offboard.setTarget(tracker.getLatestFreezedWaypoint().getValue());
+           offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
            offboard.addListener((m,d) -> {
-        	        Entry<Long, Vector4D_F32> e = tracker.getLatestFreezedWaypoint();
+        	        Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
         	        if(e!=null)
 				   offboard.setTarget(e.getValue());
         	        else

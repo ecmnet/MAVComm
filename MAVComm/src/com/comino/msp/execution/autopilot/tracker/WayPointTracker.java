@@ -13,10 +13,9 @@ public class WayPointTracker implements Runnable {
 	private static final int MAX_WAYPOINTS     = 100;
 	private static final int RATE_MS           = 100;
 
-	private final TreeMap<Long,Vector4D_F32> list;
-	private final DataModel                 model;
-
-	private TreeMap<Long,Vector4D_F32>    freezed;
+	private final TreeMap<Long,Vector4D_F32>  list;
+	private final TreeMap<Long,Vector4D_F32>  freezed;
+	private final DataModel                   model;
 
 	private boolean                       enabled = false;
 
@@ -30,6 +29,12 @@ public class WayPointTracker implements Runnable {
 		return list.floorEntry(model.sys.getSynchronizedPX4Time_us()/1000-ago_ms);
 	}
 
+	public Entry<Long, Vector4D_F32> pollLastWaypoint() {
+		if(list.size()>0)
+			return list.pollLastEntry();
+		return null;
+	}
+
 	public long freeze() {
 		freezed.clear();
 		freezed.putAll(list);
@@ -40,10 +45,14 @@ public class WayPointTracker implements Runnable {
 		freezed.clear();
 	}
 
-	public Entry<Long, Vector4D_F32> getLatestFreezedWaypoint() {
+	public Entry<Long, Vector4D_F32> pollLastFreezedWaypoint() {
 		if(freezed.size()>0)
 			return freezed.pollLastEntry();
 		return null;
+	}
+
+	public TreeMap<Long, Vector4D_F32> getFreezed() {
+		return freezed;
 	}
 
 	public void start() {
@@ -91,7 +100,6 @@ public class WayPointTracker implements Runnable {
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 		}
 	}
-
 
 	public String toString() {
 		return list.toString();
