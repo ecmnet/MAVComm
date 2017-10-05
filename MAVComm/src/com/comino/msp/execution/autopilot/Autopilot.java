@@ -112,10 +112,10 @@ public class Autopilot {
 				offboard.setTarget(e.getValue());
 			else {
 				offboardPosHold(false);
+				logger.writeLocalMsg("[msp] JumpBack execution finalized",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 				tracker.unfreeze();
 			}
 		});
-
 	}
 
 	// Circle mode
