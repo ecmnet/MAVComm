@@ -106,7 +106,6 @@ public class MSPCommander {
 			break;
 
 		case MSP_AUTOCONTROL_MODE.WAYPOINT_MODE:
-			if(enable)
 				autopilot.waypoint_example(5f);
 			break;
 		case MSP_AUTOCONTROL_MODE.AUTO_MISSION:

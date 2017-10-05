@@ -16,6 +16,8 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
+	private static final int UPDATE_RATE                 = 50;
+
 	public static final int MODE_POSITION	 		    = 1;
 	public static final int MODE_SPEED	 		        = 2;
 
@@ -85,13 +87,14 @@ public class OffboardManager implements Runnable {
 	@Override
 	public void run() {
 
-		float delta;
+		float delta; long tms; long sleep_tms = 0;
 
 		already_fired = false;
 
 		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, true);
 
+		tms = model.sys.getSynchronizedPX4Time_us();
 		while(enabled) {
 			switch(mode) {
 			case MODE_POSITION:
@@ -111,13 +114,19 @@ public class OffboardManager implements Runnable {
 				}
 				break;
 			}
-			try { Thread.sleep(50); 	} catch (InterruptedException e) { }
+
+			sleep_tms = UPDATE_RATE - (model.sys.getSynchronizedPX4Time_us() - tms ) / 1000;
+			tms = model.sys.getSynchronizedPX4Time_us();
+
+			if(sleep_tms> 0 && enabled)
+				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 
 			publishSLAM(model.hud.s,target,current);
 		}
 		listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, false);
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
+		publishSLAM(0,target,current);
 		already_fired = false;
 	}
 

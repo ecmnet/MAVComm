@@ -1,5 +1,7 @@
 package com.comino.msp.execution.autopilot;
 
+import java.util.Map.Entry;
+
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
@@ -7,6 +9,7 @@ import org.mavlink.messages.MAV_SEVERITY;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
+import com.comino.msp.execution.autopilot.tracker.WayPointTracker;
 import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -14,6 +17,7 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
 import georegression.struct.point.Vector3D_F32;
+import georegression.struct.point.Vector4D_F32;
 
 public class Autopilot {
 
@@ -23,6 +27,7 @@ public class Autopilot {
 	private DataModel               model    = null;
 	private MSPLogger               logger   = null;
 	private IMAVController          control  = null;
+	private WayPointTracker         tracker  = null;
 
 
 	public static Autopilot getInstance(IMAVController control) {
@@ -32,7 +37,9 @@ public class Autopilot {
 	}
 
 	private Autopilot(IMAVController control) {
+
 		this.offboard = new OffboardManager(control);
+		this.tracker  = new WayPointTracker(control.getCurrentModel());
 		this.control  = control;
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
@@ -54,6 +61,8 @@ public class Autopilot {
 			offboard.stop();
 			model.sys.autopilot = 0;
 		});
+
+		tracker.start();
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {
@@ -115,7 +124,7 @@ public class Autopilot {
 				circleTarget.set(circleCenter);
 				circleDelta.set((float)Math.sin(inc)*radius, (float)Math.cos(inc)*radius, 0);
 				circleTarget.plusIP(circleDelta);
-				offboard.setTarget(circleTarget,inc);
+				offboard.setTarget(circleTarget,0);
 			});
 			offboard.setTarget(circleTarget);
 			offboard.start(OffboardManager.MODE_POSITION);
@@ -130,31 +139,17 @@ public class Autopilot {
 	}
 
 	public void waypoint_example(float length) {
+           logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
+           tracker.freeze();
+           offboard.setTarget(tracker.getLatestFreezedWaypoint().getValue());
+           offboard.addListener((m,d) -> {
+        	        Entry<Long, Vector4D_F32> e = tracker.getLatestFreezedWaypoint();
+        	        if(e!=null)
+				   offboard.setTarget(e.getValue());
+        	        else
+        	        	 tracker.unfreeze();
+			});
 
-//		offboard.setCurrentAsTarget(); offboard.start(OffboardManager.MODE_POSITION);
-//		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-//				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-//				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-
-		////		APSetPoint start  = new APSetPoint(APSetPoint.TYPE_TAKEOFF);
-		////		offboard.addToList(start);
-		//
-		//		APSetPoint target  = new APSetPoint(model);
-		//		target.position.z = -8;
-		//	//	for(int z=0;z<5;z++) {
-		//		target.position.x = target.position.x+length;
-		//		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,new APSetPoint(model),target));
-		//		target.position.y = target.position.y+length;
-		//		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
-		//		target.position.x = target.position.x-length;
-		//		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
-		//		target.position.y = target.position.y-length;
-		//		offboard.addAllToList(APSetPointUtils.interpolateCombinedLinear(30,2000,offboard.getLastAdded(),target));
-		//	//	}
-		//		APSetPoint land  = new APSetPoint(APSetPoint.TYPE_LAND);
-		//		offboard.addToList(land);
-		//
-		//		offboard.executeList();
 
 	}
 
