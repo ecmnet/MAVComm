@@ -40,7 +40,7 @@ public class Autopilot {
 	private Autopilot(IMAVController control) {
 
 		this.offboard = new OffboardManager(control);
-		this.tracker  = new WayPointTracker(control.getCurrentModel());
+		this.tracker  = new WayPointTracker(control);
 		this.control  = control;
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
@@ -57,13 +57,16 @@ public class Autopilot {
 			}
 		});
 
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_RTL, StatusManager.EDGE_RISING, (o,n) -> {
+			offboard.stop();
+			model.sys.autopilot = 0;
+		});
+
 		// Stop offboard updater as soon as landed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (o,n) -> {
 			offboard.stop();
 			model.sys.autopilot = 0;
 		});
-
-		tracker.start();
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {
@@ -101,11 +104,14 @@ public class Autopilot {
 	}
 
 	public void jumpback(float distance) {
+		if(!tracker.freeze())
+			return;
 		Vector4D_F32 current = MSP3DUtils.getCurrentVector4D(model);
-		tracker.freeze();
 		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+
 		offboardPosHold(true);
 		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+
 		offboard.addListener((m,d) -> {
 			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
 			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
@@ -152,15 +158,19 @@ public class Autopilot {
 	}
 
 	public void waypoint_example(float length) {
+		if(!tracker.freeze())
+			return;
 		logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
-		tracker.freeze();
 		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+		offboard.start(OffboardManager.MODE_POSITION);
 		offboard.addListener((m,d) -> {
 			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
 			if(e!=null)
 				offboard.setTarget(e.getValue());
-			else
+			else {
 				tracker.unfreeze();
+				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			}
 		});
 
 
