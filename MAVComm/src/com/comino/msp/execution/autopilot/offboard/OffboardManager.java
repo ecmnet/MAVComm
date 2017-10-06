@@ -1,14 +1,20 @@
 package com.comino.msp.execution.autopilot.offboard;
 
+import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
+import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
+import com.comino.mav.mavlink.MAV_CUST_MODE;
+import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
+import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -16,7 +22,9 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final int UPDATE_RATE                 = 50;
+	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
+
+	private static final int UPDATE_RATE                 = 100;
 
 	public static final int MODE_POSITION	 		    = 1;
 	public static final int MODE_SPEED	 		        = 2;
@@ -42,6 +50,13 @@ public class OffboardManager implements Runnable {
 		this.logger         = MSPLogger.getInstance();
 		this.target         = new Vector4D_F32();
 		this.current        = new Vector4D_F32();
+
+		// If offboard enabled by RC switch -> set current Position as target
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_OFFBOARD, StatusManager.EDGE_RISING, (o,n) -> {
+			if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+				setCurrentAsTarget();
+			}
+		});
 	}
 
 	public void start(int m) {
@@ -95,7 +110,13 @@ public class OffboardManager implements Runnable {
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, true);
 
 		tms = model.sys.getSynchronizedPX4Time_us();
+
+		//		// Check bottom clearance for minimal altitude above ground. Abort offboard if too low
+		//		if(model.hud.ar < MIN_REL_ALTITUDE)
+		//			enabled = false;
+
 		while(enabled) {
+
 			switch(mode) {
 			case MODE_POSITION:
 				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.state.h);

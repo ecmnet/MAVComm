@@ -45,25 +45,30 @@ public class StatusManager implements Runnable {
 	}
 
 
-	public void addListener(byte type, int mask, int edge, IMSPStatusChangedListener listener) {
+	private void addListener(byte type, int mask, int timeout_ms, int edge, IMSPStatusChangedListener listener) {
 		StatusListenerEntry entry = new StatusListenerEntry();
 		entry.listener    = listener;
 		entry.type        = type;
 		entry.mask        = mask;
+		entry.timeout_ms  = timeout_ms;
 		entry.state       = edge;
 		list.add(entry);
 	}
 
+	public void addListener(byte type, int box, int edge, IMSPStatusChangedListener listener) {
+		addListener(type, 1 << box, 0, edge, listener);
+	}
+
 	public void addListener(byte type, int box, IMSPStatusChangedListener listener) {
-		addListener(type, 1 << box, EDGE_BOTH, listener);
+		addListener(type, 1 << box, 0, EDGE_BOTH, listener);
 	}
 
 	public void addListener(int box, IMSPStatusChangedListener listener) {
-		addListener(TYPE_PX4_STATUS, 1 << box, EDGE_BOTH, listener);
+		addListener(TYPE_PX4_STATUS, 1 << box, 0, EDGE_BOTH, listener);
 	}
 
 	public void addListener(IMSPStatusChangedListener listener) {
-		addListener(TYPE_PX4_STATUS, MASK_ALL, EDGE_BOTH, listener);
+		addListener(TYPE_PX4_STATUS, MASK_ALL, 0, EDGE_BOTH, listener);
 	}
 
 	public void removeAll() {
@@ -75,16 +80,15 @@ public class StatusManager implements Runnable {
 
 		while(true) {
 
-			try { Thread.sleep(50); } catch(Exception e) { }
+			try { Thread.sleep(20); } catch(Exception e) { }
 
 			status_current.set(model.sys);
 
 			if (status_current.isStatus(Status.MSP_ARMED))
 				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
-			if(status_old.isEqual(status_current)) {
+			if(status_old.isEqual(status_current))
 				continue;
-			}
 
 			if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
@@ -100,16 +104,19 @@ public class StatusManager implements Runnable {
 						case EDGE_BOTH:
 							if(status_current.isStatusChanged(status_old, entry.mask)) {
 								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
 							}
 							break;
 						case EDGE_RISING:
 							if(status_current.isStatusChanged(status_old, entry.mask, true)) {
 								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
 							}
 							break;
 						case EDGE_FALLING:
 							if(status_current.isStatusChanged(status_old, entry.mask, false)) {
 								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
 							}
 							break;
 						}
@@ -122,6 +129,7 @@ public class StatusManager implements Runnable {
 					case TYPE_MSP_AUTOPILOT:
 						if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
 							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
 					}
@@ -137,8 +145,10 @@ public class StatusManager implements Runnable {
 	private class StatusListenerEntry {
 
 		public IMSPStatusChangedListener	listener = null;
-		public int							mask    = MASK_ALL;
+		public int							mask     = MASK_ALL;
 		public byte                         type     = TYPE_PX4_STATUS;
+		public long                   last_triggered = 0;
+		public int                        timeout_ms = 0;
 		public int                          state    = EDGE_BOTH;
 	}
 }
