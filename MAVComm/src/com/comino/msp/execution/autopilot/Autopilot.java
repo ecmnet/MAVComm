@@ -47,9 +47,9 @@ public class Autopilot {
 
 		// Auto-Takeoff: Switch to Offboard as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
+			offboard.setCurrentAsTarget();
+			offboard.start(OffboardManager.MODE_POSITION);
 			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
-				offboard.setCurrentAsTarget();
-				offboard.start(OffboardManager.MODE_POSITION);
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
