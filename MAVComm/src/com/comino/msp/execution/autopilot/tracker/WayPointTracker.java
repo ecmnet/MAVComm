@@ -14,7 +14,7 @@ public class WayPointTracker implements Runnable {
 
 	private static final int MIN_FREEZE_WP     = 3;
 
-	private static final int MAX_WAYPOINTS     = 100;
+	private static final int MAX_WAYPOINTS     = 50;
 	private static final int RATE_MS           = 100;
 
 	private final TreeMap<Long,Vector4D_F32>  list;
@@ -27,7 +27,7 @@ public class WayPointTracker implements Runnable {
 		this.list    = new TreeMap<Long,Vector4D_F32>();
 		this.freezed = new TreeMap<Long,Vector4D_F32>();
 		this.model = control.getCurrentModel();
-		System.out.println("WaypointTracker initialized with length "+MAX_WAYPOINTS*RATE_MS / 1000 +" seconds");
+		System.out.println("WaypointTracker initialized ( max. duration: "+MAX_WAYPOINTS*RATE_MS / 1000 +" seconds)");
 
 		control.getStatusManager().addListener(Status.MSP_LANDED, (o,n) -> {
 			if(n.isStatus(Status.MSP_LANDED))

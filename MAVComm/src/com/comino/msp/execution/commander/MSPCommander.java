@@ -108,7 +108,7 @@ public class MSPCommander {
 				autopilot.waypoint_example(5f);
 			break;
 		case MSP_AUTOCONTROL_MODE.AUTO_MISSION:
-			     autopilot.jumpback(1f);
+			     autopilot.jumpback(0.5f);
 			break;
 		case MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER:
 				autopilot.offboardPosHold(enable);
