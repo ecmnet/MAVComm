@@ -588,7 +588,8 @@ public class MAVLinkToModelParser {
 
 				model.rc.rssi = (short) (rc.rssi);
 
-				model.sys.setStatus(Status.MSP_RC_ATTACHED, (model.rc.rssi > 0));
+				if(!model.sys.isStatus(Status.MSP_SITL))
+					model.sys.setStatus(Status.MSP_RC_ATTACHED, (model.rc.rssi > 0));
 
 				model.rc.s0  = rc.chan1_raw < 65534 ? (short) rc.chan1_raw : 1500;
 				model.rc.s1  = rc.chan2_raw < 65534 ? (short) rc.chan2_raw : 1500;
@@ -737,7 +738,7 @@ public class MAVLinkToModelParser {
 				msg_extended_sys_state sys = (msg_extended_sys_state) o;
 				model.sys.setStatus(Status.MSP_LANDED, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_ON_GROUND);
 				model.sys.setStatus(Status.MSP_INAIR, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_IN_AIR);
-	//			model.sys.setStatus(Status.MSP_MODE_LANDING, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_LANDING);
+				//			model.sys.setStatus(Status.MSP_MODE_LANDING, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_LANDING);
 				model.sys.setStatus(Status.MSP_MODE_TAKEOFF, sys.landed_state == MAV_LANDED_STATE.MAV_LANDED_STATE_TAKEOFF);
 			}
 		});
@@ -827,9 +828,11 @@ public class MAVLinkToModelParser {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
 		}
 
-		if (checkTimeOut(model.rc.tms, TIMEOUT_RC_ATTACHED)) {
-			model.sys.setStatus(Status.MSP_RC_ATTACHED, (false));
-			model.rc.rssi = 0;
+		if(!model.sys.isStatus(Status.MSP_SITL)) {
+			if (checkTimeOut(model.rc.tms, TIMEOUT_RC_ATTACHED)) {
+				model.sys.setStatus(Status.MSP_RC_ATTACHED, (false));
+				model.rc.rssi = 0;
+			}
 		}
 
 		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {

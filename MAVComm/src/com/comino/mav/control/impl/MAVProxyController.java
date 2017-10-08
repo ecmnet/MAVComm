@@ -85,6 +85,8 @@ public class MAVProxyController implements IMAVMSPController {
 		model = new DataModel();
 		status_manager = new StatusManager(model);
 
+		model.sys.setStatus(Status.MSP_SITL, sitl);
+
 		if(sitl) {
 			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14556, 14550);
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
@@ -96,7 +98,7 @@ public class MAVProxyController implements IMAVMSPController {
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
 			    comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			else
-		    	comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
+		      	comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			comm.open();
 		//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
 			try {

@@ -39,6 +39,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
 import com.comino.mav.control.IMAVController;
+import com.comino.msp.model.segment.Status;
 
 
 public class MAVUdpController extends MAVController implements IMAVController, Runnable {
@@ -54,7 +55,6 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		this.bindPort = bindPort;
 		System.out.println("UDP Controller loaded ("+peerAddress+":"+peerPort+")");
 		comm = MAVUdpCommNIO3.getInstance(model, peerAddress,peerPort, bindPort);
-
 	}
 
 	@Override
@@ -84,6 +84,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 	public void run() {
 		while(connect) {
 			try {
+				model.sys.setStatus(Status.MSP_SITL, isSITL);
 				Thread.sleep(1000);
 				if(!comm.isConnected()) {
 					comm.close(); Thread.sleep(100); comm.open();

@@ -50,6 +50,7 @@ public class Status extends Segment {
 	public static final int MSP_RC_ATTACHED					= 3;
 	public static final int MSP_JOY_ATTACHED			        = 4;
 	public static final int MSP_OFFBOARD_UPDATER_STARTED     = 5;
+	public static final int MSP_SITL                         = 6;
 
 	public static final int MSP_ARMED						= 8;
 	public static final int MSP_MODE_MANUAL			        = 9;

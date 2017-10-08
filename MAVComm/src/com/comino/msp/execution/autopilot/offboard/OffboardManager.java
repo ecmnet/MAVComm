@@ -143,6 +143,9 @@ public class OffboardManager implements Runnable {
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 
 			publishSLAM(model.hud.s,target,current);
+
+			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
+
 		}
 		listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, false);
