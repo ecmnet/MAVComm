@@ -42,6 +42,7 @@ public class OffboardManager implements Runnable {
 	private float		acceptance_radius_pos			= 0.2f;
 	private float		acceptance_radius_speed			= 0.05f;
 	private boolean     already_fired				    = false;
+	private boolean     valid_setpoint                   = false;
 
 
 	public OffboardManager(IMAVController control) {
@@ -53,7 +54,7 @@ public class OffboardManager implements Runnable {
 
 		// If offboard enabled by RC switch -> set current Position as target
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_OFFBOARD, StatusManager.EDGE_RISING, (o,n) -> {
-			if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+			if(model.sys.isStatus(Status.MSP_RC_ATTACHED) || model.sys.isStatus(Status.MSP_SITL)) {
 				setCurrentAsTarget();
 			}
 		});
@@ -73,21 +74,24 @@ public class OffboardManager implements Runnable {
 
 	public void setTarget(Vector3D_F32 t) {
 		target.set(t.x,t.y,t.z,0);
+		valid_setpoint = true;
 		already_fired = false;
 	}
 
 	public void setTarget(Vector3D_F32 t, float w) {
 		target.set(t.x,t.y,t.z,w);
+		valid_setpoint = true;
 		already_fired = false;
 	}
 
 	public void setTarget(Vector4D_F32 t) {
 		target.set(t);
+		valid_setpoint = true;
 		already_fired = false;
 	}
 
 	public void setCurrentAsTarget() {
-		target.set(model.state.l_x, model.state.l_y, model.state.l_z, model.state.h);
+		target.set(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.y);
 		already_fired = false;
 	}
 
@@ -104,7 +108,7 @@ public class OffboardManager implements Runnable {
 
 		float delta; long tms; long sleep_tms = 0;
 
-		already_fired = false;
+		already_fired = false; valid_setpoint = false;
 
 		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, true);
@@ -116,6 +120,9 @@ public class OffboardManager implements Runnable {
 		//			enabled = false;
 
 		while(enabled) {
+
+			if(!valid_setpoint)
+				setCurrentAsTarget();
 
 			switch(mode) {
 			case MODE_POSITION:
@@ -151,7 +158,7 @@ public class OffboardManager implements Runnable {
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER, false);
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		publishSLAM(0,target,current);
-		already_fired = false;
+		already_fired = false; valid_setpoint = false;
 	}
 
 	private void sendPositionControlToVehice(Vector4D_F32 target) {

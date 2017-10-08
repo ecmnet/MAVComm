@@ -32,8 +32,8 @@ public class WayPointTracker implements Runnable {
 		control.getStatusManager().addListener(Status.MSP_LANDED, (o,n) -> {
 			if(n.isStatus(Status.MSP_LANDED))
 				stop();
-		//	else
-		//		start();
+			else
+				start();
 		});
 	}
 
@@ -98,7 +98,7 @@ public class WayPointTracker implements Runnable {
 
 		while(enabled) {
 			tms = model.sys.getSynchronizedPX4Time_us()/1000;
-			Vector4D_F32 waypoint = new Vector4D_F32(model.state.l_x, model.state.l_y, model.state.l_z, model.state.h);
+			Vector4D_F32 waypoint = new Vector4D_F32(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.y);
 
 			if(!list.isEmpty())
 				distance = MSP3DUtils.distance3D(waypoint, list.lastEntry().getValue());

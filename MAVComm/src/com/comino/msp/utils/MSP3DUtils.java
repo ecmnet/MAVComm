@@ -22,7 +22,7 @@ public class MSP3DUtils {
 	}
 
 	public static Vector4D_F32 getCurrentVector4D(DataModel model) {
-		return new Vector4D_F32(model.state.l_x,model.state.l_y, model.state.l_z,model.state.h);
+		return new Vector4D_F32(model.state.l_x,model.state.l_y, model.state.l_z, model.attitude.y);
 	}
 
 	public static void convertModelToSe3_F32(DataModel model, Se3_F32 state) {
