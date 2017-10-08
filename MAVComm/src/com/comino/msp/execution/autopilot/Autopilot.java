@@ -106,10 +106,15 @@ public class Autopilot {
 	public void jumpback(float distance) {
 		if(!tracker.freeze())
 			return;
-		Vector4D_F32 current = MSP3DUtils.getCurrentVector4D(model);
-		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 
-		offboardPosHold(true);
+		Vector4D_F32 current = MSP3DUtils.getCurrentVector4D(model);
+
+		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+		offboard.start(OffboardManager.MODE_POSITION);
+		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+
 		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
 
 		offboard.addListener((m,d) -> {
@@ -117,8 +122,11 @@ public class Autopilot {
 			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
 				offboard.setTarget(e.getValue());
 			else {
-				offboardPosHold(false);
+				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 				logger.writeLocalMsg("[msp] JumpBack execution finalized",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+				offboard.stop();
 				tracker.unfreeze();
 			}
 		});

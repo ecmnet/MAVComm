@@ -52,11 +52,9 @@ public class OffboardManager implements Runnable {
 		this.target         = new Vector4D_F32();
 		this.current        = new Vector4D_F32();
 
-		// If offboard enabled by RC switch -> set current Position as target
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_OFFBOARD, StatusManager.EDGE_RISING, (o,n) -> {
-			if(model.sys.isStatus(Status.MSP_RC_ATTACHED) || model.sys.isStatus(Status.MSP_SITL)) {
-				setCurrentAsTarget();
-			}
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS,
+				    Status.MSP_MODE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
+			valid_setpoint = false;
 		});
 	}
 
@@ -216,7 +214,7 @@ public class OffboardManager implements Runnable {
 
 	private void publishSLAM(float speed, Vector4D_F32 target, Vector4D_F32 current) {
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-		if(speed>0.05) {
+		if(speed>0.05 && model.sys.isStatus(Status.MSP_MODE_OFFBOARD)) {
 			slam.px = target.getX();
 			slam.py = target.getY();
 			slam.pd = MSP3DUtils.getXYDirection(target, current);
