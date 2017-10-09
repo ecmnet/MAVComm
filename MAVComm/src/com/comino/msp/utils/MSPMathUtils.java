@@ -35,9 +35,50 @@ package com.comino.msp.utils;
 
 public class MSPMathUtils {
 
-	public static final double toRad   = Math.PI / 180.0;
-	public static final double fromRad = 180.0 / Math.PI ;
-	private static final double CONSTANTS_RADIUS_OF_EARTH  = 6371000.0;
+	public static final double  DBL_EPSILON 					= 2.2204460492503131e-16d;
+
+	public static final double 	toRad   					  	= Math.PI / 180.0;
+	public static final double 	fromRad 					  	= 180.0 / Math.PI ;
+
+	private static final double 	CONSTANTS_RADIUS_OF_EARTH  	= 6371000.0;
+	private static  Reference   	ref                          = new Reference();
+
+
+	public static void map_projection_init(double lat0, double lon0) {
+		ref.lat_rad = lat0 * toRad;
+		ref.lon_rad = lon0 * toRad;
+		ref.sin_lat = Math.sin(ref.lat_rad);
+		ref.cos_lat = Math.sin(ref.lat_rad);
+		ref.init    = true;
+	}
+
+	public static boolean map_projection_reproject(float x, float y, float z, double[] latlon) {
+		if(!ref.init)
+			return false;
+
+		double x_rad = (double)x / CONSTANTS_RADIUS_OF_EARTH;
+		double y_rad = (double)y / CONSTANTS_RADIUS_OF_EARTH;
+		double c = Math.sqrt(x_rad * x_rad + y_rad * y_rad);
+		double sin_c = Math.sin(c);
+		double cos_c = Math.cos(c);
+
+		double lat_rad;
+		double lon_rad;
+
+		if (Math.abs(c) > DBL_EPSILON) {
+			lat_rad = Math.asin(cos_c * ref.sin_lat + (x_rad * sin_c * ref.cos_lat) / c);
+			lon_rad = (ref.lon_rad + Math.atan2(y_rad * sin_c, c * ref.cos_lat * cos_c - x_rad * ref.sin_lat * sin_c));
+		} else {
+			lat_rad = ref.lat_rad;
+			lon_rad = ref.lon_rad;
+		}
+
+		latlon[0] = lat_rad * fromRad;
+		latlon[1] = lon_rad * fromRad;
+
+		return true;
+	}
+
 
 	public static float getDistance(double lat1, double lon1, double lat2, double lon2) {
 
@@ -77,4 +118,16 @@ public class MSPMathUtils {
 		return rotated;
 	}
 
+	private static class Reference {
+		double lat_rad = 0;
+		double lon_rad = 0;
+		double sin_lat = 0;
+		double cos_lat = 0;
+
+		boolean init  = false;
+
+
+	}
 }
+
+
