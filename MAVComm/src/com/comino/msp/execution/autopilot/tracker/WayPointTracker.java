@@ -36,7 +36,11 @@ public class WayPointTracker implements Runnable {
 				start();
 		});
 
-		start();
+		control.getStatusManager().addListener(Status.MSP_CONNECTED, (o,n) -> {
+			if(!n.isStatus(Status.MSP_LANDED)) {
+				start();
+			}
+		});
 
 	}
 
@@ -118,7 +122,6 @@ public class WayPointTracker implements Runnable {
 			if(sleep_tms> 0 && enabled)
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 		}
-
 	}
 
 	public String toString() {
