@@ -41,7 +41,7 @@ public class MSPMathUtils {
 	public static final double 	fromRad 					  	= 180.0 / Math.PI ;
 
 	private static final double 	CONSTANTS_RADIUS_OF_EARTH  	= 6371000.0;
-	private static  Reference   	ref                          = new Reference();
+	private static  Reference   	ref                         	= new Reference();
 
 
 	public static void map_projection_init(double lat0, double lon0) {
@@ -52,7 +52,38 @@ public class MSPMathUtils {
 		ref.init    = true;
 	}
 
+	public static boolean map_projection_project(double lat, double lon, float[] xy) {
+
+		if(!ref.init)
+			return false;
+
+		double lat_rad = lat * toRad;
+		double lon_rad = lon * toRad;
+
+		double sin_lat = Math.sin(lat_rad);
+		double cos_lat = Math.cos(lat_rad);
+		double cos_d_lon = Math.cos(lon_rad - ref.lon_rad);
+
+		double arg = ref.sin_lat * sin_lat + ref.cos_lat * cos_lat * cos_d_lon;
+
+		if (arg > 1.0) {
+			arg = 1.0;
+
+		} else if (arg < -1.0) {
+			arg = -1.0;
+		}
+
+		double c = Math.acos(arg);
+		double k = (Math.abs(c) < DBL_EPSILON) ? 1.0 : (c / Math.sin(c));
+
+		xy[0] = (float)(k * (ref.cos_lat * sin_lat - ref.sin_lat * cos_lat * cos_d_lon) * CONSTANTS_RADIUS_OF_EARTH);
+		xy[1] = (float)(k * cos_lat * Math.sin(lon_rad - ref.lon_rad) * CONSTANTS_RADIUS_OF_EARTH );
+
+		return true;
+	}
+
 	public static boolean map_projection_reproject(float x, float y, float z, double[] latlon) {
+
 		if(!ref.init)
 			return false;
 
