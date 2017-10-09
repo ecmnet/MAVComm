@@ -25,6 +25,7 @@ public class OffboardManager implements Runnable {
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
 	private static final int UPDATE_RATE                 = 100;
+	private static final int SETPOINT_TIMEOUT_MS         = 5000;
 
 	public static final int MODE_POSITION	 		    = 1;
 	public static final int MODE_SPEED	 		        = 2;
@@ -101,10 +102,14 @@ public class OffboardManager implements Runnable {
 		this.listener = listener;
 	}
 
+	public void removeListener() {
+		this.listener = null;
+	}
+
 	@Override
 	public void run() {
 
-		float delta; long tms; long sleep_tms = 0;
+		float delta; long tms; long sleep_tms = 0; long watch_tms = System.currentTimeMillis();
 
 		already_fired = false; valid_setpoint = false;
 
@@ -119,24 +124,36 @@ public class OffboardManager implements Runnable {
 
 		while(enabled) {
 
-			if(!valid_setpoint)
-				setCurrentAsTarget();
+			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS ) {
+				valid_setpoint = false; mode = MODE_POSITION;
+				logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			}
 
 			switch(mode) {
 			case MODE_POSITION:
+				if(!valid_setpoint) {
+					watch_tms = System.currentTimeMillis();
+					setCurrentAsTarget();
+				}
 				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.state.h);
 				sendPositionControlToVehice(target);
 				delta = MSP3DUtils.distance3D(target,current);
-				if(delta < acceptance_radius_pos) {
+				if(delta < acceptance_radius_pos && valid_setpoint) {
 					fireAction(model, delta);
+					watch_tms = System.currentTimeMillis();
 				}
 				break;
 			case MODE_SPEED:
+				if(!valid_setpoint) {
+					watch_tms = System.currentTimeMillis();
+					target.set(0,0,0,0);
+				}
 				current.set(model.state.l_vx, model.state.l_vy, model.state.l_vz,model.state.vh);
 				sendSpeedControlToVehice(target);
 				delta = MSP3DUtils.distance3D(target,current);
-				if(delta < acceptance_radius_speed) {
+				if(delta < acceptance_radius_speed && valid_setpoint) {
 					fireAction(model, delta);
+					watch_tms = System.currentTimeMillis();
 				}
 				break;
 			}

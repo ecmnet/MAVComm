@@ -122,11 +122,7 @@ public class Autopilot {
 			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
 				offboard.setTarget(e.getValue());
 			else {
-				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-				logger.writeLocalMsg("[msp] JumpBack execution finalized",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
-				offboard.stop();
+				abort();
 				tracker.unfreeze();
 			}
 		});
@@ -165,7 +161,7 @@ public class Autopilot {
 		}
 	}
 
-	public void waypoint_example(float length) {
+	public void return_along_path(boolean enable) {
 		if(!tracker.freeze())
 			return;
 		logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
@@ -180,8 +176,6 @@ public class Autopilot {
 				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			}
 		});
-
-
 	}
 
 }

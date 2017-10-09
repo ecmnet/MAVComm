@@ -105,7 +105,7 @@ public class MSPCommander {
 			autopilot.enableCircleMode(enable, param);
 			break;
 		case MSP_AUTOCONTROL_MODE.WAYPOINT_MODE:
-				autopilot.waypoint_example(5f);
+				autopilot.return_along_path(enable);
 			break;
 		case MSP_AUTOCONTROL_MODE.AUTO_MISSION:
 			     autopilot.jumpback(0.5f);
