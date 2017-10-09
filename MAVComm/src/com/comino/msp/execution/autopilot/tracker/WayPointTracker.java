@@ -35,6 +35,9 @@ public class WayPointTracker implements Runnable {
 			else
 				start();
 		});
+
+		start();
+
 	}
 
 	public Entry<Long, Vector4D_F32> getWaypoint(long ago_ms) {
@@ -115,6 +118,7 @@ public class WayPointTracker implements Runnable {
 			if(sleep_tms> 0 && enabled)
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 		}
+
 	}
 
 	public String toString() {
