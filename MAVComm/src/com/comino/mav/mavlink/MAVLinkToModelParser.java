@@ -205,6 +205,7 @@ public class MAVLinkToModelParser {
 				model.sys.load_m = status.load / 4f;
 				model.sys.autopilot = (int)status.autopilot_mode;
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
+				model.sys.setStatus(Status.MSP_ACTIVE, true);
 				model.sys.wifi_quality = status.wifi_quality/100f;
 			}
 		});
@@ -610,7 +611,6 @@ public class MAVLinkToModelParser {
 				model.sys.setStatus(Status.MSP_ARMED,
 						(hb.base_mode & MAV_MODE_FLAG_DECODE_POSITION.MAV_MODE_FLAG_DECODE_POSITION_SAFETY) > 0);
 
-				model.sys.setStatus(Status.MSP_ACTIVE, (hb.system_status & MAV_STATE.MAV_STATE_ACTIVE) > 0);
 				model.sys.setStatus(Status.MSP_READY, (hb.system_status & MAV_STATE.MAV_STATE_STANDBY) > 0);
 				model.sys.setStatus(Status.MSP_ARMED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED) != 0);
 
@@ -838,6 +838,7 @@ public class MAVLinkToModelParser {
 		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {
 			//System.out.println("MSP=" + model.sys.getSynchronizedPX4Time_us() + " PX4=" + model.sys.tms);
 			model.sys.setStatus(Status.MSP_CONNECTED, false);
+			model.sys.setStatus(Status.MSP_ACTIVE, false);
 			link.close();
 			link.open();
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
