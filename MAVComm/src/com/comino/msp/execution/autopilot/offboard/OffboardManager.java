@@ -174,6 +174,7 @@ public class OffboardManager implements Runnable {
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		publishSLAM(0,target,current);
 		already_fired = false; valid_setpoint = false;
+		model.sys.autopilot = 0;
 	}
 
 	private void sendPositionControlToVehice(Vector4D_F32 target) {

@@ -59,13 +59,11 @@ public class Autopilot {
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_RTL, StatusManager.EDGE_RISING, (o,n) -> {
 			offboard.stop();
-			model.sys.autopilot = 0;
 		});
 
 		// Stop offboard updater as soon as landed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (o,n) -> {
 			offboard.stop();
-			model.sys.autopilot = 0;
 		});
 	}
 
@@ -96,7 +94,6 @@ public class Autopilot {
 	}
 
 	public void abort() {
-		model.sys.autopilot = 0;
 		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
