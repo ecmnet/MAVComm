@@ -16,6 +16,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
+import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
@@ -73,6 +74,7 @@ public class OffboardManager implements Runnable {
 
 	public void setTarget(Vector3D_F32 t) {
 		target.set(t.x,t.y,t.z,0);
+		target.w = MSP3DUtils.getXYDirection(target, current);
 		valid_setpoint = true;
 		already_fired = false;
 	}
@@ -130,12 +132,13 @@ public class OffboardManager implements Runnable {
 			}
 
 			switch(mode) {
+
 			case MODE_POSITION:
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
 					setCurrentAsTarget();
 				}
-				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.state.h);
+				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 				sendPositionControlToVehice(target);
 				delta = MSP3DUtils.distance3D(target,current);
 				if(delta < acceptance_radius_pos && valid_setpoint) {
@@ -148,7 +151,7 @@ public class OffboardManager implements Runnable {
 					watch_tms = System.currentTimeMillis();
 					target.set(0,0,0,0);
 				}
-				current.set(model.state.l_vx, model.state.l_vy, model.state.l_vz,model.state.vh);
+				current.set(model.state.l_vx, model.state.l_vy, model.state.l_vz,model.attitude.yr);
 				sendSpeedControlToVehice(target);
 				delta = MSP3DUtils.distance3D(target,current);
 				if(delta < acceptance_radius_speed && valid_setpoint) {
@@ -189,10 +192,10 @@ public class OffboardManager implements Runnable {
 		cmd.z   = target.z;
 		cmd.yaw = target.w;
 
-		if(target.x==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000000001;
-		if(target.y==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000000010;
-		if(target.z==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000000100;
-		if(target.w==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000010000000000;
+		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000001;
+		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000010;
+		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000100;
+		if(target.w==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000010000000000;
 
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
@@ -212,10 +215,10 @@ public class OffboardManager implements Runnable {
 		cmd.vz       = target.z;
 		cmd.yaw_rate = target.w;
 
-		if(target.x==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000001000;
-		if(target.y==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000010000;
-		if(target.z==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000000000100000;
-		if(target.w==Float.NaN) cmd.type_mask = cmd.type_mask | 0b000100000000000;
+		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000001000;
+		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000010000;
+		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
+		if(target.w==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000100000000000;
 
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 

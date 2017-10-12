@@ -17,6 +17,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
+import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
 
 import georegression.struct.point.Point3D_F64;
@@ -177,7 +178,7 @@ public class Autopilot {
 
 			offboard.addListener((m,d) -> {
 				circleTarget.plusIP(circleDelta);
-				offboard.setTarget(circleTarget,0);
+				offboard.setTarget(circleTarget);
 			});
 			offboard.setTarget(circleTarget);
 			offboard.start(OffboardManager.MODE_POSITION);
@@ -198,7 +199,7 @@ public class Autopilot {
 		offboard.start(OffboardManager.MODE_POSITION);
 		offboard.addListener((m,d) -> {
 			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-			if(e!=null)
+			if(e!=null && e.getValue().z < -0.3f)
 				offboard.setTarget(e.getValue());
 			else {
 				tracker.unfreeze();

@@ -190,7 +190,7 @@ public class MSPCommander {
 		if(vfh==null)
 			return;
 		vfh.reset(model);
-		Point3D_F64   pos          = new Point3D_F64();
+		Point3D_F64   pos = new Point3D_F64();
 		System.err.println("SITL -> set example obstacle map");
 		pos.x = -0.10 + model.state.l_x;
 		pos.y = 1 + model.state.l_y;
