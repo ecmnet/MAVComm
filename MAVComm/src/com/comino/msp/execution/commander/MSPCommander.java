@@ -163,6 +163,8 @@ public class MSPCommander {
 	// SITL testing
 
 	private void setCircleObstacleForSITL() {
+		if(vfh==null)
+			return;
 		vfh.reset(model);
 		Point3D_F64   pos          = new Point3D_F64();
 		System.err.println("SITL -> set example obstacle map");
@@ -185,6 +187,8 @@ public class MSPCommander {
 	}
 
 	private void setYObstacleForSITL() {
+		if(vfh==null)
+			return;
 		vfh.reset(model);
 		Point3D_F64   pos          = new Point3D_F64();
 		System.err.println("SITL -> set example obstacle map");

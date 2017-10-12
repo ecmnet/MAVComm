@@ -164,7 +164,8 @@ public class StartUp implements Runnable {
 				poh.histUpdate(vfh.getMovingWindow(model.state.l_y, model.state.l_x));
 				VfhHist smoothed = poh.histSmooth(2);
 				int vi = poh.selectValley(smoothed, (int)MSPMathUtils.fromRad(model.debug.v1));
-				poh.print(smoothed,1);
+			//	System.err.println(vfh.nearestDistance(model.state.l_y, model.state.l_x,0));
+			//	poh.print(smoothed,1);
 			//	System.out.println(poh.getDirection(smoothed, vi, 18)+":"+(int)MSPMathUtils.fromRad(model.debug.v1));
 
 				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);

@@ -135,6 +135,24 @@ public class HistogramGrid2D {
 		return vfhg.toString(threshold);
 	}
 
+	public float nearestDistance(float lpos_y, float lpos_x, int threshold) {
+		float x, y; float distance = Float.MAX_VALUE, d;
+		for (int i = 0; i < vfhg.dimension; ++i) {
+			for (int j = 0; j < vfhg.dimension; ++j) {
+				if(vfhg.cells[i * vfhg.dimension + j] <= threshold)
+					continue;
+
+				x = j*vfhg.resolution/100f-centerx;
+				y = i*vfhg.resolution/100f-centery;
+
+				d = (float)Math.sqrt((lpos_x-x)*(lpos_x-x) + (lpos_y-y)*(lpos_y-y));
+				if(d < distance)
+					distance = d;
+			}
+		}
+		return distance;
+	}
+
 
 	public void forget() {
 		if((System.currentTimeMillis()-tms)>OBLIVISION_TIME_MS) {
