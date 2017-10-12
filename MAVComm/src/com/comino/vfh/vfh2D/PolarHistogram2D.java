@@ -96,13 +96,16 @@ public class PolarHistogram2D {
 
 	public VfhHist histSmooth(int l) {
 		int h;
-		for(int k =0; k < hist.sectors; k++) {
-			h = 0;
-			for(int i = -l; i<= l; i++ )
-				h  = h + hist.densities[wrap(k+i+l,hist.sectors)] * (l - Math.abs(i) + 1);
-			hist_smoothed.densities[wrap(k+l,hist.sectors)] = h / (2 * l + 1);
+		if(l > 0 ) {
+			for(int k =0; k < hist.sectors; k++) {
+				h = 0;
+				for(int i = -l; i<= l; i++ )
+					h  = h + hist.densities[wrap(k+i+l,hist.sectors)] * (l - Math.abs(i) + 1);
+				hist_smoothed.densities[wrap(k+l,hist.sectors)] = h / (2 * l + 1);
+			}
+			return hist_smoothed;
 		}
-		return hist_smoothed;
+		return hist;
 	}
 
 
@@ -136,7 +139,7 @@ public class PolarHistogram2D {
 			else
 				return alpha * (to +vi) / 2;
 		} else {
-           return vi * alpha;
+			return vi * alpha;
 		}
 	}
 

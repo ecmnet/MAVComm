@@ -29,6 +29,14 @@ public interface MSP_AUTOCONTROL_MODE {
      */
     public final static int AUTO_MISSION = 4;
     /**
+     * Execute a DEBUG1 sequence for testing
+     */
+    public final static int DEBUG_MODE1 = 29;
+    /**
+     * Execute a DEBUG2 sequence for testing
+     */
+    public final static int DEBUG_MODE2 = 30;
+    /**
      * Controls offboard updater
      */
     public final static int OFFBOARD_UPDATER = 31;

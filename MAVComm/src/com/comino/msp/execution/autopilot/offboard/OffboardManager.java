@@ -237,6 +237,8 @@ public class OffboardManager implements Runnable {
 			slam.py = target.getY();
 			slam.pd = MSP3DUtils.getXYDirection(target, current);
 			slam.pv = speed;
+
+			model.debug.v1 = slam.pd;
 		}
 		control.sendMAVLinkMessage(slam);
 	}

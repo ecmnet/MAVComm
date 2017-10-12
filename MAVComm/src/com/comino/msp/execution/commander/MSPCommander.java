@@ -52,14 +52,20 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.vfh.vfh2D.HistogramGrid2D;
+
+import georegression.struct.point.Point3D_F64;
 
 public class MSPCommander {
 
 	private IMAVMSPController        control = null;
 	private Autopilot              autopilot = null;
 	private DataModel                  model = null;
+	private HistogramGrid2D             vfh  = null;
 
-	public MSPCommander(IMAVMSPController control) {
+	public MSPCommander(IMAVMSPController control, HistogramGrid2D vfh) {
+
+		this.vfh = vfh;
 
 		this.control = control;
 		this.model   = control.getCurrentModel();
@@ -102,6 +108,8 @@ public class MSPCommander {
 			break;
 		case MSP_AUTOCONTROL_MODE.CIRCLE_MODE:
 			if(param == 0) param = 0.75f;
+			if(enable)
+				setCircleObstacleForSITL() ;
 			autopilot.enableCircleMode(enable, param);
 			break;
 		case MSP_AUTOCONTROL_MODE.WAYPOINT_MODE:
@@ -110,6 +118,15 @@ public class MSPCommander {
 		case MSP_AUTOCONTROL_MODE.AUTO_MISSION:
 			     autopilot.jumpback(0.5f);
 			break;
+		case MSP_AUTOCONTROL_MODE.DEBUG_MODE1:
+			if(enable)
+				setYObstacleForSITL();
+			autopilot.enableDebugMode1(enable, 0.1f);
+
+		break;
+		case MSP_AUTOCONTROL_MODE.DEBUG_MODE2:
+
+		break;
 		case MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER:
 				autopilot.offboardPosHold(enable);
 			break;
@@ -141,6 +158,48 @@ public class MSPCommander {
 			MSPLogger.getInstance().writeLocalMsg("LINUX command '"+command+"' failed: "+e.getMessage(),
 					MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
 		}
+	}
+
+	// SITL testing
+
+	private void setCircleObstacleForSITL() {
+		vfh.reset(model);
+		Point3D_F64   pos          = new Point3D_F64();
+		System.err.println("SITL -> set example obstacle map");
+		pos.x = 0.5 + model.state.l_x;
+		pos.y = 0.4 + model.state.l_y;
+		pos.z = 1.0 + model.state.l_z;
+		vfh.gridUpdate(pos);
+		pos.y = 0.45 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.50 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.55 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.60 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.65 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.70 + model.state.l_y;
+		vfh.gridUpdate(pos);
+	}
+
+	private void setYObstacleForSITL() {
+		vfh.reset(model);
+		Point3D_F64   pos          = new Point3D_F64();
+		System.err.println("SITL -> set example obstacle map");
+		pos.x = -0.10 + model.state.l_x;
+		pos.y = 1 + model.state.l_y;
+		pos.z = 1.0 + model.state.l_z;
+		vfh.gridUpdate(pos);
+		pos.x = -0.05 + model.state.l_x;
+		vfh.gridUpdate(pos);
+		pos.x = 0 + model.state.l_x;
+		vfh.gridUpdate(pos);
+		pos.x = 0.05 + model.state.l_x;
+		vfh.gridUpdate(pos);
+		pos.x = 0.10 + model.state.l_x;
+		vfh.gridUpdate(pos);
 	}
 
 }

@@ -46,6 +46,7 @@ import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
+import com.comino.msp.execution.autopilot.Autopilot;
 import com.comino.msp.execution.commander.MSPCommander;
 import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
@@ -54,8 +55,11 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Grid;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.VfhGrid;
+import com.comino.vfh.VfhHist;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
+import com.comino.vfh.vfh2D.PolarHistogram2D;
 
 import georegression.struct.point.Point3D_F64;
 
@@ -65,10 +69,13 @@ public class StartUp implements Runnable {
 	private MSPConfig	          config = null;
 
 	private MSPCommander commander = null;
-	private OperatingSystemMXBean osBean;
-	private MemoryMXBean mxBean;
-	private DataModel model;
-	HistogramGrid2D hist;
+	private OperatingSystemMXBean osBean = null;;
+	private MemoryMXBean  mxBean = null;
+	private DataModel      model = null;
+	private HistogramGrid2D  vfh = null;
+	private PolarHistogram2D poh = null;
+
+	private Point3D_F64   pos          = new Point3D_F64();
 
 	public StartUp(String[] args) {
 
@@ -84,7 +91,10 @@ public class StartUp implements Runnable {
 
 		MSPLogger.getInstance(control);
 
-		commander = new MSPCommander(control);
+		this.vfh      = new HistogramGrid2D(10,10,20,1f,model.grid.getResolution());
+		this.poh      = new PolarHistogram2D(2,1,10f,0.0025f, model.grid.getResolution());
+
+		commander = new MSPCommander(control, vfh);
 
 		osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
 		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
@@ -110,7 +120,7 @@ public class StartUp implements Runnable {
 				case MSP_CMD.MSP_CMD_MICROSLAM:
 					switch((int)cmd.param1) {
 					case MSP_COMPONENT_CTRL.RESET:
-						hist.reset(model);
+						vfh.reset(model);
 						control.writeLogMessage(new LogMessage("[sitl] reset local map",
 								MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 						break;
@@ -120,7 +130,10 @@ public class StartUp implements Runnable {
 			}
 		});
 
-		hist= new HistogramGrid2D(10,10,20,1.0f,model.grid.getResolution());
+
+
+		vfh.reset(model);
+
 	}
 
 
@@ -140,14 +153,19 @@ public class StartUp implements Runnable {
 
 		while(true) {
 			try {
-				Thread.sleep(200);
+				Thread.sleep(100);
 				if(!control.isConnected()) {
 					if(control.isConnected())
 						control.close();
 					control.connect();
 				}
 
-
+				vfh.transferGridToModel(model, 0, false);
+				poh.histUpdate(vfh.getMovingWindow(model.state.l_y, model.state.l_x));
+				VfhHist smoothed = poh.histSmooth(2);
+				int vi = poh.selectValley(smoothed, (int)MSPMathUtils.fromRad(model.debug.v1));
+				poh.print(smoothed,1);
+			//	System.out.println(poh.getDirection(smoothed, vi, 18)+":"+(int)MSPMathUtils.fromRad(model.debug.v1));
 
 				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
 				grid.resolution = 0;
@@ -156,7 +174,6 @@ public class StartUp implements Runnable {
 				grid.cy  = model.grid.getIndicatorY();
 				grid.tms  = System.nanoTime() / 1000;
 				grid.count = model.grid.count;
-
 				if(model.grid.toArray(grid.data)) {
 					control.sendMAVLinkMessage(grid);
 				}

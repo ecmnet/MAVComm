@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
@@ -16,7 +17,9 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
+import com.comino.vfh.vfh2D.HistogramGrid2D;
 
+import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 
@@ -34,6 +37,10 @@ public class Autopilot {
 	public static Autopilot getInstance(IMAVController control) {
 		if(autopilot == null)
 			autopilot = new Autopilot(control);
+		return autopilot;
+	}
+
+	public static Autopilot getInstance() {
 		return autopilot;
 	}
 
@@ -66,11 +73,14 @@ public class Autopilot {
 			offboard.stop();
 		});
 	}
-
 	public void setTarget(float x, float y, float z, float yaw) {
 		Vector3D_F32 target = new Vector3D_F32(x,y,z);
 		offboard.setTarget(target);
 		offboard.start(OffboardManager.MODE_POSITION);
+	}
+
+	public void clearAutopilotModes() {
+		model.sys.autopilot = 1 << MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER;
 	}
 
 	public void offboardPosHold(boolean enable) {
@@ -158,6 +168,28 @@ public class Autopilot {
 		}
 	}
 
+	public void enableDebugMode1(boolean enable, float delta) {
+		if(enable) {
+			circleCenter.set(model.state.l_x,model.state.l_y,model.state.l_z);
+			circleTarget.set(circleCenter);
+			circleDelta.set(0,delta,0);
+			circleTarget.plusIP(circleDelta);
+
+			offboard.addListener((m,d) -> {
+				circleTarget.plusIP(circleDelta);
+				offboard.setTarget(circleTarget,0);
+			});
+			offboard.setTarget(circleTarget);
+			offboard.start(OffboardManager.MODE_POSITION);
+			logger.writeLocalMsg("[msp] DebugMode1 activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
+		}
+		else {
+			offboard.addListener((m,d) -> {
+				logger.writeLocalMsg("[msp] DebugMode stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			});
+		}
+	}
+
 	public void return_along_path(boolean enable) {
 		if(!tracker.freeze())
 			return;
@@ -171,8 +203,10 @@ public class Autopilot {
 			else {
 				tracker.unfreeze();
 				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
+				clearAutopilotModes() ;
 			}
 		});
 	}
+
 
 }
