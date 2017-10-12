@@ -78,6 +78,12 @@
                <entry value="4" name="AUTO_MISSION">
                   <description>Execute a MSP mission (param3)</description>
               </entry>
+               <entry value="29" name="DEBUG_MODE1">
+                  <description>Execute a DEBUG1 sequence for testing </description>
+              </entry>
+               <entry value="30" name="DEBUG_MODE2">
+                  <description>Execute a DEBUG2 sequence for testing </description>
+              </entry>
                <entry value="31" name="OFFBOARD_UPDATER">
                   <description>Controls offboard updater</description>
               </entry>
