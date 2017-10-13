@@ -37,6 +37,7 @@ package com.comino.msp.execution.commander;
 import java.io.IOException;
 
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
@@ -106,28 +107,31 @@ public class MSPCommander {
 		case MSP_AUTOCONTROL_MODE.ABORT:
 			autopilot.abort();
 			break;
-		case MSP_AUTOCONTROL_MODE.CIRCLE_MODE:
+		case MSP_AUTOCONTROL_ACTION.CIRCLE_MODE:
 			if(param == 0) param = 0.75f;
 			if(enable)
 				setCircleObstacleForSITL() ;
 			autopilot.enableCircleMode(enable, param);
 			break;
-		case MSP_AUTOCONTROL_MODE.WAYPOINT_MODE:
+		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
 				autopilot.return_along_path(enable);
 			break;
-		case MSP_AUTOCONTROL_MODE.AUTO_MISSION:
+		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
 			     autopilot.jumpback(0.5f);
 			break;
-		case MSP_AUTOCONTROL_MODE.DEBUG_MODE1:
+		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
 			if(enable)
-				setYObstacleForSITL();
+				setXObstacleForSITL();
 			autopilot.enableDebugMode1(enable, 0.1f);
 
 		break;
-		case MSP_AUTOCONTROL_MODE.DEBUG_MODE2:
+		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
+			if(enable)
+				setYObstacleForSITL();
+			autopilot.enableDebugMode2(enable, 0.1f);
 
 		break;
-		case MSP_AUTOCONTROL_MODE.OFFBOARD_UPDATER:
+		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
 				autopilot.offboardPosHold(enable);
 			break;
 		}
@@ -183,6 +187,26 @@ public class MSPCommander {
 		pos.y = 0.65 + model.state.l_y;
 		vfh.gridUpdate(pos);
 		pos.y = 0.70 + model.state.l_y;
+		vfh.gridUpdate(pos);
+	}
+
+	private void setXObstacleForSITL() {
+		if(vfh==null)
+			return;
+		vfh.reset(model);
+		Point3D_F64   pos = new Point3D_F64();
+		System.err.println("SITL -> set example obstacle map");
+		pos.y = -0.10 + model.state.l_y;
+		pos.x = 1 + model.state.l_x;
+		pos.z = 1.0 + model.state.l_z;
+		vfh.gridUpdate(pos);
+		pos.y = -0.05 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.05 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.10 + model.state.l_y;
 		vfh.gridUpdate(pos);
 	}
 

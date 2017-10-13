@@ -5,7 +5,7 @@
 package org.mavlink.messages;
 /**
  * Interface MSP_AUTOCONTROL_MODE
- * Auto-Control mode
+ * Auto-Control modes (Bit 0-15)
  **/
 public interface MSP_AUTOCONTROL_MODE {
     /**
@@ -17,27 +17,7 @@ public interface MSP_AUTOCONTROL_MODE {
      */
     public final static int JUMPBACK = 1;
     /**
-     * Circles at center with diameter (param3)
+     * JumpBack mode
      */
-    public final static int CIRCLE_MODE = 2;
-    /**
-     * Executes a list of waypoints defined in MSP (param3)
-     */
-    public final static int WAYPOINT_MODE = 3;
-    /**
-     * Execute a MSP mission (param3)
-     */
-    public final static int AUTO_MISSION = 4;
-    /**
-     * Execute a DEBUG1 sequence for testing
-     */
-    public final static int DEBUG_MODE1 = 29;
-    /**
-     * Execute a DEBUG2 sequence for testing
-     */
-    public final static int DEBUG_MODE2 = 30;
-    /**
-     * Controls offboard updater
-     */
-    public final static int OFFBOARD_UPDATER = 31;
+    public final static int OBSTACLE_AVOIDANCE = 2;
 }

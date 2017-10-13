@@ -62,26 +62,33 @@
            </enum>
 
            <enum name="MSP_AUTOCONTROL_MODE">
-              <description>Auto-Control mode</description>
+              <description>Auto-Control modes (Bit 0-15)</description>
                <entry value="0" name="ABORT">
                   <description>Abort request: Terminates any autopilot action and returns to POSHOLD</description>
               </entry>
               <entry value="1" name="JUMPBACK">
                   <description>JumpBack mode</description>
               </entry>
-              <entry value="2" name="CIRCLE_MODE">
+              <entry value="2" name="OBSTACLE_AVOIDANCE">
+                  <description>JumpBack mode</description>
+              </entry>
+           </enum>
+
+           <enum name="MSP_AUTOCONTROL_ACTION">
+              <description>Auto-Control action (Bit 16-31)</description>
+              <entry value="16" name="CIRCLE_MODE">
                   <description>Circles at center with diameter (param3)</description>
               </entry>
-              <entry value="3" name="WAYPOINT_MODE">
+              <entry value="17" name="WAYPOINT_MODE">
                   <description>Executes a list of waypoints defined in MSP (param3)</description>
               </entry>
-               <entry value="4" name="AUTO_MISSION">
+               <entry value="18" name="AUTO_MISSION">
                   <description>Execute a MSP mission (param3)</description>
               </entry>
-               <entry value="29" name="DEBUG_MODE1">
+               <entry value="19" name="DEBUG_MODE1">
                   <description>Execute a DEBUG1 sequence for testing </description>
               </entry>
-               <entry value="30" name="DEBUG_MODE2">
+               <entry value="20" name="DEBUG_MODE2">
                   <description>Execute a DEBUG2 sequence for testing </description>
               </entry>
                <entry value="31" name="OFFBOARD_UPDATER">
