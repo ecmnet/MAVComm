@@ -108,8 +108,12 @@ public class PolarHistogram2D {
 		return hist;
 	}
 
+	public float selectValley(float target_direction_rad) {
+		return MSPMathUtils.toRad(selectValleyDeg(hist_smoothed, (int)MSPMathUtils.fromRad(target_direction_rad)));
+	}
 
-	public int selectValley(VfhHist h, int target_direction) {
+
+	public int selectValleyDeg(VfhHist h, int target_direction) {
 		int d = 999; int vi=-1;
 		for(int i=0;i<h.sectors;i++) {
 			if(h.densities[i]<threshold && Math.abs(i*alpha - target_direction) < d) {

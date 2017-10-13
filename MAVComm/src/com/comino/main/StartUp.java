@@ -38,6 +38,7 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
@@ -92,7 +93,7 @@ public class StartUp implements Runnable {
 		MSPLogger.getInstance(control);
 
 		this.vfh      = new HistogramGrid2D(10,10,20,1f,model.grid.getResolution());
-		this.poh      = new PolarHistogram2D(2,1,10f,0.0025f, model.grid.getResolution());
+		this.poh      = new PolarHistogram2D(1,1,10f,0.0025f, model.grid.getResolution());
 
 		commander = new MSPCommander(control, vfh);
 
@@ -143,7 +144,7 @@ public class StartUp implements Runnable {
 
 	}
 
-
+    boolean isAvoiding = true;
 
 	@Override
 	public void run() {
@@ -161,9 +162,23 @@ public class StartUp implements Runnable {
 				}
 
 				vfh.transferGridToModel(model, 0, false);
-				poh.histUpdate(vfh.getMovingWindow(model.state.l_y, model.state.l_x));
+				poh.histUpdate(vfh.getMovingWindow(model.state.l_x, model.state.l_y));
 				VfhHist smoothed = poh.histSmooth(2);
-				int vi = poh.selectValley(smoothed, (int)MSPMathUtils.fromRad(model.debug.v1));
+			//	int vi = poh.selectValleyDeg(smoothed, (int)MSPMathUtils.fromRad(model.debug.v1));
+
+				if(vfh.nearestDistance(model.state.l_y, model.state.l_x,0) < 0.3 && model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK)) {
+					if(!isAvoiding) {
+						System.err.println(vfh.nearestDistance(model.state.l_y, model.state.l_x,0));
+						isAvoiding = true;
+						System.err.println("Avoiding");
+					//	Autopilot.getInstance().obstacleAvoidance(vfh, poh, 0.1f);
+						Autopilot.getInstance().jumpback(0.3f);
+					}
+				} else {
+					if(isAvoiding)
+						System.err.println("Not Avoiding anymore");
+					isAvoiding = false;
+				}
 			//	System.err.println(vfh.nearestDistance(model.state.l_y, model.state.l_x,0));
 			//	poh.print(smoothed,1);
 			//	System.out.println(poh.getDirection(smoothed, vi, 18)+":"+(int)MSPMathUtils.fromRad(model.debug.v1));
