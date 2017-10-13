@@ -109,7 +109,7 @@ public class WayPointTracker implements Runnable {
 			if(!list.isEmpty())
 				distance = MSP3DUtils.distance3D(waypoint, list.lastEntry().getValue());
 
-			if((distance > 0.1f || list.isEmpty()) && freezed.isEmpty()) {
+			if((distance > 0.1f || list.isEmpty()) && freezed.isEmpty() && model.hud.ar > 0.4f) {
 				if(list.size()>=MAX_WAYPOINTS)
 					list.pollFirstEntry();
 				list.put(tms, waypoint);

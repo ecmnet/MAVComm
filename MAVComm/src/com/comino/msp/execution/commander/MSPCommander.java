@@ -117,7 +117,7 @@ public class MSPCommander {
 				autopilot.return_along_path(enable);
 			break;
 		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
-			     autopilot.jumpback(0.5f);
+
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
 			if(enable)

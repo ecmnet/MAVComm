@@ -84,7 +84,7 @@ public class Autopilot {
 	}
 
 	public void clearAutopilotActions() {
-		model.sys.autopilot &= 0b01000000000000001111111111111111;
+		model.sys.autopilot &= 0b11000000000000000111111111111111;
 	}
 
 	public void offboardPosHold(boolean enable) {
@@ -108,6 +108,7 @@ public class Autopilot {
 	}
 
 	public void abort() {
+		clearAutopilotActions();
 		if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
