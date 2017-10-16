@@ -72,6 +72,9 @@
               <entry value="2" name="OBSTACLE_AVOIDANCE">
                   <description>JumpBack mode</description>
               </entry>
+               <entry value="15" name="STEP_MODE">
+                  <description>Single step mode (testing)</description>
+              </entry>
            </enum>
 
            <enum name="MSP_AUTOCONTROL_ACTION">
@@ -90,6 +93,9 @@
               </entry>
                <entry value="20" name="DEBUG_MODE2">
                   <description>Execute a DEBUG2 sequence for testing </description>
+              </entry>
+              <entry value="30" name="STEP">
+                  <description>Execute a single step in the current sequence for testing </description>
               </entry>
                <entry value="31" name="OFFBOARD_UPDATER">
                   <description>Controls offboard updater</description>

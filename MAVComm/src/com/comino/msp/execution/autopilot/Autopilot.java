@@ -68,6 +68,10 @@ public class Autopilot {
 			}
 		});
 
+		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT, MSP_AUTOCONTROL_MODE.STEP_MODE,(o,n) -> {
+			offboard.setStepMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.STEP_MODE));
+		});
+
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_RTL, StatusManager.EDGE_RISING, (o,n) -> {
 			offboard.stop();
 		});
@@ -85,6 +89,10 @@ public class Autopilot {
 
 	public void clearAutopilotActions() {
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
+	}
+
+	public void executeStep() {
+		offboard.triggerStep();
 	}
 
 	public void offboardPosHold(boolean enable) {
@@ -151,17 +159,16 @@ public class Autopilot {
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 		target.set(current);
 
-		float angle = poh.selectValley(0);
-		System.err.println(MSPMathUtils.fromRad(angle));
-		delta.set((float)Math.sin(angle)*speed, (float)Math.cos(angle)*speed, 0);
+		float angle = poh.selectValley(model.slam.pd+(float)Math.PI);
+		delta.set((float)Math.sin(angle-Math.PI/2)*speed, (float)Math.cos(angle-Math.PI/2)*speed, 0);
 		target.plusIP(delta);
 
 		offboard.setTarget(target);
 		offboard.addListener((m,d) -> {
-			if(his.nearestDistance(model.state.l_x, model.state.l_x, 0) < 0.3f) {
-				float a = poh.selectValley(1);
-				System.err.println(MSPMathUtils.fromRad(a));
-				delta.set((float)Math.sin(a)*speed, (float)Math.cos(a)*speed, 0);
+			if(his.nearestDistance(model.state.l_y, model.state.l_x, 0) < 0.5f) {
+				float a = poh.selectValley(model.slam.pd+(float)Math.PI);
+				poh.print(poh.getSmoothed(),(int)MSPMathUtils.fromRad(a));
+				delta.set((float)Math.sin(a-Math.PI/2)*speed, (float)Math.cos(a-Math.PI/2)*speed, 0);
 				target.plusIP(delta);
 				offboard.setTarget(target);
 			} else {

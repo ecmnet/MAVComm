@@ -114,7 +114,7 @@ public class MSPCommander {
 			autopilot.enableCircleMode(enable, param);
 			break;
 		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
-				autopilot.return_along_path(enable);
+			autopilot.return_along_path(enable);
 			break;
 		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
 
@@ -123,16 +123,17 @@ public class MSPCommander {
 			if(enable)
 				setXObstacleForSITL();
 			autopilot.enableDebugMode1(enable, 0.1f);
-
-		break;
+			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
 			if(enable)
 				setYObstacleForSITL();
 			autopilot.enableDebugMode2(enable, 0.1f);
-
-		break;
+			break;
 		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
-				autopilot.offboardPosHold(enable);
+			autopilot.offboardPosHold(enable);
+			break;
+		case MSP_AUTOCONTROL_ACTION.STEP:
+			autopilot.executeStep();
 			break;
 		}
 	}
