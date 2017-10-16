@@ -29,6 +29,10 @@ public interface MSP_AUTOCONTROL_ACTION {
      */
     public final static int DEBUG_MODE2 = 20;
     /**
+     * Execute a single step in the current sequence for testing
+     */
+    public final static int STEP = 30;
+    /**
      * Controls offboard updater
      */
     public final static int OFFBOARD_UPDATER = 31;

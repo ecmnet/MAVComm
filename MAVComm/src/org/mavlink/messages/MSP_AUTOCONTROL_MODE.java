@@ -20,4 +20,8 @@ public interface MSP_AUTOCONTROL_MODE {
      * JumpBack mode
      */
     public final static int OBSTACLE_AVOIDANCE = 2;
+    /**
+     * Single step mode (testing)
+     */
+    public final static int STEP_MODE = 15;
 }
