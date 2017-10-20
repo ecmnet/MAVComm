@@ -37,7 +37,9 @@
 
 package com.comino.vfh.vfh2D;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.VfhGrid;
@@ -52,10 +54,10 @@ public class PolarHistogram2D {
 	private float density_a;
 	private float density_b;
 
-	private int threshold;
+	private float threshold;
 	private int alpha;
 
-	public PolarHistogram2D(int alpha, int threshold, float density_a, float density_b, float resolution) {
+	public PolarHistogram2D(int alpha, float threshold, float density_a, float density_b, float resolution) {
 
 		this.alpha    = alpha;
 		hist          = new VfhHist(alpha);
@@ -67,18 +69,18 @@ public class PolarHistogram2D {
 
 		this.resolution = resolution;
 
-		Arrays.fill(hist.densities, (int)0);
+		Arrays.fill(hist.densities, 0);
 
 	}
 
 	public void histUpdate(VfhGrid grid) {
-		int dim = grid.dimension; double density=0;
+		int dim = grid.dimension; float density=0;
 
 		Arrays.fill(hist.densities, (int)0);
 		for (int i = 0; i < dim; ++i) {
 			for (int j = 0; j < dim; ++j) {
 
-				if(grid.cells[i * dim + j] < threshold)
+				if(grid.cells[i * dim + j] < 1)
 					continue;
 
 				/* Calculate the angular position (beta) of this cell. */
@@ -86,26 +88,30 @@ public class PolarHistogram2D {
 
 				/* Calculate the obstacle density of this cell. */
 				density = grid.cells[i * dim + j] * grid.cells[i * dim + j] *
-						(density_a - density_b * Math.sqrt((i - dim/2)*(i - dim/2) + (j - dim/2)*(j - dim/2)) * resolution);
+						(density_a - density_b * (float)Math.sqrt((i - dim/2)*(i - dim/2) + (j - dim/2)*(j - dim/2)) * resolution);
 
 				/* Add density to respective point in the histogram. */
-				hist.densities[(int)(wrap(beta+180,360)) / hist.alpha] += (int)density;
+				hist.densities[(int)(wrap(beta+180,360)) / hist.alpha] += density;
 			}
 		}
 	}
 
 	public VfhHist histSmooth(int l) {
-		int h;
+		float h;
 		if(l > 0 ) {
 			for(int k =0; k < hist.sectors; k++) {
 				h = 0;
 				for(int i = -l; i<= l; i++ )
 					h  = h + hist.densities[wrap(k+i+l,hist.sectors)] * (l - Math.abs(i) + 1);
-				hist_smoothed.densities[wrap(k+l,hist.sectors)] = h / (2 * l + 1);
+				hist_smoothed.densities[wrap(k+l,hist.sectors)] = h / (2f * l + 1);
 			}
 			return hist_smoothed;
 		}
 		return hist;
+	}
+
+	public VfhHist getSmoothed() {
+		return hist_smoothed;
 	}
 
 	public float selectValley(float target_direction_rad) {
@@ -120,7 +126,46 @@ public class PolarHistogram2D {
 				d = Math.abs(i*alpha - target_direction);  vi = i;
 			}
 		}
+
 		return vi;
+	}
+
+	public float getDirection(float target_direction_rad, int smax) {
+		int tdir = (int)MSPMathUtils.fromRad(target_direction_rad);
+		int d=999;
+		List<Valley> vs = getValleys(); Valley tv = null;
+		for(Valley v : vs) {
+			if(v.distance(tdir) < d ) {
+				tv = v; d  = v.distance(tdir);
+			}
+		}
+		if(tdir > tv.s && tdir < tv.e) {
+			return(target_direction_rad);
+		}
+
+		return MSPMathUtils.toRad(tv.get(smax));
+	}
+
+	private List<Valley> getValleys() {
+		List<Valley> valleys = new ArrayList<Valley>();
+		Valley v = null;
+		for(int i=0;i<hist_smoothed.sectors;i++) {
+			if(hist_smoothed.densities[i]<threshold) {
+				if(v==null) {
+					v = new Valley(); v.s = i;
+				} else {
+					v.e = i;
+				}
+			} else {
+				if(v!=null) {
+					valleys.add(v); v = null;
+				}
+			}
+		}
+		if(v!=null) {
+			valleys.add(v); v = null;
+		}
+		return valleys;
 	}
 
 	public int getDirection(VfhHist h, int vi, int smax) {
@@ -173,6 +218,34 @@ public class PolarHistogram2D {
 				b.append("X");
 		}
 		System.out.println(b.toString());
+	}
+
+	public void printDensities(VfhHist h, int vi) {
+		System.out.println();
+		for(int i=0;i<h.sectors;i++) {
+			System.err.println(h.densities[i]);
+		}
+		System.out.println();
+	}
+
+	private class Valley  {
+		public int s=-0;
+		public int e=-360;
+
+		public int get(int smax) {
+			if((e-s) < smax)
+				return (int)(alpha*(s+e)/2 + 0.5);
+			return (int)(alpha*(s+s+smax)/2 + 0.5);
+		}
+
+		public int distance(int tdir) {
+			return Math.abs(alpha*(s+e)/2-tdir);
+		}
+
+		public String toString() {
+			return "From: "+s+" To: "+e;
+		}
+
 	}
 
 }

@@ -21,8 +21,20 @@ public class MSP3DUtils {
 		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 	}
 
+	public static float distance3D(Vector3D_F32 t, Vector3D_F32 c) {
+		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
+	}
+
+	public static float angleXY(Vector3D_F32 t, Vector3D_F32 c) {
+		return (float)Math.atan2(t.y-c.y, t.x-c.x);
+	}
+
 	public static Vector4D_F32 getCurrentVector4D(DataModel model) {
 		return new Vector4D_F32(model.state.l_x,model.state.l_y, model.state.l_z, model.attitude.y);
+	}
+
+	public static Vector3D_F32 convertTo3D(Vector4D_F32 v) {
+		return new Vector3D_F32(v.x,v.y,v.z);
 	}
 
 	public static void convertModelToSe3_F32(DataModel model, Se3_F32 state) {

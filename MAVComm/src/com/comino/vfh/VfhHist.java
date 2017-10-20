@@ -41,13 +41,13 @@ public class VfhHist {
 
 	public int 		alpha;
 	public int 	   sectors;
-	public int[]    densities;
+	public float[]    densities;
 
 
 	public VfhHist(int alpha) {
 		this.alpha = alpha;
 		this.sectors = 360 / alpha;
-		this.densities = new int[sectors];
+		this.densities = new float[sectors];
 	}
 
 

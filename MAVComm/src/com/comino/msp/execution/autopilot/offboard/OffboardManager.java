@@ -188,7 +188,7 @@ public class OffboardManager implements Runnable {
 			if(sleep_tms> 0 && enabled)
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 
-			publishSLAM(model.hud.s,target,current);
+		//	publishSLAM(model.hud.s,target,current);
 
 			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
 

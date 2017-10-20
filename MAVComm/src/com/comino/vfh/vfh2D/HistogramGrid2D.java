@@ -88,7 +88,7 @@ public class HistogramGrid2D {
 		int new_x = (int)Math.floor((lpos_x+centerx+obstacle.x)*100f / vfhg.resolution);
 		int new_y = (int)Math.floor((lpos_y+centery+obstacle.y)*100f / vfhg.resolution);
 
-		if (new_x < vfhg.dimension && new_y < vfhg.dimension && new_x > 0 && new_y > 0
+		if (new_x <= vfhg.dimension && new_y <= vfhg.dimension && new_x > 0 && new_y > 0
 				&& vfhg.cells[new_y * vfhg.dimension + new_x]<MAX_CERTAINITY) {
 			vfhg.cells[new_y * vfhg.dimension + new_x] += 1;
 			return true;
@@ -97,7 +97,7 @@ public class HistogramGrid2D {
 	}
 
 	// creates a moveing window at the current position with a certain window size
-	public synchronized VfhGrid getMovingWindow(float lpos_x, float lpos_y) {
+	public VfhGrid getMovingWindow(float lpos_x, float lpos_y) {
 		window.clear(); int new_x  = 0; int new_y = 0;
 		for (int y = 0; y < window.dimension; y++) {
 			for (int x = 0; x < window.dimension;x++) {

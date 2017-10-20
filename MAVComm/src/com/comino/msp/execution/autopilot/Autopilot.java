@@ -7,6 +7,7 @@ import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
@@ -88,7 +89,10 @@ public class Autopilot {
 	}
 
 	public void clearAutopilotActions() {
+		offboard.removeListener();
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
+		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+		control.sendMAVLinkMessage(slam);
 	}
 
 	public void executeStep() {
@@ -152,28 +156,42 @@ public class Autopilot {
 
 	public void obstacleAvoidance(HistogramGrid2D his, PolarHistogram2D poh, float speed) {
 
-		final Vector3D_F32 current = new Vector3D_F32();
-		final Vector3D_F32 delta   = new Vector3D_F32();
-		final Vector3D_F32 target  = new Vector3D_F32();
+		float angle=0;
+
+		final Vector3D_F32 current    = new Vector3D_F32();
+		final Vector3D_F32 delta      = new Vector3D_F32();
+		final Vector3D_F32 target     = new Vector3D_F32();
+		final Vector3D_F32 projected  = new Vector3D_F32();
 
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 		target.set(current);
 
-		float angle = poh.selectValley(model.slam.pd+(float)Math.PI);
-		delta.set((float)Math.sin(angle-Math.PI/2)*speed, (float)Math.cos(angle-Math.PI/2)*speed, 0);
+		projected.set(current);
+		angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.getWaypoint(100).getValue()))+(float)Math.PI;
+		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*2, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*2, 0);
+		projected.plusIP(delta);
+
+	    angle = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,18);
+		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
 		target.plusIP(delta);
 
 		offboard.setTarget(target);
 		offboard.addListener((m,d) -> {
-			if(his.nearestDistance(model.state.l_y, model.state.l_x, 0) < 0.5f) {
-				float a = poh.selectValley(model.slam.pd+(float)Math.PI);
-				poh.print(poh.getSmoothed(),(int)MSPMathUtils.fromRad(a));
-				delta.set((float)Math.sin(a-Math.PI/2)*speed, (float)Math.cos(a-Math.PI/2)*speed, 0);
+			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
+			float a = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, 18);
+			if(his.nearestDistance(model.state.l_y, model.state.l_x, 0) < 0.35f) {
+				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*speed, 0);
 				target.plusIP(delta);
 				offboard.setTarget(target);
+				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+				slam.px = projected.getX();
+				slam.py = projected.getY();
+				slam.pd = MSP3DUtils.angleXY(projected, current);
+				slam.pv = 0.3f;
+				control.sendMAVLinkMessage(slam);
 			} else {
 				logger.writeLocalMsg("[msp] ObstacleAvoidance finalized. Resume track.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-
+				clearAutopilotActions();
 			}
 		});
 

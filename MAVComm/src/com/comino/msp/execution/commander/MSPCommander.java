@@ -197,9 +197,36 @@ public class MSPCommander {
 		vfh.reset(model);
 		Point3D_F64   pos = new Point3D_F64();
 		System.err.println("SITL -> set example obstacle map");
-		pos.y = -0.10 + model.state.l_y;
+
+
+		pos.y = -0.15 + model.state.l_y;
 		pos.x = 1 + model.state.l_x;
 		pos.z = 1.0 + model.state.l_z;
+		vfh.gridUpdate(pos);
+		pos.y = -0.35 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.40 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.45 + model.state.l_y;
+		vfh.gridUpdate(pos);
+
+		if(Math.random()>0.5) {
+		pos.y = -0.40 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.35 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.30 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.25 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.20 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.15 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		}
+
+
+		pos.y = -0.10 + model.state.l_y;
 		vfh.gridUpdate(pos);
 		pos.y = -0.05 + model.state.l_y;
 		vfh.gridUpdate(pos);
@@ -209,6 +236,63 @@ public class MSPCommander {
 		vfh.gridUpdate(pos);
 		pos.y = 0.10 + model.state.l_y;
 		vfh.gridUpdate(pos);
+		pos.y = 0.15 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.20 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.25 + model.state.l_y;
+		vfh.gridUpdate(pos);
+
+		pos.x = 1.5f + model.state.l_x;
+		pos.y = 0.0 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.35 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.30 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.25 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.20 + model.state.l_y;
+		vfh.gridUpdate(pos);
+
+		if(Math.random()>0.5) {
+		pos.y = -0.15 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.10 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.05 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = -0.00 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.05 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		}
+
+		pos.y = 0.10 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.05 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.10 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.30 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.35 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.40 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.45 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.50 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		
+		if(Math.random()>0.5) {
+		pos.y = 0.55 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.60 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		pos.y = 0.90 + model.state.l_y;
+		vfh.gridUpdate(pos);
+		}
 	}
 
 	private void setYObstacleForSITL() {

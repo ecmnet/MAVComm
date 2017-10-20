@@ -41,8 +41,10 @@ import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
+import org.mavlink.messages.lquac.msg_debug;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -56,6 +58,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Grid;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.VfhGrid;
 import com.comino.vfh.VfhHist;
@@ -92,12 +95,12 @@ public class StartUp implements Runnable {
 
 		MSPLogger.getInstance(control);
 
-		this.vfh      = new HistogramGrid2D(10,10,20,1f,model.grid.getResolution());
-		this.poh      = new PolarHistogram2D(1,1,10f,0.0025f, model.grid.getResolution());
+		this.vfh      = new HistogramGrid2D(10,10,20,2f,model.grid.getResolution());
+		this.poh      = new PolarHistogram2D(1,0.5f,10f,0.025f, model.grid.getResolution());
 
 		commander = new MSPCommander(control, vfh);
 
-		osBean =  java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+		osBean = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
 		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
 
 		// Start services if required
@@ -163,22 +166,21 @@ public class StartUp implements Runnable {
 
 				vfh.transferGridToModel(model, 0, false);
 				poh.histUpdate(vfh.getMovingWindow(model.state.l_x, model.state.l_y));
-				VfhHist smoothed = poh.histSmooth(2);
-			//	int vi = poh.selectValleyDeg(smoothed, (int)MSPMathUtils.fromRad(model.debug.v1));
+				poh.histSmooth(5);
 
-				if(vfh.nearestDistance(model.state.l_y, model.state.l_x,0) < 0.3 && model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK)) {
+				if(vfh.nearestDistance(model.state.l_y, model.state.l_x,0) < 0.35) {
 					if(!isAvoiding) {
-						System.err.println(vfh.nearestDistance(model.state.l_y, model.state.l_x,0));
 						isAvoiding = true;
-						System.err.println("Avoiding");
-					//	Autopilot.getInstance().obstacleAvoidance(vfh, poh, 0.1f);
-						Autopilot.getInstance().jumpback(0.3f);
+						if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
+							Autopilot.getInstance().obstacleAvoidance(vfh, poh, 0.01f);
+						if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK))
+						    Autopilot.getInstance().jumpback(0.3f);
 					}
 				} else {
-					if(isAvoiding)
-						System.err.println("Not Avoiding anymore");
 					isAvoiding = false;
 				}
+
+
 			//	System.err.println(vfh.nearestDistance(model.state.l_y, model.state.l_x,0));
 			//	poh.print(smoothed,1);
 			//	System.out.println(poh.getDirection(smoothed, vi, 18)+":"+(int)MSPMathUtils.fromRad(model.debug.v1));
