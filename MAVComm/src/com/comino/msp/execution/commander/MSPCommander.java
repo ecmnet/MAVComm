@@ -43,15 +43,11 @@ import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 
-import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.execution.autopilot.Autopilot;
-import com.comino.msp.execution.autopilot.offboard.OffboardManager;
-import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
 

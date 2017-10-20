@@ -40,10 +40,8 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
-import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
-import com.comino.msp.model.segment.Status;
 
 public class MAVCommTest implements Runnable, IMAVLinkListener {
 

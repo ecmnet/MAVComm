@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
-import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
@@ -19,12 +18,9 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
-import com.comino.msp.utils.MSPMathUtils;
-import com.comino.vfh.VfhHist;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
 import com.comino.vfh.vfh2D.PolarHistogram2D;
 
-import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 
