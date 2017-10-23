@@ -216,6 +216,7 @@ public class MAVLinkToModelParser {
 				msg_vfr_hud hud = (msg_vfr_hud) o;
 				model.hud.s = hud.groundspeed;
 				model.hud.vs = hud.climb;
+				model.hud.h  = hud.heading;
 				model.hud.as = hud.airspeed;
 				model.attitude.t = hud.throttle / 100f;
 			}
@@ -322,7 +323,6 @@ public class MAVLinkToModelParser {
 				model.attitude.r = att.roll;
 				model.attitude.p = att.pitch;
 				model.attitude.y = att.yaw;
-				model.hud.h = MSPMathUtils.fromRad(model.attitude.y);
 				model.state.h = model.hud.h;
 
 				model.attitude.rr = att.rollspeed;
