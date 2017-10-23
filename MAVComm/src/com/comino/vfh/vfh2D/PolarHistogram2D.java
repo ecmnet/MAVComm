@@ -57,6 +57,8 @@ public class PolarHistogram2D {
 	private float threshold;
 	private int alpha;
 
+	private List<Valley> valleys = new ArrayList<Valley>();
+
 	public PolarHistogram2D(int alpha, float threshold, float density_a, float density_b, float resolution) {
 
 		this.alpha    = alpha;
@@ -147,7 +149,7 @@ public class PolarHistogram2D {
 	}
 
 	private List<Valley> getValleys() {
-		List<Valley> valleys = new ArrayList<Valley>();
+		valleys.clear();
 		Valley v = null;
 		for(int i=0;i<hist_smoothed.sectors;i++) {
 			if(hist_smoothed.densities[i]<threshold) {
@@ -229,13 +231,13 @@ public class PolarHistogram2D {
 	}
 
 	private class Valley  {
-		public int s=-0;
-		public int e=-360;
+		public int s= 0;
+		public int e=360;
 
 		public int get(int smax) {
-			if((e-s) < smax)
-				return (int)(alpha*(s+e)/2 + 0.5);
-			return (int)(alpha*(s+s+smax)/2 + 0.5);
+			if(Math.abs(e-s) < smax)
+				return (int)(alpha*(s+e)/2);
+			return (int)(alpha*(s+s+smax)/2 );
 		}
 
 		public int distance(int tdir) {

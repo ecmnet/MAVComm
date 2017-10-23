@@ -44,12 +44,16 @@ import com.comino.msp.slam.BlockPoint2D;
 
 public class Grid extends Segment {
 
+	public static final float GRID_EXTENSION_M  = 20.0f;
+	public static final float GRID_RESOLUTION_M = 0.05f;
+
 	private static final long serialVersionUID = -77272456745165428L;
 
 	// TODO: add blockcount => is 0 then refresh on MAVGCL side
 
 	private int      dimension 		= 0;
 	private int      resolution_cm 	= 0;
+	private int      extension_cm    = 0;
 	private int      max_length;
 
 	private static List<Integer>         transfer  = new ArrayList<Integer>();
@@ -63,13 +67,14 @@ public class Grid extends Segment {
 	private int      vx,vy;
 
 	public Grid() {
-		this(10, 0.05f);
+		this(GRID_EXTENSION_M, GRID_RESOLUTION_M);
 	}
 
 
 	public Grid(float extension_m, float resolution_m) {
 		//		this.data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.count    = 0;
+		this.extension_cm = (int)(extension_m) * 100 * 2;
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);
 		this.cx = dimension / 2;
@@ -238,6 +243,10 @@ public class Grid extends Segment {
 
 	public float getResolution() {
 		return resolution_cm / 100f;
+	}
+
+	public float getExtension() {
+		return extension_cm / 100f;
 	}
 
 	public float getIndicatorX() {

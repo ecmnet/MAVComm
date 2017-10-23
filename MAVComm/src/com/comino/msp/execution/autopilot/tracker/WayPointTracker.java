@@ -19,7 +19,7 @@ public class WayPointTracker implements Runnable {
 	private final DataModel                   model;
 
 	private static final int MAX_WAYPOINTS   = 50;
-	private static final int RATE_MS         = 100;
+	private static final int RATE_MS         = 200;
 
 	private boolean          enabled 		= false;
 
@@ -44,7 +44,7 @@ public class WayPointTracker implements Runnable {
 	}
 
 	public Entry<Long, Vector4D_F32> getWaypoint(long ago_ms) {
-		return list.floorEntry(model.sys.getSynchronizedPX4Time_us()/1000-ago_ms);
+		return list.floorEntry(list.lastKey()-ago_ms);
 	}
 
 	public Entry<Long, Vector4D_F32> pollLastWaypoint() {

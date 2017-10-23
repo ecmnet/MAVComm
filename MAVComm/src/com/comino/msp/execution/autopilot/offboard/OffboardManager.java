@@ -20,7 +20,7 @@ public class OffboardManager implements Runnable {
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
-	private static final int UPDATE_RATE                 = 100;
+	private static final int UPDATE_RATE                 = 50;
 	private static final int SETPOINT_TIMEOUT_MS         = 5000;
 
 	public static final int MODE_POSITION	 		    = 1;
@@ -52,9 +52,9 @@ public class OffboardManager implements Runnable {
 		this.current        = new Vector4D_F32();
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS,
-				    Status.MSP_MODE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
-			valid_setpoint = false;
-		});
+				Status.MSP_MODE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
+					valid_setpoint = false;
+				});
 	}
 
 	public void start(int m) {
@@ -182,7 +182,7 @@ public class OffboardManager implements Runnable {
 			if(sleep_tms> 0 && enabled)
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 
-		//	publishSLAM(model.hud.s,target,current);
+			//	publishSLAM(model.hud.s,target,current);
 
 			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
 

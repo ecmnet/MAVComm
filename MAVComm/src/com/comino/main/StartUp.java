@@ -47,12 +47,13 @@ import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
-import com.comino.msp.execution.autopilot.Autopilot;
+import com.comino.msp.execution.autopilot.Autopilot2D;
 import com.comino.msp.execution.commander.MSPCommander;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
 import com.comino.vfh.vfh2D.PolarHistogram2D;
 
@@ -67,8 +68,6 @@ public class StartUp implements Runnable {
 	private OperatingSystemMXBean osBean = null;;
 	private MemoryMXBean  mxBean = null;
 	private DataModel      model = null;
-	private HistogramGrid2D  vfh = null;
-	private PolarHistogram2D poh = null;
 
 	private Point3D_F64   pos          = new Point3D_F64();
 
@@ -86,10 +85,7 @@ public class StartUp implements Runnable {
 
 		MSPLogger.getInstance(control);
 
-		this.vfh      = new HistogramGrid2D(10,10,20,2f,model.grid.getResolution());
-		this.poh      = new PolarHistogram2D(1,0.5f,10f,0.025f, model.grid.getResolution());
-
-		commander = new MSPCommander(control, vfh);
+		commander = new MSPCommander(control);
 
 		osBean = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
 		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();
@@ -115,7 +111,7 @@ public class StartUp implements Runnable {
 				case MSP_CMD.MSP_CMD_MICROSLAM:
 					switch((int)cmd.param1) {
 					case MSP_COMPONENT_CTRL.RESET:
-						vfh.reset(model);
+						Autopilot2D.getInstance().reset();
 						control.writeLogMessage(new LogMessage("[sitl] reset local map",
 								MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 						break;
@@ -124,11 +120,7 @@ public class StartUp implements Runnable {
 				}
 			}
 		});
-
-
-
-		vfh.reset(model);
-
+		Autopilot2D.getInstance().reset();
 	}
 
 
@@ -144,8 +136,6 @@ public class StartUp implements Runnable {
 	public void run() {
 		long tms = System.currentTimeMillis();
 
-
-
 		while(true) {
 			try {
 				Thread.sleep(100);
@@ -154,39 +144,6 @@ public class StartUp implements Runnable {
 						control.close();
 					control.connect();
 				}
-
-				vfh.transferGridToModel(model, 0, false);
-				poh.histUpdate(vfh.getMovingWindow(model.state.l_x, model.state.l_y));
-				poh.histSmooth(5);
-
-				if(vfh.nearestDistance(model.state.l_y, model.state.l_x,0) < 0.35) {
-					if(!isAvoiding) {
-						isAvoiding = true;
-						if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-							Autopilot.getInstance().obstacleAvoidance(vfh, poh, 0.01f);
-						if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK))
-						    Autopilot.getInstance().jumpback(0.3f);
-					}
-				} else {
-					isAvoiding = false;
-				}
-
-
-			//	System.err.println(vfh.nearestDistance(model.state.l_y, model.state.l_x,0));
-			//	poh.print(smoothed,1);
-			//	System.out.println(poh.getDirection(smoothed, vi, 18)+":"+(int)MSPMathUtils.fromRad(model.debug.v1));
-
-				msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
-				grid.resolution = 0;
-				grid.extension  = 0;
-				grid.cx  = model.grid.getIndicatorX();
-				grid.cy  = model.grid.getIndicatorY();
-				grid.tms  = System.nanoTime() / 1000;
-				grid.count = model.grid.count;
-				if(model.grid.toArray(grid.data)) {
-					control.sendMAVLinkMessage(grid);
-				}
-
 
 				msg_msp_status msg = new msg_msp_status(2,1);
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);

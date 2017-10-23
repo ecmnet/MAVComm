@@ -73,4 +73,16 @@ public class VfhGrid {
 		b.append("\n");
 		return b.toString();
 	}
+
+	public String toString() {
+		StringBuilder b = new StringBuilder();
+		for(int c=dimension-1; c >= 0; c--) {
+			for(int r=0; r < dimension; r++) {
+					b.append(cells[r * dimension +c]+" ");
+			}
+			b.append("\n");
+		}
+		b.append("\n");
+		return b.toString();
+	}
 }

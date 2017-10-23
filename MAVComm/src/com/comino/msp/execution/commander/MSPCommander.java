@@ -44,7 +44,7 @@ import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.msp.execution.autopilot.Autopilot;
+import com.comino.msp.execution.autopilot.Autopilot2D;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -56,13 +56,11 @@ import georegression.struct.point.Point3D_F64;
 public class MSPCommander {
 
 	private IMAVMSPController        control = null;
-	private Autopilot              autopilot = null;
+	private Autopilot2D              autopilot = null;
 	private DataModel                  model = null;
 	private HistogramGrid2D             vfh  = null;
 
-	public MSPCommander(IMAVMSPController control, HistogramGrid2D vfh) {
-
-		this.vfh = vfh;
+	public MSPCommander(IMAVMSPController control) {
 
 		this.control = control;
 		this.model   = control.getCurrentModel();
@@ -71,7 +69,8 @@ public class MSPCommander {
 
 		System.out.println("Commander initialized");
 
-		autopilot = Autopilot.getInstance(control);
+		autopilot = Autopilot2D.getInstance(control);
+		this.vfh = autopilot.getMap2D();
 	}
 
 	private void registerCommands() {
@@ -196,7 +195,7 @@ public class MSPCommander {
 
 
 		pos.y = -0.15 + model.state.l_y;
-		pos.x = 1 + model.state.l_x;
+		pos.x = 1.5 + model.state.l_x;
 		pos.z = 1.0 + model.state.l_z;
 		vfh.gridUpdate(pos);
 		pos.y = -0.35 + model.state.l_y;
@@ -207,18 +206,18 @@ public class MSPCommander {
 		vfh.gridUpdate(pos);
 
 		if(Math.random()>0.5) {
-		pos.y = -0.40 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.35 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.30 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.25 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.20 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.15 + model.state.l_y;
-		vfh.gridUpdate(pos);
+			pos.y = -0.40 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.35 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.30 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.25 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.20 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.15 + model.state.l_y;
+			vfh.gridUpdate(pos);
 		}
 
 
@@ -239,7 +238,7 @@ public class MSPCommander {
 		pos.y = 0.25 + model.state.l_y;
 		vfh.gridUpdate(pos);
 
-		pos.x = 1.5f + model.state.l_x;
+		pos.x = 2.5f + model.state.l_x;
 		pos.y = 0.0 + model.state.l_y;
 		vfh.gridUpdate(pos);
 		pos.y = -0.35 + model.state.l_y;
@@ -252,16 +251,16 @@ public class MSPCommander {
 		vfh.gridUpdate(pos);
 
 		if(Math.random()>0.5) {
-		pos.y = -0.15 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.10 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.05 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = -0.00 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = 0.05 + model.state.l_y;
-		vfh.gridUpdate(pos);
+			pos.y = -0.15 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.10 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.05 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = -0.00 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = 0.05 + model.state.l_y;
+			vfh.gridUpdate(pos);
 		}
 
 		pos.y = 0.10 + model.state.l_y;
@@ -280,35 +279,78 @@ public class MSPCommander {
 		vfh.gridUpdate(pos);
 		pos.y = 0.50 + model.state.l_y;
 		vfh.gridUpdate(pos);
-		
+
 		if(Math.random()>0.5) {
-		pos.y = 0.55 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = 0.60 + model.state.l_y;
-		vfh.gridUpdate(pos);
-		pos.y = 0.90 + model.state.l_y;
-		vfh.gridUpdate(pos);
+			pos.y = 0.55 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = 0.60 + model.state.l_y;
+			vfh.gridUpdate(pos);
+			pos.y = 0.90 + model.state.l_y;
+			vfh.gridUpdate(pos);
 		}
 	}
 
 	private void setYObstacleForSITL() {
+		float x,y;
 		if(vfh==null)
 			return;
 		vfh.reset(model);
 		Point3D_F64   pos = new Point3D_F64();
 		System.err.println("SITL -> set example obstacle map");
-		pos.x = -0.10 + model.state.l_x;
-		pos.y = 1 + model.state.l_y;
 		pos.z = 1.0 + model.state.l_z;
+
+		pos.y = 1.5 + model.state.l_y;
+		pos.x = -0.15 + model.state.l_x;
+		vfh.gridUpdate(pos);
+		pos.x = -0.10 + model.state.l_x;
 		vfh.gridUpdate(pos);
 		pos.x = -0.05 + model.state.l_x;
 		vfh.gridUpdate(pos);
-		pos.x = 0 + model.state.l_x;
+		pos.x =  0.00 + model.state.l_x;
 		vfh.gridUpdate(pos);
 		pos.x = 0.05 + model.state.l_x;
 		vfh.gridUpdate(pos);
 		pos.x = 0.10 + model.state.l_x;
 		vfh.gridUpdate(pos);
+		pos.x = 0.15 + model.state.l_x;
+		vfh.gridUpdate(pos);
+
+		for(int i=0; i< 40; i++) {
+
+
+			x = ((int)(Math.random()*20 - 5)) / 5f         + (float)Math.random()*2f - 1f;
+			y = ((int)(Math.random()*20))     / 5f  + 2f   + (float)Math.random()*2f - 1f;
+
+			pos.x = x   + model.state.l_x - 0.05;
+			pos.y = y   + model.state.l_y - 0.05;
+			vfh.gridUpdate(pos);
+
+			pos.x = x   + model.state.l_x - 0.05;
+			pos.y = y   + model.state.l_y;
+			vfh.gridUpdate(pos);
+
+			pos.x = x   + model.state.l_x;
+			pos.y = y   + model.state.l_y - 0.05;
+			vfh.gridUpdate(pos);
+
+			pos.x = x   + model.state.l_x;
+			pos.y = y   + model.state.l_y;
+			vfh.gridUpdate(pos);
+
+			pos.x = x   + model.state.l_x + 0.05;
+			pos.y = y   + model.state.l_y + 0.05;
+			vfh.gridUpdate(pos);
+
+			pos.x = x   + model.state.l_x + 0.05;
+			pos.y = y   + model.state.l_y;
+			vfh.gridUpdate(pos);
+
+			pos.x = x   + model.state.l_x;
+			pos.y = y   + model.state.l_y + 0.05;
+			vfh.gridUpdate(pos);
+
+		}
+
 	}
 
 }
