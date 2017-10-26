@@ -19,7 +19,6 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
-import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
 import com.comino.vfh.vfh2D.PolarHistogram2D;
 
@@ -37,9 +36,8 @@ public class Autopilot2D implements Runnable {
 	private static final int   POH_SMAX             = 18;
 	private static final int   POH_SMOOTHING        = 12;
 
-	private static final float OBSTACLE_MINDISTANCE = 1.25f;
+	private static final float OBSTACLE_MINDISTANCE = 0.5f;
 	private static final float OBSTACLE_SPEEDFACTOR = 0.2f;
-	private static final int   OBSTACLE_THRESHOLD   = 0;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -51,6 +49,8 @@ public class Autopilot2D implements Runnable {
 
 	private HistogramGrid2D  		vfh 		= null;
 	private PolarHistogram2D 		poh 		= null;
+
+	private IAutoPilotGetTarget targetListener = null;
 
 	private boolean              isAvoiding  = false;
 
@@ -142,6 +142,10 @@ public class Autopilot2D implements Runnable {
 		}
 	}
 
+	public void registerTargetListener(IAutoPilotGetTarget cb) {
+		this.targetListener = cb;
+	}
+
 	public HistogramGrid2D getMap2D() {
 		return vfh;
 	}
@@ -149,7 +153,7 @@ public class Autopilot2D implements Runnable {
 	public void reset(boolean grid) {
 		clearAutopilotActions();
 		if(grid)
-		  vfh.reset(model);
+			vfh.reset(model);
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {
@@ -160,6 +164,7 @@ public class Autopilot2D implements Runnable {
 
 	private void clearAutopilotActions() {
 		isAvoiding = false;
+		targetListener = null;
 		offboard.removeListener();
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
@@ -227,7 +232,7 @@ public class Autopilot2D implements Runnable {
 
 	public void obstacleAvoidance(HistogramGrid2D his, PolarHistogram2D poh, float speed) {
 
-		float angle=0; final float projected_distance = 15f;
+		float angle=0;  float projected_distance = 6f;
 
 		final Vector3D_F32 current    = new Vector3D_F32();
 		final Vector3D_F32 delta      = new Vector3D_F32();
@@ -237,14 +242,18 @@ public class Autopilot2D implements Runnable {
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 		target.set(current);
 
-		projected.set(current);
-		// Problem: Target direction
-		//	angle = MSPMathUtils.toRad(model.hud.h)+(float)Math.PI;
-		angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
+		// Determine projected position via CB
+		if(targetListener!=null) {
+			targetListener.getTarget(projected);
+		} else {
+			// If no target by CB available => use last direction projection
+			projected.set(current);
+			angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
 
-		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
-				(float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
-		projected.plusIP(delta);
+			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
+					(float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
+			projected.plusIP(delta);
+		}
 
 		angle = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,POH_SMAX);
 		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
@@ -256,21 +265,29 @@ public class Autopilot2D implements Runnable {
 			float a  = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, POH_SMAX);
 			float nd = his.nearestDistance(model.state.l_y, model.state.l_x);
 			//		System.out.print(nd+": "); poh.print(poh.hist_smoothed,(int)MSPMathUtils.fromRad(a));
-			if(nd < OBSTACLE_MINDISTANCE ) {
-				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*speed*nd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*speed*nd, 0);
-				target.plusIP(delta);
-				offboard.setTarget(target);
-				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-				slam.px = projected.getY();
-				slam.py = projected.getX();
-				slam.md = nd;
-				slam.pd = MSP3DUtils.angleXY(projected, current);
-				slam.pv = speed*nd*15;
-				control.sendMAVLinkMessage(slam);
+			float spd = speed * nd;
+
+			if(MSP3DUtils.distance3D(projected,current) > 0.3f ) {
+
+				if(nd < OBSTACLE_MINDISTANCE ) {
+					delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*spd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*spd, 0);
+					target.plusIP(delta);
+					offboard.setTarget(target);
+				} else {
+					target.plusIP(delta);
+					offboard.setTarget(target);
+				}
 			} else {
-				logger.writeLocalMsg("[msp] ObstacleAvoidance finalized. Resume track.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-				clearAutopilotActions();
+				logger.writeLocalMsg("[msp] ObstacleAvoidance finalized. Projected target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+                 spd = 0;
 			}
+			msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+			slam.px = projected.getY();
+			slam.py = projected.getX();
+			slam.md = nd;
+			slam.pd = MSP3DUtils.angleXY(projected, current);
+			slam.pv = spd*15;
+			control.sendMAVLinkMessage(slam);
 		});
 
 		offboard.start(OffboardManager.MODE_POSITION);
@@ -379,6 +396,10 @@ public class Autopilot2D implements Runnable {
 		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
 		final Vector3D_F32 delta      = new Vector3D_F32();
 		final Vector3D_F32 projected  = new Vector3D_F32();
+
+		autopilot.registerTargetListener((n)->{
+			n.set(target);
+		});
 
 		projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
 		float angle = MSP3DUtils.angleXY(target,projected);
