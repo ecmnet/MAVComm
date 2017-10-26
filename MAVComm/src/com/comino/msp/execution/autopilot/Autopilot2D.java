@@ -274,6 +274,7 @@ public class Autopilot2D implements Runnable {
 					target.plusIP(delta);
 					offboard.setTarget(target);
 				} else {
+					// should continue with previous mode execution
 					target.plusIP(delta);
 					offboard.setTarget(target);
 				}
@@ -296,6 +297,57 @@ public class Autopilot2D implements Runnable {
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 		logger.writeLocalMsg("[msp] ObstacleAvoidance executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 	}
+
+	public void return_along_path(boolean enable) {
+		if(!tracker.freeze())
+			return;
+		logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
+		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+		offboard.start(OffboardManager.MODE_POSITION);
+		offboard.addListener((m,d) -> {
+			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
+			if(e!=null && e.getValue().z < -0.3f)
+				offboard.setTarget(e.getValue());
+			else {
+				tracker.unfreeze();
+				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
+				clearAutopilotActions() ;
+			}
+		});
+	}
+
+	public void moveto(float x, float y, float z, float yaw) {
+		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
+		final Vector3D_F32 delta      = new Vector3D_F32();
+		final Vector3D_F32 projected  = new Vector3D_F32();
+
+		autopilot.registerTargetListener((n)->{
+			n.set(target);
+		});
+
+		projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
+		float angle = MSP3DUtils.angleXY(target,projected);
+
+		delta.set((float)Math.sin(Math.PI-angle-(float)Math.PI/2f)*0.2f,
+				(float)Math.cos(Math.PI-angle-(float)Math.PI/2f)*0.2f, 0);
+
+		projected.plusIP(delta);
+
+		offboard.setTarget(projected);
+		offboard.start(OffboardManager.MODE_POSITION);
+		offboard.addListener((m,d) -> {
+			projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
+			if(MSP3DUtils.distance3D(target,projected) >0.3f && model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.INTERACTIVE)) {
+				projected.plusIP(delta);
+				offboard.setTarget(projected);
+			} else {
+
+			}
+		});
+	}
+
+
+	///************ Experimental modes
 
 	// Circle mode
 	private Vector3D_F32 circleCenter = new Vector3D_F32();
@@ -373,55 +425,5 @@ public class Autopilot2D implements Runnable {
 			});
 		}
 	}
-
-	public void return_along_path(boolean enable) {
-		if(!tracker.freeze())
-			return;
-		logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
-		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
-		offboard.start(OffboardManager.MODE_POSITION);
-		offboard.addListener((m,d) -> {
-			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-			if(e!=null && e.getValue().z < -0.3f)
-				offboard.setTarget(e.getValue());
-			else {
-				tracker.unfreeze();
-				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
-				clearAutopilotActions() ;
-			}
-		});
-	}
-
-	public void moveto(float x, float y, float z, float yaw) {
-		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
-		final Vector3D_F32 delta      = new Vector3D_F32();
-		final Vector3D_F32 projected  = new Vector3D_F32();
-
-		autopilot.registerTargetListener((n)->{
-			n.set(target);
-		});
-
-		projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
-		float angle = MSP3DUtils.angleXY(target,projected);
-
-		delta.set((float)Math.sin(Math.PI-angle-(float)Math.PI/2f)*0.2f,
-				(float)Math.cos(Math.PI-angle-(float)Math.PI/2f)*0.2f, 0);
-
-		projected.plusIP(delta);
-
-		offboard.setTarget(projected);
-		offboard.start(OffboardManager.MODE_POSITION);
-		offboard.addListener((m,d) -> {
-			projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
-			if(MSP3DUtils.distance3D(target,projected) >0.3f && model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.INTERACTIVE)) {
-				projected.plusIP(delta);
-				offboard.setTarget(projected);
-			} else {
-
-			}
-		});
-	}
-
-
 
 }
