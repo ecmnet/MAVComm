@@ -30,12 +30,12 @@ public class Autopilot2D implements Runnable {
 
 	private static final float HIS_WINDOWSIZE       = 3f;
 
-	private static final float POH_DENSITY_B        = 0.025f;
+	private static final float POH_DENSITY_B        = 0.24f;
 	private static final float POH_DENSITY_A        = 10f;
-	private static final float POH_THRESHOLD        = 0.5f;
+	private static final float POH_THRESHOLD        = 2f;
 	private static final int   POH_ALPHA            = 1;
 	private static final int   POH_SMAX             = 18;
-	private static final int   POH_SMOOTHING        = 10;
+	private static final int   POH_SMOOTHING        = 12;
 
 	private static final float OBSTACLE_MINDISTANCE = 1.25f;
 	private static final float OBSTACLE_SPEEDFACTOR = 0.2f;
@@ -76,11 +76,12 @@ public class Autopilot2D implements Runnable {
 		this.vfh      = new HistogramGrid2D(model.grid.getExtension(),HIS_WINDOWSIZE, model.grid.getResolution());
 		this.poh      = new PolarHistogram2D(POH_ALPHA,POH_THRESHOLD,POH_DENSITY_A,POH_DENSITY_B, model.grid.getResolution());
 
-		// Auto-Takeoff: Switch to Offboard as soon as takeoff completed
+		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
 			offboard.setCurrentAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
 			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+				model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
@@ -129,15 +130,15 @@ public class Autopilot2D implements Runnable {
 				isAvoiding = false;
 			}
 
-				grid.resolution = 0;
-				grid.extension  = 0;
-				grid.cx  = model.grid.getIndicatorX();
-				grid.cy  = model.grid.getIndicatorY();
-				grid.tms  = System.nanoTime() / 1000;
-				grid.count = model.grid.count;
-				if(model.grid.toArray(grid.data)) {
-					control.sendMAVLinkMessage(grid);
-				}
+			grid.resolution = 0;
+			grid.extension  = 0;
+			grid.cx  = model.grid.getIndicatorX();
+			grid.cy  = model.grid.getIndicatorY();
+			grid.tms  = System.nanoTime() / 1000;
+			grid.count = model.grid.count;
+			if(model.grid.toArray(grid.data)) {
+				control.sendMAVLinkMessage(grid);
+			}
 		}
 	}
 
@@ -145,9 +146,10 @@ public class Autopilot2D implements Runnable {
 		return vfh;
 	}
 
-	public void reset() {
+	public void reset(boolean grid) {
 		clearAutopilotActions();
-		vfh.reset(model);
+		if(grid)
+		  vfh.reset(model);
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {
@@ -157,6 +159,7 @@ public class Autopilot2D implements Runnable {
 	}
 
 	private void clearAutopilotActions() {
+		isAvoiding = false;
 		offboard.removeListener();
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
@@ -224,7 +227,7 @@ public class Autopilot2D implements Runnable {
 
 	public void obstacleAvoidance(HistogramGrid2D his, PolarHistogram2D poh, float speed) {
 
-		float angle=0; final float projected_distance = 6f;
+		float angle=0; final float projected_distance = 15f;
 
 		final Vector3D_F32 current    = new Vector3D_F32();
 		final Vector3D_F32 delta      = new Vector3D_F32();
@@ -236,11 +239,11 @@ public class Autopilot2D implements Runnable {
 
 		projected.set(current);
 		// Problem: Target direction
-	//	angle = MSPMathUtils.toRad(model.hud.h)+(float)Math.PI;
+		//	angle = MSPMathUtils.toRad(model.hud.h)+(float)Math.PI;
 		angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
 
 		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
-				  (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
+				(float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
 		projected.plusIP(delta);
 
 		angle = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,POH_SMAX);
@@ -252,14 +255,15 @@ public class Autopilot2D implements Runnable {
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 			float a  = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, POH_SMAX);
 			float nd = his.nearestDistance(model.state.l_y, model.state.l_x);
-			float td = MSP3DUtils.distance3D(current, projected);
-			if(nd < OBSTACLE_MINDISTANCE *2 && td > 0.3 ) {
+			//		System.out.print(nd+": "); poh.print(poh.hist_smoothed,(int)MSPMathUtils.fromRad(a));
+			if(nd < OBSTACLE_MINDISTANCE ) {
 				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*speed*nd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*speed*nd, 0);
 				target.plusIP(delta);
 				offboard.setTarget(target);
 				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 				slam.px = projected.getY();
 				slam.py = projected.getX();
+				slam.md = nd;
 				slam.pd = MSP3DUtils.angleXY(projected, current);
 				slam.pv = speed*nd*15;
 				control.sendMAVLinkMessage(slam);
@@ -367,6 +371,32 @@ public class Autopilot2D implements Runnable {
 				tracker.unfreeze();
 				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
 				clearAutopilotActions() ;
+			}
+		});
+	}
+
+	public void moveto(float x, float y, float z, float yaw) {
+		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
+		final Vector3D_F32 delta      = new Vector3D_F32();
+		final Vector3D_F32 projected  = new Vector3D_F32();
+
+		projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
+		float angle = MSP3DUtils.angleXY(target,projected);
+
+		delta.set((float)Math.sin(Math.PI-angle-(float)Math.PI/2f)*0.2f,
+				(float)Math.cos(Math.PI-angle-(float)Math.PI/2f)*0.2f, 0);
+
+		projected.plusIP(delta);
+
+		offboard.setTarget(projected);
+		offboard.start(OffboardManager.MODE_POSITION);
+		offboard.addListener((m,d) -> {
+			projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
+			if(MSP3DUtils.distance3D(target,projected) >0.3f && model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.INTERACTIVE)) {
+				projected.plusIP(delta);
+				offboard.setTarget(projected);
+			} else {
+
 			}
 		});
 	}

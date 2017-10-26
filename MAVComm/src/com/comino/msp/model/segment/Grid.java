@@ -100,7 +100,7 @@ public class Grid extends Segment {
 	public boolean toArray(long[] array) {
 		count = data.size();
 		Arrays.fill(array, 0);
-		if(transfer.isEmpty())
+		if(transfer.isEmpty() || array == null)
 			return false;
 		for(int i=0; i< array.length && transfer.size() > 0;i++) {
 			array[i] = transfer.remove(0);

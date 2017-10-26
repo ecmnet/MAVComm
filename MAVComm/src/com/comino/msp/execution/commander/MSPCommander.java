@@ -143,7 +143,9 @@ public class MSPCommander {
 
 
 	private void setOffboardPosition(msg_msp_command cmd) {
-		autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+		//autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+        autopilot.reset(false);
+		autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
 	}
 
 
@@ -315,40 +317,48 @@ public class MSPCommander {
 		pos.x = 0.15 + model.state.l_x;
 		vfh.gridUpdate(pos);
 
-		for(int i=0; i< 40; i++) {
+		float dotx, doty ;
+
+		for(int j=0; j< 10; j++) {
+
+			dotx = 0 + (float)((Math.random()*8 - 4));
+			doty = 2 + (float)((Math.random()*5  ));
+
+			for(int i=0; i< 10; i++) {
 
 
-			x = ((int)(Math.random()*20 - 5)) / 5f         + (float)Math.random()*2f - 1f;
-			y = ((int)(Math.random()*20))     / 5f  + 2f   + (float)Math.random()*2f - 1f;
+				x =  (float)Math.random()*0.8f - 0.4f + dotx;
+				y =  (float)Math.random()*0.8f - 0.4f + doty;
 
-			pos.x = x   + model.state.l_x - 0.05;
-			pos.y = y   + model.state.l_y - 0.05;
-			vfh.gridUpdate(pos);
+				pos.x = x   + model.state.l_x - 0.05;
+				pos.y = y   + model.state.l_y - 0.05;
+				vfh.gridUpdate(pos);
 
-			pos.x = x   + model.state.l_x - 0.05;
-			pos.y = y   + model.state.l_y;
-			vfh.gridUpdate(pos);
+				pos.x = x   + model.state.l_x - 0.05;
+				pos.y = y   + model.state.l_y;
+				vfh.gridUpdate(pos);
 
-			pos.x = x   + model.state.l_x;
-			pos.y = y   + model.state.l_y - 0.05;
-			vfh.gridUpdate(pos);
+				pos.x = x   + model.state.l_x;
+				pos.y = y   + model.state.l_y - 0.05;
+				vfh.gridUpdate(pos);
 
-			pos.x = x   + model.state.l_x;
-			pos.y = y   + model.state.l_y;
-			vfh.gridUpdate(pos);
+				pos.x = x   + model.state.l_x;
+				pos.y = y   + model.state.l_y;
+				vfh.gridUpdate(pos);
 
-			pos.x = x   + model.state.l_x + 0.05;
-			pos.y = y   + model.state.l_y + 0.05;
-			vfh.gridUpdate(pos);
+				pos.x = x   + model.state.l_x + 0.05;
+				pos.y = y   + model.state.l_y + 0.05;
+				vfh.gridUpdate(pos);
 
-			pos.x = x   + model.state.l_x + 0.05;
-			pos.y = y   + model.state.l_y;
-			vfh.gridUpdate(pos);
+				pos.x = x   + model.state.l_x + 0.05;
+				pos.y = y   + model.state.l_y;
+				vfh.gridUpdate(pos);
 
-			pos.x = x   + model.state.l_x;
-			pos.y = y   + model.state.l_y + 0.05;
-			vfh.gridUpdate(pos);
+				pos.x = x   + model.state.l_x;
+				pos.y = y   + model.state.l_y + 0.05;
+				vfh.gridUpdate(pos);
 
+			}
 		}
 
 	}

@@ -111,7 +111,7 @@ public class StartUp implements Runnable {
 				case MSP_CMD.MSP_CMD_MICROSLAM:
 					switch((int)cmd.param1) {
 					case MSP_COMPONENT_CTRL.RESET:
-						Autopilot2D.getInstance().reset();
+						Autopilot2D.getInstance().reset(true);
 						control.writeLogMessage(new LogMessage("[sitl] reset local map",
 								MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 						break;
@@ -120,7 +120,7 @@ public class StartUp implements Runnable {
 				}
 			}
 		});
-		Autopilot2D.getInstance().reset();
+		Autopilot2D.getInstance().reset(true);
 	}
 
 

@@ -152,6 +152,7 @@ public class MAVLinkToModelParser {
 				model.slam.pv = slam.pv;
 				model.slam.px = slam.px;
 				model.slam.py = slam.py;
+				model.slam.di = slam.md;
 				model.grid.tms = model.sys.getSynchronizedPX4Time_us();
 
 			}

@@ -72,6 +72,9 @@
               <entry value="2" name="OBSTACLE_AVOIDANCE">
                   <description>JumpBack mode</description>
               </entry>
+              <entry value="3" name="INTERACTIVE">
+                  <description>Interactive mode (by mouse)</description>
+              </entry>
                <entry value="15" name="STEP_MODE">
                   <description>Single step mode (testing)</description>
               </entry>

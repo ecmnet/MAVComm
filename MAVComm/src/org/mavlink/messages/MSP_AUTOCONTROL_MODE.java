@@ -21,6 +21,10 @@ public interface MSP_AUTOCONTROL_MODE {
      */
     public final static int OBSTACLE_AVOIDANCE = 2;
     /**
+     * Interactive mode (by mouse)
+     */
+    public final static int INTERACTIVE = 3;
+    /**
      * Single step mode (testing)
      */
     public final static int STEP_MODE = 15;

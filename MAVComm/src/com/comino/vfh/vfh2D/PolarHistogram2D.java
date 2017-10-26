@@ -48,7 +48,7 @@ import com.comino.vfh.VfhHist;
 public class PolarHistogram2D {
 
 	private VfhHist hist;
-	private VfhHist hist_smoothed;
+	public VfhHist hist_smoothed;
 
 	private float resolution;
 	private float density_a;
@@ -93,7 +93,9 @@ public class PolarHistogram2D {
 						(density_a - density_b * (float)Math.sqrt((i - dim/2)*(i - dim/2) + (j - dim/2)*(j - dim/2)) * resolution);
 
 				/* Add density to respective point in the histogram. */
-				hist.densities[(int)(wrap(beta+180,360)) / hist.alpha] += density;
+				int pos = (int)(wrap(beta+180,360)) / hist.alpha;
+				hist.densities[pos] += density;
+
 			}
 		}
 	}
@@ -116,36 +118,18 @@ public class PolarHistogram2D {
 		return hist_smoothed;
 	}
 
-	public float selectValley(float target_direction_rad) {
-		return MSPMathUtils.toRad(selectValleyDeg(hist_smoothed, (int)MSPMathUtils.fromRad(target_direction_rad)));
-	}
-
-
-	public int selectValleyDeg(VfhHist h, int target_direction) {
-		int d = 999; int vi=-1;
-		for(int i=0;i<h.sectors;i++) {
-			if(h.densities[i]<threshold && Math.abs(i*alpha - target_direction) < d) {
-				d = Math.abs(i*alpha - target_direction);  vi = i;
-			}
-		}
-
-		return vi;
-	}
 
 	public float getDirection(float target_direction_rad, int smax) {
 		int tdir = (int)MSPMathUtils.fromRad(target_direction_rad);
-		int d=999;
+		int d=9999;
 		List<Valley> vs = getValleys(); Valley tv = null;
 		for(Valley v : vs) {
+			//			System.out.println(tdir+" => "+v+" ->"+v.distance(tdir));
 			if(v.distance(tdir) < d ) {
 				tv = v; d  = v.distance(tdir);
 			}
 		}
-		if(tdir > tv.s && tdir < tv.e) {
-			return(target_direction_rad);
-		}
-
-		return MSPMathUtils.toRad(tv.get(smax));
+		return MSPMathUtils.toRad(tv.get(smax,tdir));
 	}
 
 	private List<Valley> getValleys() {
@@ -165,34 +149,12 @@ public class PolarHistogram2D {
 			}
 		}
 		if(v!=null) {
-			valleys.add(v); v = null;
+			valleys.add(v);
+			v = null;
 		}
 		return valleys;
 	}
 
-	public int getDirection(VfhHist h, int vi, int smax) {
-		if(vi < 0)
-			return -1;
-
-		int from = 0; int to = 360;
-		for(int i=vi;i<h.sectors;i++)
-			if(h.densities[i]>threshold) {
-				to = i-1; break;
-			}
-		for(int i=vi;i>0;i--)
-			if(h.densities[i]>threshold) {
-				from = i+1; break;
-			}
-
-		if((to - from) > smax) {
-			if((vi - from) > (to -vi))
-				return alpha * (from + vi) / 2;
-			else
-				return alpha * (to +vi) / 2;
-		} else {
-			return vi * alpha;
-		}
-	}
 
 
 
@@ -234,19 +196,88 @@ public class PolarHistogram2D {
 		public int s= 0;
 		public int e=360;
 
-		public int get(int smax) {
-			if(Math.abs(e-s) < smax)
-				return (int)(alpha*(s+e)/2);
-			return (int)(alpha*(s+s+smax)/2 );
+		public int get(int smax, int tdir) {
+
+			int tsec = tdir/alpha; int es = 0; int ss = 0;
+
+//
+//			if(Math.abs(e-s) > 180/alpha)
+//				return tdir;
+
+			if(s < tsec && e > tsec)
+				return tdir;
+
+
+			if(Math.abs(e-s) > smax) {
+
+				es = e; ss = s;
+
+				if((s+e)/2 > tsec)
+					e = s + smax;
+				else
+					s = e - smax;
+
+				if(ss < tsec && es > tsec && !(s < tsec && e > tsec))
+					return tdir;
+
+
+			}
+
+			//		System.out.println(" ==> "+toString() +" ==> "+(int)(alpha*(s+e)/2));
+
+			return (int)(alpha*(s+e)/2);
 		}
 
 		public int distance(int tdir) {
-			return Math.abs(alpha*(s+e)/2-tdir);
+
+			if(e<360/alpha)
+				return Math.abs((s+e)/2-tdir/alpha);
+
+			if(tdir > 180)
+				return Math.abs((s+e)/2-tdir/alpha);
+
+			return Math.abs((s+e)/2-(tdir+360)/alpha);
 		}
 
 		public String toString() {
-			return "From: "+s+" To: "+e;
+			return "From: "+s*alpha+" To: "+e*alpha;
 		}
+	}
+
+	public static void main(String[] args) {
+		int target = 0;
+
+		PolarHistogram2D poh = new PolarHistogram2D(2,0.5f,10,0.24f,0.05f);
+		for(int i=0;i<20;i++)
+			poh.hist_smoothed.densities[i] = 0f;
+		for(int i=20;i<60;i++)
+			poh.hist_smoothed.densities[i] = 10f;
+		for(int i=60;i<70;i++)
+			poh.hist_smoothed.densities[i] = 0f;
+		for(int i=70;i<85;i++)
+			poh.hist_smoothed.densities[i] = 10f;
+		for(int i=85;i<120;i++)
+			poh.hist_smoothed.densities[i] = 0f;
+		for(int i=120;i<130;i++)
+			poh.hist_smoothed.densities[i] = 10f;
+		for(int i=130;i<180;i++)
+			poh.hist_smoothed.densities[i] = 0f;
+
+		System.out.println();
+
+
+		target = (int)MSPMathUtils.fromRad(poh.getDirection(MSPMathUtils.toRad(0), 18));
+		poh.print(poh.hist_smoothed,target); System.out.println(target);
+		target = (int)MSPMathUtils.fromRad(poh.getDirection(MSPMathUtils.toRad(45), 18));
+		poh.print(poh.hist_smoothed,target); System.out.println(target);
+		target = (int)MSPMathUtils.fromRad(poh.getDirection(MSPMathUtils.toRad(130), 18));
+		poh.print(poh.hist_smoothed,target); System.out.println(target);
+		target = (int)MSPMathUtils.fromRad(poh.getDirection(MSPMathUtils.toRad(200), 18));
+		poh.print(poh.hist_smoothed,target); System.out.println(target);
+		target = (int)MSPMathUtils.fromRad(poh.getDirection(MSPMathUtils.toRad(270), 18));
+		poh.print(poh.hist_smoothed,target); System.out.println(target);
+		target = (int)MSPMathUtils.fromRad(poh.getDirection(MSPMathUtils.toRad(360), 18));
+		poh.print(poh.hist_smoothed,target); System.out.println(target);
 
 	}
 

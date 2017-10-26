@@ -239,10 +239,10 @@ public class HistogramGrid2D {
 
 		pol.print();
 		VfhHist s = pol.histSmooth(5);
-		int vi = pol.selectValleyDeg(s,240);
-		int d = pol.getDirection(s,vi,12);
-	    System.out.println(d);
-		pol.print(pol.histSmooth(5),d);
+//		int vi = pol.selectValleyDeg(s,240);
+//		int d = pol.getDirection(s,vi,12);
+//	    System.out.println(d);
+//		pol.print(pol.histSmooth(5),d);
 
 
 
