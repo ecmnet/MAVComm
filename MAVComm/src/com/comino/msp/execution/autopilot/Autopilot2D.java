@@ -19,6 +19,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
+import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
 import com.comino.vfh.vfh2D.PolarHistogram2D;
 
@@ -31,13 +32,14 @@ public class Autopilot2D implements Runnable {
 
 	private static final float POH_DENSITY_B        = 0.24f;
 	private static final float POH_DENSITY_A        = 10f;
-	private static final float POH_THRESHOLD        = 2f;
+	private static final float POH_THRESHOLD        = 1f;
 	private static final int   POH_ALPHA            = 1;
-	private static final int   POH_SMAX             = 18;
-	private static final int   POH_SMOOTHING        = 12;
+	private static final int   POH_SMAX             = 50;
+	private static final int   POH_SMOOTHING        = 10;
 
-	private static final float OBSTACLE_MINDISTANCE = 0.5f;
-	private static final float OBSTACLE_SPEEDFACTOR = 0.2f;
+	private static final float OBSTACLE_MINDISTANCE  = 1.25f;
+	private static final float OBSTACLE_FAILDISTANCE = 0.3f;
+	private static final float OBSTACLE_SPEEDFACTOR  = 0.3f;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -109,6 +111,8 @@ public class Autopilot2D implements Runnable {
 	@Override
 	public void run() {
 
+		float nearestTarget = 0;
+
 		msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
 
 		while(true) {
@@ -118,7 +122,12 @@ public class Autopilot2D implements Runnable {
 			poh.histUpdate(vfh.getMovingWindow(model.state.l_x, model.state.l_y));
 			poh.histSmooth(POH_SMOOTHING);
 
-			if(vfh.nearestDistance(model.state.l_y, model.state.l_x) < OBSTACLE_MINDISTANCE) {
+			nearestTarget = vfh.nearestDistance(model.state.l_y, model.state.l_x);
+			//			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
+			//				logger.writeLocalMsg("[msp] Obstacle too close.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+			//			}
+
+			if(nearestTarget < OBSTACLE_MINDISTANCE) {
 				if(!isAvoiding) {
 					isAvoiding = true;
 					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
@@ -232,7 +241,7 @@ public class Autopilot2D implements Runnable {
 
 	public void obstacleAvoidance(HistogramGrid2D his, PolarHistogram2D poh, float speed) {
 
-		float angle=0;  float projected_distance = 6f;
+		float angle=0;  float projected_distance = 2.5f;
 
 		final Vector3D_F32 current    = new Vector3D_F32();
 		final Vector3D_F32 delta      = new Vector3D_F32();
@@ -255,32 +264,44 @@ public class Autopilot2D implements Runnable {
 			projected.plusIP(delta);
 		}
 
-		angle = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,POH_SMAX);
+		try {
+			angle = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,POH_SMAX);
+		} catch(Exception e) {
+			offboard.setTarget(current);
+			logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+			return;
+		}
 		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
 		target.plusIP(delta);
 
 		offboard.setTarget(target);
 		offboard.addListener((m,d) -> {
+			float a  =  0;
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
-			float a  = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, POH_SMAX);
+			try {
+				a  = poh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, POH_SMAX);
+			} catch(Exception e) {
+				offboard.setTarget(current);
+				return;
+			}
 			float nd = his.nearestDistance(model.state.l_y, model.state.l_x);
-			//		System.out.print(nd+": "); poh.print(poh.hist_smoothed,(int)MSPMathUtils.fromRad(a));
+			//			System.out.print(nd+": "); poh.print(poh.hist_smoothed,(int)MSPMathUtils.fromRad(a));
 			float spd = speed * nd;
 
 			if(MSP3DUtils.distance3D(projected,current) > 0.3f ) {
 
-				if(nd < OBSTACLE_MINDISTANCE ) {
-					delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*spd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*spd, 0);
-					target.plusIP(delta);
-					offboard.setTarget(target);
-				} else {
-					// should continue with previous mode execution
-					target.plusIP(delta);
-					offboard.setTarget(target);
-				}
+				//				if(nd < OBSTACLE_MINDISTANCE ) {
+				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*spd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*spd, 0);
+				target.plusIP(delta);
+				offboard.setTarget(target);
+				//				} else {
+				//					// should continue with previous mode execution
+				//					target.plusIP(delta);
+				//					offboard.setTarget(target);
+				//				}
 			} else {
 				logger.writeLocalMsg("[msp] ObstacleAvoidance finalized. Projected target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-                 spd = 0;
+				spd = 0;
 			}
 			msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 			slam.px = projected.getY();
