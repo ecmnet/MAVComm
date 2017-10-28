@@ -31,75 +31,22 @@
  *
  ****************************************************************************/
 
+package com.comino.msp.model.utils;
 
-package com.comino.msp.slam.storage;
+public class BlockPoint2D {
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+	public float x=0;
+	public float y=0;
+	public long  tms = 0;
 
-import com.comino.msp.model.DataModel;
-
-public class GridStore {
-
-	private static final String DIRECTORY_NAME = "/grid_store";
-
-	private static GridStore gridStore 	= null;
-
-	private DataModel model				= null;
-	private String    path              = null;
-
-
-	public static GridStore getInstance(DataModel model) {
-		if(gridStore==null)
-			gridStore = new GridStore(model);
-		return gridStore;
+	public BlockPoint2D(float x, float y) {
+		this.x = x;
+		this.y = y;
+		this.tms = System.nanoTime();
 	}
 
-	public static GridStore getInstance() {
-		return gridStore;
-	}
-
-	public GridStore(DataModel model) {
-		this.model = model;
-
-		try {
-			String dirName = System.getProperty("user.home") + DIRECTORY_NAME;
-			File dir = new File(dirName);
-			if(!dir.exists())
-				dir.mkdir();
-			path = dir.getAbsolutePath();
-			System.out.println("GridStore directory set to "+path);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	public void store_current_grid() {
-		GridContainer gc = new GridContainer();
-		gc.grid        = model.grid.clone();
-		gc.home        = model.base.clone();
-		gc.created_tms = System.currentTimeMillis();
-
-		// TODO: generate file and store grid as json-encoded file
-	}
-
-	private String generateFilename(GridContainer gc) {
-		// Idea: file name pattern:  [LAT]_[LON]_[TMS].grid
-		return null;
-	}
-
-	private List<String> getListOfSurroundingGridsNames(float max_distance_m) {
-		// Idea: scans all grids within a certain range by filename for access and returns a list of filenames
-		List<String> gridNames = new ArrayList<String>();
-
-		return gridNames;
-	}
-
-	public static void main(String[] args) {
-		DataModel m = new DataModel();
-		GridStore store = GridStore.getInstance(m);
-
+	public String toString() {
+		return String.format("< % #.2f,% #.2f>",x,y);
 	}
 
 }

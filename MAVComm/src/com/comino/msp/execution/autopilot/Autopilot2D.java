@@ -18,6 +18,8 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.slam.mapping.IMSPMap;
+import com.comino.msp.slam.mapping.LocalMap2D;
 import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
 import com.comino.vfh.vfh2D.HistogramGrid2D;
@@ -52,6 +54,8 @@ public class Autopilot2D implements Runnable {
 	private HistogramGrid2D  		vfh 		= null;
 	private PolarHistogram2D 		poh 		= null;
 
+	private LocalMap2D				map     = null;
+
 	private IAutoPilotGetTarget targetListener = null;
 
 	private boolean              isAvoiding  = false;
@@ -77,6 +81,8 @@ public class Autopilot2D implements Runnable {
 
 		this.vfh      = new HistogramGrid2D(model.grid.getExtension(),HIS_WINDOWSIZE, model.grid.getResolution());
 		this.poh      = new PolarHistogram2D(POH_ALPHA,POH_THRESHOLD,POH_DENSITY_A,POH_DENSITY_B, model.grid.getResolution());
+
+		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution());
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
@@ -118,7 +124,9 @@ public class Autopilot2D implements Runnable {
 		while(true) {
 			try { Thread.sleep(50); } catch(Exception s) { }
 
-			vfh.transferGridToModel(model, 4, false);
+			map.toDataModel(model, 1, false);
+
+		//	vfh.transferGridToModel(model, 4, false);
 			poh.histUpdate(vfh.getMovingWindow(model.state.l_x, model.state.l_y));
 			poh.histSmooth(POH_SMOOTHING);
 
@@ -155,14 +163,14 @@ public class Autopilot2D implements Runnable {
 		this.targetListener = cb;
 	}
 
-	public HistogramGrid2D getMap2D() {
-		return vfh;
+	public IMSPMap getMap2D() {
+		return map;
 	}
 
 	public void reset(boolean grid) {
 		clearAutopilotActions();
 		if(grid)
-			vfh.reset(model);
+			vfh.reset();
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {

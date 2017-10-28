@@ -1,3 +1,6 @@
+package com.comino.vfh;
+
+
 /****************************************************************************
  *
  *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
@@ -34,8 +37,6 @@
 /*
  * Source: http://crsouza.blogspot.com/2009/09/modulo-and-modular-distance-in-c.html
  */
-
-package com.comino.vfh;
 
 public class VfhUtils {
 

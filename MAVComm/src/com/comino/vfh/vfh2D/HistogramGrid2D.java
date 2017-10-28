@@ -38,12 +38,14 @@
 package com.comino.vfh.vfh2D;
 
 import com.comino.msp.model.DataModel;
+import com.comino.msp.slam.mapping.IMSPMap;
 import com.comino.vfh.VfhGrid;
 import com.comino.vfh.VfhHist;
 
 import georegression.struct.point.Point3D_F64;
+import georegression.struct.point.Vector3D_F32;
 
-public class HistogramGrid2D {
+public class HistogramGrid2D  implements IMSPMap {
 
 	private static final long OBLIVISION_TIME_MS = 10000;
 	private static final int  MAX_CERTAINITY     = 1000;
@@ -71,24 +73,19 @@ public class HistogramGrid2D {
 		System.out.println("HistogramGricd2D initialized at ("+cenx+","+ceny+") with size "+dimension+" and resolution "+ resolution);
 	}
 
-	public void reset(DataModel model) {
+	public void reset() {
 		vfhg.clear();
-		for (int i = 0; i < vfhg.dimension; ++i) {
-			for (int j = 0; j < vfhg.dimension; ++j) {
-				model.grid.setBlock(j*vfhg.resolution/100f-centerx,i*vfhg.resolution/100f-centery, false);
-			}
-		}
 	}
 
 	// Updates the grid with an absolute observation
-	public boolean gridUpdate(Point3D_F64 obstacle_absolute) {
+	public boolean update(Vector3D_F32 obstacle_absolute) {
 		return gridUpdate(0,0,obstacle_absolute);
 	}
 
 	// Updates the grid with an relative observation
 	// TODO: 1. Weight increment relative to the distance
 	//       2. Mark surrounding cells with a default if distance is < limit
-	public boolean gridUpdate(float lpos_x, float lpos_y, Point3D_F64 obstacle) {
+	public boolean gridUpdate(float lpos_x, float lpos_y, Vector3D_F32 obstacle) {
 
 		int new_x = (int)Math.floor((lpos_x+centerx+obstacle.x)*100f / vfhg.resolution);
 		int new_y = (int)Math.floor((lpos_y+centery+obstacle.y)*100f / vfhg.resolution);
@@ -147,7 +144,7 @@ public class HistogramGrid2D {
 //			System.out.println(model.grid);
 //	}
 
-	public void transferGridToModel(DataModel model, int threshold, boolean debug) {
+	public void toDataModel(DataModel model, int threshold, boolean debug) {
 		for (int i = 0; i < vfhg.dimension; ++i) {
 			for (int j = 0; j < vfhg.dimension; ++j) {
 
@@ -218,16 +215,16 @@ public class HistogramGrid2D {
 
 		HistogramGrid2D hist = new HistogramGrid2D(5,5,10,1f,0.1f);
 
-		Point3D_F64 p = new Point3D_F64();
+		Vector3D_F32 p = new Vector3D_F32();
 
 		for(int c= 0; c < 5; c++) {
 
 			for(int i=0;i<10;i++) {
-				p.set(0.5f,i/10f-0.15f,0); hist.gridUpdate(p);
+				p.set(0.5f,i/10f-0.15f,0); hist.update(p);
 			}
 
 			for(int i=0;i<10;i++) {
-				p.set(i/10f-1.15f,0.5f,0); hist.gridUpdate(p);
+				p.set(i/10f-1.15f,0.5f,0); hist.update(p);
 			}
 		}
 

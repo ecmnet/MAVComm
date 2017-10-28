@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.comino.msp.model.segment.generic.Segment;
-import com.comino.msp.slam.BlockPoint2D;
+import com.comino.msp.model.utils.BlockPoint2D;
 
 public class Grid extends Segment {
 

@@ -1,47 +1,52 @@
-package com.comino.msp.vfhplus;
+package com.comino.vfhplus;
 
 /****************************************************************************
-*
-*   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
-*
-* Redistribution and use in source and binary forms, with or without
-* modification, are permitted provided that the following conditions
-* are met:
-*
-* 1. Redistributions of source code must retain the above copyright
-*    notice, this list of conditions and the following disclaimer.
-* 2. Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in
-*    the documentation and/or other materials provided with the
-*    distribution.
-* 3. Neither the name of the copyright holder nor the names of its
-*    contributors may be used to endorse or promote products derived
-*    from this software without specific prior written permission.
-*
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-* FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-* COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
-* OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
-* AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-* LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-* ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-* POSSIBILITY OF SUCH DAMAGE.
-*
-****************************************************************************/
+ *
+ *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************/
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.comino.msp.slam.mapping.LocalMap2D;
+import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
+import com.comino.vfh.VfhGrid;
+
+import georegression.struct.point.Vector3D_F32;
 
 // Code transferred from https://github.com/morpheus1820/ros-nodes/blob/master/vfh/src/vfh_algorithm.cc
 
-public class VfhPlus {
+public class VfhPlus2D {
 
 
 	float 			robot_radius					= 400;      // millimeters
@@ -49,7 +54,7 @@ public class VfhPlus {
 	int 				center_y;                 				// cells
 	int 				hist_size;                				// sectors (over 360deg)
 
-	float 			cell_width					= 100;      // millimeters
+	float 			cell_width					= 50;       // millimeters
 	int 				window_diameter          	= 60;		// cells
 	int 				sector_angle					= 5;        // degrees
 	float 			safety_dist_0ms				= 100;      // millimeters
@@ -113,6 +118,80 @@ public class VfhPlus {
 	long						last_update_time;
 
 
+	public void Update_VFH(LocalMap2D map, Vector3D_F32 current_pos, Vector3D_F32 target_pos, int current_speed, float goal_distance_tol) {
+
+		int x,y,v;
+
+		desired_angle = MSPMathUtils.fromRad(MSP3DUtils.angleXY(target_pos, current_pos));
+		dist_to_goal  = target_pos.distance(current_pos);
+		goal_distance_tolerance = goal_distance_tol;
+
+		int current_pos_speed;
+
+		if ( current_speed < 0 )
+			current_pos_speed = 0;
+		else
+			current_pos_speed = current_speed;
+
+		if ( current_pos_speed < last_chosen_speed )
+			current_pos_speed = last_chosen_speed;
+
+		float diffSeconds = (System.currentTimeMillis() - last_update_time ) / 1000.0f;
+		last_update_time = System.currentTimeMillis();
+
+		// create cells_mag window from map relative to current position
+
+		float cell_width_m = cell_width/1000f;
+
+		for(x=0;x<window_diameter;x++) {
+			for(y=0;y<(int)Math.ceil(window_diameter/2.0);y++) {
+				v = map.get((x-window_diameter/2.0f)*cell_width_m+cell_width_m/2+current_pos.x,
+					     	(y-window_diameter/2.0f)*cell_width_m+cell_width_m/2+current_pos.y);
+				if(v>0)
+					cell_mag[x][y] = cell_base_mag[x][y];
+				else
+					cell_mag[x][y] = 0.0f;
+			}
+		}
+
+		// Something's inside our safety distance: brake hard and
+		// turn on the spot
+		//			Arrays.fill(hist, 1);
+		//			picked_angle = last_picked_angle;
+		//			max_speed_for_picked_angle = 0;
+
+
+		build_Primary_Polar_Histogram(current_pos_speed);
+		build_Binary_Polar_Histogram(current_pos_speed);
+		build_Masked_Polar_Histogram(current_pos_speed);
+
+		// Sets Picked_Angle, Last_Picked_Angle, and Max_Speed_For_Picked_Angle.
+		select_Direction();
+
+		// OK, so now we've chosen a direction.  Time to choose a speed.
+		int speed_incr;
+
+		if ( (diffSeconds > 0.3) || (diffSeconds < 0) ) {
+			// Either this is the first time we've been updated, or something's a bit screwy and
+			// update hasn't been called for a while.  Don't want a sudden burst of acceleration,
+			// so better to just pick a small value this time, calculate properly next time.
+			speed_incr = 10;
+		} else {
+			speed_incr = (int) (max_acceleration * diffSeconds);
+		}
+
+		if ( cant_Turn_To_Goal() ) {
+			//		      printf("The goal's too close -- we can't turn tightly enough to get to it, so slow down...");
+			speed_incr = -speed_incr;
+		}
+
+		// Accelerate (if we're not already at Max_Speed_For_Picked_Angle).
+		chosen_speed = Math.min( last_chosen_speed + speed_incr, max_speed_for_picked_angle );
+		set_Motion(current_speed);
+
+		last_chosen_speed = chosen_speed;
+	}
+
 	public void Update_VFH( float[][] ranges, int current_speed,float goal_direction, float goal_distance, float goal_distance_tol) {
 		//    int &chosen_speed,
 		//    int &chosen_turnrate )
@@ -134,12 +213,16 @@ public class VfhPlus {
 		float diffSeconds = (System.currentTimeMillis() - last_update_time ) / 1000.0f;
 		last_update_time = System.currentTimeMillis();
 
-		if ( !build_Primary_Polar_Histogram(ranges,current_pos_speed)) {
+		if ( !calculate_Cells_Mag(ranges, current_pos_speed ) ) {
 			// Something's inside our safety distance: brake hard and
 			// turn on the spot
+			Arrays.fill(hist, 1);
 			picked_angle = last_picked_angle;
 			max_speed_for_picked_angle = 0;
+
 		} else {
+
+			build_Primary_Polar_Histogram(current_pos_speed);
 			build_Binary_Polar_Histogram(current_pos_speed);
 			build_Masked_Polar_Histogram(current_pos_speed);
 
@@ -169,6 +252,18 @@ public class VfhPlus {
 		set_Motion(current_speed);
 
 		last_chosen_speed = chosen_speed;
+	}
+
+	public float getTurnrate() {
+		return chosen_turn_rate;
+	}
+
+	public float getSpeed() {
+		return chosen_speed;
+	}
+
+	public float getAngle() {
+		return picked_angle;
 	}
 
 	private void set_Motion(int actual_speed )
@@ -322,7 +417,7 @@ public class VfhPlus {
 	private void build_Masked_Polar_Histogram(int speed) {
 
 		int x, y;
-		float center_x_right, center_x_left, center_y_t, dist_r, dist_l;
+		float center_x_right, center_x_left, dist_r, dist_l;
 		float angle_ahead, phi_left, phi_right, angle;
 
 		// center_x_[left|right] is the centre of the circles on either side that
@@ -330,7 +425,6 @@ public class VfhPlus {
 		// local coordinate system (+y is forward).
 		center_x_right = center_x + (min_turning_radius[speed] / (float)cell_width);
 		center_x_left = center_x - (min_turning_radius[speed] / (float)cell_width);
-		center_y_t = center_y;
 
 		angle_ahead = 90;
 		phi_left  = 180;
@@ -405,18 +499,12 @@ public class VfhPlus {
 		}
 	}
 
-	private boolean build_Primary_Polar_Histogram( float[][] ranges, int speed ) {
+	private void build_Primary_Polar_Histogram( int speed ) {
 		int x, y, i;
 
 		// index into the vector of Cell_Sector tables
 		int speed_index = get_Speed_Index( speed );
 
-		Arrays.fill(hist, 0);
-
-		if ( !calculate_Cells_Mag(ranges, speed ) ) {
-			Arrays.fill(hist, 1);
-			return false;
-		}
 		for(y=0;y<=(int)Math.ceil(window_diameter/2.0);y++) {
 			for(x=0;x<window_diameter;x++) {
 				for(i=0;i<cell_sector[speed_index][x][y].length;i++) {
@@ -424,15 +512,16 @@ public class VfhPlus {
 				}
 			}
 		}
-		return true;
+		return;
 	}
 
 	private boolean calculate_Cells_Mag( float[][] ranges, int speed ) {
 
 		int x, y;
 
-		float safeSpeed = (float) get_Safety_Dist(speed);
-		float r = robot_radius +  safeSpeed;
+		float r = robot_radius +  (float) get_Safety_Dist(speed);
+
+		Arrays.fill(hist, 0);
 
 		for(x=0;x<window_diameter;x++) {
 			for(y=0;y<(int)Math.ceil(window_diameter/2.0);y++) {
@@ -647,6 +736,10 @@ public class VfhPlus {
 
 		setCurrentMaxSpeed(max_speed);
 
+		System.out.println("VFHPlus2D initialized ("+
+		     (cell_sector.length*cell_sector[0].length * cell_sector[0][0].length *  cell_sector[0][0][0].length * 4 / 1024)
+		    +"k)");
+
 	}
 
 	private float delta_Angle(float a1, float a2) {
@@ -659,18 +752,18 @@ public class VfhPlus {
 		return(diff);
 	}
 
-	private int bisect_Angle(int angle1, int angle2) {
-		float a; int angle;
-
-		a = delta_Angle((float)angle1, (float)angle2);
-		angle = (int)Math.rint(angle1 + (a / 2.0));
-		if (angle < 0) {
-			angle += 360;
-		} else if (angle >= 360) {
-			angle -= 360;
-		}
-		return(angle);
-	}
+	//	private int bisect_Angle(int angle1, int angle2) {
+	//		float a; int angle;
+	//
+	//		a = delta_Angle((float)angle1, (float)angle2);
+	//		angle = (int)Math.rint(angle1 + (a / 2.0));
+	//		if (angle < 0) {
+	//			angle += 360;
+	//		} else if (angle >= 360) {
+	//			angle -= 360;
+	//		}
+	//		return(angle);
+	//	}
 
 	private boolean cant_Turn_To_Goal()
 	{

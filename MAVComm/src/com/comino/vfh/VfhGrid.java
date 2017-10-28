@@ -55,7 +55,7 @@ public class VfhGrid {
 
 
 	public void clear() {
-		Arrays.fill(cells,(short)0);
+		Arrays.fill(cells,(short)-1);
 	}
 
 	public String toString(int threshold) {
