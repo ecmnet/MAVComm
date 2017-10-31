@@ -40,8 +40,8 @@ package com.comino.vfh;
 public class VfhHist {
 
 	public int 		alpha;
-	public int 	   sectors;
-	public float[]    densities;
+	public int 	    sectors;
+	public float[]  densities;
 
 
 	public VfhHist(int alpha) {

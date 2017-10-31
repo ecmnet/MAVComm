@@ -96,6 +96,10 @@ public class OffboardManager implements Runnable {
 		already_fired = false;
 	}
 
+	public Vector4D_F32 getCurrentTarget() {
+		return target;
+	}
+
 	public void setCurrentAsTarget() {
 		target.set(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.y);
 		already_fired = false;

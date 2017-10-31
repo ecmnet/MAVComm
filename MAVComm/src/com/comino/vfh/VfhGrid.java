@@ -39,6 +39,8 @@ package com.comino.vfh;
 
 import java.util.Arrays;
 
+import com.comino.msp.utils.MSPMathUtils;
+
 public class VfhGrid {
 
 	public  int   dimension;
@@ -51,6 +53,11 @@ public class VfhGrid {
 		resolution =(int)(res*100f);
 		cells = new short[dimension * dimension];
 	//	System.out.println("Grid with "+dimension +" ("+resolution+"cm)");
+	}
+
+	public int getCellDirection(int x, int y) {
+           return (int)(MSPMathUtils.fromRad((float)Math.atan2(
+        		  (x -  dimension/2.0f),(y - dimension/2.0f)))) +180;
 	}
 
 

@@ -81,118 +81,55 @@ public class VfhPlus2D {
 	float 			binary_hist_low_1ms			= 2000000.0f;
 	float			binary_hist_high_1ms			= 2000000.0f;
 
-	float 			u1 = 6.0f, u2 = 1.0f;
+	private float 			u1 = 6.0f, u2 = 1.0f;
 
-	float 			desired_angle, dist_to_goal;
-	float 			goal_distance_tolerance;
-	float 			picked_angle;
-	float 			last_picked_angle;
+	private float 			desired_angle, dist_to_goal;
+	private float 			goal_distance_tolerance;
+	private float 			picked_angle;
+	private float 			last_picked_angle;
+	private float			current_dir;
 
-	int				last_chosen_speed;
-	int 				chosen_speed;
+	private int				last_chosen_speed;
+	private int 				chosen_speed;
 
-	float			chosen_turn_rate;
+	private float			chosen_turn_rate;
 
-	int   			max_speed_for_picked_angle;
+	private int   			max_speed_for_picked_angle;
 
-	float 			blocked_circle_radius;  					// radius of dis-allowed circles, either side of the robot, which
+	private float 			blocked_circle_radius;  					// radius of dis-allowed circles, either side of the robot, which
 	// we can't enter due to our minimum turning radius
-	double dist_eps;
-	double ang_eps;
+	private double dist_eps;
+	private double ang_eps;
 
-	float[] hist;
-	float[] last_binary_hist;
+	private float[] hist;
+	private float[] last_binary_hist;
 
-	float[][]				cell_direction;
-	float[][]    			cell_base_mag;
-	float[][]				cell_mag;
-	float[][]				cell_dist;      					// millimetres
-	float[][]				cell_enlarge;
+	private float[][]				cell_direction;
+	private float[][]    			cell_base_mag;
+	private float[][]				cell_mag;
+	private float[][]				cell_dist;      					// millimetres
+	private float[][]				cell_enlarge;
 
-	int[][][][]			    cell_sector;
-	int[]					min_turning_radius;
+	private List<Integer>[][][]      cell_sector;
 
-	List<Float>				candidate_angle;
-	List<Short> 			    candidate_speed;
+	private int[]					min_turning_radius;
 
-	long						last_update_time;
+	private List<Float>				candidate_angle;
+	private List<Short> 			    candidate_speed;
 
+	private long						last_update_time;
 
-	public void Update_VFH(LocalMap2D map, Vector3D_F32 current_pos, Vector3D_F32 target_pos, int current_speed, float goal_distance_tol) {
-
-		int x,y,v;
-
-		desired_angle = MSPMathUtils.fromRad(MSP3DUtils.angleXY(target_pos, current_pos));
-		dist_to_goal  = target_pos.distance(current_pos);
-		goal_distance_tolerance = goal_distance_tol;
-
-		int current_pos_speed;
-
-		if ( current_speed < 0 )
-			current_pos_speed = 0;
-		else
-			current_pos_speed = current_speed;
-
-		if ( current_pos_speed < last_chosen_speed )
-			current_pos_speed = last_chosen_speed;
-
-		float diffSeconds = (System.currentTimeMillis() - last_update_time ) / 1000.0f;
-		last_update_time = System.currentTimeMillis();
-
-		// create cells_mag window from map relative to current position
-
-		float cell_width_m = cell_width/1000f;
-
-		for(x=0;x<window_diameter;x++) {
-			for(y=0;y<(int)Math.ceil(window_diameter/2.0);y++) {
-				v = map.get((x-window_diameter/2.0f)*cell_width_m+cell_width_m/2+current_pos.x,
-					     	(y-window_diameter/2.0f)*cell_width_m+cell_width_m/2+current_pos.y);
-				if(v>0)
-					cell_mag[x][y] = cell_base_mag[x][y];
-				else
-					cell_mag[x][y] = 0.0f;
-			}
-		}
-
-		// Something's inside our safety distance: brake hard and
-		// turn on the spot
-		//			Arrays.fill(hist, 1);
-		//			picked_angle = last_picked_angle;
-		//			max_speed_for_picked_angle = 0;
-
-
-		build_Primary_Polar_Histogram(current_pos_speed);
-		build_Binary_Polar_Histogram(current_pos_speed);
-		build_Masked_Polar_Histogram(current_pos_speed);
-
-		// Sets Picked_Angle, Last_Picked_Angle, and Max_Speed_For_Picked_Angle.
-		select_Direction();
-
-		// OK, so now we've chosen a direction.  Time to choose a speed.
-		int speed_incr;
-
-		if ( (diffSeconds > 0.3) || (diffSeconds < 0) ) {
-			// Either this is the first time we've been updated, or something's a bit screwy and
-			// update hasn't been called for a while.  Don't want a sudden burst of acceleration,
-			// so better to just pick a small value this time, calculate properly next time.
-			speed_incr = 10;
-		} else {
-			speed_incr = (int) (max_acceleration * diffSeconds);
-		}
-
-		if ( cant_Turn_To_Goal() ) {
-			//		      printf("The goal's too close -- we can't turn tightly enough to get to it, so slow down...");
-			speed_incr = -speed_incr;
-		}
-
-		// Accelerate (if we're not already at Max_Speed_For_Picked_Angle).
-		chosen_speed = Math.min( last_chosen_speed + speed_incr, max_speed_for_picked_angle );
-		set_Motion(current_speed);
-
-		last_chosen_speed = chosen_speed;
+	public void update_VFH( LocalMap2D map, Vector3D_F32 current, Vector3D_F32 target, float speed_ms, float goal_distance_tol_m) {
+		current_dir = MSPMathUtils.fromRad((float)Math.atan2(current.y, current.x));
+		float goal_angle = MSPMathUtils.fromRad((float)Math.atan2(target.y - current.y, target.x - current.x)) - current_dir;
+		if(goal_angle<0)
+			goal_angle += 360;
+		float goal_dist  = (float)(Math.sqrt((target.y - current.y)*(target.y - current.y) + (target.x - current.x)*(target.x - current.x)) * 1000f);
+//		update_VFH(map.getWindowPolar((int)current_dir, current.x, current.y),(int)(speed_ms*1000f), goal_angle,goal_dist, goal_distance_tol_m * 1000f);
 	}
 
-	public void Update_VFH( float[][] ranges, int current_speed,float goal_direction, float goal_distance, float goal_distance_tol) {
+
+	public void update_VFH(float[] ranges, int current_speed,float goal_direction, float goal_distance, float goal_distance_tol) {
 		//    int &chosen_speed,
 		//    int &chosen_turnrate )
 
@@ -262,8 +199,12 @@ public class VfhPlus2D {
 		return chosen_speed;
 	}
 
-	public float getAngle() {
+	public float getAngleRel() {
 		return picked_angle;
+	}
+
+	public float getAngle() {
+		return (picked_angle+current_dir) % 360.0f;
 	}
 
 	private void set_Motion(int actual_speed )
@@ -367,7 +308,7 @@ public class VfhPlus2D {
 				candidate_angle.add(new_angle);
 				candidate_speed.add((short)Math.min(current_max_speed,max_speed_wide_opening));
 
-				new_angle = (float)(p.s + 40);
+				new_angle = (float)(p.e - 40);
 				if (new_angle < 0)
 					new_angle += 360;
 				candidate_angle.add(new_angle);
@@ -404,7 +345,7 @@ public class VfhPlus2D {
 		for(i=0;i<candidate_angle.size();i++)   {
 			//printf("CANDIDATE: %f\n", Candidate_Angle[i]);
 			weight = u1 * Math.abs(delta_Angle(desired_angle, candidate_angle.get(i))) +
-					u2 * Math.abs(delta_Angle(desired_angle, candidate_angle.get(i)));
+					 u2 * Math.abs(delta_Angle(last_picked_angle, candidate_angle.get(i)));
 			if (weight < min_weight) {
 				min_weight = weight;
 				picked_angle = candidate_angle.get(i);
@@ -424,7 +365,7 @@ public class VfhPlus2D {
 		// are blocked due to the robot's dynamics.  Units are in cells, in the robot's
 		// local coordinate system (+y is forward).
 		center_x_right = center_x + (min_turning_radius[speed] / (float)cell_width);
-		center_x_left = center_x - (min_turning_radius[speed] / (float)cell_width);
+		center_x_left = center_x -  (min_turning_radius[speed] / (float)cell_width);
 
 		angle_ahead = 90;
 		phi_left  = 180;
@@ -507,15 +448,15 @@ public class VfhPlus2D {
 
 		for(y=0;y<=(int)Math.ceil(window_diameter/2.0);y++) {
 			for(x=0;x<window_diameter;x++) {
-				for(i=0;i<cell_sector[speed_index][x][y].length;i++) {
-					hist[cell_sector[speed_index][x][y][i]]+=cell_mag[x][y];
+				for(i=0;i<cell_sector[speed_index][x][y].size();i++) {
+					hist[cell_sector[speed_index][x][y].get(i)]+=cell_mag[x][y];
 				}
 			}
 		}
 		return;
 	}
 
-	private boolean calculate_Cells_Mag( float[][] ranges, int speed ) {
+	private boolean calculate_Cells_Mag( float[] ranges, int speed ) {
 
 		int x, y;
 
@@ -525,7 +466,7 @@ public class VfhPlus2D {
 
 		for(x=0;x<window_diameter;x++) {
 			for(y=0;y<(int)Math.ceil(window_diameter/2.0);y++) {
-				if ((cell_dist[x][y] + cell_width / 2.0) > ranges[(int)Math.rint(cell_direction[x][y] * 2.0)][0]) {
+				if ((cell_dist[x][y] + cell_width / 2.0) > ranges[(int)Math.rint(cell_direction[x][y] * 2.0)]) {
 					if ( cell_dist[x][y] < r && !(x==center_x && y==center_y) )
 						// Damn, something got inside our safety_distance...
 						// Short-circuit this process.
@@ -546,8 +487,6 @@ public class VfhPlus2D {
 		float plus_sector_to_neg_dir=0, plus_sector_to_plus_dir=0;
 		int max_speed_this_table;
 		float r;
-
-		int cell_sector_count = 0;
 
 		center_x = (int)Math.floor(window_diameter / 2.0);
 		center_y = center_x;
@@ -614,11 +553,10 @@ public class VfhPlus2D {
 					else
 						cell_enlarge[x][y] = 0;
 
-					Arrays.fill(cell_sector[cell_sector_tablenum][x][y],0);
+					cell_sector[cell_sector_tablenum][x][y].clear();
 					plus_dir = cell_direction[x][y] + cell_enlarge[x][y];
 					neg_dir  = cell_direction[x][y] - cell_enlarge[x][y];
 
-					cell_sector_count = 0;
 					for(int i=0;i<(360 / sector_angle);i++) {
 
 						// Set plus_sector and neg_sector to the angles to the two adjacent sectors
@@ -686,13 +624,13 @@ public class VfhPlus2D {
 						}
 
 						if ((plus_dir_bw) || (neg_dir_bw) || (dir_around_sector)) {
-							cell_sector[cell_sector_tablenum][x][y][cell_sector_count++] = i;
+							cell_sector[cell_sector_tablenum][x][y].add(i);
 						}
 					}
 				}
 			}
 		}
-		last_update_time = System.currentTimeMillis();
+//		last_update_time = System.currentTimeMillis();
 	}
 
 	private void setCurrentMaxSpeed( int max_speed )
@@ -729,7 +667,12 @@ public class VfhPlus2D {
 		cell_dist  	   		= new float[window_diameter][window_diameter];
 		cell_enlarge   		= new float[window_diameter][window_diameter];
 
-		cell_sector    		= new int[num_cell_sector_tables][window_diameter][window_diameter][cell_sector_size];
+		cell_sector    		= new List[num_cell_sector_tables][window_diameter][window_diameter];
+
+		for(int t=0;t<num_cell_sector_tables;t++)
+			for(int x=0;x<window_diameter;x++)
+				for(int y=0;y<window_diameter;y++)
+					cell_sector[t][x][y] = new ArrayList<Integer>(0);
 
 		hist 				= new float[hist_size];
 		last_binary_hist 	= new float[hist_size];
@@ -737,8 +680,8 @@ public class VfhPlus2D {
 		setCurrentMaxSpeed(max_speed);
 
 		System.out.println("VFHPlus2D initialized ("+
-		     (cell_sector.length*cell_sector[0].length * cell_sector[0][0].length *  cell_sector[0][0][0].length * 4 / 1024)
-		    +"k)");
+				(cell_sector.length*cell_sector[0].length * cell_sector[0][0].length*cell_sector[0][0][0].size()/1024)
+				+"k)");
 
 	}
 
@@ -841,6 +784,37 @@ public class VfhPlus2D {
 		}
 	}
 
+	public void print_Cells_Sector()
+	{
+		int x, y;
+		int i=0;
 
+		System.out.format("\nCell Sectors for table 0:\n");
+		System.out.format("***************************\n");
 
+		for(y=0;y<window_diameter;y++) {
+			for(x=0;x<window_diameter;x++) {
+				for(i=0;i<cell_sector[0][x][y].size();i++) {
+					if (i < (cell_sector[0][x][y].size() -1 )) {
+						System.out.format("%d,", cell_sector[0][x][y].get(i));
+					} else {
+						System.out.format("%d\t\t", cell_sector[0][x][y].get(i));
+					}
+				}
+			}
+			System.out.format("\n");
+		}
+	}
+
+	public void print_Hist()
+	{
+		int x;
+		System.out.format("Histogram:\n");
+		System.out.format("****************\n");
+
+		for(x=0;x<=(hist_size/2);x++) {
+			System.out.format("%d,%1.1f\n", (x * sector_angle), hist[x]);
+		}
+		System.out.format("\n\n");
+	}
 }

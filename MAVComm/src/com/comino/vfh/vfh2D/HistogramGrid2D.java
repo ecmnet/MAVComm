@@ -38,14 +38,14 @@
 package com.comino.vfh.vfh2D;
 
 import com.comino.msp.model.DataModel;
-import com.comino.msp.slam.mapping.IMSPMap;
+import com.comino.msp.slam.mapping.IMSPLocalMap;
 import com.comino.vfh.VfhGrid;
 import com.comino.vfh.VfhHist;
 
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
-public class HistogramGrid2D  implements IMSPMap {
+public class HistogramGrid2D  implements IMSPLocalMap {
 
 	private static final long OBLIVISION_TIME_MS = 10000;
 	private static final int  MAX_CERTAINITY     = 1000;
@@ -228,18 +228,12 @@ public class HistogramGrid2D  implements IMSPMap {
 			}
 		}
 
-		PolarHistogram2D  pol = new PolarHistogram2D(3,2,3,0.1f,0.1f);
-		VfhGrid window = hist.getMovingWindow(0.1f,0.1f);
-		System.out.println(window.toString(0));
-		pol.histUpdate(window);
+		VfhGrid win = hist.getMovingWindow(0, 0);
+
+		System.out.println(win.getCellDirection(6, 3));
 
 
-		pol.print();
-		VfhHist s = pol.histSmooth(5);
-//		int vi = pol.selectValleyDeg(s,240);
-//		int d = pol.getDirection(s,vi,12);
-//	    System.out.println(d);
-//		pol.print(pol.histSmooth(5),d);
+		System.out.println(win.toString());
 
 
 
