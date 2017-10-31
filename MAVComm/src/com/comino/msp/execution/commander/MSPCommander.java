@@ -50,9 +50,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.mapping.IMSPLocalMap;
-import com.comino.vfh.vfh2D.HistogramGrid2D;
 
-import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
 public class MSPCommander {

@@ -38,7 +38,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.comino.msp.slam.mapping.LocalMap2D;
-import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;

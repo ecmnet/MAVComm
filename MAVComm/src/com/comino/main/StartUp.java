@@ -38,11 +38,9 @@ import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
 import org.mavlink.messages.MAV_SEVERITY;
-import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
-import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -53,9 +51,6 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
-import com.comino.msp.utils.MSPMathUtils;
-import com.comino.vfh.vfh2D.HistogramGrid2D;
-import com.comino.vfh.vfh2D.PolarHistogram2D;
 
 import georegression.struct.point.Point3D_F64;
 

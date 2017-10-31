@@ -3,7 +3,6 @@ package com.comino.msp.slam.mapping;
 import java.util.Arrays;
 
 import com.comino.msp.model.DataModel;
-import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 
