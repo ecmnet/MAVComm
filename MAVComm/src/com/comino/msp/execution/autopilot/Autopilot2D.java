@@ -30,8 +30,6 @@ public class Autopilot2D implements Runnable {
 
 	private static final float HIS_WINDOWSIZE       = 2f;
 
-	private static final int   POH_SMAX             = 30;
-
 	private static final float OBSTACLE_MINDISTANCE  = 1.25f;
 	private static final float OBSTACLE_FAILDISTANCE = 0.3f;
 	private static final float OBSTACLE_SPEEDFACTOR  = 0.3f;
@@ -71,7 +69,7 @@ public class Autopilot2D implements Runnable {
 		this.logger   = MSPLogger.getInstance();
 
 		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution(),HIS_WINDOWSIZE);
-		this.lvfh     = new LocalVFH2D();
+		this.lvfh     = new LocalVFH2D(HIS_WINDOWSIZE,model.grid.getResolution());
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
@@ -115,7 +113,7 @@ public class Autopilot2D implements Runnable {
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
 			map.toDataModel(model, 1, false);
-			lvfh.update(map, current);
+			lvfh.update_map(map, current);
 
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
 			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
@@ -234,7 +232,7 @@ public class Autopilot2D implements Runnable {
 		});
 	}
 
-	public void obstacleAvoidance(float speed) {
+	public void obstacleAvoidance(float none) {
 
 		float angle=0;  float projected_distance = 2.5f;
 
@@ -260,7 +258,8 @@ public class Autopilot2D implements Runnable {
 		}
 
 		try {
-			angle = lvfh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,POH_SMAX);
+			lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
+			angle = lvfh.getSelectedDirection();
 		} catch(Exception e) {
 			offboard.setTarget(current);
 			logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
@@ -273,6 +272,8 @@ public class Autopilot2D implements Runnable {
 			return;
 		}
 
+		float speed = lvfh.getSelectedSpeed();
+
 		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
 		target.plusIP(delta);
 
@@ -281,7 +282,8 @@ public class Autopilot2D implements Runnable {
 			float a  =  0;
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 			try {
-				a = lvfh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,POH_SMAX);
+				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
+				a = lvfh.getSelectedDirection();
 			} catch(Exception e) {
 				offboard.setTarget(current);
 				return;
@@ -292,9 +294,11 @@ public class Autopilot2D implements Runnable {
 				return;
 			}
 
-			float nd = map.nearestDistance(model.state.l_y, model.state.l_x);
-			if(nd > 1) nd = 1;
-			float spd = speed * nd;
+//			float nd = map.nearestDistance(model.state.l_y, model.state.l_x);
+//			if(nd > 1) nd = 1;
+//			float spd = speed * nd;
+
+			float spd = lvfh.getSelectedSpeed();
 
 			if(MSP3DUtils.distance3D(projected,current) > 0.3f) {
 				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*spd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*spd, 0);
@@ -307,7 +311,7 @@ public class Autopilot2D implements Runnable {
 			msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 			slam.px = projected.getY();
 			slam.py = projected.getX();
-			slam.md = nd;
+			slam.md = map.nearestDistance(model.state.l_y, model.state.l_x);
 			slam.pd = MSP3DUtils.angleXY(projected, current);
 			slam.pv = spd*15;
 			control.sendMAVLinkMessage(slam);
