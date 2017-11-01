@@ -58,7 +58,7 @@ public class MSPCommander {
 	private IMAVMSPController        control = null;
 	private Autopilot2D              autopilot = null;
 	private DataModel                  model = null;
-	private IMSPLocalMap                     vfh  = null;
+	private IMSPLocalMap                map  = null;
 
 	public MSPCommander(IMAVMSPController control) {
 
@@ -70,7 +70,7 @@ public class MSPCommander {
 		System.out.println("Commander initialized");
 
 		autopilot = Autopilot2D.getInstance(control);
-		this.vfh = autopilot.getMap2D();
+		this.map = autopilot.getMap2D();
 	}
 
 	private void registerCommands() {
@@ -163,33 +163,33 @@ public class MSPCommander {
 	// SITL testing
 
 	private void setCircleObstacleForSITL() {
-		if(vfh==null)
+		if(map==null)
 			return;
-		vfh.reset();
+		map.reset();
 		Vector3D_F32   pos          = new Vector3D_F32();
 		System.err.println("SITL -> set example obstacle map");
 		pos.x = 0.5f + model.state.l_x;
 		pos.y = 0.4f + model.state.l_y;
 		pos.z = 1.0f + model.state.l_z;
-		vfh.update(pos);
+		map.update(pos);
 		pos.y = 0.45f + model.state.l_y;
-		vfh.update(pos);
+		map.update(pos);
 		pos.y = 0.50f + model.state.l_y;
-		vfh.update(pos);
+		map.update(pos);
 		pos.y = 0.55f + model.state.l_y;
-		vfh.update(pos);
+		map.update(pos);
 		pos.y = 0.60f + model.state.l_y;
-		vfh.update(pos);
+		map.update(pos);
 		pos.y = 0.65f + model.state.l_y;
-		vfh.update(pos);
+		map.update(pos);
 		pos.y = 0.70f + model.state.l_y;
-		vfh.update(pos);
+		map.update(pos);
 	}
 
 	private void setXObstacleForSITL() {
-		if(vfh==null)
+		if(map==null)
 			return;
-		vfh.reset();
+		map.reset();
 		Vector3D_F32   pos          = new Vector3D_F32();
 		System.err.println("SITL -> set example obstacle map");
 
@@ -197,12 +197,12 @@ public class MSPCommander {
 		pos.z =  model.state.l_z;
 		for(int i = 0; i < 40;i++) {
 			pos.x = -1 + i *0.05f + model.state.l_x;
-			vfh.update(pos);
+			map.update(pos);
 		}
 		pos.y = -0.5f + model.state.l_y;
 		for(int i = 0; i < 40;i++) {
 			pos.x = -1 + i *0.05f + model.state.l_x;
-			vfh.update(pos);
+			map.update(pos);
 		}
 
 
@@ -211,28 +211,28 @@ public class MSPCommander {
 
 	private void setYObstacleForSITL() {
 		float x,y;
-		if(vfh==null)
+		if(map==null)
 			return;
-		vfh.reset();
+		map.reset();
 		Vector3D_F32   pos          = new Vector3D_F32();
 		System.err.println("SITL -> set example obstacle map");
 		pos.z = 1.0f + model.state.l_z;
 
 		pos.y = 1.5f + model.state.l_y;
 		pos.x = -0.15f + model.state.l_x;
-		vfh.update(pos);
+		map.update(pos);
 		pos.x = -0.10f + model.state.l_x;
-		vfh.update(pos);
+		map.update(pos);
 		pos.x = -0.05f + model.state.l_x;
-		vfh.update(pos);
+		map.update(pos);
 		pos.x =  0.00f + model.state.l_x;
-		vfh.update(pos);
+		map.update(pos);
 		pos.x = 0.05f + model.state.l_x;
-		vfh.update(pos);
+		map.update(pos);
 		pos.x = 0.10f + model.state.l_x;
-		vfh.update(pos);
+		map.update(pos);
 		pos.x = 0.15f + model.state.l_x;
-		vfh.update(pos);
+		map.update(pos);
 
 		float dotx, doty ;
 
@@ -249,31 +249,31 @@ public class MSPCommander {
 
 				pos.x = x   + model.state.l_x - 0.05f;
 				pos.y = y   + model.state.l_y - 0.05f;
-				vfh.update(pos);
+				map.update(pos);
 
 				pos.x = x   + model.state.l_x - 0.05f;
 				pos.y = y   + model.state.l_y;
-				vfh.update(pos);
+				map.update(pos);
 
 				pos.x = x   + model.state.l_x;
 				pos.y = y   + model.state.l_y - 0.05f;
-				vfh.update(pos);
+				map.update(pos);
 
 				pos.x = x   + model.state.l_x;
 				pos.y = y   + model.state.l_y;
-				vfh.update(pos);
+				map.update(pos);
 
 				pos.x = x   + model.state.l_x + 0.05f;
 				pos.y = y   + model.state.l_y + 0.05f;
-				vfh.update(pos);
+				map.update(pos);
 
 				pos.x = x   + model.state.l_x + 0.05f;
 				pos.y = y   + model.state.l_y;
-				vfh.update(pos);
+				map.update(pos);
 
 				pos.x = x   + model.state.l_x;
 				pos.y = y   + model.state.l_y + 0.05f;
-				vfh.update(pos);
+				map.update(pos);
 
 			}
 		}

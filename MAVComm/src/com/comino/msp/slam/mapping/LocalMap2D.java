@@ -65,7 +65,7 @@ public class LocalMap2D implements IMSPLocalMap {
 	}
 
 	public boolean update(Vector3D_F32 point) {
-		return set(point.x, point.y,1);
+		return set(point.x, point.y,2);
 	}
 
 	public boolean update(float lpos_x, float lpos_y,Vector3D_F32 point) {
@@ -181,13 +181,8 @@ public class LocalMap2D implements IMSPLocalMap {
 	public void toDataModel(DataModel model, int threshold, boolean debug) {
 		for (int y = 0; y <map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
-				if(map[x][y] == 0)
-					continue;
-
-				if(map[x][y] > threshold) {
+				if(map[x][y] > threshold)
 					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, true);
-					//	System.out.println("ADD: "+(j*grid.resolution/100f-center_x)+ ":"+ (i*grid.resolution/100f-center_y));
-				}
 				else
 					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, false);
 			}

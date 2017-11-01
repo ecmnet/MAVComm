@@ -64,8 +64,6 @@ public class StartUp implements Runnable {
 	private MemoryMXBean  mxBean = null;
 	private DataModel      model = null;
 
-	private Point3D_F64   pos          = new Point3D_F64();
-
 	public StartUp(String[] args) {
 
 		config  = MSPConfig.getInstance("home/pi","msp.properties");

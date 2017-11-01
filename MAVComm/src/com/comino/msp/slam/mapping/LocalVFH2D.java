@@ -18,10 +18,15 @@ public class LocalVFH2D {
 	private static final int  	SMOOTHING	= 5;
 	private static final float  	THRESHOLD	= 0.5f;
 
+	private static final float   THRESH_HIGH = 1000f;
+	private static final float   THRESH_LOW  = 100f;
+
+
 	private float 			u1 = 6.0f, u2 = 1.0f;
 
 	private float[]  		hist;
 	private float[]  		hist_smoothed;
+	private float[]  		hist_last;
 
 	private List<Float>		candidate_angle;
 	private List<pair>       borders;
@@ -32,6 +37,7 @@ public class LocalVFH2D {
 	public LocalVFH2D() {
 
 		this.hist 			= new float[360 / ALPHA];
+		this.hist_last 		= new float[360 / ALPHA];
 		this.hist_smoothed 	= new float[360 / ALPHA];
 
 		this.candidate_angle = new ArrayList<Float>();
@@ -72,13 +78,29 @@ public class LocalVFH2D {
 				h  = h + hist[(k+i+360/ALPHA) % (360/ALPHA)] * (SMOOTHING - Math.abs(i) + 1);
 			hist_smoothed[k] = h / (2f * SMOOTHING + 1);
 		}
+
+		build_Binary_Polar_Histogram(hist_smoothed,0);
+	}
+
+	private void build_Binary_Polar_Histogram(float h[], int speed ) {
+		for(int x=0; x<h.length;x++) {
+			if (h[x] > THRESH_HIGH) {
+				h[x] = 1.0f;
+			} else if (h[x] < THRESH_LOW) {
+				h[x] = 0.0f;
+			} else {
+				h[x] = hist_last[x];
+			}
+		}
+		for(int x=0;x<h.length;x++)
+			hist_last[x] = h[x];
 	}
 
 	public float getDirection(float tdir_rad, int smax) {
-		return MSPMathUtils.toRad(getAbsoluteDirection((int)MSPMathUtils.fromRad(tdir_rad), smax));
+		return MSPMathUtils.toRad(getAbsoluteDirection(hist_smoothed,(int)MSPMathUtils.fromRad(tdir_rad), smax));
 	}
 
-	public float getAbsoluteDirection(int tdir, int smax) {
+	private float getAbsoluteDirection(float[] h, int tdir, int smax) {
 
 		int start, left;
 		float angle, new_angle, weight, min_weight;
@@ -91,7 +113,7 @@ public class LocalVFH2D {
 		start = -1; left = 1;
 
 		for(int i=0;i<hist.length;i++) {
-			if (hist_smoothed[i] > THRESHOLD) {
+			if (h[i] > THRESHOLD) {
 				start = i; 	break;
 			}
 		}
@@ -103,11 +125,11 @@ public class LocalVFH2D {
 
 		for(int i = start;i<start+hist.length+1;i++) {
 
-			if ((hist_smoothed[i % hist.length] <= THRESHOLD) && (left==1)) {
+			if ((h[i % hist.length] <= THRESHOLD) && (left==1)) {
 				new_border.s = (i % hist.length) * ALPHA;
 				left = 0;
 			}
-			if ((hist_smoothed[i % hist.length] > THRESHOLD) && (left==0)) {
+			if ((h[i % hist.length] > THRESHOLD) && (left==0)) {
 				new_border.e = ((i % hist.length)-1) * ALPHA;
 				if (new_border.e < 0 || new_border.s > new_border.e ) {
 					new_border.e += 360;
@@ -120,12 +142,13 @@ public class LocalVFH2D {
 
 		for(pair p : borders) {
 			angle = delta_angle(p.s, p.e);
+		//	System.out.print(p+" ["+angle+"]");
 
 			// ignore narrow gaps
 			if (Math.abs(angle) < 8)
 				continue;
 
-			if (Math.abs(angle) < 50) {
+			if (Math.abs(angle) < 80) {
 				// narrow opening: aim for the centre
 				new_angle = p.s + (p.e - p.s) / 2.0f;
 				candidate_angle.add(new_angle);
@@ -142,13 +165,16 @@ public class LocalVFH2D {
 				candidate_angle.add(new_angle);
 
 				// See if candidate dir is in this opening
+				if(candidate_angle.get(candidate_angle.size()-1)>360) {
+					tdir +=360;
+				}
 				if ((delta_angle(tdir, candidate_angle.get(candidate_angle.size()-2)) < 0) &&
-						(delta_angle(tdir, candidate_angle.get(candidate_angle.size()-1)) > 0)) {
+					(delta_angle(tdir, candidate_angle.get(candidate_angle.size()-1)) > 0)) {
 					candidate_angle.add((float)tdir);
 				}
 
-			}
 
+			}
 		}
 
 		if (candidate_angle.size() == 0) {
@@ -169,7 +195,14 @@ public class LocalVFH2D {
 					selected_tdir += 360;
 			}
 		}
-		System.out.println(this);
+		if(hist_smoothed[(int)selected_tdir/ALPHA]>THRESHOLD) {
+			for(float selected : candidate_angle)
+				System.err.print(" "+selected);
+			System.err.println(" => "+selected_tdir);
+			System.err.println(this);
+		}
+//		else
+//		  System.out.println(this);
 		last_selected_tdir = selected_tdir;
 		return selected_tdir;
 	}
@@ -177,6 +210,7 @@ public class LocalVFH2D {
 	private float delta_angle(float a1, float a2) {
 		return ( a2 - a1 ) % 360;
 	}
+
 
 	public String toString() {
 		StringBuilder b = new StringBuilder();
@@ -191,6 +225,11 @@ public class LocalVFH2D {
 			}
 		}
 		return b.toString();
+	}
+
+	public void print(float[] h) {
+		for(int x=0;x<h.length;x++)
+			System.out.println((x*ALPHA)+"°: "+h[x]);
 	}
 
 	private class pair {

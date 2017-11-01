@@ -114,7 +114,7 @@ public class Autopilot2D implements Runnable {
 			try { Thread.sleep(50); } catch(Exception s) { }
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
-			map.toDataModel(model, 0, false);
+			map.toDataModel(model, 1, false);
 			lvfh.update(map, current);
 
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
@@ -263,9 +263,16 @@ public class Autopilot2D implements Runnable {
 			angle = lvfh.getDirection(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,POH_SMAX);
 		} catch(Exception e) {
 			offboard.setTarget(current);
-			logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+			logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			return;
 		}
+
+		if( angle < 0) {
+			logger.writeLocalMsg("[msp] ObstacleAvoidance: No path found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			offboard.setTarget(current);
+			return;
+		}
+
 		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
 		target.plusIP(delta);
 
@@ -279,6 +286,12 @@ public class Autopilot2D implements Runnable {
 				offboard.setTarget(current);
 				return;
 			}
+			if( a < 0) {
+				logger.writeLocalMsg("[msp] ObstacleAvoidance: No path found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+				offboard.setTarget(current);
+				return;
+			}
+
 			float nd = map.nearestDistance(model.state.l_y, model.state.l_x);
 			if(nd > 1) nd = 1;
 			float spd = speed * nd;
@@ -288,7 +301,7 @@ public class Autopilot2D implements Runnable {
 				target.plusIP(delta);
 				offboard.setTarget(target);
 			} else {
-				logger.writeLocalMsg("[msp] ObstacleAvoidance finalized. Projected target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+				logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 				spd = 0;
 			}
 			msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
