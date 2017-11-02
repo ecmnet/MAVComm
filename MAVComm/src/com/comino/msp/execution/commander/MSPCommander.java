@@ -199,9 +199,9 @@ public class MSPCommander {
 			pos.x = -1 + i *0.05f + model.state.l_x;
 			map.update(pos);
 		}
-		pos.y = -0.5f + model.state.l_y;
-		for(int i = 0; i < 40;i++) {
-			pos.x = -1 + i *0.05f + model.state.l_x;
+		pos.x = 1.5f + model.state.l_x;
+		for(int i = 0; i < 20;i++) {
+			pos.y = -1 + i *0.05f + model.state.l_y;
 			map.update(pos);
 		}
 

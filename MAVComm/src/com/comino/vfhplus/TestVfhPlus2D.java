@@ -20,7 +20,7 @@ public class TestVfhPlus2D {
 	//	map = new LocalMap2D(8.0f, 0.05f);
 		map.setLocalPosition(current_pos);
 
-		for(int i=-80;i<80;i++) {
+		for(int i=-0;i<80;i++) {
 		  point.x = i*0.05f;
 		  map.update(point);
 		}

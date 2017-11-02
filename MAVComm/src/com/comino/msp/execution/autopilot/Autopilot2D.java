@@ -11,6 +11,7 @@ import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
+import com.comino.msp.execution.autopilot.offboard.IOffboardSpeedControl;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
 import com.comino.msp.execution.autopilot.tracker.WayPointTracker;
 import com.comino.msp.execution.control.StatusManager;
@@ -28,7 +29,7 @@ import georegression.struct.point.Vector4D_F32;
 
 public class Autopilot2D implements Runnable {
 
-	private static final float HIS_WINDOWSIZE       = 2f;
+	private static final float HIS_WINDOWSIZE       = 1.5f;
 
 	private static final float OBSTACLE_MINDISTANCE  = 1.25f;
 	private static final float OBSTACLE_FAILDISTANCE = 0.3f;
@@ -113,11 +114,12 @@ public class Autopilot2D implements Runnable {
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
 			map.toDataModel(model, 1, false);
-			lvfh.update_map(map, current);
+			lvfh.update_map(map, current, model.hud.s);
 
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
 			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
-				logger.writeLocalMsg("[msp] Obstacle too close.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+//				logger.writeLocalMsg("[msp] Obstacle too close.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+//				System.err.println(lvfh.toString());
 			}
 
 			if(nearestTarget < OBSTACLE_MINDISTANCE) {
@@ -129,6 +131,7 @@ public class Autopilot2D implements Runnable {
 						jumpback(0.3f);
 				}
 			} else {
+				offboard.removeSpeedControl();
 				isAvoiding = false;
 			}
 
@@ -232,17 +235,94 @@ public class Autopilot2D implements Runnable {
 		});
 	}
 
+//	public void obstacleAvoidance(float none) {
+//
+//		float angle=0;  float projected_distance = 2.5f;
+//
+//		final Vector3D_F32 current    = new Vector3D_F32();
+//		final Vector3D_F32 delta      = new Vector3D_F32();
+//		final Vector3D_F32 target     = new Vector3D_F32();
+//		final Vector3D_F32 projected  = new Vector3D_F32();
+//
+//		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
+//		target.set(current);
+//
+//		// Determine projected position via CB
+//		if(targetListener!=null) {
+//			targetListener.getTarget(projected);
+//		} else {
+//			// If no target by CB available => use last direction projection
+//			projected.set(current);
+//			angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
+//
+//			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
+//					  (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
+//			projected.plusIP(delta);
+//		}
+//
+//		try {
+//			lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
+//			angle = lvfh.getSelectedDirection();
+//		} catch(Exception e) {
+//			offboard.setTarget(current);
+//			logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
+//			return;
+//		}
+//
+//		float speed = lvfh.getSelectedSpeed();
+//
+//		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
+//		target.plusIP(delta);
+//
+//		offboard.setTarget(target);
+//		offboard.addListener((m,d) -> {
+//			float a  =  0;
+//			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
+//			try {
+//				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
+//				a = lvfh.getSelectedDirection();
+//			} catch(Exception e) {
+//				offboard.setTarget(current);
+//				return;
+//			}
+//
+//			float spd = lvfh.getSelectedSpeed();
+//
+//			if(MSP3DUtils.distance3D(projected,current) > 0.3f) {
+//				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*spd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*spd, 0);
+//				target.plusIP(delta);
+//				offboard.setTarget(target);
+//			} else {
+//				logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+//				spd = 0;
+//			}
+//			msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+//			slam.px = projected.getY();
+//			slam.py = projected.getX();
+//			slam.md = map.nearestDistance(model.state.l_y, model.state.l_x);
+//			slam.pd = MSP3DUtils.angleXY(projected, current);
+//			slam.pv = spd*5;
+//			control.sendMAVLinkMessage(slam);
+//		});
+//
+//		offboard.start(OffboardManager.MODE_POSITION);
+//		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+//				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+//				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+//		logger.writeLocalMsg("[msp] ObstacleAvoidance executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+//	}
+
 	public void obstacleAvoidance(float none) {
 
 		float angle=0;  float projected_distance = 2.5f;
 
 		final Vector3D_F32 current    = new Vector3D_F32();
 		final Vector3D_F32 delta      = new Vector3D_F32();
-		final Vector3D_F32 target     = new Vector3D_F32();
 		final Vector3D_F32 projected  = new Vector3D_F32();
 
+		float[] ctl = new float[2];
+
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
-		target.set(current);
 
 		// Determine projected position via CB
 		if(targetListener!=null) {
@@ -253,71 +333,46 @@ public class Autopilot2D implements Runnable {
 			angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
 
 			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
-					(float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
+					  (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
 			projected.plusIP(delta);
 		}
 
-		try {
-			lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
-			angle = lvfh.getSelectedDirection();
-		} catch(Exception e) {
-			offboard.setTarget(current);
-			logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
-			return;
-		}
+		offboard.setTarget(projected);
+		offboard.registerSpeedControl((speed,target_dir) -> {
 
-		if( angle < 0) {
-			logger.writeLocalMsg("[msp] ObstacleAvoidance: No path found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-			offboard.setTarget(current);
-			return;
-		}
-
-		float speed = lvfh.getSelectedSpeed();
-
-		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
-		target.plusIP(delta);
-
-		offboard.setTarget(target);
-		offboard.addListener((m,d) -> {
-			float a  =  0;
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
+
+			if(!model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
+				offboard.setTarget(current);
+			}
+
 			try {
-				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
-				a = lvfh.getSelectedDirection();
+				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed);
+				ctl[IOffboardSpeedControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
+				ctl[IOffboardSpeedControl.SPEED] = lvfh.getSelectedSpeed();
+
+				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+				slam.px = projected.getY();
+				slam.py = projected.getX();
+				slam.md = 0;
+				slam.pd = target_dir;
+				slam.pv = speed*5;
+				control.sendMAVLinkMessage(slam);
+
 			} catch(Exception e) {
+				logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
 				offboard.setTarget(current);
-				return;
 			}
-			if( a < 0) {
-				logger.writeLocalMsg("[msp] ObstacleAvoidance: No path found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-				offboard.setTarget(current);
-				return;
-			}
-
-//			float nd = map.nearestDistance(model.state.l_y, model.state.l_x);
-//			if(nd > 1) nd = 1;
-//			float spd = speed * nd;
-
-			float spd = lvfh.getSelectedSpeed();
-
-			if(MSP3DUtils.distance3D(projected,current) > 0.3f) {
-				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*spd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*spd, 0);
-				target.plusIP(delta);
-				offboard.setTarget(target);
-			} else {
-				logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-				spd = 0;
-			}
-			msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-			slam.px = projected.getY();
-			slam.py = projected.getX();
-			slam.md = map.nearestDistance(model.state.l_y, model.state.l_x);
-			slam.pd = MSP3DUtils.angleXY(projected, current);
-			slam.pv = spd*15;
-			control.sendMAVLinkMessage(slam);
+			return ctl;
 		});
 
-		offboard.start(OffboardManager.MODE_POSITION);
+		offboard.addListener((m,d) -> {
+			offboard.removeSpeedControl();
+			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
+			logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+		});
+
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
 		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
@@ -344,32 +399,15 @@ public class Autopilot2D implements Runnable {
 
 	public void moveto(float x, float y, float z, float yaw) {
 		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
-		final Vector3D_F32 delta      = new Vector3D_F32();
-		final Vector3D_F32 projected  = new Vector3D_F32();
 
+		isAvoiding = false;
 		autopilot.registerTargetListener((n)->{
 			n.set(target);
 		});
 
-		projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
-		float angle = MSP3DUtils.angleXY(target,projected);
+		offboard.setTarget(target);
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
 
-		delta.set((float)Math.sin(Math.PI-angle-(float)Math.PI/2f)*0.2f,
-				(float)Math.cos(Math.PI-angle-(float)Math.PI/2f)*0.2f, 0);
-
-		projected.plusIP(delta);
-
-		offboard.setTarget(projected);
-		offboard.start(OffboardManager.MODE_POSITION);
-		offboard.addListener((m,d) -> {
-			projected.set(model.state.l_x,model.state.l_y,model.state.l_z);
-			if(MSP3DUtils.distance3D(target,projected) >0.3f && model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.INTERACTIVE)) {
-				projected.plusIP(delta);
-				offboard.setTarget(projected);
-			} else {
-
-			}
-		});
 	}
 
 
