@@ -1,9 +1,10 @@
-package com.comino.msp.slam.mapping;
+package com.comino.msp.slam.vfh;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.comino.msp.slam.mapping.LocalMap2D;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
