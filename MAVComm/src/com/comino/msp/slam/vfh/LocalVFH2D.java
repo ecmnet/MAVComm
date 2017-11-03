@@ -12,7 +12,7 @@ import georegression.struct.point.Vector3D_F32;
 
 public class LocalVFH2D {
 
-	private static final float  	ROBOT_RADIUS		= 0.5f;
+	private static final float  	ROBOT_RADIUS		= 0.25f;
 
 	private static final float	DENSITY_A		= 1000.0f;
 	private static final float	DENSITY_B		= 2.5f;
@@ -49,8 +49,8 @@ public class LocalVFH2D {
 
 	private long				last_update_time		=0;
 
-	private float 			safety_dist_0ms		= 0.2f;      // meters
-	private float 			safety_dist_1ms    	= 0.5f;		 // meters
+	private float 			safety_dist_0ms		= 0.1f;      // meters
+	private float 			safety_dist_1ms    	= 0.3f;		 // meters
 
 	public LocalVFH2D(float window_size_m, float cell_size_m) {
 
@@ -68,6 +68,11 @@ public class LocalVFH2D {
 
 	public float getSelectedSpeed() {
 		return selected_speed / 1000f;
+	}
+
+	public void setInitialSpeed(float current_speed) {
+		selected_speed = current_speed * 1000.0f;
+		last_selected_speed = selected_speed;
 	}
 
 	public void update_map(LocalMap2D map, Vector3D_F32 current, float current_speed) {
@@ -103,7 +108,6 @@ public class LocalVFH2D {
 				h  = h + hist[(k+i+360/ALPHA) % (360/ALPHA)] * (SMOOTHING - Math.abs(i) + 1);
 			hist_smoothed[k] = h / (2f * SMOOTHING + 1);
 		}
-
 	}
 
 	public void select(float tdir_rad, float current_speed, float distance_to_goal) {
@@ -139,7 +143,7 @@ public class LocalVFH2D {
 
 	private boolean cantTurnToTarget(float distance, float tdir_rad, float speed) {
 
-		float blocked_circle_radius = 0.25f + ROBOT_RADIUS + get_Safety_Dist(speed);
+		float blocked_circle_radius = ROBOT_RADIUS + get_Safety_Dist(speed);
 
 		float dist_between_centres;
 
@@ -148,7 +152,7 @@ public class LocalVFH2D {
 
 		// right circle
 		dist_between_centres = (float)Math.hypot( goal_x - blocked_circle_radius, goal_y );
-		if ( dist_between_centres+0.3f < blocked_circle_radius )
+		if ( dist_between_centres+0.3 < blocked_circle_radius )
 			return true;
 
 		// left circle

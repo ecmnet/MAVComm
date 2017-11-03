@@ -33,7 +33,6 @@ public class Autopilot2D implements Runnable {
 
 	private static final float OBSTACLE_MINDISTANCE  = 1.25f;
 	private static final float OBSTACLE_FAILDISTANCE = 0.3f;
-	private static final float OBSTACLE_SPEEDFACTOR  = 0.3f;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -126,7 +125,7 @@ public class Autopilot2D implements Runnable {
 				if(!isAvoiding) {
 					isAvoiding = true;
 					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-						obstacleAvoidance(OBSTACLE_SPEEDFACTOR);
+						obstacleAvoidance();
 					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK))
 						jumpback(0.3f);
 				}
@@ -139,7 +138,7 @@ public class Autopilot2D implements Runnable {
 			grid.extension  = 0;
 			grid.cx  = model.grid.getIndicatorX();
 			grid.cy  = model.grid.getIndicatorY();
-			grid.tms  = System.nanoTime() / 1000;
+			grid.tms  = model.sys.getSynchronizedPX4Time_us();
 			grid.count = model.grid.count;
 			if(model.grid.toArray(grid.data)) {
 				control.sendMAVLinkMessage(grid);
@@ -170,8 +169,8 @@ public class Autopilot2D implements Runnable {
 	private void clearAutopilotActions() {
 		isAvoiding = false;
 		targetListener = null;
-		offboard.removeActionListener();
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
+		offboard.removeActionListener();
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 		control.sendMAVLinkMessage(slam);
 	}
@@ -202,11 +201,15 @@ public class Autopilot2D implements Runnable {
 
 	public void abort() {
 		clearAutopilotActions();
+		model.sys.autopilot &= 0b11000000000000000000000000000001;
 		if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 			offboard.stop();
+		} else {
+			offboard.setCurrentAsTarget();
+			offboard.start(OffboardManager.MODE_POSITION);
 		}
 	}
 
@@ -235,84 +238,7 @@ public class Autopilot2D implements Runnable {
 		});
 	}
 
-//	public void obstacleAvoidance(float none) {
-//
-//		float angle=0;  float projected_distance = 2.5f;
-//
-//		final Vector3D_F32 current    = new Vector3D_F32();
-//		final Vector3D_F32 delta      = new Vector3D_F32();
-//		final Vector3D_F32 target     = new Vector3D_F32();
-//		final Vector3D_F32 projected  = new Vector3D_F32();
-//
-//		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
-//		target.set(current);
-//
-//		// Determine projected position via CB
-//		if(targetListener!=null) {
-//			targetListener.getTarget(projected);
-//		} else {
-//			// If no target by CB available => use last direction projection
-//			projected.set(current);
-//			angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
-//
-//			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
-//					  (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
-//			projected.plusIP(delta);
-//		}
-//
-//		try {
-//			lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
-//			angle = lvfh.getSelectedDirection();
-//		} catch(Exception e) {
-//			offboard.setTarget(current);
-//			logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
-//			return;
-//		}
-//
-//		float speed = lvfh.getSelectedSpeed();
-//
-//		delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*speed, (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*speed, 0);
-//		target.plusIP(delta);
-//
-//		offboard.setTarget(target);
-//		offboard.addListener((m,d) -> {
-//			float a  =  0;
-//			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
-//			try {
-//				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI,0.5f);
-//				a = lvfh.getSelectedDirection();
-//			} catch(Exception e) {
-//				offboard.setTarget(current);
-//				return;
-//			}
-//
-//			float spd = lvfh.getSelectedSpeed();
-//
-//			if(MSP3DUtils.distance3D(projected,current) > 0.3f) {
-//				delta.set((float)Math.sin(2*Math.PI-a-(float)Math.PI/2f)*spd, (float)Math.cos(2*Math.PI-a-(float)Math.PI/2f)*spd, 0);
-//				target.plusIP(delta);
-//				offboard.setTarget(target);
-//			} else {
-//				logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-//				spd = 0;
-//			}
-//			msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-//			slam.px = projected.getY();
-//			slam.py = projected.getX();
-//			slam.md = map.nearestDistance(model.state.l_y, model.state.l_x);
-//			slam.pd = MSP3DUtils.angleXY(projected, current);
-//			slam.pv = spd*5;
-//			control.sendMAVLinkMessage(slam);
-//		});
-//
-//		offboard.start(OffboardManager.MODE_POSITION);
-//		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-//				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-//				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-//		logger.writeLocalMsg("[msp] ObstacleAvoidance executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-//	}
-
-	public void obstacleAvoidance(float none) {
+	public void obstacleAvoidance() {
 
 		float angle=0;  float projected_distance = 2.5f;
 
@@ -323,6 +249,8 @@ public class Autopilot2D implements Runnable {
 		float[] ctl = new float[2];
 
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
+
+		lvfh.setInitialSpeed(model.hud.s);
 
 		// Determine projected position via CB
 		if(targetListener!=null) {
@@ -338,7 +266,7 @@ public class Autopilot2D implements Runnable {
 		}
 
 		offboard.setTarget(projected);
-		offboard.registerExternalControlListener((speed,target_dir, distance) -> {
+		offboard.registerExternalControlListener((speed, target_dir, distance) -> {
 
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 

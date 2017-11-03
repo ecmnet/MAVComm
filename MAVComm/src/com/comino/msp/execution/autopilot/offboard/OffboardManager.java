@@ -213,6 +213,7 @@ public class OffboardManager implements Runnable {
 			case MODE_SPEED_POSITION:
 
 				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
+				watch_tms = System.currentTimeMillis();
 
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
