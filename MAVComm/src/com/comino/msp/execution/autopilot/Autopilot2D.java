@@ -11,7 +11,7 @@ import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
-import com.comino.msp.execution.autopilot.offboard.IOffboardSpeedControl;
+import com.comino.msp.execution.autopilot.offboard.IOffboardExternalControl;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
 import com.comino.msp.execution.autopilot.tracker.WayPointTracker;
 import com.comino.msp.execution.control.StatusManager;
@@ -131,7 +131,7 @@ public class Autopilot2D implements Runnable {
 						jumpback(0.3f);
 				}
 			} else {
-				offboard.removeSpeedControl();
+				offboard.removeExternalControlListener();
 				isAvoiding = false;
 			}
 
@@ -170,7 +170,7 @@ public class Autopilot2D implements Runnable {
 	private void clearAutopilotActions() {
 		isAvoiding = false;
 		targetListener = null;
-		offboard.removeListener();
+		offboard.removeActionListener();
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 		control.sendMAVLinkMessage(slam);
@@ -224,7 +224,7 @@ public class Autopilot2D implements Runnable {
 
 		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
 
-		offboard.addListener((m,d) -> {
+		offboard.registerActionListener((m,d) -> {
 			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
 			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
 				offboard.setTarget(e.getValue());
@@ -338,7 +338,7 @@ public class Autopilot2D implements Runnable {
 		}
 
 		offboard.setTarget(projected);
-		offboard.registerSpeedControl((speed,target_dir, distance) -> {
+		offboard.registerExternalControlListener((speed,target_dir, distance) -> {
 
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 
@@ -348,8 +348,8 @@ public class Autopilot2D implements Runnable {
 
 			try {
 				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance);
-				ctl[IOffboardSpeedControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
-				ctl[IOffboardSpeedControl.SPEED] = lvfh.getSelectedSpeed();
+				ctl[IOffboardExternalControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
+				ctl[IOffboardExternalControl.SPEED] = lvfh.getSelectedSpeed();
 
 				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 				slam.px = projected.getY();
@@ -366,8 +366,8 @@ public class Autopilot2D implements Runnable {
 			return ctl;
 		});
 
-		offboard.addListener((m,d) -> {
-			offboard.removeSpeedControl();
+		offboard.registerActionListener((m,d) -> {
+			offboard.removeExternalControlListener();
 			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 			logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		});
@@ -385,7 +385,7 @@ public class Autopilot2D implements Runnable {
 		logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
 		offboard.start(OffboardManager.MODE_POSITION);
-		offboard.addListener((m,d) -> {
+		offboard.registerActionListener((m,d) -> {
 			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
 			if(e!=null && e.getValue().z < -0.3f)
 				offboard.setTarget(e.getValue());
@@ -427,7 +427,7 @@ public class Autopilot2D implements Runnable {
 			circleDelta.set((float)Math.sin(inc), (float)Math.cos(inc), 0);
 			circleTarget.plusIP(circleDelta);
 
-			offboard.addListener((m,d) -> {
+			offboard.registerActionListener((m,d) -> {
 				inc = inc+0.2f;
 				circleTarget.set(circleCenter);
 				circleDelta.set((float)Math.sin(inc)*radius, (float)Math.cos(inc)*radius, 0);
@@ -440,7 +440,7 @@ public class Autopilot2D implements Runnable {
 		}
 		else {
 			offboard.setTarget(circleCenter);
-			offboard.addListener((m,d) -> {
+			offboard.registerActionListener((m,d) -> {
 				logger.writeLocalMsg("[msp] Circlemode stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			});
 		}
@@ -453,7 +453,7 @@ public class Autopilot2D implements Runnable {
 			circleDelta.set(delta,0,0);
 			circleTarget.plusIP(circleDelta);
 
-			offboard.addListener((m,d) -> {
+			offboard.registerActionListener((m,d) -> {
 				circleTarget.plusIP(circleDelta);
 				offboard.setTarget(circleTarget);
 			});
@@ -462,7 +462,7 @@ public class Autopilot2D implements Runnable {
 			logger.writeLocalMsg("[msp] DebugMode1 activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 		else {
-			offboard.addListener((m,d) -> {
+			offboard.registerActionListener((m,d) -> {
 				logger.writeLocalMsg("[msp] DebugMode1 stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			});
 		}
@@ -475,7 +475,7 @@ public class Autopilot2D implements Runnable {
 			circleDelta.set(0,delta,0);
 			circleTarget.plusIP(circleDelta);
 
-			offboard.addListener((m,d) -> {
+			offboard.registerActionListener((m,d) -> {
 				circleTarget.plusIP(circleDelta);
 				offboard.setTarget(circleTarget);
 			});
@@ -484,7 +484,7 @@ public class Autopilot2D implements Runnable {
 			logger.writeLocalMsg("[msp] DebugMode2 activated",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		}
 		else {
-			offboard.addListener((m,d) -> {
+			offboard.registerActionListener((m,d) -> {
 				logger.writeLocalMsg("[msp] DebugMod2 stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			});
 		}

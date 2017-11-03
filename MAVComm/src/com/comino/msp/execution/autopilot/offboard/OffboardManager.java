@@ -32,8 +32,8 @@ public class OffboardManager implements Runnable {
 	private MSPLogger 				logger				= null;
 	private DataModel 				model				= null;
 	private IMAVController         	control      		= null;
-	private IOffboardListener        listener     		= null;
-	private IOffboardSpeedControl    speed_control       = null;
+	private IOffboardTargetAction        action_listener     	= null;		// CB target reached
+	private IOffboardExternalControl    ext_control_listener   = null;		// CB external angle+speed control in MODE_SPEED_POSITION
 
 	private boolean					enabled				= false;
 	private int						mode					= 0;
@@ -122,20 +122,20 @@ public class OffboardManager implements Runnable {
 		return enabled;
 	}
 
-	public void registerSpeedControl(IOffboardSpeedControl speed_control) {
-		this.speed_control = speed_control;
+	public void registerExternalControlListener(IOffboardExternalControl control_listener) {
+		this.ext_control_listener = control_listener;
 	}
 
-	public void removeSpeedControl() {
-		this.speed_control = null;
+	public void removeExternalControlListener() {
+		this.ext_control_listener = null;
 	}
 
-	public void addListener(IOffboardListener listener) {
-		this.listener = listener;
+	public void registerActionListener(IOffboardTargetAction listener) {
+		this.action_listener = listener;
 	}
 
-	public void removeListener() {
-		this.listener = null;
+	public void removeActionListener() {
+		this.action_listener = null;
 	}
 
 	@Override
@@ -166,8 +166,8 @@ public class OffboardManager implements Runnable {
 
 			if(new_setpoint) {
 				new_setpoint = false;
-				ctl[IOffboardSpeedControl.ANGLE] = 0;
-				ctl[IOffboardSpeedControl.SPEED] = 0;
+				ctl[IOffboardExternalControl.ANGLE] = 0;
+				ctl[IOffboardExternalControl.SPEED] = 0;
 			}
 
 			switch(mode) {
@@ -190,6 +190,7 @@ public class OffboardManager implements Runnable {
 					step_trigger = false;
 				}
 				break;
+
 			case MODE_SPEED:
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
@@ -212,7 +213,6 @@ public class OffboardManager implements Runnable {
 			case MODE_SPEED_POSITION:
 
 				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
-				watch_tms = System.currentTimeMillis();
 
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
@@ -222,36 +222,37 @@ public class OffboardManager implements Runnable {
 				delta = MSP3DUtils.distance3D(target,current);
 
 				if(delta < acceptance_radius_pos && valid_setpoint) {
+					watch_tms = System.currentTimeMillis();
 
-					ctl[IOffboardSpeedControl.ANGLE] = 0;
-					ctl[IOffboardSpeedControl.SPEED] = 0;
+					ctl[IOffboardExternalControl.ANGLE] = 0;
+					ctl[IOffboardExternalControl.SPEED] = 0;
 
 					fireAction(model, delta);
 					step_trigger = false;
 					mode = MODE_POSITION;
 				}
 
-				if(speed_control!=null) {
-					ctl = speed_control.determine(model.hud.s, MSP3DUtils.getXYDirection(target, current), delta);
+				if(ext_control_listener!=null) {
+					ctl = ext_control_listener.determine(model.hud.s, MSP3DUtils.getXYDirection(target, current), delta);
 				}
 				else {
-					ctl[IOffboardSpeedControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
+					ctl[IOffboardExternalControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
 					if(delta > 0.5) {
-						ctl[IOffboardSpeedControl.SPEED] += 0.1*delta_sec;
-						if(ctl[IOffboardSpeedControl.SPEED] > MAX_SPEED) ctl[IOffboardSpeedControl.SPEED] = MAX_SPEED;
+						ctl[IOffboardExternalControl.SPEED] += 0.1*delta_sec;
+						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
 					}
 					else {
-						ctl[IOffboardSpeedControl.SPEED] -= 0.3*delta_sec;
-						if(ctl[IOffboardSpeedControl.SPEED] < 0.01) ctl[IOffboardSpeedControl.SPEED] = 0;
+						ctl[IOffboardExternalControl.SPEED] -= 0.3*delta_sec;
+						if(ctl[IOffboardExternalControl.SPEED] < 0.01) ctl[IOffboardExternalControl.SPEED] = 0;
 					}
 				}
 
-				current_speed.set((float)Math.sin(ctl[IOffboardSpeedControl.ANGLE]), (float)Math.cos(ctl[IOffboardSpeedControl.ANGLE]), 0) ;
-				current_speed.scale(ctl[IOffboardSpeedControl.SPEED]);
+				current_speed.set((float)Math.sin(ctl[IOffboardExternalControl.ANGLE]), (float)Math.cos(ctl[IOffboardExternalControl.ANGLE]), 0) ;
+				current_speed.scale(ctl[IOffboardExternalControl.SPEED]);
 
 				constraint_speed(current_speed);
 
-				sendSpeedControlToVehice(current_speed,(float)(2*Math.PI)-ctl[IOffboardSpeedControl.ANGLE]+(float)Math.PI/2f);
+				sendSpeedControlToVehice(current_speed,(float)(2*Math.PI)-ctl[IOffboardExternalControl.ANGLE]+(float)Math.PI/2f);
 
 				break;
 			}
@@ -266,7 +267,7 @@ public class OffboardManager implements Runnable {
 			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
 
 		}
-		listener = null;
+		action_listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, false);
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		publishSLAM(0,target,current);
@@ -350,9 +351,9 @@ public class OffboardManager implements Runnable {
 	}
 
 	private void fireAction(DataModel model,float delta) {
-		if(listener!=null && !already_fired) {
+		if(action_listener!=null && !already_fired) {
 			already_fired = true;
-			listener.action(model, delta);
+			action_listener.action(model, delta);
 		}
 	}
 
