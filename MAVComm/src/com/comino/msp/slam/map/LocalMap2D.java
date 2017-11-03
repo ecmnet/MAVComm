@@ -1,9 +1,10 @@
-package com.comino.msp.slam.mapping;
+package com.comino.msp.slam.map;
 
 import java.util.Arrays;
 
 import com.comino.msp.model.DataModel;
 
+import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
 public class LocalMap2D implements IMSPLocalMap {
@@ -67,6 +68,10 @@ public class LocalMap2D implements IMSPLocalMap {
 
 	public boolean update(Vector3D_F32 point) {
 		return set(point.x, point.y,2);
+	}
+
+	public boolean update(Point3D_F64 point) {
+		return set((float)point.x, (float)point.y,2);
 	}
 
 	public boolean update(float lpos_x, float lpos_y,Vector3D_F32 point) {

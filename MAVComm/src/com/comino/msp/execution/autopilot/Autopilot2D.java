@@ -19,8 +19,8 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.slam.mapping.IMSPLocalMap;
-import com.comino.msp.slam.mapping.LocalMap2D;
+import com.comino.msp.slam.map.IMSPLocalMap;
+import com.comino.msp.slam.map.LocalMap2D;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.MSP3DUtils;
 

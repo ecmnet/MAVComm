@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.comino.msp.slam.mapping.LocalMap2D;
+import com.comino.msp.slam.map.LocalMap2D;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -249,7 +249,7 @@ public class LocalVFH2D {
 						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
 					new_result.speed = MAX_SPEED;
 					new_result.angle = tdir;
-					new_result.filter = false;
+					new_result.filter = false;  // TODO: Use a factor to reduce u2
 					results.add(new_result.clone());
 				}
 			}

@@ -49,7 +49,7 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.slam.mapping.IMSPLocalMap;
+import com.comino.msp.slam.map.IMSPLocalMap;
 
 import georegression.struct.point.Vector3D_F32;
 
