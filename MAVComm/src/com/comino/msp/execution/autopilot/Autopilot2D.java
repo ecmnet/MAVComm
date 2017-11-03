@@ -32,7 +32,7 @@ public class Autopilot2D implements Runnable {
 	private static final float HIS_WINDOWSIZE       = 1.5f;
 
 	private static final float OBSTACLE_MINDISTANCE  = 1.25f;
-	private static final float OBSTACLE_FAILDISTANCE = 0.3f;
+	private static final float OBSTACLE_FAILDISTANCE = 0.45f;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -104,7 +104,7 @@ public class Autopilot2D implements Runnable {
 	@Override
 	public void run() {
 
-		float nearestTarget = 0; Vector3D_F32 current = new Vector3D_F32();
+		float nearestTarget = 0; Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false;
 
 		msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
 
@@ -116,10 +116,15 @@ public class Autopilot2D implements Runnable {
 			lvfh.update_map(map, current, model.hud.s);
 
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
-			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
-//				logger.writeLocalMsg("[msp] Obstacle too close.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+			if(nearestTarget < OBSTACLE_FAILDISTANCE && !tooClose ) {
+				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+//				abort();
+				tooClose = true;
 //				System.err.println(lvfh.toString());
 			}
+
+			if(nearestTarget > OBSTACLE_FAILDISTANCE+0.2f)
+				tooClose = false;
 
 			if(nearestTarget < OBSTACLE_MINDISTANCE) {
 				if(!isAvoiding) {
