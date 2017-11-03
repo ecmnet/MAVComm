@@ -338,7 +338,7 @@ public class Autopilot2D implements Runnable {
 		}
 
 		offboard.setTarget(projected);
-		offboard.registerSpeedControl((speed,target_dir) -> {
+		offboard.registerSpeedControl((speed,target_dir, distance) -> {
 
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 
@@ -347,7 +347,7 @@ public class Autopilot2D implements Runnable {
 			}
 
 			try {
-				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed);
+				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance);
 				ctl[IOffboardSpeedControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
 				ctl[IOffboardSpeedControl.SPEED] = lvfh.getSelectedSpeed();
 

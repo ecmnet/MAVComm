@@ -244,8 +244,8 @@ public class MSPCommander {
 			for(int i=0; i< 10; i++) {
 
 
-				x =  (float)Math.random()*0.8f - 0.4f + dotx;
-				y =  (float)Math.random()*0.8f - 0.4f + doty;
+				x =  (float)Math.random()*0.9f - 0.45f + dotx;
+				y =  (float)Math.random()*0.9f - 0.45f + doty;
 
 				pos.x = x   + model.state.l_x - 0.05f;
 				pos.y = y   + model.state.l_y - 0.05f;
@@ -277,6 +277,7 @@ public class MSPCommander {
 
 			}
 		}
+
 
 	}
 

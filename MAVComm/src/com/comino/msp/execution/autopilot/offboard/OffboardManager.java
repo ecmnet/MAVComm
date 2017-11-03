@@ -45,6 +45,7 @@ public class OffboardManager implements Runnable {
 	private float		acceptance_radius_speed			= 0.05f;
 	private boolean     already_fired				    = false;
 	private boolean     valid_setpoint                   = false;
+	private boolean     new_setpoint                     = false;
 	private boolean     step_mode                        = false;
 	private boolean     step_trigger                     = false;
 
@@ -88,18 +89,21 @@ public class OffboardManager implements Runnable {
 		target.set(t.x,t.y,t.z,0);
 		target.w = MSP3DUtils.getXYDirection(target, current);
 		valid_setpoint = true;
+		new_setpoint = true;
 		already_fired = false;
 	}
 
 	public void setTarget(Vector3D_F32 t, float w) {
 		target.set(t.x,t.y,t.z,w);
 		valid_setpoint = true;
+		new_setpoint = true;
 		already_fired = false;
 	}
 
 	public void setTarget(Vector4D_F32 t) {
 		target.set(t);
 		valid_setpoint = true;
+		new_setpoint = true;
 		already_fired = false;
 	}
 
@@ -110,6 +114,8 @@ public class OffboardManager implements Runnable {
 	public void setCurrentAsTarget() {
 		target.set(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.y);
 		already_fired = false;
+		new_setpoint = true;
+		valid_setpoint = true;
 	}
 
 	public boolean isEnabled() {
@@ -156,6 +162,12 @@ public class OffboardManager implements Runnable {
 			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS  && !step_mode) {
 				valid_setpoint = false; mode = MODE_POSITION;
 				logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			}
+
+			if(new_setpoint) {
+				new_setpoint = false;
+				ctl[IOffboardSpeedControl.ANGLE] = 0;
+				ctl[IOffboardSpeedControl.SPEED] = 0;
 			}
 
 			switch(mode) {
@@ -219,8 +231,8 @@ public class OffboardManager implements Runnable {
 					mode = MODE_POSITION;
 				}
 
-				if(speed_control!=null && delta > 0.3f) {
-					ctl = speed_control.determine(current_speed.norm(), MSP3DUtils.getXYDirection(target, current));
+				if(speed_control!=null) {
+					ctl = speed_control.determine(model.hud.s, MSP3DUtils.getXYDirection(target, current), delta);
 				}
 				else {
 					ctl[IOffboardSpeedControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
@@ -265,8 +277,8 @@ public class OffboardManager implements Runnable {
 	private void constraint_speed(Vector3D_F32 s) {
 		if(s.x >  MAX_SPEED )  s.x =  MAX_SPEED;
 		if(s.y >  MAX_SPEED )  s.y =  MAX_SPEED;
-		if(s.x <  -MAX_SPEED )  s.x =  -MAX_SPEED;
-		if(s.y <  -MAX_SPEED )  s.y =  -MAX_SPEED;
+		if(s.x < -MAX_SPEED )  s.x = -MAX_SPEED;
+		if(s.y < -MAX_SPEED )  s.y = -MAX_SPEED;
 	}
 
 	private void sendPositionControlToVehice(Vector4D_F32 target) {
