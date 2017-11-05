@@ -18,7 +18,7 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 1.0f;
+	private static final float MAX_SPEED					= 0.8f;
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
@@ -29,23 +29,23 @@ public class OffboardManager implements Runnable {
 	public static final int MODE_SPEED	 		        = 2;
 	public static final int MODE_SPEED_POSITION	 	    = 3;
 
-	private MSPLogger 				logger				= null;
-	private DataModel 				model				= null;
-	private IMAVController         	control      		= null;
-	private IOffboardTargetAction        action_listener     	= null;		// CB target reached
-	private IOffboardExternalControl    ext_control_listener   = null;		// CB external angle+speed control in MODE_SPEED_POSITION
+	private MSPLogger 				logger					= null;
+	private DataModel 				model					= null;
+	private IMAVController         	control      			= null;
+	private IOffboardTargetAction    action_listener     		= null;		// CB target reached
+	private IOffboardExternalControl ext_control_listener   	= null;		// CB external angle+speed control in MODE_SPEED_POSITION
 
-	private boolean					enabled				= false;
-	private int						mode					= 0;
-	private Vector4D_F32				target				= null;
-	private Vector4D_F32				current				= null;
-	private Vector3D_F32				current_speed		= null;
+	private boolean					enabled					= false;
+	private int						mode						= 0;
+	private Vector4D_F32				target					= null;
+	private Vector4D_F32				current					= null;
+	private Vector3D_F32				current_speed			= null;
 
-	private float		acceptance_radius_pos			= 0.2f;
-	private float		acceptance_radius_speed			= 0.05f;
-	private boolean     already_fired				    = false;
-	private boolean     valid_setpoint                   = false;
-	private boolean     new_setpoint                     = false;
+	private float		acceptance_radius_pos				= 0.2f;
+	private float		acceptance_radius_speed				= 0.05f;
+	private boolean     already_fired				    		= false;
+	private boolean     valid_setpoint                   		= false;
+	private boolean     new_setpoint                    	 = false;
 	private boolean     step_mode                        = false;
 	private boolean     step_trigger                     = false;
 
@@ -156,6 +156,8 @@ public class OffboardManager implements Runnable {
 		//			enabled = false;
 
 		while(enabled) {
+
+			// TODO: Security checks: XY Sticks and altitude
 
 			delta_sec = UPDATE_RATE / 1000.0f;
 

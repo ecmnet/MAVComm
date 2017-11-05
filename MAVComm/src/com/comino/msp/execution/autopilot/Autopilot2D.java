@@ -29,10 +29,12 @@ import georegression.struct.point.Vector4D_F32;
 
 public class Autopilot2D implements Runnable {
 
-	private static final float HIS_WINDOWSIZE       = 1.5f;
+	private static final float HIS_WINDOWSIZE       = 2.0f;
 
-	private static final float OBSTACLE_MINDISTANCE  = 1.25f;
-	private static final float OBSTACLE_FAILDISTANCE = 0.45f;
+	private static final float OBSTACLE_MINDISTANCE_0MS  = 0.75f;
+	private static final float OBSTACLE_MINDISTANCE_1MS  = 2.5f;
+
+	private static final float OBSTACLE_FAILDISTANCE     = 0.35f;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -126,7 +128,7 @@ public class Autopilot2D implements Runnable {
 			if(nearestTarget > OBSTACLE_FAILDISTANCE+0.2f)
 				tooClose = false;
 
-			if(nearestTarget < OBSTACLE_MINDISTANCE) {
+			if(nearestTarget < getAvoidanceDistance(model.hud.s)) {
 				if(!isAvoiding) {
 					isAvoiding = true;
 					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
@@ -341,6 +343,13 @@ public class Autopilot2D implements Runnable {
 		offboard.setTarget(target);
 		offboard.start(OffboardManager.MODE_SPEED_POSITION);
 
+	}
+
+	private float getAvoidanceDistance( float speed ) {
+		float val = OBSTACLE_MINDISTANCE_0MS + (speed*( OBSTACLE_MINDISTANCE_1MS-OBSTACLE_MINDISTANCE_0MS ));
+		if ( val < 0 )
+			val = 0;
+		return val;
 	}
 
 

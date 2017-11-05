@@ -29,8 +29,6 @@ public class LocalMap2D implements IMSPLocalMap {
 	private int             window_dimension;
 	private long            tms;
 
-	private float[]			polar = new float[360];
-
 	public LocalMap2D(float diameter_m, float cell_size_m, float window_diameter_m) {
 		this(diameter_m, cell_size_m, window_diameter_m, diameter_m/2f, diameter_m/2f);
 	}
@@ -181,7 +179,7 @@ public class LocalMap2D implements IMSPLocalMap {
 	}
 
 	public int getWindowDiameter_mm() {
-		return diameter_mm;
+		return window_diameter_mm;
 	}
 
 	public int getCellSize_mm() {
