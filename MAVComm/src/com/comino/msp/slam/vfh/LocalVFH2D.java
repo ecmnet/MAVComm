@@ -9,6 +9,10 @@ import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 
+// VFH and VFH+ articles:
+//- <A HREF="http://www-personal.umich.edu/~johannb/Papers/paper17.pdf"> VFH </A>
+//- <A HREF="http://www-personal.umich.edu/~johannb/Papers/paper17.pdf"> VFH+ </A>
+
 
 public class LocalVFH2D {
 
@@ -26,12 +30,13 @@ public class LocalVFH2D {
 	private static final int MAX_SPEED_NARROW    = 300;
 
 
-	private float 			u1 = 6.0f, u2 = 1.5f;
+	private float 			u1 = 6.0f, u2 = 1f;
 
 	private float[][]    	magnitude;
 	private float[][]    	distance;
 
 	private float[]  		hist;
+	private float[]  		last_binary_hist;
 
 	private List<result>		results;
 	private List<pair>       borders;
@@ -47,8 +52,8 @@ public class LocalVFH2D {
 
 	private long				last_update_time		=0;
 
-	private float 			safety_dist_0ms		= 0.2f;      // meters
-	private float 			safety_dist_1ms    	= 0.4f;		 // meters
+	private int 			   safety_dist_0ms		= 200;
+	private int 			   safety_dist_1ms    	= 400;
 
 	public LocalVFH2D(float window_size_m, float cell_size_m) {
 
@@ -58,6 +63,7 @@ public class LocalVFH2D {
 		this.borders = new ArrayList<pair>();
 
 		this.hist 				= new float[360 / ALPHA];
+		this.last_binary_hist  	= new float[360 / ALPHA];
 
 		int window_dim = (int)Math.floor(window_size_m / cell_size_m );
 
@@ -68,7 +74,7 @@ public class LocalVFH2D {
 			for (int x = 0; x < window_dim; x++) {
 				distance[x][y]  = (float)Math.sqrt((x - window_dim/2)*(x - window_dim/2)  +
 						                           (y - window_dim/2)*(y - window_dim/2)) * cell_size_mm;
-				magnitude[x][y] = (float)(Math.pow((1500.0 - distance[x][y] ), 4) / 10000000.0);
+				magnitude[x][y] = (float)(Math.pow(((window_size_m*1000f) - distance[x][y] ), 4) / 10000000.0);
 			}
 		}
 
@@ -96,7 +102,7 @@ public class LocalVFH2D {
 
 		short[][] window =  map.getWindow(current.x, current.y);
 
-		// Build density histogram
+		// Build density polar histogram
 		for (int y = 0; y < window.length; y++) {
 			for (int x = 0; x < window.length; x++) {
 
@@ -105,21 +111,22 @@ public class LocalVFH2D {
 
 				beta = (int)(MSPMathUtils.fromRad((float)Math.atan2((y - window.length/2), (x - window.length/2)))+180) % 360;
 				if(beta < 0) beta += 360;
-				sigma = (int)MSPMathUtils.fromRad((float)Math.asin(min_distance/distance[x][y]));
+				sigma = Math.abs((int)MSPMathUtils.fromRad((float)Math.asin(min_distance/distance[x][y])));
 
 				if(sigma > 0) {
-					for(int i= beta-sigma; i<=beta+sigma; i++) {
+					for(int i= beta-sigma+1; i<beta+sigma; i++) {
 						if(i < 0)
-							hist[(i+360)/ALPHA] += magnitude[x][y];
+							hist[(i+360)/ALPHA] = magnitude[x][y];
 						else
-							hist[(i%360)/ALPHA] += magnitude[x][y];
+							hist[(i%360)/ALPHA] = magnitude[x][y];
 					}
 				}
 				else
-					hist[beta/ALPHA] += magnitude[x][y];
+					hist[beta/ALPHA] = magnitude[x][y];
 			}
 		}
 	}
+
 
 	public void select(float tdir_rad, float current_speed, float distance_to_goal) {
 
@@ -145,7 +152,7 @@ public class LocalVFH2D {
 		}
 
 		if ( cantTurnToTarget(distance_to_goal, tdir_rad, current_speed) ) {
-			speed_incr = - 5 * speed_incr;
+			speed_incr = - 3 * speed_incr;
 		}
 
 		selected_speed = Math.min( last_selected_speed + speed_incr, max_speed_for_selected_angle );
@@ -153,14 +160,14 @@ public class LocalVFH2D {
 		last_selected_speed = selected_speed;
 	}
 
-	private boolean cantTurnToTarget(float distance, float tdir_rad, float speed) {
+	private boolean cantTurnToTarget(float distance_to_target, float tdir_rad, float speed) {
 
-		float blocked_circle_radius = ROBOT_RADIUS + get_Safety_Dist(speed);
+		float blocked_circle_radius = ROBOT_RADIUS + get_Safety_Dist(speed)/1000f;
 
 		float dist_between_centres;
 
-		float goal_x = (float)(distance * Math.cos(tdir_rad));
-		float goal_y = (float)(distance * Math.sin(tdir_rad));
+		float goal_x = (float)(distance_to_target * Math.cos(tdir_rad));
+		float goal_y = (float)(distance_to_target * Math.sin(tdir_rad));
 
 		// right circle
 		dist_between_centres = (float)Math.hypot( goal_x - blocked_circle_radius, goal_y );
@@ -235,6 +242,7 @@ public class LocalVFH2D {
 				continue;
 
 			if (Math.abs(angle) < smax) {
+
 				new_result.speed = MAX_SPEED_NARROW;
 				// narrow opening: aim for the centre
 				new_result.angle = p.s + (p.e - p.s) / 2.0f;
@@ -261,7 +269,6 @@ public class LocalVFH2D {
 						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
 					new_result.speed = MAX_SPEED;
 					new_result.angle = tdir;
-					new_result.filter = false;  // TODO: Use a factor to reduce u2
 					results.add(new_result.clone());
 				}
 			}
@@ -280,11 +287,8 @@ public class LocalVFH2D {
 		for(result selected : results) {
 
 			// Cost function;
-	//		if(selected.filter)
 				weight = u1 * Math.abs(delta_angle_180(tdir,selected.angle))
-				+ u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle));
-	//		else
-	//			weight = u1 * Math.abs(delta_angle_180(tdir,selected.angle));
+				       + u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle));
 
 			//		System.out.print("["+tdir+","+selected.angle+":"+(Math.abs(delta_angle(tdir, selected.angle)))+"=>"+weight+"] ");
 			if(weight < min_weight) {
@@ -357,13 +361,11 @@ public class LocalVFH2D {
 
 	private class result {
 		float angle; int speed;
-		boolean filter = true;
 
 		public result clone() {
 			result p = new result();
 			p.angle  = angle;
 			p.speed  = speed;
-			p.filter = filter;
 			return p;
 		}
 

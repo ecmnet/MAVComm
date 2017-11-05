@@ -238,14 +238,14 @@ public class MSPCommander {
 
 		for(int j=0; j< 20; j++) {
 
-			dotx = 0 + (float)((Math.random()*9 - 4));
-			doty = 2 + (float)((Math.random()*9  ));
+			dotx = 0 + (float)((Math.random()*10 - 5));
+			doty = 2 + (float)((Math.random()*10  ));
 
-			for(int i=0; i< 10; i++) {
+			for(int i=0; i< 15; i++) {
 
 
-				x =  (float)Math.random()*0.9f - 0.45f + dotx;
-				y =  (float)Math.random()*0.9f - 0.45f + doty;
+				x =  (float)Math.random()*1.0f - 0.5f + dotx;
+				y =  (float)Math.random()*1.0f - 0.5f + doty;
 
 				pos.x = x   + model.state.l_x - 0.05f;
 				pos.y = y   + model.state.l_y - 0.05f;
