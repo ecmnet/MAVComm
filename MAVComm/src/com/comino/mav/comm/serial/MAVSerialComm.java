@@ -53,7 +53,6 @@ import com.fazecast.jSerialComm.SerialPort;
 import com.fazecast.jSerialComm.SerialPortDataListener;
 import com.fazecast.jSerialComm.SerialPortEvent;
 
-// TODO: Check stability
 
 public class MAVSerialComm implements IMAVComm {
 

@@ -73,7 +73,7 @@ public class LocalVFH2D {
 		for (int y = 0; y < window_dim; y++) {
 			for (int x = 0; x < window_dim; x++) {
 				distance[x][y]  = (float)Math.sqrt((x - window_dim/2)*(x - window_dim/2)  +
-						                           (y - window_dim/2)*(y - window_dim/2)) * cell_size_mm;
+						(y - window_dim/2)*(y - window_dim/2)) * cell_size_mm;
 				magnitude[x][y] = (float)(Math.pow(((window_size_m*1000f) - distance[x][y] ), 4) / 10000000.0);
 			}
 		}
@@ -86,6 +86,14 @@ public class LocalVFH2D {
 
 	public float getSelectedSpeed() {
 		return selected_speed / 1000f;
+	}
+
+	public int getAlpha() {
+		return ALPHA;
+	}
+
+	public float[] getHist() {
+		return hist;
 	}
 
 	public void setInitialSpeed(float current_speed) {
@@ -261,10 +269,6 @@ public class LocalVFH2D {
 
 				// See if candidate dir is in this opening
 				if(p.e>360)	tdir +=360;
-
-				//				System.out.println("A:"+delta_angle(tdir, results.get(results.size()-2).angle));
-				//				System.out.println("B:"+delta_angle(tdir, results.get(results.size()-1).angle));
-
 				if ((delta_angle(tdir, results.get(results.size()-2).angle) < 0) &&
 						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
 					new_result.speed = MAX_SPEED;
@@ -287,10 +291,9 @@ public class LocalVFH2D {
 		for(result selected : results) {
 
 			// Cost function;
-				weight = u1 * Math.abs(delta_angle_180(tdir,selected.angle))
-				       + u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle));
+			weight = u1 * Math.abs(delta_angle_180(tdir,selected.angle))
+				   + u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle));
 
-			//		System.out.print("["+tdir+","+selected.angle+":"+(Math.abs(delta_angle(tdir, selected.angle)))+"=>"+weight+"] ");
 			if(weight < min_weight) {
 				min_weight = weight;
 				selected_tdir = selected.angle % 360;
@@ -298,6 +301,7 @@ public class LocalVFH2D {
 					selected_tdir += 360;
 				max_speed_for_selected_angle = selected.speed;
 			}
+			//			System.out.print("["+tdir+","+selected.angle+":"+(Math.abs(delta_angle(tdir, selected.angle)))+"=>"+weight+"] ");
 		}
 		//	System.out.println(" ==> "+selected_tdir);
 
@@ -372,14 +376,6 @@ public class LocalVFH2D {
 		public String toString() {
 			return "{"+angle+","+speed+"}";
 		}
-	}
-
-	public int getAlpha() {
-		return ALPHA;
-	}
-
-	public float[] getHist() {
-		return hist;
 	}
 
 	public static void main(String[] args) {
