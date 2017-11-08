@@ -82,7 +82,7 @@ public class LocalMap2D implements IMSPLocalMap {
 		this.center_x_mm = center_x_m * 1000f;
 		this.center_y_mm = center_y_m * 1000f;
 
-		System.out.println("LocalMap2D initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" windows cells. ");
+		System.out.println("LocalMap2D initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
 	}
 
 	public void reset() {
@@ -121,6 +121,7 @@ public class LocalMap2D implements IMSPLocalMap {
 	public short[][] getWindow(float lpos_x, float lpos_y) {
 
 		int px,py, new_x,new_y;
+		int center = window_dimension/2;
 
 		px = (int)Math.floor( (lpos_x * 1000.0f + center_x_mm) / cell_size_mm);
 		py = (int)Math.floor( (lpos_y * 1000.0f + center_y_mm) / cell_size_mm);
@@ -129,8 +130,8 @@ public class LocalMap2D implements IMSPLocalMap {
 		for (int y = 0; y < window_dimension; y++) {
 			for (int x = 0; x < window_dimension; x++) {
 
-				new_x = x + px - window_dimension / 2;
-				new_y = y + py - window_dimension / 2;
+				new_x = x + px - center;
+				new_y = y + py - center;
 
 				if (new_x < map_dimension && new_y < map_dimension && new_x >= 0 && new_y >= 0)
 					window[x][y] = map[new_x][new_y];
@@ -144,59 +145,19 @@ public class LocalMap2D implements IMSPLocalMap {
 
 	public float nearestDistance(float lpos_x, float lpos_y) {
 		float distance = Float.MAX_VALUE, d;
+		int center = window_dimension/2;
 
 		for (int y = 0; y < window_dimension; y++) {
 			for (int x = 0; x < window_dimension; x++) {
 				if(window[x][y] <= 0)
 					continue;
-				d = (float)Math.sqrt((x - window_dimension/2)*(x - window_dimension/2) + (y - window_dimension/2)*(y - window_dimension/2));
+				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
 				if(d < distance)
 					distance = d;
 			}
 		}
 		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
 	}
-
-	//	public float nearestDistance(float lpos_x, float lpos_y) {
-	//		float lpos_x_mm = lpos_x * 1000f;
-	//		float lpos_y_mm = lpos_y * 1000f;
-	//		float _x, _y; float distance = Float.MAX_VALUE, d;
-	//
-	//		for (int x = 0; x < map_dimension;x++) {
-	//			for (int y = 0; y < map_dimension; y++) {
-	//
-	//				if(map[x][y] < 1)
-	//					continue;
-	//
-	//				_x = x*cell_size_mm-center_x_mm+cell_size_mm/2f;
-	//				_y = y*cell_size_mm-center_y_mm+cell_size_mm/2f;
-	//
-	//				d = (float)Math.sqrt((lpos_x_mm-_x)*(lpos_x_mm-_x) + (lpos_y_mm-_y)*(lpos_y_mm-_y));
-	//				if(d < distance)
-	//					distance = d;
-	//			}
-	//		}
-	//		return distance/1000f;
-	//	}
-
-	//	public float[] getWindowPolar(int dir, float lpos_x, float lpos_y) {
-	//		int angle; float distance; float dx,dy;
-	//		Arrays.fill(polar, Float.MAX_VALUE);
-	//		for (int y = 0; y <map_dimension; y++) {
-	//			for (int x = 0; x < map_dimension; x++) {
-	//				if(map[x][y] == 0)
-	//					continue;
-	//				dx = lpos_x - (x * cell_size_mm - center_x_mm);
-	//			    dy = lpos_y - (y * cell_size_mm - center_y_mm);
-	//			    distance = (float)Math.sqrt(dx*dx + dy*dy);
-	//				angle = ((int)MSPMathUtils.fromRad((float)Math.atan2(dy,dx))-dir) % 360;
-	//				if(angle<0) angle += 360;
-	//                 if(polar[angle] > distance)
-	//                	    polar[angle] = distance;
-	//			}
-	//		}
-	//		return polar;
-	//	}
 
 	public short get(float xpos, float ypos) {
 		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
