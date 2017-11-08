@@ -21,6 +21,7 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map.IMSPLocalMap;
 import com.comino.msp.slam.map.LocalMap2D;
+import com.comino.msp.slam.map.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.MSP3DUtils;
 
@@ -84,6 +85,7 @@ public class Autopilot2D implements Runnable {
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 				control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 			}
+			loadMap2D();
 		});
 
 		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT, MSP_AUTOCONTROL_MODE.STEP_MODE,(o,n) -> {
@@ -120,9 +122,9 @@ public class Autopilot2D implements Runnable {
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
 			if(nearestTarget < OBSTACLE_FAILDISTANCE && !tooClose ) {
 				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
-//				abort();
+				//				abort();
 				tooClose = true;
-//				System.err.println(lvfh.toString());
+				//				System.err.println(lvfh.toString());
 			}
 
 			if(nearestTarget > OBSTACLE_FAILDISTANCE+0.2f)
@@ -151,6 +153,21 @@ public class Autopilot2D implements Runnable {
 				control.sendMAVLinkMessage(grid);
 			}
 		}
+	}
+
+	public void saveMap2D() {
+		LocaMap2DStorage store = new LocaMap2DStorage(map,model.state.g_lat, model.state.g_lon);
+		store.write();
+		logger.writeLocalMsg("[msp] Map for this home position stored.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+
+	}
+
+	public void loadMap2D() {
+		LocaMap2DStorage store = new LocaMap2DStorage(map, model.state.g_lat, model.state.g_lon);
+		if(store.locateAndRead()!=null)
+			logger.writeLocalMsg("[msp] Map for this home position loaded.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+		else
+			logger.writeLocalMsg("[msp] No Map for this home position found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 	}
 
 	public void registerTargetListener(IAutoPilotGetTarget cb) {
@@ -268,7 +285,7 @@ public class Autopilot2D implements Runnable {
 			angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
 
 			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
-					  (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
+					(float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
 			projected.plusIP(delta);
 		}
 
@@ -282,7 +299,7 @@ public class Autopilot2D implements Runnable {
 			}
 
 			try {
-				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance);
+				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance*1000f);
 				ctl[IOffboardExternalControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
 				ctl[IOffboardExternalControl.SPEED] = lvfh.getSelectedSpeed();
 

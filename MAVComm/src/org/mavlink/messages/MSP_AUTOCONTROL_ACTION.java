@@ -29,6 +29,10 @@ public interface MSP_AUTOCONTROL_ACTION {
      */
     public final static int DEBUG_MODE2 = 20;
     /**
+     * Saves a map corresponding to the global position
+     */
+    public final static int SAVE_MAP2D = 21;
+    /**
      * Execute a single step in the current sequence for testing
      */
     public final static int STEP = 30;

@@ -222,7 +222,7 @@ public class OffboardManager implements Runnable {
 					current_speed.set(0,0,0);
 				}
 
-				delta = MSP3DUtils.distance3D(target,current);
+				delta = MSP3DUtils.distance2D(target,current);
 
 				if(delta < acceptance_radius_pos && valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
@@ -240,13 +240,13 @@ public class OffboardManager implements Runnable {
 				}
 				else {
 					ctl[IOffboardExternalControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
-					if(delta > 0.5) {
+					if(delta > 1.0) {
 						ctl[IOffboardExternalControl.SPEED] += 0.1*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
 					}
 					else {
 						ctl[IOffboardExternalControl.SPEED] -= 0.3*delta_sec;
-						if(ctl[IOffboardExternalControl.SPEED] < 0.01) ctl[IOffboardExternalControl.SPEED] = 0;
+						if(ctl[IOffboardExternalControl.SPEED] < 0.2) ctl[IOffboardExternalControl.SPEED] = 0.2f;
 					}
 				}
 

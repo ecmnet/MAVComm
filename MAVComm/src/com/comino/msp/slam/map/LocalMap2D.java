@@ -1,3 +1,36 @@
+/****************************************************************************
+ *
+ *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in
+ *    the documentation and/or other materials provided with the
+ *    distribution.
+ * 3. Neither the name of the copyright holder nor the names of its
+ *    contributors may be used to endorse or promote products derived
+ *    from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+ * COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS
+ * OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED
+ * AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ * ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ ****************************************************************************/
+
 package com.comino.msp.slam.map;
 
 import java.util.Arrays;
@@ -59,6 +92,10 @@ public class LocalMap2D implements IMSPLocalMap {
 			Arrays.fill(row, (short)0);
 	}
 
+	public short[][] get() {
+		return map;
+	}
+
 	public void 	setLocalPosition(Vector3D_F32 point) {
 		local_x_mm = point.x *1000f + center_x_mm;;
 		local_y_mm = point.y *1000f + center_y_mm;;
@@ -74,6 +111,11 @@ public class LocalMap2D implements IMSPLocalMap {
 
 	public boolean update(float lpos_x, float lpos_y,Vector3D_F32 point) {
 		return set(lpos_x+point.x, lpos_y+point.y,1);
+	}
+
+	public boolean merge(LocalMap2D m) {
+
+		return true;
 	}
 
 	public short[][] getWindow(float lpos_x, float lpos_y) {
@@ -96,7 +138,7 @@ public class LocalMap2D implements IMSPLocalMap {
 					window[x][y] = Short.MAX_VALUE;
 			}
 		}
-	//	System.err.println(windowToString());
+		//	System.err.println(windowToString());
 		return window;
 	}
 
@@ -105,8 +147,8 @@ public class LocalMap2D implements IMSPLocalMap {
 
 		for (int y = 0; y < window_dimension; y++) {
 			for (int x = 0; x < window_dimension; x++) {
-				 if(window[x][y] <= 0)
-					 continue;
+				if(window[x][y] <= 0)
+					continue;
 				d = (float)Math.sqrt((x - window_dimension/2)*(x - window_dimension/2) + (y - window_dimension/2)*(y - window_dimension/2));
 				if(d < distance)
 					distance = d;
@@ -115,46 +157,46 @@ public class LocalMap2D implements IMSPLocalMap {
 		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
 	}
 
-//	public float nearestDistance(float lpos_x, float lpos_y) {
-//		float lpos_x_mm = lpos_x * 1000f;
-//		float lpos_y_mm = lpos_y * 1000f;
-//		float _x, _y; float distance = Float.MAX_VALUE, d;
-//
-//		for (int x = 0; x < map_dimension;x++) {
-//			for (int y = 0; y < map_dimension; y++) {
-//
-//				if(map[x][y] < 1)
-//					continue;
-//
-//				_x = x*cell_size_mm-center_x_mm+cell_size_mm/2f;
-//				_y = y*cell_size_mm-center_y_mm+cell_size_mm/2f;
-//
-//				d = (float)Math.sqrt((lpos_x_mm-_x)*(lpos_x_mm-_x) + (lpos_y_mm-_y)*(lpos_y_mm-_y));
-//				if(d < distance)
-//					distance = d;
-//			}
-//		}
-//		return distance/1000f;
-//	}
+	//	public float nearestDistance(float lpos_x, float lpos_y) {
+	//		float lpos_x_mm = lpos_x * 1000f;
+	//		float lpos_y_mm = lpos_y * 1000f;
+	//		float _x, _y; float distance = Float.MAX_VALUE, d;
+	//
+	//		for (int x = 0; x < map_dimension;x++) {
+	//			for (int y = 0; y < map_dimension; y++) {
+	//
+	//				if(map[x][y] < 1)
+	//					continue;
+	//
+	//				_x = x*cell_size_mm-center_x_mm+cell_size_mm/2f;
+	//				_y = y*cell_size_mm-center_y_mm+cell_size_mm/2f;
+	//
+	//				d = (float)Math.sqrt((lpos_x_mm-_x)*(lpos_x_mm-_x) + (lpos_y_mm-_y)*(lpos_y_mm-_y));
+	//				if(d < distance)
+	//					distance = d;
+	//			}
+	//		}
+	//		return distance/1000f;
+	//	}
 
-//	public float[] getWindowPolar(int dir, float lpos_x, float lpos_y) {
-//		int angle; float distance; float dx,dy;
-//		Arrays.fill(polar, Float.MAX_VALUE);
-//		for (int y = 0; y <map_dimension; y++) {
-//			for (int x = 0; x < map_dimension; x++) {
-//				if(map[x][y] == 0)
-//					continue;
-//				dx = lpos_x - (x * cell_size_mm - center_x_mm);
-//			    dy = lpos_y - (y * cell_size_mm - center_y_mm);
-//			    distance = (float)Math.sqrt(dx*dx + dy*dy);
-//				angle = ((int)MSPMathUtils.fromRad((float)Math.atan2(dy,dx))-dir) % 360;
-//				if(angle<0) angle += 360;
-//                 if(polar[angle] > distance)
-//                	    polar[angle] = distance;
-//			}
-//		}
-//		return polar;
-//	}
+	//	public float[] getWindowPolar(int dir, float lpos_x, float lpos_y) {
+	//		int angle; float distance; float dx,dy;
+	//		Arrays.fill(polar, Float.MAX_VALUE);
+	//		for (int y = 0; y <map_dimension; y++) {
+	//			for (int x = 0; x < map_dimension; x++) {
+	//				if(map[x][y] == 0)
+	//					continue;
+	//				dx = lpos_x - (x * cell_size_mm - center_x_mm);
+	//			    dy = lpos_y - (y * cell_size_mm - center_y_mm);
+	//			    distance = (float)Math.sqrt(dx*dx + dy*dy);
+	//				angle = ((int)MSPMathUtils.fromRad((float)Math.atan2(dy,dx))-dir) % 360;
+	//				if(angle<0) angle += 360;
+	//                 if(polar[angle] > distance)
+	//                	    polar[angle] = distance;
+	//			}
+	//		}
+	//		return polar;
+	//	}
 
 	public short get(float xpos, float ypos) {
 		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
@@ -215,7 +257,7 @@ public class LocalMap2D implements IMSPLocalMap {
 			for(int x=0; x<map_dimension; x++) {
 				if(Math.abs(local_x_mm - x * cell_size_mm)<cell_size_mm &&
 						Math.abs(local_y_mm - y * cell_size_mm)<cell_size_mm)
-					b.append("o");
+					b.append("o ");
 				else if(map[x][y]>0) {
 					b.append("X ");
 				}
@@ -243,5 +285,13 @@ public class LocalMap2D implements IMSPLocalMap {
 		b.append("\n");
 		return b.toString();
 	}
+
+	public static void main(String[] args) {
+		LocalMap2D map = new LocalMap2D(11,1,2);
+
+		System.out.println(map);
+
+	}
+
 
 }

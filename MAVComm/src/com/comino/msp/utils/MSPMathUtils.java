@@ -52,6 +52,26 @@ public class MSPMathUtils {
 		ref.init    = true;
 	}
 
+	public static float map_projection_distance(double lat, double lon, double lat2, double lon2, float[] translation) {
+		float[] p1 = new float[2]; float[] p2 = new float[2];
+
+		if(!ref.init)
+			map_projection_init(lat,lon);
+
+		 map_projection_project(lat,  lon,  p1);
+		 map_projection_project(lat2, lon2, p2);
+
+		 if(translation != null) {
+			 translation[0] = p2[0] - p1[0];
+			 translation[1] = p2[1] - p1[1];
+		 }
+
+		 return (float)Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+
+
+	}
+
+
 	public static boolean map_projection_project(double lat, double lon, float[] xy) {
 
 		if(!ref.init)
