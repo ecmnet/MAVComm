@@ -69,7 +69,7 @@ public class LocalVFH2D {
 	private float[][]    	distance;
 
 	private float[]  		hist;
-	private float[]  		last_binary_hist;
+//	private float[]  		last_binary_hist;
 
 	private List<result>		results;
 	private List<pair>       borders;
@@ -96,7 +96,7 @@ public class LocalVFH2D {
 		this.borders = new ArrayList<pair>();
 
 		this.hist 				= new float[360 / ALPHA];
-		this.last_binary_hist  	= new float[360 / ALPHA];
+//		this.last_binary_hist  	= new float[360 / ALPHA];
 
 		int window_dim = (int)Math.floor(window_size_m / cell_size_m );
 
@@ -169,7 +169,7 @@ public class LocalVFH2D {
 	}
 
 
-	public void select(float tdir_rad, float current_speed, float distance_to_goal_mms) {
+	public void select(float tdir_rad, float current_speed, float distance_to_goal_mm) {
 
 		float diffSeconds = (System.currentTimeMillis() - last_update_time ) / 1000.0f;
 		last_update_time = System.currentTimeMillis();
@@ -192,10 +192,10 @@ public class LocalVFH2D {
 			speed_incr = (int) (MAX_ACCELERATION * diffSeconds);
 		}
 
-		if ( cantTurnToTarget(distance_to_goal_mms, tdir_rad, current_speed)) {
+		if ( cantTurnToTarget(distance_to_goal_mm, tdir_rad, current_speed)) {
 			speed_incr = - 3 * speed_incr;
 		} else {
-			if(distance_to_goal_mms < 750 && last_selected_speed > 200)
+			if(distance_to_goal_mm < 750 && last_selected_speed > 200)
 				speed_incr = - 3 * speed_incr;
 		}
 
@@ -204,14 +204,14 @@ public class LocalVFH2D {
 		last_selected_speed = selected_speed;
 	}
 
-	private boolean cantTurnToTarget(float distance_to_target, float tdir_rad, float speed) {
+	private boolean cantTurnToTarget(float distance_to_target_mm, float tdir_rad, float speed) {
 
 		float blocked_circle_radius = ROBOT_RADIUS + get_Safety_Dist(speed)/1000f;
 
 		float dist_between_centres;
 
-		float goal_x = (float)(distance_to_target * Math.cos(tdir_rad));
-		float goal_y = (float)(distance_to_target * Math.sin(tdir_rad));
+		float goal_x = (float)(distance_to_target_mm/1000f * Math.cos(tdir_rad));
+		float goal_y = (float)(distance_to_target_mm/1000f * Math.sin(tdir_rad));
 
 		// right circle
 		dist_between_centres = (float)Math.hypot( goal_x - blocked_circle_radius, goal_y );
@@ -431,10 +431,7 @@ public class LocalVFH2D {
 		poh.select(MSPMathUtils.toRad(180),0.5f,1);
 		System.out.println(poh.toString());
 
-
 		System.out.println("Result: "+ (int)MSPMathUtils.fromRad(poh.getSelectedDirection())+"° Speed: "+poh.getSelectedSpeed());
 
 	}
-
-
 }

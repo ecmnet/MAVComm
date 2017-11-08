@@ -84,6 +84,7 @@ public class Autopilot2D implements Runnable {
 	private IAutoPilotGetTarget targetListener = null;
 
 	private boolean              isAvoiding  = false;
+	private float             nearestTarget  = 0;
 
 
 	public static Autopilot2D getInstance(IMAVController control) {
@@ -141,7 +142,7 @@ public class Autopilot2D implements Runnable {
 	@Override
 	public void run() {
 
-		float nearestTarget = 0; Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false;
+       Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false;
 
 		msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
 
@@ -305,6 +306,8 @@ public class Autopilot2D implements Runnable {
 
 		float[] ctl = new float[2];
 
+		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 
 		lvfh.setInitialSpeed(model.hud.s);
@@ -336,10 +339,9 @@ public class Autopilot2D implements Runnable {
 				ctl[IOffboardExternalControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
 				ctl[IOffboardExternalControl.SPEED] = lvfh.getSelectedSpeed();
 
-				msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 				slam.px = projected.getY();
 				slam.py = projected.getX();
-				slam.md = 0;
+				slam.md = nearestTarget;
 				slam.pd = target_dir;
 				slam.pv = speed*5;
 				control.sendMAVLinkMessage(slam);
