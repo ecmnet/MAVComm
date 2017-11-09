@@ -49,7 +49,7 @@ import georegression.struct.point.Vector3D_F32;
 
 public class LocalVFH2D {
 
-	private static final float  	 ROBOT_RADIUS	= 0.4f;
+	private static final float  	 ROBOT_RADIUS	= 0.3f;
 
 	private static final int     SMAX        	= 80;
 
@@ -85,8 +85,8 @@ public class LocalVFH2D {
 
 	private long				last_update_time		=0;
 
-	private int 			   safety_dist_0ms		= 200;
-	private int 			   safety_dist_1ms    	= 400;
+	private int 			   safety_dist_0ms		= 100;
+	private int 			   safety_dist_1ms    	= 200;
 
 	public LocalVFH2D(float window_size_m, float cell_size_m) {
 

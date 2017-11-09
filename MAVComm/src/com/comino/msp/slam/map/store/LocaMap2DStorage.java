@@ -10,6 +10,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.comino.main.MSPConfig;
 import com.comino.msp.slam.map.LocalMap2D;
 import com.comino.msp.utils.MSPArrayUtils;
 import com.comino.msp.utils.MSPMathUtils;
@@ -20,7 +21,6 @@ import com.google.gson.InstanceCreator;
 public class LocaMap2DStorage {
 
 	private final static String EXT  = ".m2D";
-	private final static String PATH = "/";
 
 	private float  lat;
 	private float  lon;
@@ -31,12 +31,16 @@ public class LocaMap2DStorage {
 	private long    tms;
 	private Gson    gson;
 
+	private String base_path;
+
 	/* TODO:
 	 * Search for map within MAP size and determine global center
 	 * then move map according to position
 	 */
 
 	public LocaMap2DStorage(LocalMap2D map,float lat, float lon) {
+
+		this.base_path = MSPConfig.getInstance().getBasePath()+"/";
 
 		this.lat = (float)Math.floor(lat * 1000000d) / 1000000f;
 		this.lon = (float)Math.floor(lon * 1000000d) / 1000000f;
@@ -55,7 +59,8 @@ public class LocaMap2DStorage {
 
 		this.tms = System.currentTimeMillis();
 
-		File f = new File(System.getProperty("user.home")+PATH+filename);
+		File f = new File(base_path+filename);
+		System.out.println("Map stored to "+f.getPath());
 		if(f.exists()) f.delete();
 		try {
 			f.createNewFile();
@@ -79,6 +84,11 @@ public class LocaMap2DStorage {
 
 		found = null;
 		for( String f : getMapFileNames()) {
+
+			if(f.contains("test")) {
+				found = f;
+				break;
+			}
 			origin = getOriginFromFileName(f);
 			distance_origin = MSPMathUtils.map_projection_distance(lat, lon, origin[0], origin[1], req_translation);
 			if(distance_origin<distance && distance_origin < map.getDiameter_mm()/2000f) {
@@ -123,9 +133,8 @@ public class LocaMap2DStorage {
 	}
 
 	private List<String> getMapFileNames() {
-		String directory = System.getProperty("user.home")+PATH;
 		ArrayList<String> result = new ArrayList<String>();
-		File folder = new File(directory);
+		File folder = new File(base_path);
 		for(File f : folder.listFiles()) {
 			if(f.isFile() && f.getName().contains(EXT))
 				result.add(f.getName());
@@ -135,7 +144,7 @@ public class LocaMap2DStorage {
 
 	private LocalMap2D read(String fn) {
 
-		File f = new File(System.getProperty("user.home")+PATH+fn);
+		File f = new File(base_path+fn);
 		if(f.exists()) {
 			System.out.println("Map '"+f.getAbsolutePath()+"' found in store");
 			try {

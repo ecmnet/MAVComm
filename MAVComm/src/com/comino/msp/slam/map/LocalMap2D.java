@@ -113,8 +113,7 @@ public class LocalMap2D implements IMSPLocalMap {
 		return set(lpos_x+point.x, lpos_y+point.y,1);
 	}
 
-	public boolean merge(LocalMap2D m) {
-
+	public boolean merge(LocalMap2D m, float weight) {
 		return true;
 	}
 

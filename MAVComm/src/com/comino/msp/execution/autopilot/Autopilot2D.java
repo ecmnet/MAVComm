@@ -142,9 +142,7 @@ public class Autopilot2D implements Runnable {
 	@Override
 	public void run() {
 
-       Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false;
-
-		msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
+		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false;
 
 		while(true) {
 			try { Thread.sleep(50); } catch(Exception s) { }
@@ -175,16 +173,6 @@ public class Autopilot2D implements Runnable {
 			} else {
 				offboard.removeExternalControlListener();
 				isAvoiding = false;
-			}
-
-			grid.resolution = 0;
-			grid.extension  = 0;
-			grid.cx  = model.grid.getIndicatorX();
-			grid.cy  = model.grid.getIndicatorY();
-			grid.tms  = model.sys.getSynchronizedPX4Time_us();
-			grid.count = model.grid.count;
-			if(model.grid.toArray(grid.data)) {
-				control.sendMAVLinkMessage(grid);
 			}
 		}
 	}
@@ -306,7 +294,7 @@ public class Autopilot2D implements Runnable {
 
 		float[] ctl = new float[2];
 
-		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+		final msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 
@@ -316,7 +304,7 @@ public class Autopilot2D implements Runnable {
 		if(targetListener!=null) {
 			targetListener.getTarget(projected);
 		} else {
-			// If no target by CB available => use last direction projection
+			// If no target by CB available => use last direction and project project
 			projected.set(current);
 			angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
 
@@ -326,6 +314,8 @@ public class Autopilot2D implements Runnable {
 		}
 
 		offboard.setTarget(projected);
+
+		// determine velocity setpoint via callback
 		offboard.registerExternalControlListener((speed, target_dir, distance) -> {
 
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
