@@ -74,6 +74,10 @@ public class MSPConfig {
 		this.version = prop.getProperty("build","tmp");
 	}
 
+	public String getBasePath() {
+		return path;
+	}
+
 
 	public void updateProperty(String item, String value)  {
 		this.prop.setProperty(item, value);

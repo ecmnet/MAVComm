@@ -41,6 +41,7 @@ import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
+import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -66,8 +67,8 @@ public class StartUp implements Runnable {
 
 	public StartUp(String[] args) {
 
-		config  = MSPConfig.getInstance("home/pi","msp.properties");
-		System.out.println("MSPService version "+config.getVersion());
+		config  = MSPConfig.getInstance(System.getProperty("user.home"),"msp.properties");
+		System.out.println("MSPService version "+config.getVersion()+" ("+config.getBasePath()+")");
 
 		if(args.length>0)
 			control = new MAVProxyController(true);
@@ -129,16 +130,30 @@ public class StartUp implements Runnable {
 	public void run() {
 		long tms = System.currentTimeMillis();
 
+		msg_msp_micro_grid grid = new msg_msp_micro_grid(2,1);
+		msg_msp_status msg = new msg_msp_status(2,1);
+
 		while(true) {
 			try {
-				Thread.sleep(100);
+				Thread.sleep(250);
 				if(!control.isConnected()) {
 					if(control.isConnected())
 						control.close();
 					control.connect();
 				}
 
-				msg_msp_status msg = new msg_msp_status(2,1);
+
+				grid.resolution = 0;
+				grid.extension  = 0;
+				grid.cx  = model.grid.getIndicatorX();
+				grid.cy  = model.grid.getIndicatorY();
+				grid.tms  = model.sys.getSynchronizedPX4Time_us();
+				grid.count = model.grid.count;
+				if(model.grid.toArray(grid.data)) {
+					control.sendMAVLinkMessage(grid);
+				}
+
+
 				msg.load = (int)(osBean.getSystemLoadAverage()*100);
 				msg.autopilot_mode =control.getCurrentModel().sys.autopilot;
 				msg.memory = (int)(mxBean.getHeapMemoryUsage().getUsed() * 100 /mxBean.getHeapMemoryUsage().getMax());
