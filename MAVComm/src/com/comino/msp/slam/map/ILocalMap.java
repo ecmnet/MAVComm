@@ -33,19 +33,38 @@
 
 package com.comino.msp.slam.map;
 
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.GrayU16;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
 public interface ILocalMap {
 
 	public boolean update(Vector3D_F32 point);
+
 	public boolean update(Point3D_F64 point);
+
+	public boolean update(Vector3D_F32 point, int incr);
+
+	public boolean update(Point3D_F64 point, int incr);
+
+
 	public float nearestDistance(float lpos_y, float lpos_x);
+
 	public void processWindow(float lpos_x, float lpos_y);
-	public int getWindowDimension();
-	public int getMapDimension();
+
 	public int getWindowValue(int x, int y);
+
+
+	public int getWindowDimension();
+
+	public int getMapDimension();
+
 	public int getCellSize_mm();
+
+	public GrayF32 getMap();
+
+
 	public void reset();
 
 }

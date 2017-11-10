@@ -52,7 +52,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map.ILocalMap;
-import com.comino.msp.slam.map.LocalMap2D;
+import com.comino.msp.slam.map.impl.LocalMap2D;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.MSP3DUtils;
@@ -110,7 +110,7 @@ public class Autopilot2D implements Runnable {
 		this.logger   = MSPLogger.getInstance();
 
 		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
-		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, model.grid.getResolution(),CERTAINITY_THRESHOLD);
+		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {

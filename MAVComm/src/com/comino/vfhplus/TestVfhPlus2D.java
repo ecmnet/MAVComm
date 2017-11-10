@@ -1,6 +1,6 @@
 package com.comino.vfhplus;
 
-import com.comino.msp.slam.map.LocalMap2D;
+import com.comino.msp.slam.map.impl.LocalMap2D;
 
 import georegression.struct.point.Vector3D_F32;
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 import com.comino.main.MSPConfig;
 import com.comino.msp.slam.map.ILocalMap;
-import com.comino.msp.slam.map.LocalMap2D;
+import com.comino.msp.slam.map.impl.LocalMap2D;
 import com.comino.msp.utils.MSPArrayUtils;
 import com.comino.msp.utils.MSPMathUtils;
 import com.google.gson.Gson;
@@ -58,6 +58,17 @@ public class LocaMap2DStorage {
 		};
 
 		this.gson = new GsonBuilder().registerTypeAdapter(LocalMap2D.class, creator).create();
+	}
+
+	public LocaMap2DStorage(String filename) {
+		try {
+			this.base_path = MSPConfig.getInstance().getBasePath()+"/";
+			} catch(Exception e) {
+				this.base_path = System.getProperty("user.home")+"/";
+			}
+		this.filename = filename + EXT;
+		this.gson = new Gson();
+
 	}
 
 	public void write() {
@@ -106,10 +117,12 @@ public class LocaMap2DStorage {
 
 		read(found);
 
+
+
 		return map;
 	}
 
-	public LocalMap2D read() {
+	public ILocalMap read() {
 		return read(filename);
 	}
 
@@ -138,7 +151,7 @@ public class LocaMap2DStorage {
 		return result;
 	}
 
-	private LocalMap2D read(String fn) {
+	private ILocalMap read(String fn) {
 
 		File f = new File(base_path+fn);
 		if(f.exists()) {
@@ -146,7 +159,7 @@ public class LocaMap2DStorage {
 			try {
 				FileInputStream fs = new FileInputStream(f);
 				return gson.fromJson(new BufferedReader(new InputStreamReader(fs)), LocalMap2D.class);
-			} catch (IOException e) {
+			} catch (Exception e) {
 				System.err.println(fn+" reading error "+e.getMessage());
 				return null;
 			}
