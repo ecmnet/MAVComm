@@ -49,7 +49,7 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.slam.map.IMSPLocalMap;
+import com.comino.msp.slam.map.ILocalMap;
 
 import georegression.struct.point.Vector3D_F32;
 
@@ -58,7 +58,7 @@ public class MSPCommander {
 	private IMAVMSPController        control = null;
 	private Autopilot2D              autopilot = null;
 	private DataModel                  model = null;
-	private IMSPLocalMap                map  = null;
+	private ILocalMap                map  = null;
 
 	public MSPCommander(IMAVMSPController control) {
 

@@ -40,7 +40,7 @@ import com.comino.msp.model.DataModel;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
-public class LocalMap2D implements IMSPLocalMap {
+public class LocalMap2D implements ILocalMap {
 
 	private static final long OBLIVISION_TIME_MS = 10000;
 	private static final int  MAX_CERTAINITY     = 1000;
@@ -88,17 +88,6 @@ public class LocalMap2D implements IMSPLocalMap {
 		System.out.println("LocalMap2D initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
 	}
 
-	public void reset() {
-		for (short[] row : map)
-			Arrays.fill(row, (short)0);
-		for (short[] row : window)
-			Arrays.fill(row, (short)0);
-	}
-
-	public short[][] get() {
-		return map;
-	}
-
 	public void 	setLocalPosition(Vector3D_F32 point) {
 		local_x_mm = point.x *1000f + center_x_mm;;
 		local_y_mm = point.y *1000f + center_y_mm;;
@@ -120,7 +109,7 @@ public class LocalMap2D implements IMSPLocalMap {
 		return true;
 	}
 
-	public short[][] getWindow(float lpos_x, float lpos_y) {
+	public void processWindow(float lpos_x, float lpos_y) {
 
 		int px,py, new_x,new_y;
 		int center = window_dimension/2;
@@ -141,9 +130,12 @@ public class LocalMap2D implements IMSPLocalMap {
 					window[x][y] = Short.MAX_VALUE;
 			}
 		}
-		//	System.err.println(windowToString());
-		return window;
 	}
+
+	public int getWindowValue(int x, int y) {
+		return window[x][y];
+	}
+
 
 	public float nearestDistance(float lpos_x, float lpos_y) {
 		float distance = Float.MAX_VALUE, d;
@@ -179,18 +171,6 @@ public class LocalMap2D implements IMSPLocalMap {
 		return false;
 	}
 
-	public int getDiameter_mm() {
-		return diameter_mm;
-	}
-
-	public int getWindowDiameter_mm() {
-		return window_diameter_mm;
-	}
-
-	public int getCellSize_mm() {
-		return cell_size_mm;
-	}
-
 	public void toDataModel(DataModel model,  boolean debug) {
 		for (int y = 0; y <map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
@@ -212,6 +192,29 @@ public class LocalMap2D implements IMSPLocalMap {
 					if(map[i][j] > 0)
 						map[i][j] -= 1;
 		}
+	}
+
+	public int getWindowDimension() {
+		return window_dimension;
+	}
+
+	public int getMapDimension() {
+		return map_dimension;
+	}
+
+	public int getCellSize_mm() {
+		return cell_size_mm;
+	}
+
+	public void reset() {
+		for (short[] row : map)
+			Arrays.fill(row, (short)0);
+		for (short[] row : window)
+			Arrays.fill(row, (short)0);
+	}
+
+	public short[][] get() {
+		return map;
 	}
 
 	public String toString() {

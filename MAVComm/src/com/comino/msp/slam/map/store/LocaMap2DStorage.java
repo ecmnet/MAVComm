@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.comino.main.MSPConfig;
+import com.comino.msp.slam.map.ILocalMap;
 import com.comino.msp.slam.map.LocalMap2D;
 import com.comino.msp.utils.MSPArrayUtils;
 import com.comino.msp.utils.MSPMathUtils;
@@ -26,7 +27,7 @@ public class LocaMap2DStorage {
 	private float  lon;
 
 	private String  filename;
-	private LocalMap2D map;
+	private ILocalMap map;
 
 	private long    tms;
 	private Gson    gson;
@@ -38,7 +39,7 @@ public class LocaMap2DStorage {
 	 * then move map according to position
 	 */
 
-	public LocaMap2DStorage(LocalMap2D map,float lat, float lon) {
+	public LocaMap2DStorage(ILocalMap map,float lat, float lon) {
 
 		try {
 		this.base_path = MSPConfig.getInstance().getBasePath()+"/";
@@ -52,8 +53,8 @@ public class LocaMap2DStorage {
 
 		this.filename = generateFileName()+EXT;
 
-		InstanceCreator<LocalMap2D> creator = new InstanceCreator<LocalMap2D>() {
-			public LocalMap2D createInstance(Type type) { return map; }
+		InstanceCreator<ILocalMap> creator = new InstanceCreator<ILocalMap>() {
+			public ILocalMap createInstance(Type type) { return map; }
 		};
 
 		this.gson = new GsonBuilder().registerTypeAdapter(LocalMap2D.class, creator).create();
@@ -76,11 +77,11 @@ public class LocaMap2DStorage {
 		}
 	}
 
-	public LocalMap2D locateAndRead() {
+	public ILocalMap locateAndRead() {
 		return locateAndRead(this.lat, this.lon);
 	}
 
-	public LocalMap2D locateAndRead(float lat, float lon) {
+	public ILocalMap locateAndRead(float lat, float lon) {
 		float[] origin; String found; float distance_origin, distance = Float.MAX_VALUE;
 		float[] req_translation = new float[2]; int tx,ty;
 
@@ -95,7 +96,7 @@ public class LocaMap2DStorage {
 			}
 			origin = getOriginFromFileName(f);
 			distance_origin = MSPMathUtils.map_projection_distance(lat, lon, origin[0], origin[1], req_translation);
-			if(distance_origin<distance && distance_origin < map.getDiameter_mm()/2000f) {
+			if(distance_origin<distance && distance_origin < map.getMapDimension()*map.getCellSize_mm()/2000f) {
 				found = f; distance = distance_origin;
 			}
 		}
@@ -104,15 +105,6 @@ public class LocaMap2DStorage {
 			return null;
 
 		read(found);
-		// perform map translation (rotation later)
-
-		tx =   (int)Math.floor(req_translation[0]*1000f/map.getCellSize_mm());
-		ty = - (int)Math.floor(req_translation[1]*1000f/map.getCellSize_mm());
-
-
-		MSPArrayUtils.translate(map.get(), tx, ty);
-
-		System.out.println("Map Translation: ["+req_translation[0]+","+req_translation[1]+"] => "+distance);
 
 		return map;
 	}

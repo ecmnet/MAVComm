@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.comino.msp.slam.map.LocalMap2D;
+import com.comino.msp.slam.map.ILocalMap;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -60,6 +60,8 @@ public class LocalVFH2D {
 	private static final int MAX_SPEED_WIDE			= 500;
 	private static final int MAX_SPEED_NARROW    	= 300;
 
+	private ILocalMap 		map = null;
+
 
 	private float 			u1 = 6.0f, u2 = 1f;
 
@@ -67,7 +69,6 @@ public class LocalVFH2D {
 	private float[][]    	distance;
 
 	private float[]  		hist;
-//	private float[]  		last_binary_hist;
 
 	private List<result>		results;
 	private List<pair>       borders;
@@ -89,7 +90,9 @@ public class LocalVFH2D {
 	private int				robot_radius        = 0;
 	private int              threshold           = 0;
 
-	public LocalVFH2D(float robot_radius_m, float window_size_m, float cell_size_m, int threshold) {
+	public LocalVFH2D(ILocalMap map, float robot_radius_m, float cell_size_m, int threshold) {
+
+		this.map = map;
 
 		float cell_size_mm = cell_size_m * 1000f;
 
@@ -100,9 +103,8 @@ public class LocalVFH2D {
 		this.borders = new ArrayList<pair>();
 
 		this.hist 				= new float[360 / ALPHA];
-//		this.last_binary_hist  	= new float[360 / ALPHA];
 
-		int window_dim = (int)Math.floor(window_size_m / cell_size_m );
+		int window_dim = map.getWindowDimension();
 
 		this.magnitude = new float[window_dim][window_dim];
 		this.distance  = new float[window_dim][window_dim];
@@ -111,7 +113,7 @@ public class LocalVFH2D {
 			for (int x = 0; x < window_dim; x++) {
 				distance[x][y]  = (float)Math.sqrt((x - window_dim/2)*(x - window_dim/2)  +
 						(y - window_dim/2)*(y - window_dim/2)) * cell_size_mm;
-				magnitude[x][y] = (float)(Math.pow(((window_size_m*1000f) - distance[x][y] ), 4) / 10000000.0);
+				magnitude[x][y] = (float)(Math.pow(((window_dim*map.getCellSize_mm()) - distance[x][y] ), 4) / 10000000.0);
 			}
 		}
 
@@ -138,23 +140,24 @@ public class LocalVFH2D {
 		last_selected_speed = selected_speed;
 	}
 
-	public void update_map(LocalMap2D map, Vector3D_F32 current, float current_speed) {
+	public void update_histogram(Vector3D_F32 current, float current_speed) {
 		int beta = 0; int sigma;
 
 		float min_distance = this.robot_radius;
 
 		Arrays.fill(hist, 0);
 
-		short[][] window =  map.getWindow(current.x, current.y);
+	    map.processWindow(current.x, current.y);
+	    int window_center = map.getWindowDimension()/2;
 
 		// Build density polar histogram
-		for (int y = 0; y < window.length; y++) {
-			for (int x = 0; x < window.length; x++) {
+		for (int y = 0; y < map.getWindowDimension(); y++) {
+			for (int x = 0; x < map.getWindowDimension(); x++) {
 
-				if(window[x][y] <= threshold)
+				if(map.getWindowValue(x, y) <= threshold)
 					continue;
 
-				beta = (int)(MSPMathUtils.fromRad((float)Math.atan2((y - window.length/2), (x - window.length/2)))+180) % 360;
+				beta = (int)(MSPMathUtils.fromRad((float)Math.atan2((y - window_center), (x - window_center)))+180) % 360;
 				if(beta < 0) beta += 360;
 				sigma = Math.abs((int)MSPMathUtils.fromRad((float)Math.asin(min_distance/distance[x][y])));
 
@@ -420,22 +423,22 @@ public class LocalVFH2D {
 
 	public static void main(String[] args) {
 
-		LocalVFH2D poh = new LocalVFH2D(0.3f,3f,0.05f, 1);
-
-		for(int i=40;i<120;i++)
-			poh.hist[i/ALPHA]  = 10f;
-		for(int i=140;i<160;i++)
-			poh.hist[i/ALPHA]  = 10f;
-		for(int i=250;i<270;i++)
-			poh.hist[i/ALPHA]  = 10f;
-
-		System.out.println();
-
-
-		poh.select(MSPMathUtils.toRad(180),0.5f,1);
-		System.out.println(poh.toString());
-
-		System.out.println("Result: "+ (int)MSPMathUtils.fromRad(poh.getSelectedDirection())+"° Speed: "+poh.getSelectedSpeed());
+//		LocalVFH2D poh = new LocalVFH2D(0.3f,3f,0.05f, 1);
+//
+//		for(int i=40;i<120;i++)
+//			poh.hist[i/ALPHA]  = 10f;
+//		for(int i=140;i<160;i++)
+//			poh.hist[i/ALPHA]  = 10f;
+//		for(int i=250;i<270;i++)
+//			poh.hist[i/ALPHA]  = 10f;
+//
+//		System.out.println();
+//
+//
+//		poh.select(MSPMathUtils.toRad(180),0.5f,1);
+//		System.out.println(poh.toString());
+//
+//		System.out.println("Result: "+ (int)MSPMathUtils.fromRad(poh.getSelectedDirection())+"° Speed: "+poh.getSelectedSpeed());
 
 	}
 }

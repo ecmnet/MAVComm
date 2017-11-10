@@ -51,7 +51,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.slam.map.IMSPLocalMap;
+import com.comino.msp.slam.map.ILocalMap;
 import com.comino.msp.slam.map.LocalMap2D;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
@@ -62,9 +62,11 @@ import georegression.struct.point.Vector4D_F32;
 
 public class Autopilot2D implements Runnable {
 
+	private static final int   CYCLE_MS					= 50;
+
 	private static final int   CERTAINITY_THRESHOLD      = 5;
 	private static final float ROBOT_RADIUS         		= 0.3f;
-	private static final float HIS_WINDOWSIZE       		= 2.0f;
+	private static final float WINDOWSIZE       			= 2.0f;
 
 
 	private static final float OBSTACLE_MINDISTANCE_0MS  = 0.5f;
@@ -107,8 +109,8 @@ public class Autopilot2D implements Runnable {
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
 
-		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution(),HIS_WINDOWSIZE,CERTAINITY_THRESHOLD);
-		this.lvfh     = new LocalVFH2D(ROBOT_RADIUS,HIS_WINDOWSIZE,model.grid.getResolution(),CERTAINITY_THRESHOLD);
+		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, model.grid.getResolution(),CERTAINITY_THRESHOLD);
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
@@ -147,18 +149,16 @@ public class Autopilot2D implements Runnable {
 		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false;
 
 		while(true) {
-			try { Thread.sleep(50); } catch(Exception s) { }
+			try { Thread.sleep(CYCLE_MS); } catch(Exception s) { }
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
 			map.toDataModel(model, false);
-			lvfh.update_map(map, current, model.hud.s);
+			lvfh.update_histogram(current, model.hud.s);
 
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
 			if(nearestTarget < OBSTACLE_FAILDISTANCE && !tooClose ) {
 				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
-				//				abort();
 				tooClose = true;
-				//				System.err.println(lvfh.toString());
 			}
 
 			if(nearestTarget > OBSTACLE_FAILDISTANCE+0.2f)
@@ -198,7 +198,7 @@ public class Autopilot2D implements Runnable {
 		this.targetListener = cb;
 	}
 
-	public IMSPLocalMap getMap2D() {
+	public ILocalMap getMap2D() {
 		return map;
 	}
 
