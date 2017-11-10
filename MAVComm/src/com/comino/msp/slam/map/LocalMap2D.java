@@ -58,18 +58,21 @@ public class LocalMap2D implements IMSPLocalMap {
 	private float			local_x_mm;
 	private float			local_y_mm;
 
-	private int 				map_dimension;
+	private int 			    map_dimension;
 	private int             window_dimension;
 	private long            tms;
 
-	public LocalMap2D(float diameter_m, float cell_size_m, float window_diameter_m) {
-		this(diameter_m, cell_size_m, window_diameter_m, diameter_m/2f, diameter_m/2f);
+	private int				threshold = 0;
+
+	public LocalMap2D(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
+		this(diameter_m, cell_size_m, window_diameter_m, diameter_m/2f, diameter_m/2f, threshold );
 	}
 
-	public LocalMap2D(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m) {
+	public LocalMap2D(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m,  int threshold) {
 		diameter_mm  = (int)(map_diameter_m * 1000f);
 		window_diameter_mm = (int)(window_diameter_m * 1000f);
 		cell_size_mm = (int)(cell_size_m * 1000f);
+		this.threshold = threshold;
 
 		map_dimension  = (int)Math.floor(map_diameter_m / cell_size_m );
 		map = new short[map_dimension][map_dimension];
@@ -188,7 +191,7 @@ public class LocalMap2D implements IMSPLocalMap {
 		return cell_size_mm;
 	}
 
-	public void toDataModel(DataModel model, int threshold, boolean debug) {
+	public void toDataModel(DataModel model,  boolean debug) {
 		for (int y = 0; y <map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
 				if(map[x][y] > threshold)
@@ -247,8 +250,7 @@ public class LocalMap2D implements IMSPLocalMap {
 	}
 
 	public static void main(String[] args) {
-		LocalMap2D map = new LocalMap2D(11,1,2);
-
+		LocalMap2D map = new LocalMap2D(11,1,2, 1);
 		System.out.println(map);
 
 	}

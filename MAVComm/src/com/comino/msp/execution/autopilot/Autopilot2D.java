@@ -39,7 +39,6 @@ import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
-import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
 import com.comino.mav.control.IMAVController;
@@ -63,12 +62,15 @@ import georegression.struct.point.Vector4D_F32;
 
 public class Autopilot2D implements Runnable {
 
-	private static final float HIS_WINDOWSIZE       = 2.0f;
+	private static final int   CERTAINITY_THRESHOLD      = 5;
+	private static final float ROBOT_RADIUS         		= 0.3f;
+	private static final float HIS_WINDOWSIZE       		= 2.0f;
 
-	private static final float OBSTACLE_MINDISTANCE_0MS  = 0.75f;
-	private static final float OBSTACLE_MINDISTANCE_1MS  = 2.5f;
 
-	private static final float OBSTACLE_FAILDISTANCE     = 0.35f;
+	private static final float OBSTACLE_MINDISTANCE_0MS  = 0.5f;
+	private static final float OBSTACLE_MINDISTANCE_1MS  = 1.5f;
+
+	private static final float OBSTACLE_FAILDISTANCE     = ROBOT_RADIUS / 2;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -105,8 +107,8 @@ public class Autopilot2D implements Runnable {
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
 
-		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution(),HIS_WINDOWSIZE);
-		this.lvfh     = new LocalVFH2D(HIS_WINDOWSIZE,model.grid.getResolution());
+		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution(),HIS_WINDOWSIZE,CERTAINITY_THRESHOLD);
+		this.lvfh     = new LocalVFH2D(ROBOT_RADIUS,HIS_WINDOWSIZE,model.grid.getResolution(),CERTAINITY_THRESHOLD);
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
@@ -148,7 +150,7 @@ public class Autopilot2D implements Runnable {
 			try { Thread.sleep(50); } catch(Exception s) { }
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
-			map.toDataModel(model, 1, false);
+			map.toDataModel(model, false);
 			lvfh.update_map(map, current, model.hud.s);
 
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);

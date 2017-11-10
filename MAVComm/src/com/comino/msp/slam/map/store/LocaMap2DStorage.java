@@ -40,7 +40,11 @@ public class LocaMap2DStorage {
 
 	public LocaMap2DStorage(LocalMap2D map,float lat, float lon) {
 
+		try {
 		this.base_path = MSPConfig.getInstance().getBasePath()+"/";
+		} catch(Exception e) {
+			this.base_path = System.getProperty("user.home")+"/";
+		}
 
 		this.lat = (float)Math.floor(lat * 1000000d) / 1000000f;
 		this.lon = (float)Math.floor(lon * 1000000d) / 1000000f;
@@ -161,7 +165,7 @@ public class LocaMap2DStorage {
 
 	public static void main(String[] args) {
 
-		LocalMap2D map = new LocalMap2D(20f,0.05f,1.5f);
+		LocalMap2D map = new LocalMap2D(20f,0.05f,1.5f,1);
 		LocaMap2DStorage store = new LocaMap2DStorage(map, 40.563734f,11.2363635f);
 
 		store.write();
@@ -176,5 +180,4 @@ public class LocaMap2DStorage {
 			System.err.println("ER");
 
 	}
-
 }

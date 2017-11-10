@@ -49,18 +49,16 @@ import georegression.struct.point.Vector3D_F32;
 
 public class LocalVFH2D {
 
-	private static final float  	 ROBOT_RADIUS	= 0.3f;
+	private static final int     SMAX        		= 80;
 
-	private static final int     SMAX        	= 80;
+	private static final int		ALPHA				= 2;
+	private static final float  	HIST_THRESHOLD	    = 1f;
 
-	private static final int		ALPHA			= 2;
-	private static final float  	THRESHOLD		= 1f;
+	private static final int MAX_ACCELERATION		= 100;
 
-	private static final int MAX_ACCELERATION	= 100;
-
-	private static final int MAX_SPEED   	    = 800;
-	private static final int MAX_SPEED_WIDE		= 500;
-	private static final int MAX_SPEED_NARROW    = 300;
+	private static final int MAX_SPEED   	    		= 800;
+	private static final int MAX_SPEED_WIDE			= 500;
+	private static final int MAX_SPEED_NARROW    	= 300;
 
 
 	private float 			u1 = 6.0f, u2 = 1f;
@@ -88,9 +86,15 @@ public class LocalVFH2D {
 	private int 			   safety_dist_0ms		= 100;
 	private int 			   safety_dist_1ms    	= 200;
 
-	public LocalVFH2D(float window_size_m, float cell_size_m) {
+	private int				robot_radius        = 0;
+	private int              threshold           = 0;
+
+	public LocalVFH2D(float robot_radius_m, float window_size_m, float cell_size_m, int threshold) {
 
 		float cell_size_mm = cell_size_m * 1000f;
+
+		this.robot_radius = (int)(robot_radius_m*1000.0f);
+		this.threshold = threshold;
 
 		this.results = new ArrayList<result>();
 		this.borders = new ArrayList<pair>();
@@ -137,7 +141,7 @@ public class LocalVFH2D {
 	public void update_map(LocalMap2D map, Vector3D_F32 current, float current_speed) {
 		int beta = 0; int sigma;
 
-		float min_distance = (ROBOT_RADIUS*1000.0f);
+		float min_distance = this.robot_radius;
 
 		Arrays.fill(hist, 0);
 
@@ -147,7 +151,7 @@ public class LocalVFH2D {
 		for (int y = 0; y < window.length; y++) {
 			for (int x = 0; x < window.length; x++) {
 
-				if(window[x][y] <= 0)
+				if(window[x][y] <= threshold)
 					continue;
 
 				beta = (int)(MSPMathUtils.fromRad((float)Math.atan2((y - window.length/2), (x - window.length/2)))+180) % 360;
@@ -206,7 +210,7 @@ public class LocalVFH2D {
 
 	private boolean cantTurnToTarget(float distance_to_target_mm, float tdir_rad, float speed) {
 
-		float blocked_circle_radius = ROBOT_RADIUS + get_Safety_Dist(speed)/1000f;
+		float blocked_circle_radius = (robot_radius + get_Safety_Dist(speed))/1000f;
 
 		float dist_between_centres;
 
@@ -240,7 +244,7 @@ public class LocalVFH2D {
 		start = -1; left = 1;
 
 		for(int i=0;i<hist.length;i++) {
-			if (h[i] > THRESHOLD) {
+			if (h[i] > HIST_THRESHOLD) {
 				start = i; 	break;
 			}
 		}
@@ -260,11 +264,11 @@ public class LocalVFH2D {
 
 		for(int i = start;i<start+hist.length+1;i++) {
 
-			if ((h[i % hist.length] <= THRESHOLD) && (left==1)) {
+			if ((h[i % hist.length] <= HIST_THRESHOLD) && (left==1)) {
 				new_border.s = (i % hist.length) * ALPHA;
 				left = 0;
 			}
-			if ((h[i % hist.length] > THRESHOLD) && (left==0)) {
+			if ((h[i % hist.length] > HIST_THRESHOLD) && (left==0)) {
 				new_border.e = ((i % hist.length) -1) * ALPHA;
 				if (new_border.e < 0 )
 					new_border.e += 360;
@@ -328,7 +332,7 @@ public class LocalVFH2D {
 
 			// Cost function;
 			weight = u1 * Math.abs(delta_angle_180(tdir,selected.angle))
-					+ u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle));
+			       + u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle));
 
 			if(weight < min_weight) {
 				min_weight = weight;
@@ -371,7 +375,7 @@ public class LocalVFH2D {
 			if(i==(int)selected_tdir/ALPHA) {
 				b.append("o");
 			} else {
-				if(hist[i]<THRESHOLD)
+				if(hist[i]<HIST_THRESHOLD)
 					b.append(".");
 				else
 					b.append("X");
@@ -416,7 +420,7 @@ public class LocalVFH2D {
 
 	public static void main(String[] args) {
 
-		LocalVFH2D poh = new LocalVFH2D(3f,0.05f);
+		LocalVFH2D poh = new LocalVFH2D(0.3f,3f,0.05f, 1);
 
 		for(int i=40;i<120;i++)
 			poh.hist[i/ALPHA]  = 10f;
