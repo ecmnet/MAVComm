@@ -37,7 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.comino.msp.slam.map.impl.LocalMap2D;
+import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -117,7 +117,7 @@ public class VfhPlus2D {
 
 	private long						last_update_time;
 
-	public void update_VFH( LocalMap2D map, Vector3D_F32 current, Vector3D_F32 target, float speed_ms, float goal_distance_tol_m) {
+	public void update_VFH( LocalMap2DGrayU8 map, Vector3D_F32 current, Vector3D_F32 target, float speed_ms, float goal_distance_tol_m) {
 		current_dir = MSPMathUtils.fromRad((float)Math.atan2(current.y, current.x));
 		float goal_angle = MSPMathUtils.fromRad((float)Math.atan2(target.y - current.y, target.x - current.x)) - current_dir;
 		if(goal_angle<0)

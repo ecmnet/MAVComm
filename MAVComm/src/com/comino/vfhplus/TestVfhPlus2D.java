@@ -1,13 +1,13 @@
 package com.comino.vfhplus;
 
-import com.comino.msp.slam.map.impl.LocalMap2D;
+import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 
 import georegression.struct.point.Vector3D_F32;
 
 public class TestVfhPlus2D {
 
 	private VfhPlus2D 	vfhp = null;
-	private LocalMap2D 	map = null;
+	private LocalMap2DGrayU8 	map = null;
 
 	private Vector3D_F32 current_pos = new Vector3D_F32(0,0,0);
 	private Vector3D_F32 target_pos  = new Vector3D_F32(0,5,0);

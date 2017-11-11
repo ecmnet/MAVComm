@@ -38,7 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.comino.msp.slam.map.ILocalMap;
-import com.comino.msp.slam.map.impl.LocalMap2D;
+import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -311,6 +311,13 @@ public class LocalVFH2D {
 
 				// See if candidate dir is in this opening
 				if(p.e>360)	tdir +=360;
+
+				if(p.s < tdir && tdir < p.e) {
+					new_result.speed = MAX_SPEED;
+					new_result.angle = tdir;
+					results.add(new_result.clone());
+				}
+
 				if ((delta_angle(tdir, results.get(results.size()-2).angle) < 0) &&
 						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
 					new_result.speed = MAX_SPEED;
@@ -422,7 +429,7 @@ public class LocalVFH2D {
 
 	public static void main(String[] args) {
 
-		LocalMap2D map = new LocalMap2D(20f,0.05f,1.5f,1);
+		LocalMap2DGrayU8 map = new LocalMap2DGrayU8(20f,0.05f,1.5f,1);
 
 		LocalVFH2D poh = new LocalVFH2D(map, 0.3f, 1);
 

@@ -52,7 +52,8 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map.ILocalMap;
-import com.comino.msp.slam.map.impl.LocalMap2D;
+import com.comino.msp.slam.map.impl.LocalMap2DArray;
+import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.MSP3DUtils;
@@ -82,7 +83,7 @@ public class Autopilot2D implements Runnable {
 	private IMAVController          control  = null;
 	private WayPointTracker         tracker  = null;
 
-	private LocalMap2D				map     = null;
+	private ILocalMap				map     = null;
 	private LocalVFH2D              lvfh     = null;
 
 	private IAutoPilotGetTarget targetListener = null;
@@ -109,7 +110,7 @@ public class Autopilot2D implements Runnable {
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
 
-		this.map      = new LocalMap2D(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+		this.map      = new LocalMap2DArray(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
@@ -188,7 +189,7 @@ public class Autopilot2D implements Runnable {
 
 	public void loadMap2D() {
 		LocaMap2DStorage store = new LocaMap2DStorage(map, model.state.g_lat, model.state.g_lon);
-		if(store.locateAndRead()!=null)
+		if(store.locateAndRead())
 			logger.writeLocalMsg("[msp] Map for this home position loaded.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		else
 			logger.writeLocalMsg("[msp] No Map for this home position found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
@@ -289,6 +290,9 @@ public class Autopilot2D implements Runnable {
 	public void obstacleAvoidance() {
 
 		float angle=0;  float projected_distance = 2.5f;
+
+		long	 trapped_tms = 0;
+		float last_distance = 0;
 
 		final Vector3D_F32 current    = new Vector3D_F32();
 		final Vector3D_F32 delta      = new Vector3D_F32();
