@@ -38,17 +38,17 @@ import java.util.Arrays;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map.ILocalMap;
 
-import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
-public class LocalMap2D implements ILocalMap {
+public class LocalMap2DGrayU8 implements ILocalMap {
 
 	private static final long OBLIVISION_TIME_MS = 10000;
-	private static final int  MAX_CERTAINITY     = 1000;
+	private static final int  MAX_CERTAINITY     = 256;
 
-	private GrayF32 		    map;
-	private GrayF32		    	window;
+	private GrayU8 		    map;
+	private GrayU8		    	window;
 
 	private int 				cell_size_mm;
 	private float			center_x_mm;
@@ -63,19 +63,23 @@ public class LocalMap2D implements ILocalMap {
 
 	private int				threshold = 0;
 
-	public LocalMap2D(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
+	public LocalMap2DGrayU8() {
+        this(20.0f,0.05f,2.0f,2);
+	}
+
+	public LocalMap2DGrayU8(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
 		this(diameter_m, cell_size_m, window_diameter_m, diameter_m/2f, diameter_m/2f, threshold );
 	}
 
-	public LocalMap2D(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m,  int threshold) {
+	public LocalMap2DGrayU8(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m,  int threshold) {
 		cell_size_mm = (int)(cell_size_m * 1000f);
 		this.threshold = threshold;
 
 		map_dimension  = (int)Math.floor(map_diameter_m / cell_size_m );
-		map = new GrayF32(map_dimension,map_dimension);
+		map = new GrayU8(map_dimension,map_dimension);
 
 		window_dimension = (int)Math.floor(window_diameter_m / cell_size_m );
-		window = new GrayF32(window_dimension,window_dimension);
+		window = new GrayU8(window_dimension,window_dimension);
 
 		reset();
 
@@ -110,7 +114,7 @@ public class LocalMap2D implements ILocalMap {
 		return set(lpos_x+point.x, lpos_y+point.y,1);
 	}
 
-	public GrayF32 getMap() {
+	public GrayU8 getMap() {
 		return map;
 	}
 
@@ -169,8 +173,8 @@ public class LocalMap2D implements ILocalMap {
 	public boolean set(float xpos, float ypos, int value) {
 		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
 		int y = (int)Math.floor((ypos*1000f+center_y_mm)/cell_size_mm);
-		if(x >=0 && x < map_dimension && y >=0 && y < map_dimension && map_dimension < MAX_CERTAINITY ) {
-			map.set(x, y, map.get(x, y)+value);
+		if(x >=0 && x < map_dimension && y >=0 && y < map_dimension && map.get(x, y) < MAX_CERTAINITY ) {
+				map.set(x, y, map.get(x, y)+value);
 			return true;
 		}
 		return false;
@@ -212,8 +216,8 @@ public class LocalMap2D implements ILocalMap {
 	}
 
 	public void reset() {
-	    Arrays.fill(map.data, (short)0);
-	    Arrays.fill(window.data, (short)0);
+		Arrays.fill(map.data, (byte)0);
+		Arrays.fill(window.data, (byte)0);
 	}
 
 	public String toString() {

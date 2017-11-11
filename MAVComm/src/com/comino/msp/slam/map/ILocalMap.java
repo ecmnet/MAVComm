@@ -33,8 +33,9 @@
 
 package com.comino.msp.slam.map;
 
-import boofcv.struct.image.GrayF32;
-import boofcv.struct.image.GrayU16;
+import com.comino.msp.model.DataModel;
+
+import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
@@ -62,9 +63,11 @@ public interface ILocalMap {
 
 	public int getCellSize_mm();
 
-	public GrayF32 getMap();
+	public GrayU8 getMap();
 
 
 	public void reset();
+
+	public void toDataModel(DataModel model, boolean b);
 
 }

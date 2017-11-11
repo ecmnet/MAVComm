@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -12,8 +11,7 @@ import java.util.List;
 
 import com.comino.main.MSPConfig;
 import com.comino.msp.slam.map.ILocalMap;
-import com.comino.msp.slam.map.impl.LocalMap2D;
-import com.comino.msp.utils.MSPArrayUtils;
+import com.comino.msp.slam.map.impl.LocalMap2DArray;
 import com.comino.msp.utils.MSPMathUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -39,7 +37,7 @@ public class LocaMap2DStorage {
 	 * then move map according to position
 	 */
 
-	public LocaMap2DStorage(ILocalMap map,float lat, float lon) {
+	public LocaMap2DStorage(ILocalMap map, float lat, float lon) {
 
 		try {
 		this.base_path = MSPConfig.getInstance().getBasePath()+"/";
@@ -57,17 +55,22 @@ public class LocaMap2DStorage {
 			public ILocalMap createInstance(Type type) { return map; }
 		};
 
-		this.gson = new GsonBuilder().registerTypeAdapter(LocalMap2D.class, creator).create();
+		this.gson = new GsonBuilder().registerTypeAdapter(map.getClass(), creator).create();
 	}
 
-	public LocaMap2DStorage(String filename) {
+	public LocaMap2DStorage(ILocalMap map, String filename) {
 		try {
 			this.base_path = MSPConfig.getInstance().getBasePath()+"/";
 			} catch(Exception e) {
 				this.base_path = System.getProperty("user.home")+"/";
 			}
 		this.filename = filename + EXT;
-		this.gson = new Gson();
+
+		InstanceCreator<ILocalMap> creator = new InstanceCreator<ILocalMap>() {
+			public ILocalMap createInstance(Type type) { return map; }
+		};
+
+		this.gson = new GsonBuilder().registerTypeAdapter(map.getClass(), creator).create();
 
 	}
 
@@ -88,13 +91,13 @@ public class LocaMap2DStorage {
 		}
 	}
 
-	public ILocalMap locateAndRead() {
+	public boolean locateAndRead() {
 		return locateAndRead(this.lat, this.lon);
 	}
 
-	public ILocalMap locateAndRead(float lat, float lon) {
+	public boolean locateAndRead(float lat, float lon) {
 		float[] origin; String found; float distance_origin, distance = Float.MAX_VALUE;
-		float[] req_translation = new float[2]; int tx,ty;
+		float[] req_translation = new float[2];
 
 		MSPMathUtils.map_projection_init(this.lat, this.lon);
 
@@ -113,16 +116,12 @@ public class LocaMap2DStorage {
 		}
 
 		if(found==null)
-			return null;
+			return false;
 
-		read(found);
-
-
-
-		return map;
+		return read(found);
 	}
 
-	public ILocalMap read() {
+	public boolean read() {
 		return read(filename);
 	}
 
@@ -151,26 +150,27 @@ public class LocaMap2DStorage {
 		return result;
 	}
 
-	private ILocalMap read(String fn) {
+	private boolean read(String fn) {
 
 		File f = new File(base_path+fn);
 		if(f.exists()) {
 			System.out.println("Map '"+f.getAbsolutePath()+"' found in store");
 			try {
 				FileInputStream fs = new FileInputStream(f);
-				return gson.fromJson(new BufferedReader(new InputStreamReader(fs)), LocalMap2D.class);
+				map = gson.fromJson(new BufferedReader(new InputStreamReader(fs)), map.getClass());
+				return true;
 			} catch (Exception e) {
 				System.err.println(fn+" reading error "+e.getMessage());
-				return null;
+				return false;
 			}
 		}
 		System.err.println(fn+" not found");
-		return null;
+		return false;
 	}
 
 	public static void main(String[] args) {
 
-		LocalMap2D map = new LocalMap2D(20f,0.05f,1.5f,1);
+		LocalMap2DArray map = new LocalMap2DArray(20f,0.05f,1.5f,1);
 		LocaMap2DStorage store = new LocaMap2DStorage(map, 40.563734f,11.2363635f);
 
 		store.write();
@@ -179,7 +179,7 @@ public class LocaMap2DStorage {
 		System.out.println(fn);
 		System.out.println(store);
 
-		if(store.locateAndRead()!=null)
+		if(store.locateAndRead())
 			System.out.println(store);
 		else
 			System.err.println("ER");

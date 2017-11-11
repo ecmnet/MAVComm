@@ -40,6 +40,7 @@ import com.comino.msp.slam.map.ILocalMap;
 
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU16;
+import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 
@@ -267,7 +268,7 @@ public class LocalMap2DArray implements ILocalMap {
 	}
 
 	@Override
-	public GrayF32 getMap() {
+	public GrayU8 getMap() {
 		return null;
 	}
 
