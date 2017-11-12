@@ -151,6 +151,13 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 	}
 
+	public void finalize() {
+		target.w = 0;
+		mode = MODE_POSITION;
+		this.action_listener = null;
+		this.ext_control_listener = null;
+	}
+
 	public boolean isEnabled() {
 		return enabled;
 	}

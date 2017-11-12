@@ -291,9 +291,6 @@ public class Autopilot2D implements Runnable {
 
 		float angle=0;  float projected_distance = 2.5f;
 
-		long	 trapped_tms = 0;
-		float last_distance = 0;
-
 		final Vector3D_F32 current    = new Vector3D_F32();
 		final Vector3D_F32 delta      = new Vector3D_F32();
 		final Vector3D_F32 projected  = new Vector3D_F32();
@@ -350,7 +347,7 @@ public class Autopilot2D implements Runnable {
 		});
 
 		offboard.registerActionListener((m,d) -> {
-			offboard.removeExternalControlListener();
+			offboard.finalize();
 			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 			logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		});
@@ -386,6 +383,11 @@ public class Autopilot2D implements Runnable {
 		isAvoiding = false;
 		autopilot.registerTargetListener((n)->{
 			n.set(target);
+		});
+
+		offboard.registerActionListener((m,d) -> {
+			offboard.finalize();
+			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 		});
 
 		offboard.setTarget(target);
