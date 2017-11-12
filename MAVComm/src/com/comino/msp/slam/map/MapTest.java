@@ -1,5 +1,6 @@
 package com.comino.msp.slam.map;
 
+import com.comino.msp.slam.map.impl.LocalMap2DArray;
 import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
 
@@ -26,11 +27,9 @@ public class MapTest {
 	// Map enhancement tests
 
 	public static void main(String[] args) {
-		LocalMap2DGrayU8 map = new LocalMap2DGrayU8();
+		LocalMap2DArray map    = new LocalMap2DArray();
 		LocaMap2DStorage store = new LocaMap2DStorage(map,"test");
-		store.read();
-
-		if(map==null)
+		if(!store.read())
 		  System.exit(-1);
 
 		GrayU8 a = map.getMap().createSameShape();

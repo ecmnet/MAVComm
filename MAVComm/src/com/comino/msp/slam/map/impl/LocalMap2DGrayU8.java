@@ -64,7 +64,7 @@ public class LocalMap2DGrayU8 implements ILocalMap {
 	private int				threshold = 0;
 
 	public LocalMap2DGrayU8() {
-        this(20.0f,0.05f,2.0f,2);
+        this(40.0f,0.05f,2.0f,2);
 	}
 
 	public LocalMap2DGrayU8(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {

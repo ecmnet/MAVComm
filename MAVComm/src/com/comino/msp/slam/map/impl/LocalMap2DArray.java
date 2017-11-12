@@ -37,6 +37,7 @@ import java.util.Arrays;
 
 import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map.ILocalMap;
+import com.comino.msp.utils.MSPArrayUtils;
 
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU16;
@@ -65,6 +66,10 @@ public class LocalMap2DArray implements ILocalMap {
 	private long            tms;
 
 	private int				threshold = 0;
+
+	public LocalMap2DArray() {
+        this(40.0f,0.05f,2.0f,2);
+	}
 
 	public LocalMap2DArray(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
 		this(diameter_m, cell_size_m, window_diameter_m, diameter_m/2f, diameter_m/2f, threshold );
@@ -269,7 +274,7 @@ public class LocalMap2DArray implements ILocalMap {
 
 	@Override
 	public GrayU8 getMap() {
-		return null;
+		return MSPArrayUtils.convertToGrayU8(map);
 	}
 
 

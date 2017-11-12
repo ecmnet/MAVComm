@@ -1,5 +1,7 @@
 package com.comino.msp.utils;
 
+import boofcv.struct.image.GrayU8;
+
 public class MSPArrayUtils {
 
 	public static void translate(short[][] map, int px, int py) {
@@ -46,6 +48,14 @@ public class MSPArrayUtils {
 				for(int y=map.length-py-1;y>0;y--)
 					map[x][y] = 0;
 		}
+	}
+
+	public static GrayU8 convertToGrayU8(short[][] map) {
+		GrayU8 m = new GrayU8(map[0].length, map[0].length);
+		for(int y = 0;y < map[0].length; y++)
+			for(int x = 0;x < map[0].length; x++)
+			   m.data[x +  map[0].length * y ] = (byte)(map[x][y]);
+		return m;
 	}
 
 

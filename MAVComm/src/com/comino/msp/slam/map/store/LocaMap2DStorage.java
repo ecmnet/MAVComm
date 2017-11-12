@@ -65,6 +65,7 @@ public class LocaMap2DStorage {
 				this.base_path = System.getProperty("user.home")+"/";
 			}
 		this.filename = filename + EXT;
+		this.map      = map;
 
 		InstanceCreator<ILocalMap> creator = new InstanceCreator<ILocalMap>() {
 			public ILocalMap createInstance(Type type) { return map; }
@@ -157,10 +158,11 @@ public class LocaMap2DStorage {
 			System.out.println("Map '"+f.getAbsolutePath()+"' found in store");
 			try {
 				FileInputStream fs = new FileInputStream(f);
-				map = gson.fromJson(new BufferedReader(new InputStreamReader(fs)), map.getClass());
+				gson.fromJson(new BufferedReader(new InputStreamReader(fs)), map.getClass());
 				return true;
 			} catch (Exception e) {
-				System.err.println(fn+" reading error "+e.getMessage());
+				System.err.println(fn+" reading error ");
+				e.printStackTrace();
 				return false;
 			}
 		}
