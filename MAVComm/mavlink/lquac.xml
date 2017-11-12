@@ -82,8 +82,8 @@
 
            <enum name="MSP_AUTOCONTROL_ACTION">
               <description>Auto-Control action (Bit 16-31)</description>
-              <entry value="16" name="CIRCLE_MODE">
-                  <description>Circles at center with diameter (param3)</description>
+              <entry value="16" name="RTL">
+                  <description>Returns to local home position and lands device</description>
               </entry>
               <entry value="17" name="WAYPOINT_MODE">
                   <description>Executes a list of waypoints defined in MSP (param3)</description>

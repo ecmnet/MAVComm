@@ -9,9 +9,9 @@ package org.mavlink.messages;
  **/
 public interface MSP_AUTOCONTROL_ACTION {
     /**
-     * Circles at center with diameter (param3)
+     * Returns to local home position and lands device
      */
-    public final static int CIRCLE_MODE = 16;
+    public final static int RTL = 16;
     /**
      * Executes a list of waypoints defined in MSP (param3)
      */

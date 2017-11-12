@@ -34,6 +34,7 @@
 package com.comino.msp.execution.autopilot;
 
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -44,6 +45,7 @@ import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.autopilot.offboard.IOffboardExternalControl;
+import com.comino.msp.execution.autopilot.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
 import com.comino.msp.execution.autopilot.tracker.WayPointTracker;
 import com.comino.msp.execution.control.StatusManager;
@@ -56,6 +58,7 @@ import com.comino.msp.slam.map.impl.LocalMap2DArray;
 import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
+import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -68,6 +71,8 @@ public class Autopilot2D implements Runnable {
 	private static final int   CERTAINITY_THRESHOLD      = 5;
 	private static final float ROBOT_RADIUS         		= 0.3f;
 	private static final float WINDOWSIZE       			= 2.0f;
+
+	private static final float MIN_DISTANCE_HYSTERESIS   = 0.2f;
 
 
 	private static final float OBSTACLE_MINDISTANCE_0MS  = 0.5f;
@@ -103,6 +108,8 @@ public class Autopilot2D implements Runnable {
 	}
 
 	private Autopilot2D(IMAVController control) {
+
+		System.out.println("Autopilot2D instantiated");
 
 		this.offboard = new OffboardManager(control);
 		this.tracker  = new WayPointTracker(control);
@@ -147,7 +154,7 @@ public class Autopilot2D implements Runnable {
 	@Override
 	public void run() {
 
-		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false;
+		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false; float min_distance;
 
 		while(true) {
 			try { Thread.sleep(CYCLE_MS); } catch(Exception s) { }
@@ -162,18 +169,20 @@ public class Autopilot2D implements Runnable {
 				tooClose = true;
 			}
 
-			if(nearestTarget > OBSTACLE_FAILDISTANCE+0.2f)
+			if(nearestTarget > OBSTACLE_FAILDISTANCE+MIN_DISTANCE_HYSTERESIS)
 				tooClose = false;
 
-			if(nearestTarget < getAvoidanceDistance(model.hud.s)) {
-				if(!isAvoiding) {
+			min_distance = getAvoidanceDistance(model.hud.s);
+
+			if(nearestTarget < min_distance && !isAvoiding) {
 					isAvoiding = true;
 					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
 						obstacleAvoidance();
 					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK))
 						jumpback(0.3f);
-				}
-			} else {
+			}
+
+			if(nearestTarget > (min_distance + MIN_DISTANCE_HYSTERESIS) && isAvoiding) {
 				offboard.removeExternalControlListener();
 				isAvoiding = false;
 			}
@@ -210,6 +219,7 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {
+		isAvoiding = false;
 		Vector3D_F32 target = new Vector3D_F32(x,y,z);
 		offboard.setTarget(target);
 		offboard.start(OffboardManager.MODE_POSITION);
@@ -262,7 +272,31 @@ public class Autopilot2D implements Runnable {
 		}
 	}
 
+	public void returnToLand(int delay_ms) {
+
+		final Vector3D_F32 target = new Vector3D_F32(0,0,model.state.l_z);
+		logger.writeLocalMsg("[msp] Autopilot: Return to land.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+
+		isAvoiding = false;
+		autopilot.registerTargetListener((n)->{
+			n.set(target);
+		});
+
+		offboard.registerActionListener((m,d) -> {
+			offboard.finalize();
+			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			ExecutorService.get().schedule(()-> {
+				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
+			}, delay_ms, TimeUnit.MILLISECONDS);
+		});
+
+		offboard.setTarget(target);
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
+	}
+
 	public void jumpback(float distance) {
+
+		isAvoiding = false;
 		if(!tracker.freeze())
 			return;
 
@@ -346,12 +380,6 @@ public class Autopilot2D implements Runnable {
 			return ctl;
 		});
 
-		offboard.registerActionListener((m,d) -> {
-			offboard.finalize();
-			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
-			logger.writeLocalMsg("[msp] ObstacleAvoidance: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-		});
-
 		offboard.start(OffboardManager.MODE_SPEED_POSITION);
 		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
@@ -360,8 +388,12 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void return_along_path(boolean enable) {
+
+		isAvoiding = false;
+
 		if(!tracker.freeze())
 			return;
+
 		logger.writeLocalMsg("[msp] Return along the path",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
 		offboard.start(OffboardManager.MODE_POSITION);
@@ -387,6 +419,7 @@ public class Autopilot2D implements Runnable {
 
 		offboard.registerActionListener((m,d) -> {
 			offboard.finalize();
+			logger.writeLocalMsg("[msp] Autopilot: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 		});
 

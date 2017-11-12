@@ -154,7 +154,7 @@ public class OffboardManager implements Runnable {
 	public void finalize() {
 		target.w = 0;
 		mode = MODE_POSITION;
-		this.action_listener = null;
+		this.action_listener      = null;
 		this.ext_control_listener = null;
 	}
 
@@ -176,6 +176,10 @@ public class OffboardManager implements Runnable {
 
 	public void removeActionListener() {
 		this.action_listener = null;
+	}
+
+	public IOffboardTargetAction getActionListener() {
+		return action_listener;
 	}
 
 	@Override

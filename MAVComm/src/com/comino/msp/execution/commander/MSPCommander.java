@@ -102,11 +102,9 @@ public class MSPCommander {
 		case MSP_AUTOCONTROL_MODE.ABORT:
 			autopilot.abort();
 			break;
-		case MSP_AUTOCONTROL_ACTION.CIRCLE_MODE:
-			if(param == 0) param = 0.75f;
+		case MSP_AUTOCONTROL_ACTION.RTL:
 			if(enable)
-				setCircleObstacleForSITL() ;
-			autopilot.enableCircleMode(enable, param);
+			   autopilot.returnToLand(3000);
 			break;
 		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
 			autopilot.return_along_path(enable);
