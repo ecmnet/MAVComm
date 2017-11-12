@@ -45,7 +45,6 @@ import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.autopilot.offboard.IOffboardExternalControl;
-import com.comino.msp.execution.autopilot.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
 import com.comino.msp.execution.autopilot.tracker.WayPointTracker;
 import com.comino.msp.execution.control.StatusManager;
@@ -55,7 +54,6 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map.ILocalMap;
 import com.comino.msp.slam.map.impl.LocalMap2DArray;
-import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.ExecutorService;
@@ -193,7 +191,6 @@ public class Autopilot2D implements Runnable {
 		LocaMap2DStorage store = new LocaMap2DStorage(map,model.state.g_lat, model.state.g_lon);
 		store.write();
 		logger.writeLocalMsg("[msp] Map for this home position stored.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-
 	}
 
 	public void loadMap2D() {
@@ -230,8 +227,7 @@ public class Autopilot2D implements Runnable {
 		targetListener = null;
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
 		offboard.removeActionListener();
-		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-		control.sendMAVLinkMessage(slam);
+		control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 	}
 
 	public void executeStep() {
@@ -277,6 +273,7 @@ public class Autopilot2D implements Runnable {
 		final Vector3D_F32 target = new Vector3D_F32(0,0,model.state.l_z);
 		logger.writeLocalMsg("[msp] Autopilot: Return to land.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
 		isAvoiding = false;
 		autopilot.registerTargetListener((n)->{
 			n.set(target);
@@ -288,6 +285,7 @@ public class Autopilot2D implements Runnable {
 			ExecutorService.get().schedule(()-> {
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
 			}, delay_ms, TimeUnit.MILLISECONDS);
+			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 		});
 
 		offboard.setTarget(target);
@@ -390,6 +388,7 @@ public class Autopilot2D implements Runnable {
 	public void return_along_path(boolean enable) {
 
 		isAvoiding = false;
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, false);
 
 		if(!tracker.freeze())
 			return;
@@ -399,8 +398,9 @@ public class Autopilot2D implements Runnable {
 		offboard.start(OffboardManager.MODE_POSITION);
 		offboard.registerActionListener((m,d) -> {
 			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-			if(e!=null && e.getValue().z < -0.3f)
+			if(e!=null && e.getValue().z < -0.3f && !isAvoiding) {
 				offboard.setTarget(e.getValue());
+			}
 			else {
 				tracker.unfreeze();
 				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
