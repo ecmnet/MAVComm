@@ -309,21 +309,21 @@ public class LocalVFH2D {
 				if (new_result.angle < 0) new_result.angle += 360;
 				results.add(new_result.clone());
 
-				// See if candidate dir is in this opening
-				if(p.e>360)	tdir +=360;
-
 				if(p.s < tdir && tdir < p.e) {
 					new_result.speed = MAX_SPEED;
 					new_result.angle = tdir;
 					results.add(new_result.clone());
 				}
 
-				if ((delta_angle(tdir, results.get(results.size()-2).angle) < 0) &&
-						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
-					new_result.speed = MAX_SPEED;
-					new_result.angle = tdir;
-					results.add(new_result.clone());
-				}
+				// See if candidate dir is in this opening
+//				if(p.e>360)	tdir +=360;
+//				System.out.println(p+" TDIR:"+tdir);
+//				if ((delta_angle(tdir, results.get(results.size()-2).angle) < 0) &&
+//						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
+//					new_result.speed = MAX_SPEED;
+//					new_result.angle = tdir;
+//					results.add(new_result.clone());
+//				}
 			}
 		}
 
