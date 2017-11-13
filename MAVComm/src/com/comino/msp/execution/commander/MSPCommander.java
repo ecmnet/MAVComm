@@ -91,6 +91,12 @@ public class MSPCommander {
 				case MSP_CMD.MSP_CMD_AUTOMODE:
 					setAutopilotMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
 					break;
+				case MSP_CMD.MSP_CMD_MICROSLAM:
+					switch((int)cmd.param1) {
+					case MSP_COMPONENT_CTRL.RESET:
+						autopilot.reset(); break;
+					}
+					break;
 				}
 			}
 		});

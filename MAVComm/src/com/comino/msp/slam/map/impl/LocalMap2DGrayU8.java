@@ -152,7 +152,7 @@ public class LocalMap2DGrayU8 implements ILocalMap {
 
 		for (int y = 0; y < window_dimension; y++) {
 			for (int x = 0; x < window_dimension; x++) {
-				if(window.get(x, y) <= 0)
+				if(window.get(x, y) <= threshold)
 					continue;
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
 				if(d < distance)

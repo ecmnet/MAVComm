@@ -1,4 +1,4 @@
-package com.comino.vfhplus;
+package com.comino.dev;
 
 import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 

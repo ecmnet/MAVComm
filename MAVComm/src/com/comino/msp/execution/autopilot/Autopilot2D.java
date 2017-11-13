@@ -39,6 +39,7 @@ import java.util.concurrent.TimeUnit;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
@@ -187,6 +188,10 @@ public class Autopilot2D implements Runnable {
 		}
 	}
 
+	public void reset() {
+		map.reset();
+	}
+
 	public void saveMap2D() {
 		LocaMap2DStorage store = new LocaMap2DStorage(map,model.state.g_lat, model.state.g_lon);
 		store.write();
@@ -283,6 +288,7 @@ public class Autopilot2D implements Runnable {
 			offboard.finalize();
 			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			ExecutorService.get().schedule(()-> {
+				model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.RTL, false);
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
 			}, delay_ms, TimeUnit.MILLISECONDS);
 			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
