@@ -12,6 +12,10 @@ import georegression.struct.point.Vector3D_F32;
 
 public class CoreSLAM {
 
+	private static final int QUALITY 				= 50;
+	private static final int HOLE_SIZE 				= 70;
+	private static final int MONTE_CARLO_ITERATIONS 	= 1000;
+
 	private ILocalMap		target_map  		= null;
 	private int             diameter_mm		= 0;
 	private int             cell_size_mm		= 0;
@@ -38,9 +42,11 @@ public class CoreSLAM {
 
 
 	public void update(List<Point3D_F64> p_list, Vector3D_F32 current_pos) {
-            Vector3D_F32 guessed_pos = monte_carlo_search(p_list, current_pos, 0.1f , 1000);
+            Vector3D_F32 guessed_pos = monte_carlo_search(p_list, current_pos, 0.1f , MONTE_CARLO_ITERATIONS);
             System.out.println("Current: "+current_pos+" guessed: "+guessed_pos);
-            update_map(p_list,guessed_pos, 50, 70);
+            update_map(p_list,guessed_pos, QUALITY, HOLE_SIZE);
+
+            // Transfer might not be every time
             transfer_to_target_map_and_forget(-2);
 	}
 
@@ -50,7 +56,7 @@ public class CoreSLAM {
 				if(map[x][y]>threshold)
 					continue;
 				target_map.get()[x][y] = 10;
-				map[x][y] += 50/10;
+	//			map[x][y] += QUALITY/10;
 			}
 		}
 	}
