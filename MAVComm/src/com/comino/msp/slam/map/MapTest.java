@@ -1,5 +1,9 @@
 package com.comino.msp.slam.map;
 
+import java.util.ArrayList;
+
+import com.comino.dev.OriginalTinySLAM;
+import com.comino.msp.slam.core.CoreSLAM;
 import com.comino.msp.slam.map.impl.LocalMap2DArray;
 import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
@@ -12,6 +16,8 @@ import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU8;
+import georegression.struct.point.Point3D_F64;
+import georegression.struct.point.Vector3D_F32;
 
 public class MapTest {
 
@@ -29,17 +35,43 @@ public class MapTest {
 	public static void main(String[] args) {
 		LocalMap2DArray map    = new LocalMap2DArray();
 		LocaMap2DStorage store = new LocaMap2DStorage(map,"test");
-		if(!store.read())
-		  System.exit(-1);
+
+
+		CoreSLAM slam = new CoreSLAM(map);
+
+		ArrayList<Point3D_F64> list = new ArrayList<Point3D_F64>();
+
+		Vector3D_F32 pos = new Vector3D_F32();
+		Point3D_F64 p = new Point3D_F64();
+
+		p.set(1,1,0);
+		list.add(p.copy());
+		p.set(2,0,0);
+		list.add(p.copy());
+
+		slam.update(list, pos);
+
+		p.set(1.4,1,0);
+		list.add(p.copy());
+		p.set(2.1,0.0,0);
+		list.add(p.copy());
+
+		pos.set(0.1f,0,0);
+
+		long tms = System.currentTimeMillis();
+		slam.update(list, pos);
+
+		System.out.println("Test: "+(System.currentTimeMillis() - tms));
+
 
 		GrayU8 a = map.getMap().createSameShape();
 		GrayU8 b = map.getMap().createSameShape();
-		long tms = System.currentTimeMillis();
+
 
 		GBlurImageOps.gaussian(map.getMap(), a, 20, 2, null);
 
 
-		System.out.println("Test: "+(System.currentTimeMillis() - tms));
+
 
 		addMap(map.getMap(),"Map");
 		addMap(a,"opA");
