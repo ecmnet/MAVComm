@@ -118,6 +118,10 @@ public class LocalMap2DGrayU8 implements ILocalMap {
 		return map;
 	}
 
+	public short[][] get() {
+		return null;
+	}
+
 
 	public void processWindow(float lpos_x, float lpos_y) {
 

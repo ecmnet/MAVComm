@@ -65,6 +65,7 @@ public interface ILocalMap {
 
 	public GrayU8 getMap();
 
+	public short[][] get();
 
 	public void reset();
 

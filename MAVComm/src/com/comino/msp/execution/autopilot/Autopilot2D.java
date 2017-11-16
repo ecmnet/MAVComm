@@ -189,6 +189,7 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void reset() {
+		logger.writeLocalMsg("[vis] reset local map",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
 		map.reset();
 	}
 
@@ -243,7 +244,7 @@ public class Autopilot2D implements Runnable {
 		if(enable) {
 			offboard.setCurrentAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
-			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED) && !model.sys.isStatus(Status.MSP_LANDED)) {
+			if(!model.sys.isStatus(Status.MSP_LANDED)) {
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
@@ -308,10 +309,11 @@ public class Autopilot2D implements Runnable {
 
 		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 		offboard.start(OffboardManager.MODE_POSITION);
-		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-
+		if(!model.sys.isStatus(Status.MSP_LANDED)) {
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+		}
 		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
 
 		offboard.registerActionListener((m,d) -> {
@@ -385,9 +387,11 @@ public class Autopilot2D implements Runnable {
 		});
 
 		offboard.start(OffboardManager.MODE_SPEED_POSITION);
-		control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-				MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+		if(!model.sys.isStatus(Status.MSP_LANDED)) {
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+		}
 		logger.writeLocalMsg("[msp] ObstacleAvoidance executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 	}
 
