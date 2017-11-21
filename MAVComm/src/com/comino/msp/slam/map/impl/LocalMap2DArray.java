@@ -44,6 +44,8 @@ import boofcv.struct.image.GrayU16;
 import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
+import georegression.struct.point.Vector3D_F64;
+import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DArray implements ILocalMap {
 
@@ -104,6 +106,10 @@ public class LocalMap2DArray implements ILocalMap {
 
 	public boolean update(Point3D_F64 point) {
 		return set((float)point.x, (float)point.y,10);
+	}
+
+	public boolean update(Point3D_F64 point, Vector4D_F64 pos) {
+		return set((float)(point.x+pos.x), (float)(point.y+pos.y),10);
 	}
 
 	public boolean update(Vector3D_F32 point, int incr) {

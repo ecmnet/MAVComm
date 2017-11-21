@@ -1,5 +1,8 @@
 package com.comino.msp.utils;
 
+import boofcv.gui.ListDisplayPanel;
+import boofcv.gui.image.ShowImages;
+import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayU8;
 
 public class MSPArrayUtils {
@@ -54,8 +57,24 @@ public class MSPArrayUtils {
 		GrayU8 m = new GrayU8(map[0].length, map[0].length);
 		for(int y = 0;y < map[0].length; y++)
 			for(int x = 0;x < map[0].length; x++)
-			   m.data[x +  map[0].length * y ] = (byte)(map[x][y]);
+				m.data[x +  map[0].length * y ] = (byte)(map[x][y]);
 		return m;
+	}
+
+	public static GrayU8 convertToGrayU8(int[][] map) {
+		GrayU8 m = new GrayU8(map[0].length, map[0].length);
+		for(int y = 0;y < map[0].length; y++)
+			for(int x = 0;x < map[0].length; x++)
+				m.data[x +  map[0].length * y ] = (byte)((map[x][y]) >> 16);
+		return m;
+	}
+
+
+	public static void displayMap(int[][] map) {
+		ListDisplayPanel panel = new ListDisplayPanel();
+		GrayU8 display =convertToGrayU8(map);
+		panel.addImage(ConvertBufferedImage.convertTo(display, null, true),"Map");
+		ShowImages.showWindow(panel,"Image Blur Examples",true);
 	}
 
 
