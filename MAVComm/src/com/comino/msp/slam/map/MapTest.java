@@ -2,9 +2,9 @@ package com.comino.msp.slam.map;
 
 import java.util.ArrayList;
 
-import com.comino.msp.slam.core.CoreSLAM;
+import com.comino.dev.CoreSLAM;
+import com.comino.dev.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.impl.LocalMap2DArray;
-import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.store.LocaMap2DStorage;
 
 import boofcv.abst.denoise.FactoryImageDenoise;

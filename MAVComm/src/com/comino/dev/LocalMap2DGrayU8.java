@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.slam.map.impl;
+package com.comino.dev;
 
 import java.util.Arrays;
 

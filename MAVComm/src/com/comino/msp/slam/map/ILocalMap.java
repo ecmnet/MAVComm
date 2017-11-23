@@ -73,6 +73,8 @@ public interface ILocalMap {
 
 	public void reset();
 
+	public void forget();
+
 	public void toDataModel(DataModel model, boolean b);
 
 }

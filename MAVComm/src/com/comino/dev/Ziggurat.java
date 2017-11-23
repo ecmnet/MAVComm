@@ -1,4 +1,4 @@
-package com.comino.msp.slam.core;
+package com.comino.dev;
 
 import java.util.Random;
 
@@ -70,6 +70,10 @@ public class Ziggurat extends Random {
 	public float normal(float m, float s) {
 	    return (float)RNOR() * s + m ;
 	};
+
+//	public float normal(float m, float s) {
+//		return (float)this.nextGaussian() * s + m;
+//	}
 
 	private int SHR3() {
 		int jz = jsr;

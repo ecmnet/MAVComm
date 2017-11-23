@@ -1,7 +1,5 @@
 package com.comino.dev;
 
-import com.comino.msp.slam.map.impl.LocalMap2DGrayU8;
-
 import georegression.struct.point.Vector3D_F32;
 
 public class TestVfhPlus2D {

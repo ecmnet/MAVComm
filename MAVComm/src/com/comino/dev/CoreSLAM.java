@@ -1,4 +1,4 @@
-package com.comino.msp.slam.core;
+package com.comino.dev;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public class CoreSLAM {
 	private static final float SIGMA_THETA			= 0.3f;
 
 	private static final int QUALITY 				= 50;
-	private static final int HOLE_SIZE 				= 2500;
+	private static final int HOLE_SIZE 				= 600;
 	private static final int MONTE_CARLO_ITERATIONS 	= 1500;
 
 	private ILocalMap		target_map  		= null;
@@ -60,8 +60,8 @@ public class CoreSLAM {
 
 		this.target_map    = target_map;
 		this.cell_size_mm  = (int)(cell_size_m * 1000f);
-		this.diameter_mm   = (int)(diameter_m * 1000f);
-		this.map = new int[target_map.getMapDimension()][ target_map.getMapDimension()];
+		this.diameter_mm   = (int)(diameter_m  * 1000f);
+		this.map = new int[diameter_mm/cell_size_mm][diameter_mm/cell_size_mm];
 		this.randomizer = new Ziggurat();
 
 		System.out.println("CoreSLAM initialized with "+(int)(diameter_mm/cell_size_mm)+" x "+(int)(diameter_mm/cell_size_mm)+" cells");
@@ -128,22 +128,23 @@ public class CoreSLAM {
 		currentpos.set(startpos);  bestpos.set(startpos); lastbestpos.set(startpos);
 		currentdist = distance_to_features(p_list, currentpos);
 		bestdist = lastbestdist = currentdist;
-		// System.out.printf("Initial %g %g %d (count = %d)\n", bestpos.x, bestpos.y, currentdist, counter);
+	// System.out.printf("Initial %g %g %d (count = %d)\n", bestpos.x, bestpos.y, currentdist, counter);
 
 		do {
 
 			currentpos.set(lastbestpos);
 			currentpos.x = randomizer.normal((float)currentpos.x, sigma_xy);
 			currentpos.y = randomizer.normal((float)currentpos.y, sigma_xy);
-			currentpos.w = randomizer.normal((float)currentpos.w, sigma_theta);
+		//	currentpos.w = randomizer.normal((float)currentpos.w, sigma_theta);
 
 			currentdist = distance_to_features(p_list, currentpos);
+//			System.out.printf("Search = %g %g %.1f° => %d (count = %d)\n", currentpos.x, currentpos.y,
+//			           MSPMathUtils.fromRad((float)currentpos.w), currentdist, counter);
 
 			if (currentdist < bestdist) {
 				bestdist = currentdist;
 				bestpos.set(currentpos);
-				//				System.out.printf("Search = %g %g %.1f° => %d (count = %d)\n", currentpos.x, currentpos.y,
-				//						           MSPMathUtils.fromRad((float)currentpos.w), currentdist, counter);
+
 			} else {
 				counter++;
 			}
@@ -175,7 +176,7 @@ public class CoreSLAM {
 			x = (int)Math.floor(((cp.x + p.x * c - p.y * s )*1000.0+diameter_mm/2.0)/cell_size_mm);
 			y = (int)Math.floor(((cp.y + p.x * s + p.y * c )*1000.0+diameter_mm/2.0)/cell_size_mm);
 
-			if (x >= 0 && x < target_map.getMapDimension() && y >= 0 && y < target_map.getMapDimension()) {
+			if (x >= 0 && x < map.length && y >= 0 && y < map.length) {
 				sum +=map[x][y]; count++;
 			}
 		}
@@ -216,6 +217,7 @@ public class CoreSLAM {
 	}
 
 	private void set_map_point(int x,int y, int radius, int dr) {
+
 		if(x >=0 && y>=0 && x < map.length && y < map.length) {
 			map[x][y] -=dr;
 		}
@@ -238,9 +240,9 @@ public class CoreSLAM {
 	}
 
 	public String toString() {
-		return String.format("SLAM correction from ( % .2f, % .2f - % .1f°) to ( % .2f, % .2f - % .1f° ) %d ",
+		return String.format("SLAM correction from ( % .2f, % .2f - % .1f°) to ( % .2f, % .2f - % .1f° ) %d %.2fms",
 				initialpos.x,initialpos.y,MSPMathUtils.fromRad((float)initialpos.w),
-				bestpos.x,bestpos.y, MSPMathUtils.fromRad((float)bestpos.w), bestdist);
+				bestpos.x,bestpos.y, MSPMathUtils.fromRad((float)bestpos.w), bestdist, avg_update_ms );
 	}
 
 	public String mapToString() {

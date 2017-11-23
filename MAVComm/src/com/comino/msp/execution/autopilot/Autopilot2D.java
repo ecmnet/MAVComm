@@ -67,7 +67,7 @@ public class Autopilot2D implements Runnable {
 
 	private static final int   CYCLE_MS					= 50;
 
-	private static final int   CERTAINITY_THRESHOLD      = 5;
+	private static final int   CERTAINITY_THRESHOLD      = 10;
 	private static final float ROBOT_RADIUS         		= 0.3f;
 	private static final float WINDOWSIZE       			= 2.0f;
 
@@ -349,7 +349,8 @@ public class Autopilot2D implements Runnable {
 		} else {
 			// If no target by CB available => use last direction and project project
 			projected.set(current);
-			angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
+			if(tracker.getList().size()>0)
+			 angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
 
 			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
 					(float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);

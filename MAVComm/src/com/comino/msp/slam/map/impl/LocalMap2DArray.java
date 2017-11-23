@@ -39,18 +39,18 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map.ILocalMap;
 import com.comino.msp.utils.MSPArrayUtils;
 
-import boofcv.struct.image.GrayF32;
-import boofcv.struct.image.GrayU16;
 import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
-import georegression.struct.point.Vector3D_F64;
 import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DArray implements ILocalMap {
 
-	private static final long OBLIVISION_TIME_MS = 10000;
-	private static final int  MAX_CERTAINITY     = 1000;
+	private static int         FILTER_SIZE_PX     = 3;
+
+	private static final long OBLIVISION_TIME_MS = 500;
+	private static final int  MAX_CERTAINITY     = 10000;
+	private static final int  CERTAINITY_INCR    = 20;
 
 	private short[][] 		map;
 
@@ -93,6 +93,7 @@ public class LocalMap2DArray implements ILocalMap {
 		this.center_y_mm = center_y_m * 1000f;
 
 		System.out.println("LocalMap2D initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
+		System.out.println("FilterRadius is "+FILTER_SIZE_PX*cell_size_mm+"mm");
 	}
 
 	public void 	setLocalPosition(Vector3D_F32 point) {
@@ -101,15 +102,15 @@ public class LocalMap2DArray implements ILocalMap {
 	}
 
 	public boolean update(Vector3D_F32 point) {
-		return set(point.x, point.y,10);
+		return set(point.x, point.y,CERTAINITY_INCR);
 	}
 
 	public boolean update(Point3D_F64 point) {
-		return set((float)point.x, (float)point.y,10);
+		return set((float)point.x, (float)point.y,CERTAINITY_INCR);
 	}
 
 	public boolean update(Point3D_F64 point, Vector4D_F64 pos) {
-		return set((float)(point.x+pos.x), (float)(point.y+pos.y),10);
+		return set((float)(point.x+pos.x), (float)(point.y+pos.y),CERTAINITY_INCR);
 	}
 
 	public boolean update(Vector3D_F32 point, int incr) {
@@ -158,6 +159,7 @@ public class LocalMap2DArray implements ILocalMap {
 
 
 	public float nearestDistance(float lpos_x, float lpos_y) {
+
 		float distance = Float.MAX_VALUE, d;
 		int center = window_dimension/2;
 
@@ -184,14 +186,18 @@ public class LocalMap2DArray implements ILocalMap {
 	public boolean set(float xpos, float ypos, int value) {
 		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
 		int y = (int)Math.floor((ypos*1000f+center_y_mm)/cell_size_mm);
-		if(x >=0 && x < map[0].length && y >=0 && y < map[0].length && map[x][y] < MAX_CERTAINITY ) {
-			map[x][y] += (short)value;
+
+		if(map[x][y] < MAX_CERTAINITY ) {
+			draw_into_map(x, y, FILTER_SIZE_PX, value);
 			return true;
 		}
+
+
 		return false;
 	}
 
 	public void toDataModel(DataModel model,  boolean debug) {
+
 		for (int y = 0; y <map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
 				if(map[x][y] > threshold)
@@ -210,7 +216,7 @@ public class LocalMap2DArray implements ILocalMap {
 			for (int i = 0; i < map_dimension; ++i)
 				for (int j = 0; j < map_dimension; ++j)
 					if(map[i][j] > 0)
-						map[i][j] -= 1;
+						map[i][j] -= CERTAINITY_INCR/4;
 		}
 	}
 
@@ -235,6 +241,55 @@ public class LocalMap2DArray implements ILocalMap {
 
 	public short[][] get() {
 		return map;
+	}
+
+	private void draw_into_map(int xm, int ym, int radius, int value) {
+
+		if (xm< 0 || xm >= map.length || ym < 0 || ym >= map.length)
+			return;
+
+		set_map_point(xm,ym,value);
+		if(radius == 0)
+			return;
+
+		int i=0; int y_old=0; int dr=0;
+		int r = radius, x = -r, y = 0, err = 2-2*r;
+		do {
+			for(i=x;i<=0;i++) {
+				if(y!=y_old) {
+					dr = ( value - sqrt(y*y+i*i) * value / radius );
+					dr = dr < 0 ? 0 : dr;
+					if(dr!=0) {
+						set_map_point(xm-i,ym+y,dr);
+						set_map_point(xm-y,ym-i,dr);
+						set_map_point(xm+i,ym-y,dr);
+						set_map_point(xm+y,ym+i,dr);
+					}
+				}
+			}
+			y_old = y;
+			r = err;
+			if (r < y) err += ++y*2+1;            /* e_xy+e_y < 0 */
+			if (r > x || err > y) err += ++x*2+1; /* e_xy+e_x > 0 or no 2nd y-step */
+		} while (x <= 0);
+
+	}
+
+	private int sqrt(int n) {
+		int sc, lc;
+		if(n < 2) return 1;
+		sc = sqrt( n >> 2) << 1;
+		lc = sc + 1;
+		if((lc*lc > n))
+			return sc;
+		else
+			return lc;
+	}
+
+	private void set_map_point(int x,int y, int dr) {
+		if(x >=0 && y>=0 && x < map.length && y < map.length) {
+			map[x][y] +=dr;
+		}
 	}
 
 	public String toString() {
