@@ -49,11 +49,10 @@ public class LocalMap2DArray implements ILocalMap {
 	private static int         FILTER_SIZE_PX     = 3;
 
 	private static final long OBLIVISION_TIME_MS = 500;
-	private static final int  MAX_CERTAINITY     = 10000;
+	private static final int  MAX_CERTAINITY     = 400;
 	private static final int  CERTAINITY_INCR    = 20;
 
 	private short[][] 		map;
-
 	private short[][]    	window;
 
 	private int 				cell_size_mm;
@@ -70,7 +69,7 @@ public class LocalMap2DArray implements ILocalMap {
 	private int				threshold = 0;
 
 	public LocalMap2DArray() {
-        this(40.0f,0.05f,2.0f,2);
+		this(40.0f,0.05f,2.0f,2);
 	}
 
 	public LocalMap2DArray(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
@@ -214,9 +213,12 @@ public class LocalMap2DArray implements ILocalMap {
 		if((System.currentTimeMillis()-tms)>OBLIVISION_TIME_MS) {
 			tms = System.currentTimeMillis();
 			for (int i = 0; i < map_dimension; ++i)
-				for (int j = 0; j < map_dimension; ++j)
-					if(map[i][j] > 0)
-						map[i][j] -= CERTAINITY_INCR/4;
+				for (int j = 0; j < map_dimension; ++j) {
+					if(map[i][j] == 0)
+						continue;
+					map[i][j] -= CERTAINITY_INCR/4;
+					if(map[i][j]<0) map[i][j] = 0;
+				}
 		}
 	}
 
