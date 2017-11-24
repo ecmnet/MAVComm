@@ -12,6 +12,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_ACTUATOR_CONTROL_TARGET = 140;
   public static int MAVLINK_MSG_ID_SETUP_SIGNING = 256;
   public static int MAVLINK_MSG_ID_FLIGHT_INFORMATION = 264;
+  public static int MAVLINK_MSG_ID_OBSTACLE_DISTANCE = 330;
   public static int MAVLINK_MSG_ID_HIL_SENSOR = 107;
   public static int MAVLINK_MSG_ID_CAMERA_TRIGGER = 112;
   public static int MAVLINK_MSG_ID_PARAM_REQUEST_LIST = 21;

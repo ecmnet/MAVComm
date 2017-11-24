@@ -24,7 +24,7 @@ public class msg_autopilot_version extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_AUTOPILOT_VERSION;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 60;
+    payload_length = 78;
 }
 
   /**
@@ -32,7 +32,7 @@ public class msg_autopilot_version extends MAVLinkMessage {
    */
   public long capabilities;
   /**
-   * UID if provided by hardware
+   * UID if provided by hardware (see uid2)
    */
   public long uid;
   /**
@@ -71,6 +71,10 @@ public class msg_autopilot_version extends MAVLinkMessage {
    * Custom version field, commonly the first 8 bytes of the git hash. This is not an unique identifier, but should allow to identify the commit using the main version number even for very large code bases.
    */
   public int[] os_custom_version = new int[8];
+  /**
+   * UID if provided by hardware (supersedes the uid field. If this is non-zero, use this field, otherwise use uid)
+   */
+  public int[] uid2 = new int[18];
 /**
  * Decode message with raw data
  */
@@ -92,12 +96,15 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   for (int i=0; i<8; i++) {
     os_custom_version[i] = (int)dis.readUnsignedByte()&0x00FF;
   }
+  for (int i=0; i<18; i++) {
+    uid2[i] = (int)dis.readUnsignedByte()&0x00FF;
+  }
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+60];
+  byte[] buffer = new byte[12+78];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -126,18 +133,21 @@ public byte[] encode() throws IOException {
   for (int i=0; i<8; i++) {
     dos.writeByte(os_custom_version[i]&0x00FF);
   }
+  for (int i=0; i<18; i++) {
+    dos.writeByte(uid2[i]&0x00FF);
+  }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 60);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 78);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[70] = crcl;
-  buffer[71] = crch;
+  buffer[88] = crcl;
+  buffer[89] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_AUTOPILOT_VERSION : " +   "  capabilities="+capabilities+  "  uid="+uid+  "  flight_sw_version="+flight_sw_version+  "  middleware_sw_version="+middleware_sw_version+  "  os_sw_version="+os_sw_version+  "  board_version="+board_version+  "  vendor_id="+vendor_id+  "  product_id="+product_id+  "  flight_custom_version="+flight_custom_version+  "  middleware_custom_version="+middleware_custom_version+  "  os_custom_version="+os_custom_version;}
+return "MAVLINK_MSG_ID_AUTOPILOT_VERSION : " +   "  capabilities="+capabilities+  "  uid="+uid+  "  flight_sw_version="+flight_sw_version+  "  middleware_sw_version="+middleware_sw_version+  "  os_sw_version="+os_sw_version+  "  board_version="+board_version+  "  vendor_id="+vendor_id+  "  product_id="+product_id+  "  flight_custom_version="+flight_custom_version+  "  middleware_custom_version="+middleware_custom_version+  "  os_custom_version="+os_custom_version+  "  uid2="+uid2;}
 }

@@ -46,7 +46,7 @@ import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DArray implements ILocalMap {
 
-	private static int         FILTER_SIZE_PX     = 3;
+	private static int        FILTER_SIZE_PX     = 3;
 
 	private static final long OBLIVISION_TIME_MS = 500;
 	private static final int  MAX_CERTAINITY     = 400;
@@ -92,7 +92,7 @@ public class LocalMap2DArray implements ILocalMap {
 		this.center_y_mm = center_y_m * 1000f;
 
 		System.out.println("LocalMap2D initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
-		System.out.println("FilterRadius is "+FILTER_SIZE_PX*cell_size_mm+"mm");
+		System.out.println(" and filter radius  "+FILTER_SIZE_PX*cell_size_mm+"mm");
 	}
 
 	public void 	setLocalPosition(Vector3D_F32 point) {
@@ -110,14 +110,6 @@ public class LocalMap2DArray implements ILocalMap {
 
 	public boolean update(Point3D_F64 point, Vector4D_F64 pos) {
 		return set((float)(point.x+pos.x), (float)(point.y+pos.y),CERTAINITY_INCR);
-	}
-
-	public boolean update(Vector3D_F32 point, int incr) {
-		return set(point.x, point.y,incr);
-	}
-
-	public boolean update(Point3D_F64 point, int incr) {
-		return set((float)point.x, (float)point.y,incr);
 	}
 
 
@@ -190,8 +182,6 @@ public class LocalMap2DArray implements ILocalMap {
 			draw_into_map(x, y, FILTER_SIZE_PX, value);
 			return true;
 		}
-
-
 		return false;
 	}
 
@@ -243,6 +233,11 @@ public class LocalMap2DArray implements ILocalMap {
 
 	public short[][] get() {
 		return map;
+	}
+
+	@Override
+	public GrayU8 getMap() {
+		return MSPArrayUtils.convertToGrayU8(map);
 	}
 
 	private void draw_into_map(int xm, int ym, int radius, int value) {
@@ -334,11 +329,4 @@ public class LocalMap2DArray implements ILocalMap {
 		System.out.println(map);
 
 	}
-
-	@Override
-	public GrayU8 getMap() {
-		return MSPArrayUtils.convertToGrayU8(map);
-	}
-
-
 }

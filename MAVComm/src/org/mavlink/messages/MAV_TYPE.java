@@ -120,4 +120,8 @@ public interface MAV_TYPE {
      * Onboard ADSB peripheral
      */
     public final static int MAV_TYPE_ADSB = 27;
+    /**
+     * Steerable, nonrigid airfoil
+     */
+    public final static int MAV_TYPE_PARAFOIL = 28;
 }

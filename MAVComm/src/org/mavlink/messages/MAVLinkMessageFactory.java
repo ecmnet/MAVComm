@@ -12,6 +12,7 @@ import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_setup_signing;
 import org.mavlink.messages.lquac.msg_flight_information;
+import org.mavlink.messages.lquac.msg_obstacle_distance;
 import org.mavlink.messages.lquac.msg_hil_sensor;
 import org.mavlink.messages.lquac.msg_camera_trigger;
 import org.mavlink.messages.lquac.msg_param_request_list;
@@ -172,6 +173,7 @@ import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_setup_signing;
 import org.mavlink.messages.lquac.msg_flight_information;
+import org.mavlink.messages.lquac.msg_obstacle_distance;
 import org.mavlink.messages.lquac.msg_hil_sensor;
 import org.mavlink.messages.lquac.msg_camera_trigger;
 import org.mavlink.messages.lquac.msg_param_request_list;
@@ -356,6 +358,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_FLIGHT_INFORMATION:
       msg = new msg_flight_information(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_OBSTACLE_DISTANCE:
+      msg = new msg_obstacle_distance(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_HIL_SENSOR:
