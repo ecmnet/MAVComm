@@ -185,7 +185,8 @@ public class Autopilot2D implements Runnable {
 				offboard.removeExternalControlListener();
 				isAvoiding = false;
 			}
-			map.forget();
+			if(!control.isSimulation())
+			  map.forget();
 		}
 	}
 

@@ -156,7 +156,10 @@ public class MSPMathUtils {
 	}
 
 	public static float fromRad(float radians) {
-		return (float)(radians * fromRad ) % 360;
+		float deg = (float)(radians * fromRad ) % 360;
+		if(deg<0) deg += 360;
+		return deg;
+
 	}
 
 	public static float toRad(float angle) {

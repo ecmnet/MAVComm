@@ -47,12 +47,7 @@ public interface ILocalMap {
 
 	public boolean update(Point3D_F64 point);
 
-	public boolean update(Vector3D_F32 point, int incr);
-
-	public boolean update(Point3D_F64 point, int incr);
-
 	public boolean update(Point3D_F64 point, Vector4D_F64 pos);
-
 
 	public float nearestDistance(float lpos_y, float lpos_x);
 
