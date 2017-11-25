@@ -53,6 +53,7 @@ import org.mavlink.messages.lquac.msg_attitude_target;
 import org.mavlink.messages.lquac.msg_autopilot_version;
 import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_command_ack;
+import org.mavlink.messages.lquac.msg_debug_vect;
 import org.mavlink.messages.lquac.msg_distance_sensor;
 import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_extended_sys_state;
@@ -729,6 +730,18 @@ public class MAVLinkToModelParser {
 				// model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
 				// (sys.onboard_control_sensors_enabled &
 				// MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
+
+			}
+		});
+
+		registerListener(msg_debug_vect.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_debug_vect vec = (msg_debug_vect) o;
+				model.debug.tms = vec.time_usec;
+				model.debug.x = vec.x;
+				model.debug.y = vec.y;
+				model.debug.z = vec.z;
 
 			}
 		});

@@ -43,34 +43,29 @@ public class Debug extends Segment {
 	// positioning actual
 
 
-	public float	v1=0;
-	public float    v2=0;
-	public float    v3=0;
-	public float    v4=0;
+	public float	    x=0;
+	public float    y=0;
+	public float    z=0;
 
 
 
 	public Debug clone() {
 		Debug t = new Debug();
-		t.v1		= v1;
-		t.v2		= v2;
-		t.v3		= v3;
-		t.v4		= v4;
+		t.x		= x;
+		t.y		= y;
+		t.z		= z;
 
 		return t;
 	}
 
 	public void set(Debug t) {
-
-		v1		= t.v1;
-		v2		= t.v2;
-		v3		= t.v3;
-		v4		= t.v4;
-
+		x		= t.x;
+		y		= t.y;
+		z		= t.z;
 	}
 
 	public void clear() {
-      v1 = 0; v2 = 0; v3 = 0; v4 = 0;
+      x = 0; y = 0; z = 0;
 	}
 
 }
