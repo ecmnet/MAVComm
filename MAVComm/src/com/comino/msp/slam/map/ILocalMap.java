@@ -55,7 +55,6 @@ public interface ILocalMap {
 
 	public int getWindowValue(int x, int y);
 
-
 	public int getWindowDimension();
 
 	public int getMapDimension();

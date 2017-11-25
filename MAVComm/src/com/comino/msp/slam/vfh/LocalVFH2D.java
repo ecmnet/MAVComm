@@ -50,7 +50,7 @@ import georegression.struct.point.Vector3D_F32;
 
 public class LocalVFH2D {
 
-	private static final int     SMAX        		= 80;
+	private static final int     SMAX        		= 60;
 
 	private static final int		ALPHA				= 2;
 	private static final float  	HIST_THRESHOLD	    = 1f;

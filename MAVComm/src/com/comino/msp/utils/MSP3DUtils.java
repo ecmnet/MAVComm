@@ -7,6 +7,7 @@ import com.comino.msp.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;
 import georegression.struct.EulerType;
+import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 import georegression.struct.se.Se3_F32;
@@ -16,6 +17,16 @@ public class MSP3DUtils {
 	public static final int ROLL  = 0;
 	public static final int PITCH = 1;
 	public static final int YAW   = 2;
+
+	private static Point3D_F64  tmp_p = new Point3D_F64();
+
+	public static Point3D_F64 swap(Point3D_F64 p) {
+		tmp_p.set(p);
+		p.x =  tmp_p.z;
+		p.y =  tmp_p.x;
+		p.z = -tmp_p.y;
+		return p;
+	}
 
 	public static float distance3D(Vector4D_F32 t, Vector4D_F32 c) {
 		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));

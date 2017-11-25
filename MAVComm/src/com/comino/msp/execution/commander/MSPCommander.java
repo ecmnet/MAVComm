@@ -43,6 +43,7 @@ import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 
+import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.execution.autopilot.Autopilot2D;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
@@ -55,12 +56,12 @@ import georegression.struct.point.Vector3D_F32;
 
 public class MSPCommander {
 
-	private IMAVMSPController        control = null;
-	private Autopilot2D              autopilot = null;
-	private DataModel                  model = null;
-	private ILocalMap                map  = null;
+	private IMAVMSPController        control 	= null;
+	private Autopilot2D              autopilot 	= null;
+	private DataModel                  model 	= null;
+	private ILocalMap                	map  	= null;
 
-	public MSPCommander(IMAVMSPController control) {
+	public MSPCommander(IMAVMSPController control, MSPConfig config) {
 
 		this.control = control;
 		this.model   = control.getCurrentModel();
@@ -69,7 +70,7 @@ public class MSPCommander {
 
 		System.out.println("Commander initialized");
 
-		autopilot = Autopilot2D.getInstance(control);
+		autopilot = Autopilot2D.getInstance(control,config);
 		this.map = autopilot.getMap2D();
 	}
 

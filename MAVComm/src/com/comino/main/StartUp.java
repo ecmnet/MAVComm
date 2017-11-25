@@ -79,7 +79,7 @@ public class StartUp implements Runnable {
 
 		MSPLogger.getInstance(control);
 
-		commander = new MSPCommander(control);
+		commander = new MSPCommander(control,config);
 
 		osBean = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
 		mxBean = java.lang.management.ManagementFactory.getMemoryMXBean();

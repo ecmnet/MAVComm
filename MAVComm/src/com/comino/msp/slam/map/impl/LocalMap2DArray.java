@@ -46,7 +46,7 @@ import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DArray implements ILocalMap {
 
-	private static int        FILTER_SIZE_PX     = 3;
+	private static int        FILTER_SIZE_PX     = 2;
 
 	private static final long OBLIVISION_TIME_MS = 500;
 	private static final int  MAX_CERTAINITY     = 400;

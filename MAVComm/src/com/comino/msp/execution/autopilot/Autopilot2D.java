@@ -43,6 +43,7 @@ import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
+import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.autopilot.offboard.IOffboardExternalControl;
@@ -93,12 +94,13 @@ public class Autopilot2D implements Runnable {
 	private IAutoPilotGetTarget targetListener = null;
 
 	private boolean              isAvoiding  = false;
+	private boolean				mapForget   = false;
 	private float             nearestTarget  = 0;
 
 
-	public static Autopilot2D getInstance(IMAVController control) {
+	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
 		if(autopilot == null)
-			autopilot = new Autopilot2D(control);
+			autopilot = new Autopilot2D(control,config);
 		return autopilot;
 	}
 
@@ -106,7 +108,7 @@ public class Autopilot2D implements Runnable {
 		return autopilot;
 	}
 
-	private Autopilot2D(IMAVController control) {
+	private Autopilot2D(IMAVController control, MSPConfig config) {
 
 		System.out.println("Autopilot2D instantiated");
 
@@ -115,6 +117,9 @@ public class Autopilot2D implements Runnable {
 		this.control  = control;
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
+
+		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
+		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
 
 		this.map      = new LocalMap2DArray(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
@@ -185,7 +190,7 @@ public class Autopilot2D implements Runnable {
 				offboard.removeExternalControlListener();
 				isAvoiding = false;
 			}
-			if(!control.isSimulation())
+			if(mapForget)
 			  map.forget();
 		}
 	}
