@@ -52,6 +52,14 @@ public class msg_landing_target extends MAVLinkMessage {
    */
   public float size_y;
   /**
+   * The ID of the target if multiple targets are present
+   */
+  public int target_num;
+  /**
+   * MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.
+   */
+  public int frame;
+  /**
    * X Position of the landing target on MAV_FRAME
    */
   public float x;
@@ -67,14 +75,6 @@ public class msg_landing_target extends MAVLinkMessage {
    * Quaternion of landing target orientation (w, x, y, z order, zero-rotation is 1, 0, 0, 0)
    */
   public float[] q = new float[4];
-  /**
-   * The ID of the target if multiple targets are present
-   */
-  public int target_num;
-  /**
-   * MAV_FRAME enum specifying the whether the following feilds are earth-frame, body-frame, etc.
-   */
-  public int frame;
   /**
    * LANDING_TARGET_TYPE enum specifying the type of landing target
    */
@@ -93,14 +93,14 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   distance = (float)dis.readFloat();
   size_x = (float)dis.readFloat();
   size_y = (float)dis.readFloat();
+  target_num = (int)dis.readUnsignedByte()&0x00FF;
+  frame = (int)dis.readUnsignedByte()&0x00FF;
   x = (float)dis.readFloat();
   y = (float)dis.readFloat();
   z = (float)dis.readFloat();
   for (int i=0; i<4; i++) {
     q[i] = (float)dis.readFloat();
   }
-  target_num = (int)dis.readUnsignedByte()&0x00FF;
-  frame = (int)dis.readUnsignedByte()&0x00FF;
   type = (int)dis.readUnsignedByte()&0x00FF;
   position_valid = (int)dis.readUnsignedByte()&0x00FF;
 }
@@ -126,14 +126,14 @@ public byte[] encode() throws IOException {
   dos.writeFloat(distance);
   dos.writeFloat(size_x);
   dos.writeFloat(size_y);
+  dos.writeByte(target_num&0x00FF);
+  dos.writeByte(frame&0x00FF);
   dos.writeFloat(x);
   dos.writeFloat(y);
   dos.writeFloat(z);
   for (int i=0; i<4; i++) {
     dos.writeFloat(q[i]);
   }
-  dos.writeByte(target_num&0x00FF);
-  dos.writeByte(frame&0x00FF);
   dos.writeByte(type&0x00FF);
   dos.writeByte(position_valid&0x00FF);
   dos.flush();
@@ -149,5 +149,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_LANDING_TARGET : " +   "  time_usec="+time_usec+  "  angle_x="+angle_x+  "  angle_y="+angle_y+  "  distance="+distance+  "  size_x="+size_x+  "  size_y="+size_y+  "  x="+x+  "  y="+y+  "  z="+z+  "  q="+q+  "  target_num="+target_num+  "  frame="+frame+  "  type="+type+  "  position_valid="+position_valid;}
+return "MAVLINK_MSG_ID_LANDING_TARGET : " +   "  time_usec="+time_usec+  "  angle_x="+angle_x+  "  angle_y="+angle_y+  "  distance="+distance+  "  size_x="+size_x+  "  size_y="+size_y+  "  target_num="+target_num+  "  frame="+frame+  "  x="+x+  "  y="+y+  "  z="+z+  "  q="+q+  "  type="+type+  "  position_valid="+position_valid;}
 }

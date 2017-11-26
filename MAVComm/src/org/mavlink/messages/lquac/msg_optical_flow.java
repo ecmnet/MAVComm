@@ -44,14 +44,6 @@ public class msg_optical_flow extends MAVLinkMessage {
    */
   public float ground_distance;
   /**
-   * Flow rate in radians/second about X axis
-   */
-  public float flow_rate_x;
-  /**
-   * Flow rate in radians/second about Y axis
-   */
-  public float flow_rate_y;
-  /**
    * Flow in pixels * 10 in x-sensor direction (dezi-pixels)
    */
   public int flow_x;
@@ -67,6 +59,14 @@ public class msg_optical_flow extends MAVLinkMessage {
    * Optical flow quality / confidence. 0: bad, 255: maximum quality
    */
   public int quality;
+  /**
+   * Flow rate in radians/second about X axis
+   */
+  public float flow_rate_x;
+  /**
+   * Flow rate in radians/second about Y axis
+   */
+  public float flow_rate_y;
 /**
  * Decode message with raw data
  */
@@ -75,12 +75,12 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   flow_comp_m_x = (float)dis.readFloat();
   flow_comp_m_y = (float)dis.readFloat();
   ground_distance = (float)dis.readFloat();
-  flow_rate_x = (float)dis.readFloat();
-  flow_rate_y = (float)dis.readFloat();
   flow_x = (int)dis.readShort();
   flow_y = (int)dis.readShort();
   sensor_id = (int)dis.readUnsignedByte()&0x00FF;
   quality = (int)dis.readUnsignedByte()&0x00FF;
+  flow_rate_x = (float)dis.readFloat();
+  flow_rate_y = (float)dis.readFloat();
 }
 /**
  * Encode message with raw data and other informations
@@ -102,12 +102,12 @@ public byte[] encode() throws IOException {
   dos.writeFloat(flow_comp_m_x);
   dos.writeFloat(flow_comp_m_y);
   dos.writeFloat(ground_distance);
-  dos.writeFloat(flow_rate_x);
-  dos.writeFloat(flow_rate_y);
   dos.writeShort(flow_x&0x00FFFF);
   dos.writeShort(flow_y&0x00FFFF);
   dos.writeByte(sensor_id&0x00FF);
   dos.writeByte(quality&0x00FF);
+  dos.writeFloat(flow_rate_x);
+  dos.writeFloat(flow_rate_y);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
@@ -121,5 +121,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_OPTICAL_FLOW : " +   "  time_usec="+time_usec+  "  flow_comp_m_x="+flow_comp_m_x+  "  flow_comp_m_y="+flow_comp_m_y+  "  ground_distance="+ground_distance+  "  flow_rate_x="+flow_rate_x+  "  flow_rate_y="+flow_rate_y+  "  flow_x="+flow_x+  "  flow_y="+flow_y+  "  sensor_id="+sensor_id+  "  quality="+quality;}
+return "MAVLINK_MSG_ID_OPTICAL_FLOW : " +   "  time_usec="+time_usec+  "  flow_comp_m_x="+flow_comp_m_x+  "  flow_comp_m_y="+flow_comp_m_y+  "  ground_distance="+ground_distance+  "  flow_x="+flow_x+  "  flow_y="+flow_y+  "  sensor_id="+sensor_id+  "  quality="+quality+  "  flow_rate_x="+flow_rate_x+  "  flow_rate_y="+flow_rate_y;}
 }

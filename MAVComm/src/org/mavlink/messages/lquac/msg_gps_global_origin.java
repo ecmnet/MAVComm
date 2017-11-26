@@ -28,10 +28,6 @@ public class msg_gps_global_origin extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since UNIX epoch or microseconds since system boot)
-   */
-  public long time_usec;
-  /**
    * Latitude (WGS84), in degrees * 1E7
    */
   public long latitude;
@@ -43,14 +39,18 @@ public class msg_gps_global_origin extends MAVLinkMessage {
    * Altitude (AMSL), in meters * 1000 (positive for up)
    */
   public long altitude;
+  /**
+   * Timestamp (microseconds since UNIX epoch or microseconds since system boot)
+   */
+  public long time_usec;
 /**
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
-  time_usec = (long)dis.readLong();
   latitude = (int)dis.readInt();
   longitude = (int)dis.readInt();
   altitude = (int)dis.readInt();
+  time_usec = (long)dis.readLong();
 }
 /**
  * Encode message with raw data and other informations
@@ -68,10 +68,10 @@ public byte[] encode() throws IOException {
   dos.writeByte(messageType & 0x00FF);
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
-  dos.writeLong(time_usec);
   dos.writeInt((int)(latitude&0x00FFFFFFFF));
   dos.writeInt((int)(longitude&0x00FFFFFFFF));
   dos.writeInt((int)(altitude&0x00FFFFFFFF));
+  dos.writeLong(time_usec);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
@@ -85,5 +85,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN : " +   "  time_usec="+time_usec+  "  latitude="+latitude+  "  longitude="+longitude+  "  altitude="+altitude;}
+return "MAVLINK_MSG_ID_GPS_GLOBAL_ORIGIN : " +   "  latitude="+latitude+  "  longitude="+longitude+  "  altitude="+altitude+  "  time_usec="+time_usec;}
 }

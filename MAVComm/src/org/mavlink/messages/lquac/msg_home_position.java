@@ -28,10 +28,6 @@ public class msg_home_position extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since UNIX epoch or microseconds since system boot)
-   */
-  public long time_usec;
-  /**
    * Latitude (WGS84), in degrees * 1E7
    */
   public long latitude;
@@ -71,11 +67,14 @@ public class msg_home_position extends MAVLinkMessage {
    * Local Z position of the end of the approach vector. Multicopters should set this position based on their takeoff path. Grass-landing fixed wing aircraft should set it the same way as multicopters. Runway-landing fixed wing aircraft should set it to the opposite direction of the takeoff, assuming the takeoff happened from the threshold / touchdown zone.
    */
   public float approach_z;
+  /**
+   * Timestamp (microseconds since UNIX epoch or microseconds since system boot)
+   */
+  public long time_usec;
 /**
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
-  time_usec = (long)dis.readLong();
   latitude = (int)dis.readInt();
   longitude = (int)dis.readInt();
   altitude = (int)dis.readInt();
@@ -88,6 +87,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   approach_x = (float)dis.readFloat();
   approach_y = (float)dis.readFloat();
   approach_z = (float)dis.readFloat();
+  time_usec = (long)dis.readLong();
 }
 /**
  * Encode message with raw data and other informations
@@ -105,7 +105,6 @@ public byte[] encode() throws IOException {
   dos.writeByte(messageType & 0x00FF);
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
-  dos.writeLong(time_usec);
   dos.writeInt((int)(latitude&0x00FFFFFFFF));
   dos.writeInt((int)(longitude&0x00FFFFFFFF));
   dos.writeInt((int)(altitude&0x00FFFFFFFF));
@@ -118,6 +117,7 @@ public byte[] encode() throws IOException {
   dos.writeFloat(approach_x);
   dos.writeFloat(approach_y);
   dos.writeFloat(approach_z);
+  dos.writeLong(time_usec);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
@@ -131,5 +131,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HOME_POSITION : " +   "  time_usec="+time_usec+  "  latitude="+latitude+  "  longitude="+longitude+  "  altitude="+altitude+  "  x="+x+  "  y="+y+  "  z="+z+  "  q="+q+  "  approach_x="+approach_x+  "  approach_y="+approach_y+  "  approach_z="+approach_z;}
+return "MAVLINK_MSG_ID_HOME_POSITION : " +   "  latitude="+latitude+  "  longitude="+longitude+  "  altitude="+altitude+  "  x="+x+  "  y="+y+  "  z="+z+  "  q="+q+  "  approach_x="+approach_x+  "  approach_y="+approach_y+  "  approach_z="+approach_z+  "  time_usec="+time_usec;}
 }

@@ -45,26 +45,6 @@ public class msg_gps_raw_int extends MAVLinkMessage {
    */
   public long alt;
   /**
-   * Altitude (above WGS84, EGM96 ellipsoid), in meters * 1000 (positive for up).
-   */
-  public long alt_ellipsoid;
-  /**
-   * Position uncertainty in meters * 1000 (positive for up).
-   */
-  public long h_acc;
-  /**
-   * Altitude uncertainty in meters * 1000 (positive for up).
-   */
-  public long v_acc;
-  /**
-   * Speed uncertainty in meters * 1000 (positive for up).
-   */
-  public long vel_acc;
-  /**
-   * Heading / track uncertainty in degrees * 1e5.
-   */
-  public long hdg_acc;
-  /**
    * GPS HDOP horizontal dilution of position (unitless). If unknown, set to: UINT16_MAX
    */
   public int eph;
@@ -88,6 +68,26 @@ public class msg_gps_raw_int extends MAVLinkMessage {
    * Number of satellites visible. If unknown, set to 255
    */
   public int satellites_visible;
+  /**
+   * Altitude (above WGS84, EGM96 ellipsoid), in meters * 1000 (positive for up).
+   */
+  public long alt_ellipsoid;
+  /**
+   * Position uncertainty in meters * 1000 (positive for up).
+   */
+  public long h_acc;
+  /**
+   * Altitude uncertainty in meters * 1000 (positive for up).
+   */
+  public long v_acc;
+  /**
+   * Speed uncertainty in meters * 1000 (positive for up).
+   */
+  public long vel_acc;
+  /**
+   * Heading / track uncertainty in degrees * 1e5.
+   */
+  public long hdg_acc;
 /**
  * Decode message with raw data
  */
@@ -96,17 +96,17 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   lat = (int)dis.readInt();
   lon = (int)dis.readInt();
   alt = (int)dis.readInt();
-  alt_ellipsoid = (int)dis.readInt();
-  h_acc = (int)dis.readInt()&0x00FFFFFFFF;
-  v_acc = (int)dis.readInt()&0x00FFFFFFFF;
-  vel_acc = (int)dis.readInt()&0x00FFFFFFFF;
-  hdg_acc = (int)dis.readInt()&0x00FFFFFFFF;
   eph = (int)dis.readUnsignedShort()&0x00FFFF;
   epv = (int)dis.readUnsignedShort()&0x00FFFF;
   vel = (int)dis.readUnsignedShort()&0x00FFFF;
   cog = (int)dis.readUnsignedShort()&0x00FFFF;
   fix_type = (int)dis.readUnsignedByte()&0x00FF;
   satellites_visible = (int)dis.readUnsignedByte()&0x00FF;
+  alt_ellipsoid = (int)dis.readInt();
+  h_acc = (int)dis.readInt()&0x00FFFFFFFF;
+  v_acc = (int)dis.readInt()&0x00FFFFFFFF;
+  vel_acc = (int)dis.readInt()&0x00FFFFFFFF;
+  hdg_acc = (int)dis.readInt()&0x00FFFFFFFF;
 }
 /**
  * Encode message with raw data and other informations
@@ -128,17 +128,17 @@ public byte[] encode() throws IOException {
   dos.writeInt((int)(lat&0x00FFFFFFFF));
   dos.writeInt((int)(lon&0x00FFFFFFFF));
   dos.writeInt((int)(alt&0x00FFFFFFFF));
-  dos.writeInt((int)(alt_ellipsoid&0x00FFFFFFFF));
-  dos.writeInt((int)(h_acc&0x00FFFFFFFF));
-  dos.writeInt((int)(v_acc&0x00FFFFFFFF));
-  dos.writeInt((int)(vel_acc&0x00FFFFFFFF));
-  dos.writeInt((int)(hdg_acc&0x00FFFFFFFF));
   dos.writeShort(eph&0x00FFFF);
   dos.writeShort(epv&0x00FFFF);
   dos.writeShort(vel&0x00FFFF);
   dos.writeShort(cog&0x00FFFF);
   dos.writeByte(fix_type&0x00FF);
   dos.writeByte(satellites_visible&0x00FF);
+  dos.writeInt((int)(alt_ellipsoid&0x00FFFFFFFF));
+  dos.writeInt((int)(h_acc&0x00FFFFFFFF));
+  dos.writeInt((int)(v_acc&0x00FFFFFFFF));
+  dos.writeInt((int)(vel_acc&0x00FFFFFFFF));
+  dos.writeInt((int)(hdg_acc&0x00FFFFFFFF));
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
@@ -152,5 +152,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_GPS_RAW_INT : " +   "  time_usec="+time_usec+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  alt_ellipsoid="+alt_ellipsoid+  "  h_acc="+h_acc+  "  v_acc="+v_acc+  "  vel_acc="+vel_acc+  "  hdg_acc="+hdg_acc+  "  eph="+eph+  "  epv="+epv+  "  vel="+vel+  "  cog="+cog+  "  fix_type="+fix_type+  "  satellites_visible="+satellites_visible;}
+return "MAVLINK_MSG_ID_GPS_RAW_INT : " +   "  time_usec="+time_usec+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  eph="+eph+  "  epv="+epv+  "  vel="+vel+  "  cog="+cog+  "  fix_type="+fix_type+  "  satellites_visible="+satellites_visible+  "  alt_ellipsoid="+alt_ellipsoid+  "  h_acc="+h_acc+  "  v_acc="+v_acc+  "  vel_acc="+vel_acc+  "  hdg_acc="+hdg_acc;}
 }

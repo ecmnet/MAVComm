@@ -64,6 +64,10 @@ public class msg_servo_output_raw extends MAVLinkMessage {
    */
   public int servo8_raw;
   /**
+   * Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.
+   */
+  public int port;
+  /**
    * Servo output 9 value, in microseconds
    */
   public int servo9_raw;
@@ -95,10 +99,6 @@ public class msg_servo_output_raw extends MAVLinkMessage {
    * Servo output 16 value, in microseconds
    */
   public int servo16_raw;
-  /**
-   * Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows to encode more than 8 servos.
-   */
-  public int port;
 /**
  * Decode message with raw data
  */
@@ -112,6 +112,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   servo6_raw = (int)dis.readUnsignedShort()&0x00FFFF;
   servo7_raw = (int)dis.readUnsignedShort()&0x00FFFF;
   servo8_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  port = (int)dis.readUnsignedByte()&0x00FF;
   servo9_raw = (int)dis.readUnsignedShort()&0x00FFFF;
   servo10_raw = (int)dis.readUnsignedShort()&0x00FFFF;
   servo11_raw = (int)dis.readUnsignedShort()&0x00FFFF;
@@ -120,7 +121,6 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   servo14_raw = (int)dis.readUnsignedShort()&0x00FFFF;
   servo15_raw = (int)dis.readUnsignedShort()&0x00FFFF;
   servo16_raw = (int)dis.readUnsignedShort()&0x00FFFF;
-  port = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
@@ -147,6 +147,7 @@ public byte[] encode() throws IOException {
   dos.writeShort(servo6_raw&0x00FFFF);
   dos.writeShort(servo7_raw&0x00FFFF);
   dos.writeShort(servo8_raw&0x00FFFF);
+  dos.writeByte(port&0x00FF);
   dos.writeShort(servo9_raw&0x00FFFF);
   dos.writeShort(servo10_raw&0x00FFFF);
   dos.writeShort(servo11_raw&0x00FFFF);
@@ -155,7 +156,6 @@ public byte[] encode() throws IOException {
   dos.writeShort(servo14_raw&0x00FFFF);
   dos.writeShort(servo15_raw&0x00FFFF);
   dos.writeShort(servo16_raw&0x00FFFF);
-  dos.writeByte(port&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
@@ -169,5 +169,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SERVO_OUTPUT_RAW : " +   "  time_usec="+time_usec+  "  servo1_raw="+servo1_raw+  "  servo2_raw="+servo2_raw+  "  servo3_raw="+servo3_raw+  "  servo4_raw="+servo4_raw+  "  servo5_raw="+servo5_raw+  "  servo6_raw="+servo6_raw+  "  servo7_raw="+servo7_raw+  "  servo8_raw="+servo8_raw+  "  servo9_raw="+servo9_raw+  "  servo10_raw="+servo10_raw+  "  servo11_raw="+servo11_raw+  "  servo12_raw="+servo12_raw+  "  servo13_raw="+servo13_raw+  "  servo14_raw="+servo14_raw+  "  servo15_raw="+servo15_raw+  "  servo16_raw="+servo16_raw+  "  port="+port;}
+return "MAVLINK_MSG_ID_SERVO_OUTPUT_RAW : " +   "  time_usec="+time_usec+  "  servo1_raw="+servo1_raw+  "  servo2_raw="+servo2_raw+  "  servo3_raw="+servo3_raw+  "  servo4_raw="+servo4_raw+  "  servo5_raw="+servo5_raw+  "  servo6_raw="+servo6_raw+  "  servo7_raw="+servo7_raw+  "  servo8_raw="+servo8_raw+  "  port="+port+  "  servo9_raw="+servo9_raw+  "  servo10_raw="+servo10_raw+  "  servo11_raw="+servo11_raw+  "  servo12_raw="+servo12_raw+  "  servo13_raw="+servo13_raw+  "  servo14_raw="+servo14_raw+  "  servo15_raw="+servo15_raw+  "  servo16_raw="+servo16_raw;}
 }
