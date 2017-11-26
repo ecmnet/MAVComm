@@ -9,6 +9,7 @@ import georegression.geometry.ConvertRotation3D_F32;
 import georegression.struct.EulerType;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
+import georegression.struct.point.Vector3D_F64;
 import georegression.struct.point.Vector4D_F32;
 import georegression.struct.se.Se3_F32;
 
@@ -26,6 +27,10 @@ public class MSP3DUtils {
 		p.y =  tmp_p.x;
 		p.z = -tmp_p.y;
 		return p;
+	}
+
+	public static String vector3D_F64ToString(Vector3D_F64 v) {
+		return String.format("( % .2f,% .2f,% .2f )", v.x,v.y,v.z);
 	}
 
 	public static float distance3D(Vector4D_F32 t, Vector4D_F32 c) {
