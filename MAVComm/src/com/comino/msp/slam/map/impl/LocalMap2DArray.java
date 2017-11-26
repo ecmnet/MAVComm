@@ -177,12 +177,8 @@ public class LocalMap2DArray implements ILocalMap {
 	public boolean set(float xpos, float ypos, int value) {
 		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
 		int y = (int)Math.floor((ypos*1000f+center_y_mm)/cell_size_mm);
-
-		if(map[x][y] < MAX_CERTAINITY ) {
-			draw_into_map(x, y, FILTER_SIZE_PX, value);
-			return true;
-		}
-		return false;
+		draw_into_map(x, y, FILTER_SIZE_PX, value);
+		return true;
 	}
 
 	public void toDataModel(DataModel model,  boolean debug) {
@@ -245,7 +241,8 @@ public class LocalMap2DArray implements ILocalMap {
 		if (xm< 0 || xm >= map.length || ym < 0 || ym >= map.length)
 			return;
 
-		set_map_point(xm,ym,value);
+		if(!set_map_point(xm,ym,value))
+			return;
 		if(radius == 0)
 			return;
 
@@ -283,10 +280,14 @@ public class LocalMap2DArray implements ILocalMap {
 			return lc;
 	}
 
-	private void set_map_point(int x,int y, int dr) {
+	private boolean set_map_point(int x,int y, int dr) {
 		if(x >=0 && y>=0 && x < map.length && y < map.length) {
-			map[x][y] +=dr;
+			if(map[x][y]<MAX_CERTAINITY) {
+				map[x][y] +=dr;
+				return true;
+			}
 		}
+		return false;
 	}
 
 	public String toString() {
