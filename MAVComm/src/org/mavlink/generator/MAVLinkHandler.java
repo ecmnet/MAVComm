@@ -194,6 +194,9 @@ public class MAVLinkHandler extends DefaultHandler implements IMAVLinkTag {
                 throw new SAXException(e);
             }
         }
+        else if (qName.equalsIgnoreCase(EXTENSION_TAG)) {
+
+        }
         else {
             System.out.println("Unknown TAG : " + qName);
         }
@@ -247,6 +250,11 @@ public class MAVLinkHandler extends DefaultHandler implements IMAVLinkTag {
             currentField.setDescription(buffer.toString());
             buffer = new StringBuffer();
             currentMessage.getFields().add(currentField);
+        }
+
+        else if (qName.equalsIgnoreCase(EXTENSION_TAG)) {
+            inField = false;
+            currentMessage.setExtensionIndex(currentMessage.getFields().size());
         }
         else if (qName.equalsIgnoreCase(VERSION_TAG)) {
             inVersion = false;

@@ -14,7 +14,7 @@
  * Who       yyyy/mm/dd   Action
  * --------  ----------   ------
  * ghelle	30 mars 2012		Create
- * 
+ *
  * ====================================================================
  * Licence: MAVLink LGPL
  * ====================================================================
@@ -40,6 +40,8 @@ public class MAVLinkMessage {
     private String description;
 
     private List<MAVLinkField> fields;
+
+    private int extensionIndex = 0;
 
     public MAVLinkMessage(int id, String name) {
         this.id = id;
@@ -102,5 +104,15 @@ public class MAVLinkMessage {
     public void setFields(List<MAVLinkField> fields) {
         this.fields = fields;
     }
+
+	public int getExtensionIndex() {
+		return extensionIndex;
+	}
+
+	public void setExtensionIndex(int extensionIndex) {
+		this.extensionIndex = extensionIndex;
+	}
+
+
 
 }

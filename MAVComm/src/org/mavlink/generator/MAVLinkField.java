@@ -45,8 +45,6 @@ public class MAVLinkField {
      */
     private String description;
 
-    private boolean extension=false;
-
     /**
      * MAVLink Field constructor
      * @param type
@@ -55,14 +53,6 @@ public class MAVLinkField {
     public MAVLinkField(MAVLinkDataType type, String name) {
         this.type = type;
         this.name = name;
-    }
-
-    public void setFieldIsExtensionFlag() {
-    	this.extension = false;
-    }
-
-    public boolean isExtension() {
-    	return this.extension;
     }
 
     /**

@@ -27,8 +27,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -324,7 +326,7 @@ public class MAVLinkGenerator {
                 int fieldLen = 0;
                 //Issue 1 by BoxMonster44 : don't sort for mavlink 0.9
                 if (useExtraByte) {
-                    Collections.sort(message.getFields(), new FieldCompare());
+                	    SortFields(message.getExtensionIndex(),message.getFields());
                 }
                 for (int j = 0; j < message.getFields().size(); j++) {
                     MAVLinkField field = message.getFields().get(j);
@@ -458,7 +460,27 @@ public class MAVLinkGenerator {
         }
     }
 
-    /**
+    private void SortFields(int index, List<MAVLinkField> fields) {
+     int size = fields.size();
+    	 if(index > 0) {
+    		List<MAVLinkField> extendedFields = new ArrayList<MAVLinkField>();
+    		extendedFields.addAll(fields);
+    		for(int i=0;i<index;i++)
+    			extendedFields.remove(0);
+    		for(int i=index;i<size;i++)
+    			fields.remove(index);
+
+    	    Collections.sort(fields, new FieldCompare());
+    	    Collections.sort(extendedFields, new FieldCompare());
+
+    	    fields.addAll(extendedFields);
+
+    	 }
+    	 else
+    		Collections.sort(fields, new FieldCompare());
+	}
+
+	/**
      * Generate MAVLink Java Enum classes
      *
      * @param mavlink
