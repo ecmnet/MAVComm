@@ -209,6 +209,7 @@ public class MAVLinkToModelParser {
 				model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
 				model.sys.setStatus(Status.MSP_ACTIVE, true);
 				model.sys.wifi_quality = status.wifi_quality/100f;
+				model.sys.msp_temp = (byte)status.cpu_temp;
 			}
 		});
 
@@ -560,7 +561,7 @@ public class MAVLinkToModelParser {
 
 				model.imu.abs_pressure = imu.abs_pressure;
 
-				model.sys.imu_temp = (int) imu.temperature;
+				model.sys.imu_temp = (byte) imu.temperature;
 				model.imu.tms = imu.time_usec;
 				model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 
