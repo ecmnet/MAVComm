@@ -10,14 +10,14 @@ public class CPUTemperature {
 	private int  temperature = 0;
 
 	public void getTemperature() {
-		if(System.currentTimeMillis()-tms < 1000)
+		if(System.currentTimeMillis()-tms < 2000)
 			return;
 		try {
 			String line = null;
 			Process process = Runtime.getRuntime().exec("cat /sys/devices/platform/coretemp.0/hwmon/hwmon1/temp2_input");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 			while((line=reader.readLine())!=null)
-					temperature = Integer.parseInt(line.trim()) / 1000;
+					temperature = (temperature  + Integer.parseInt(line.trim()) / 1000) / 2;
 			reader.close();
 		} catch (IOException e) { }
 		tms = System.currentTimeMillis();
