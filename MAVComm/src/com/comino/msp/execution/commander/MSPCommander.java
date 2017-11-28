@@ -51,6 +51,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map.ILocalMap;
+import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 
@@ -255,45 +256,22 @@ public class MSPCommander {
 		pos.x = 0.15f + model.state.l_x;
 		map.update(pos);
 
-		float dotx, doty ;
+		float dotx, doty ; float[] r = new float[2];
 
-		for(int j=0; j< 20; j++) {
+		for(int j=0; j< 30; j++) {
 
-			dotx = 0 + (float)((Math.random()*10 - 5));
-			doty = 2 + (float)((Math.random()*10  ));
+			dotx = (float)((Math.random()*10-5f));
+			doty = (float)((Math.random()*10-5f));
 
-			for(int i=0; i< 15; i++) {
+			MSPMathUtils.rotateRad(r, dotx, doty, (float)Math.random() * 6.28f);
 
+			for(int i=0; i< 40; i++) {
 
-				x =  (float)Math.random()*1.0f - 0.5f + dotx;
-				y =  (float)Math.random()*1.0f - 0.5f + doty;
+				x =  (float)Math.random()*.8f - 0.4f + r[0];
+				y =  (float)Math.random()*.8f - 0.4f + r[1];
 
-				pos.x = x   + model.state.l_x - 0.05f;
-				pos.y = y   + model.state.l_y - 0.05f;
-				map.update(pos);
-
-				pos.x = x   + model.state.l_x - 0.05f;
-				pos.y = y   + model.state.l_y;
-				map.update(pos);
-
-				pos.x = x   + model.state.l_x;
-				pos.y = y   + model.state.l_y - 0.05f;
-				map.update(pos);
-
-				pos.x = x   + model.state.l_x;
-				pos.y = y   + model.state.l_y;
-				map.update(pos);
-
-				pos.x = x   + model.state.l_x + 0.05f;
-				pos.y = y   + model.state.l_y + 0.05f;
-				map.update(pos);
-
-				pos.x = x   + model.state.l_x + 0.05f;
-				pos.y = y   + model.state.l_y;
-				map.update(pos);
-
-				pos.x = x   + model.state.l_x;
-				pos.y = y   + model.state.l_y + 0.05f;
+				pos.x = x;
+				pos.y = y ;
 				map.update(pos);
 
 			}

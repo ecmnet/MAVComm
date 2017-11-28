@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.mavlink.messages.MAV_SEVERITY;
+
 import com.comino.dev.LocalMap2DGrayU8;
 import com.comino.msp.slam.map.ILocalMap;
 import com.comino.msp.utils.MSPMathUtils;
@@ -61,6 +63,8 @@ public class LocalVFH2D {
 	private static final int MAX_SPEED_WIDE			= 500;
 	private static final int MAX_SPEED_NARROW    	= 300;
 
+	private static final float LOCK_INCREMENT		= 0.1f;
+
 	private ILocalMap 		map = null;
 
 
@@ -77,6 +81,11 @@ public class LocalVFH2D {
 	private float			desired_tdir			= 0;
 	private float			selected_tdir       	= 0;
 	private float 			last_selected_tdir  	= 0;
+
+	private float			locks				= 0;
+	private float            minDistance_mm  	    = 0;
+	private boolean          deadlock 		    = false;
+	private long             deadlock_tms    	= 0;
 
 	private float			selected_speed	  	= 0;
 	private float         	last_selected_speed 	= 0;
@@ -134,9 +143,10 @@ public class LocalVFH2D {
 		return hist;
 	}
 
-	public void setInitialSpeed(float current_speed) {
+	public void init(float current_speed) {
 		selected_speed = Math.min(current_speed * 1000.0f, max_speed_for_selected_angle );
 		last_selected_speed = selected_speed;
+		minDistance_mm = Float.MAX_VALUE;
 	}
 
 	public void update_histogram(Vector3D_F32 current, float current_speed) {
@@ -146,8 +156,8 @@ public class LocalVFH2D {
 
 		Arrays.fill(hist, 0);
 
-	    map.processWindow(current.x, current.y);
-	    int window_center = map.getWindowDimension()/2;
+		map.processWindow(current.x, current.y);
+		int window_center = map.getWindowDimension()/2;
 
 		// Build density polar histogram
 		for (int y = 0; y < map.getWindowDimension(); y++) {
@@ -180,8 +190,18 @@ public class LocalVFH2D {
 		float diffSeconds = (System.currentTimeMillis() - last_update_time ) / 1000.0f;
 		last_update_time = System.currentTimeMillis();
 
+		if(distance_to_goal_mm < minDistance_mm) {
+			minDistance_mm = distance_to_goal_mm;  deadlock_tms = System.currentTimeMillis();
+			locks -= LOCK_INCREMENT;
+			if(locks < 0) locks = 0;
+		} else {
+			if((System.currentTimeMillis() - deadlock_tms) > 1000 && !deadlock) {
+				locks += LOCK_INCREMENT;
+				if(locks > u1 ) locks = u1 + LOCK_INCREMENT;
+			}
+		}
+
 		if(getAbsoluteDirection(hist,(int)MSPMathUtils.fromRad(tdir_rad), SMAX) < 0) {
-			System.err.println("NO PATH");
 			selected_speed = 0;
 			last_selected_speed = 0;
 			return;
@@ -299,6 +319,7 @@ public class LocalVFH2D {
 				results.add(new_result.clone());
 
 			} else {
+
 				new_result.speed = MAX_SPEED_WIDE;
 				// wide opening: consider the centre, and 40deg from each border
 				new_result.angle = p.s + (p.e - p.s) / 2.0f;
@@ -316,21 +337,21 @@ public class LocalVFH2D {
 				}
 
 				// See if candidate dir is in this opening
-//				if(p.e>360)	tdir +=360;
-//				System.out.println(p+" TDIR:"+tdir);
-//				if ((delta_angle(tdir, results.get(results.size()-2).angle) < 0) &&
-//						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
-//					new_result.speed = MAX_SPEED;
-//					new_result.angle = tdir;
-//					results.add(new_result.clone());
-//				}
+				//				if(p.e>360)	tdir +=360;
+				//				System.out.println(p+" TDIR:"+tdir);
+				//				if ((delta_angle(tdir, results.get(results.size()-2).angle) < 0) &&
+				//						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
+				//					new_result.speed = MAX_SPEED;
+				//					new_result.angle = tdir;
+				//					results.add(new_result.clone());
+				//				}
 			}
 		}
 
 		if (results.size() == 0) {
 			// We're hemmed in by obstacles -- nowhere to go,
 			// so brake hard and turn on the spot.
-			System.err.println(this);
+			locks = 6;
 			max_speed_for_selected_angle = 0;
 			return -1;
 		}
@@ -341,7 +362,7 @@ public class LocalVFH2D {
 
 			// Cost function;
 			weight = u1 * Math.abs(delta_angle_180(tdir,selected.angle))
-			       + u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle));
+					+ u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle)) * ( locks + 1);
 
 			if(weight < min_weight) {
 				min_weight = weight;

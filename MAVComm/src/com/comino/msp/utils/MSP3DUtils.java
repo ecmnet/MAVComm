@@ -41,6 +41,10 @@ public class MSP3DUtils {
 		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y));
 	}
 
+	public static float distance2D(Vector3D_F32 t, Vector3D_F32 c) {
+		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y));
+	}
+
 	public static float distance3D(Vector3D_F32 t, Vector3D_F32 c) {
 		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 	}

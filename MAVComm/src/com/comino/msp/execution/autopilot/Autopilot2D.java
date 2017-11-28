@@ -93,9 +93,9 @@ public class Autopilot2D implements Runnable {
 
 	private IAutoPilotGetTarget targetListener = null;
 
-	private boolean              isAvoiding  = false;
-	private boolean				mapForget   = false;
-	private float             nearestTarget  = 0;
+	private boolean            	isAvoiding  		= false;
+	private boolean				mapForget   		= false;
+	private float             	nearestTarget 	= 0;
 
 
 	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
@@ -135,7 +135,7 @@ public class Autopilot2D implements Runnable {
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 				control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 			}
-			loadMap2D();
+		//	loadMap2D();
 		});
 
 		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT, MSP_AUTOCONTROL_MODE.STEP_MODE,(o,n) -> {
@@ -348,7 +348,7 @@ public class Autopilot2D implements Runnable {
 
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
 
-		lvfh.setInitialSpeed(model.hud.s);
+		lvfh.init(model.hud.s);
 
 		// Determine projected position via CB
 		if(targetListener!=null) {
