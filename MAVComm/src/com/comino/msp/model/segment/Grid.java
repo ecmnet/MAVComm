@@ -56,8 +56,8 @@ public class Grid extends Segment {
 	private int      extension_cm    = 0;
 	private int      max_length;
 
-	private static List<Integer>         transfer  = new ArrayList<Integer>();
-	private static Map<Integer,BlockPoint2D> data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
+	private static List<Integer>  transfer  = new ArrayList<Integer>();
+	private static Map<Integer,BlockPoint2D>   data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 
 	//	private  Map<Integer,BlockPoint2D> data = null;
 
@@ -97,15 +97,17 @@ public class Grid extends Segment {
 
 	// Transfer via block only. positive values => set block; negative => remove block
 
-	public synchronized boolean toArray(long[] array) {
+	public boolean toArray(long[] array) {
 		if(transfer==null || array == null)
 			return false;
 		count = data.size();
 		Arrays.fill(array, 0);
 		if(transfer.isEmpty() || array == null)
 			return false;
-		for(int i=0; i< array.length && transfer.size() > 0;i++) {
-			array[i] = transfer.remove(0);
+		synchronized(this) {
+			for(int i=0; i< array.length && transfer.size() > 0;i++) {
+				array[i] = transfer.remove(0);
+			}
 		}
 		return true;
 	}

@@ -52,7 +52,6 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
-
 import georegression.struct.point.Point3D_F64;
 
 public class StartUp implements Runnable {
@@ -115,6 +114,7 @@ public class StartUp implements Runnable {
 			}
 		});
 		Autopilot2D.getInstance().reset(true);
+
 	}
 
 
