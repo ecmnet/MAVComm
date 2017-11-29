@@ -63,12 +63,11 @@ public class LocalVFH2D {
 	private static final int MAX_SPEED_WIDE			= 500;
 	private static final int MAX_SPEED_NARROW    	= 300;
 
-	private static final float LOCK_INCREMENT		= 0.1f;
+	private static final float LOCK_INCREMENT		= 0.05f;
 
 	private ILocalMap 		map = null;
 
-
-	private float 			u1 = 6.0f, u2 = 1f;
+	private float 			u1 = 6.0f, u2 = 2.0f;
 
 	private float[][]    	magnitude;
 	private float[][]    	distance;
@@ -83,8 +82,7 @@ public class LocalVFH2D {
 	private float 			last_selected_tdir  	= 0;
 
 	private float			locks				= 0;
-	private float            minDistance_mm  	    = 0;
-	private boolean          deadlock 		    = false;
+	private float            minDistance_mm   	= 0;
 	private long             deadlock_tms    	= 0;
 
 	private float			selected_speed	  	= 0;
@@ -147,6 +145,7 @@ public class LocalVFH2D {
 		selected_speed = Math.min(current_speed * 1000.0f, max_speed_for_selected_angle );
 		last_selected_speed = selected_speed;
 		minDistance_mm = Float.MAX_VALUE;
+		locks = 0;
 	}
 
 	public void update_histogram(Vector3D_F32 current, float current_speed) {
@@ -192,12 +191,10 @@ public class LocalVFH2D {
 
 		if(distance_to_goal_mm < minDistance_mm) {
 			minDistance_mm = distance_to_goal_mm;  deadlock_tms = System.currentTimeMillis();
-			locks -= LOCK_INCREMENT;
-			if(locks < 0) locks = 0;
+			locks -= LOCK_INCREMENT; if(locks < 0) locks = 0;
 		} else {
-			if((System.currentTimeMillis() - deadlock_tms) > 1000 && !deadlock) {
-				locks += LOCK_INCREMENT;
-				if(locks > u1 ) locks = u1 + LOCK_INCREMENT;
+			if((System.currentTimeMillis() - deadlock_tms) > 500 ) {
+				locks += LOCK_INCREMENT; if(locks > u1) locks = u1;
 			}
 		}
 
@@ -330,28 +327,19 @@ public class LocalVFH2D {
 				if (new_result.angle < 0) new_result.angle += 360;
 				results.add(new_result.clone());
 
+
 				if(p.s < tdir && tdir < p.e) {
 					new_result.speed = MAX_SPEED;
 					new_result.angle = tdir;
 					results.add(new_result.clone());
 				}
-
-				// See if candidate dir is in this opening
-				//				if(p.e>360)	tdir +=360;
-				//				System.out.println(p+" TDIR:"+tdir);
-				//				if ((delta_angle(tdir, results.get(results.size()-2).angle) < 0) &&
-				//						(delta_angle(tdir, results.get(results.size()-1).angle) > 0)) {
-				//					new_result.speed = MAX_SPEED;
-				//					new_result.angle = tdir;
-				//					results.add(new_result.clone());
-				//				}
 			}
 		}
 
 		if (results.size() == 0) {
 			// We're hemmed in by obstacles -- nowhere to go,
 			// so brake hard and turn on the spot.
-			locks = 6;
+			locks = u1;
 			max_speed_for_selected_angle = 0;
 			return -1;
 		}
@@ -362,7 +350,7 @@ public class LocalVFH2D {
 
 			// Cost function;
 			weight = u1 * Math.abs(delta_angle_180(tdir,selected.angle))
-					+ u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle)) * ( locks + 1);
+				   + u2 * Math.abs(delta_angle_180(last_selected_tdir,selected.angle)) * ( locks + 1);
 
 			if(weight < min_weight) {
 				min_weight = weight;
@@ -371,9 +359,7 @@ public class LocalVFH2D {
 					selected_tdir += 360;
 				max_speed_for_selected_angle = selected.speed;
 			}
-			//			System.out.print("["+tdir+","+selected.angle+":"+(Math.abs(delta_angle(tdir, selected.angle)))+"=>"+weight+"] ");
 		}
-		//	System.out.println(" ==> "+selected_tdir);
 
 		last_selected_tdir  = selected_tdir;
 		return selected_tdir;
