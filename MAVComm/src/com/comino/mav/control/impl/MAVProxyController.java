@@ -186,8 +186,10 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public boolean connect() {
 		comm.open(); proxy.close();proxy.open();
-		if(comm.isConnected())
+		if(comm.isConnected()) {
+			System.out.println("Connected with "+peerAddress);
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+		}
 		return true;
 	}
 
