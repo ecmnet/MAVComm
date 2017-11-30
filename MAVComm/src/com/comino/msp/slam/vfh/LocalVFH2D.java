@@ -184,16 +184,16 @@ public class LocalVFH2D {
 	}
 
 
-	public void select(float tdir_rad, float current_speed, float distance_to_goal_mm) {
+	public void select(float tdir_rad, float current_speed, float distance_to_target_mm) {
 
 		float diffSeconds = (System.currentTimeMillis() - last_update_time ) / 1000.0f;
 		last_update_time = System.currentTimeMillis();
 
-		if(distance_to_goal_mm < minDistance_mm) {
-			minDistance_mm = distance_to_goal_mm;  deadlock_tms = System.currentTimeMillis();
+		if(distance_to_target_mm < minDistance_mm) {
+			minDistance_mm = distance_to_target_mm;  deadlock_tms = System.currentTimeMillis();
 			locks -= LOCK_INCREMENT; if(locks < 0) locks = 0;
 		} else {
-			if((System.currentTimeMillis() - deadlock_tms) > 500 ) {
+			if((System.currentTimeMillis() - deadlock_tms) > 1000 ) {
 				locks += LOCK_INCREMENT; if(locks > u1) locks = u1;
 			}
 		}
@@ -215,10 +215,10 @@ public class LocalVFH2D {
 			speed_incr = (int) (MAX_ACCELERATION * diffSeconds);
 		}
 
-		if ( cantTurnToTarget(distance_to_goal_mm, tdir_rad, current_speed)) {
+		if ( cantTurnToTarget(distance_to_target_mm, tdir_rad, current_speed)) {
 			speed_incr = - 3 * speed_incr;
 		} else {
-			if(distance_to_goal_mm < 750 && last_selected_speed > 200)
+			if(distance_to_target_mm < 750 && last_selected_speed > 200)
 				speed_incr = - 3 * speed_incr;
 		}
 

@@ -360,7 +360,7 @@ public class Autopilot2D implements Runnable {
 			 angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
 
 			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
-					(float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
+				     (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
 			projected.plusIP(delta);
 		}
 
@@ -416,12 +416,12 @@ public class Autopilot2D implements Runnable {
 		offboard.start(OffboardManager.MODE_POSITION);
 		offboard.registerActionListener((m,d) -> {
 			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-			if(e!=null && e.getValue().z < -0.3f && !isAvoiding) {
+			if(e!=null && e.getValue().z < -0.3f && !isAvoiding)  {
 				offboard.setTarget(e.getValue());
 			}
 			else {
 				tracker.unfreeze();
-				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
+				  logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
 				clearAutopilotActions() ;
 			}
 		});
