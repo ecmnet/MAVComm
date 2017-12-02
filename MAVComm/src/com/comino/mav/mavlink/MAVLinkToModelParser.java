@@ -386,6 +386,8 @@ public class MAVLinkToModelParser {
 				model.gps.setFlag(GPS.GPS_SAT_RTKFIX, gps.fix_type > 4);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
 
+				model.gps.eph = gps.h_acc/1000f;
+				model.gps.epv = gps.v_acc/1000f;
 				model.gps.hdop = gps.eph / 100f;
 				model.gps.latitude = gps.lat / 1e7f;
 				model.gps.longitude = gps.lon / 1e7f;

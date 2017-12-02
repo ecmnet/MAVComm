@@ -57,6 +57,7 @@ public class GPS extends Segment {
 	public short  	heading 	= 0;
 	public short  	altitude 	= 0;
 	public float  	eph 	    = Float.NaN;
+	public float  	epv 	    = Float.NaN;
 	public float  	hdop 	    = Float.NaN;
 	public float  	speed 		= Float.NaN;
 	public byte     fixtype     = (byte)0;
@@ -101,6 +102,7 @@ public class GPS extends Segment {
 		altitude	= gps.altitude;
 		heading		= gps.heading;
 		eph			= gps.eph;
+		epv         = gps.epv;
 		hdop        = gps.hdop;
 		speed		= gps.speed;
 	}
@@ -115,6 +117,7 @@ public class GPS extends Segment {
 		g.latitude  	= latitude;
 		g.longitude 	= longitude;
 		g.eph 			= eph;
+		g.epv       = epv;
 		g.hdop          = hdop;
 		g.altitude		= altitude;
 		g.speed     	= speed;
@@ -133,6 +136,7 @@ public class GPS extends Segment {
 		heading 	= 0;
 		altitude 	= 0;
 		eph 		= 0;
+		epv = 0;
 		hdop        = 0;
 		speed 		= 0;
 		fixtype     = 0;
