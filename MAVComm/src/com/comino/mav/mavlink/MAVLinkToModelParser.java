@@ -383,17 +383,21 @@ public class MAVLinkToModelParser {
 				model.gps.numsat = (byte) gps.satellites_visible;
 				model.gps.setFlag(GPS.GPS_SAT_FIX, gps.fix_type > 0);
 				model.gps.setFlag(GPS.GPS_SAT_RTK, gps.fix_type > 3);
+
 				model.gps.setFlag(GPS.GPS_SAT_RTKFIX, gps.fix_type > 4);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
 
-				model.gps.eph = gps.h_acc/1000f;
-				model.gps.epv = gps.v_acc/1000f;
+				model.gps.eph = gps.h_acc < 100000 && gps.h_acc > 0 ? gps.h_acc/1000f : Float.NaN;
+				model.gps.epv = gps.v_acc < 100000 && gps.v_acc > 0 ? gps.v_acc/1000f : Float.NaN;
 				model.gps.hdop = gps.eph / 100f;
+
 				model.gps.latitude = gps.lat / 1e7f;
 				model.gps.longitude = gps.lon / 1e7f;
+
 				model.gps.altitude = (short) (gps.alt / 1000);
 				model.gps.fixtype = (byte) gps.fix_type;
 				model.gps.tms = model.sys.getSynchronizedPX4Time_us();
+
 				model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat > 3);
 				model.sys.setSensor(Status.MSP_RTK_AVAILABILITY, gps.fix_type > 3);
 

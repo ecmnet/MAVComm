@@ -54,10 +54,10 @@ public class GPS extends Segment {
 	public float   	numsat 		= Float.NaN;
 	public float 	latitude 	= Float.NaN;
 	public float 	longitude 	= Float.NaN;
-	public short  	heading 	= 0;
+	public short  	heading 	    = 0;
 	public short  	altitude 	= 0;
-	public float  	eph 	    = Float.NaN;
-	public float  	epv 	    = Float.NaN;
+	public float  	eph 	        = Float.NaN;
+	public float  	epv 	        = Float.NaN;
 	public float  	hdop 	    = Float.NaN;
 	public float  	speed 		= Float.NaN;
 	public byte     fixtype     = (byte)0;
