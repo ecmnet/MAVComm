@@ -155,14 +155,14 @@ public class MSPMathUtils {
 		return euler;
 	}
 
-	public static float fromRad(float radians) {
+	public static float fromRad(double radians) {
 		float deg = (float)(radians * fromRad ) % 360;
 		if(deg<0) deg += 360;
 		return deg;
 
 	}
 
-	public static float toRad(float angle) {
+	public static float toRad(double angle) {
 		return (float)(angle * toRad);
 	}
 

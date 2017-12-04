@@ -37,7 +37,7 @@ public class LocaMap2DStorage {
 	 * then move map according to position
 	 */
 
-	public LocaMap2DStorage(ILocalMap map, float lat, float lon) {
+	public LocaMap2DStorage(ILocalMap map, double lat, double lon) {
 
 		try {
 		this.base_path = MSPConfig.getInstance().getBasePath()+"/";

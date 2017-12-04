@@ -391,8 +391,8 @@ public class MAVLinkToModelParser {
 				model.gps.epv = gps.v_acc < 100000 && gps.v_acc > 0 ? gps.v_acc/1000f : Float.NaN;
 				model.gps.hdop = gps.eph / 100f;
 
-				model.gps.latitude = gps.lat / 1e7f;
-				model.gps.longitude = gps.lon / 1e7f;
+				model.gps.latitude =  gps.lat / 1e7;
+				model.gps.longitude = gps.lon / 1e7;
 
 				model.gps.altitude = (short) (gps.alt / 1000);
 				model.gps.fixtype = (byte) gps.fix_type;
@@ -422,8 +422,8 @@ public class MAVLinkToModelParser {
 				model.home_state.l_y = ref.y;
 				model.home_state.l_z = ref.z;
 
-				model.home_state.g_lat = ref.latitude / 10000000f;
-				model.home_state.g_lon = ref.longitude / 10000000f;
+				model.home_state.g_lat = ref.latitude  / 1e7;
+				model.home_state.g_lon = ref.longitude / 1e7;
 				model.home_state.g_alt = (int) ((ref.altitude + 500) / 1000f);
 
 			}
@@ -532,8 +532,8 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 				msg_global_position_int pos = (msg_global_position_int) o;
-				model.state.g_lat = pos.lat / 10000000f;
-				model.state.g_lon = pos.lon / 10000000f;
+				model.state.g_lat = pos.lat / 1.0e7;
+				model.state.g_lon = pos.lon / 1.0e7;
 				model.state.g_alt = (pos.alt / 1000);
 				model.gps.heading = (short) (pos.hdg / 1000f);
 				model.gps.altitude = (short) (pos.alt / 1000);

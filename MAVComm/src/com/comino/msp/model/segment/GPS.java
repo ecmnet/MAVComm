@@ -52,8 +52,8 @@ public class GPS extends Segment {
 	public int		flags		= 0;
 
 	public float   	numsat 		= Float.NaN;
-	public float 	latitude 	= Float.NaN;
-	public float 	longitude 	= Float.NaN;
+	public double 	latitude 	= Double.NaN;
+	public double 	longitude 	= Double.NaN;
 	public short  	heading 	    = 0;
 	public short  	altitude 	= 0;
 	public float  	eph 	        = Float.NaN;

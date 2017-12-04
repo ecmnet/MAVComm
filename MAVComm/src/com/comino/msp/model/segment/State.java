@@ -70,8 +70,8 @@ public class State extends Segment {
 
 	public float		ah=Float.NaN;		// gative heading speed in radiant/s^2
 
-	public float		g_lon	= Float.NaN;
-	public float    g_lat 	= Float.NaN;
+	public double   g_lon	= Double.NaN;
+	public double   g_lat 	= Double.NaN;
 	public float    g_alt	= Float.NaN;
 	public float    g_vx	= Float.NaN;
 	public float    g_vy	= Float.NaN;
