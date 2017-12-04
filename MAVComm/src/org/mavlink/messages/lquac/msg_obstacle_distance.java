@@ -24,7 +24,7 @@ public class msg_obstacle_distance extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_OBSTACLE_DISTANCE;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 22;
+    payload_length = 158;
 }
 
   /**
@@ -32,13 +32,21 @@ public class msg_obstacle_distance extends MAVLinkMessage {
    */
   public long time_usec;
   /**
+   * Distance of obstacles in front of the sensor starting on the left side. A value of 0 means that the obstacle is right in front of the sensor. A value of max_distance +1 means no obstace is present. A value of UINT16_MAX for unknown/not used. In a array element, each unit corresponds to 1cm.
+   */
+  public int[] distances = new int[72];
+  /**
+   * Minimum distance the sensor can measure in centimeters
+   */
+  public int min_distance;
+  /**
+   * Maximum distance the sensor can measure in centimeters
+   */
+  public int max_distance;
+  /**
    * Class id of the distance sensor type.
    */
-  public int estimator_type;
-  /**
-   * Distance of obstacles in front of the sensor starting on the left side. A value of 0 means no obstacle. In a array element, each unit corresponds to 1m.
-   */
-  public int[] distances = new int[12];
+  public int sensor_type;
   /**
    * Angular width in degrees of each array element.
    */
@@ -48,17 +56,19 @@ public class msg_obstacle_distance extends MAVLinkMessage {
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
   time_usec = (long)dis.readLong();
-  estimator_type = (int)dis.readUnsignedByte()&0x00FF;
-  for (int i=0; i<12; i++) {
-    distances[i] = (int)dis.readUnsignedByte()&0x00FF;
+  for (int i=0; i<72; i++) {
+    distances[i] = (int)dis.readUnsignedShort()&0x00FFFF;
   }
+  min_distance = (int)dis.readUnsignedShort()&0x00FFFF;
+  max_distance = (int)dis.readUnsignedShort()&0x00FFFF;
+  sensor_type = (int)dis.readUnsignedByte()&0x00FF;
   increment = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+22];
+  byte[] buffer = new byte[12+158];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -71,23 +81,25 @@ public byte[] encode() throws IOException {
   dos.writeByte((messageType >> 8) & 0x00FF);
   dos.writeByte((messageType >> 16) & 0x00FF);
   dos.writeLong(time_usec);
-  dos.writeByte(estimator_type&0x00FF);
-  for (int i=0; i<12; i++) {
-    dos.writeByte(distances[i]&0x00FF);
+  for (int i=0; i<72; i++) {
+    dos.writeShort(distances[i]&0x00FFFF);
   }
+  dos.writeShort(min_distance&0x00FFFF);
+  dos.writeShort(max_distance&0x00FFFF);
+  dos.writeByte(sensor_type&0x00FF);
   dos.writeByte(increment&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 22);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 158);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[32] = crcl;
-  buffer[33] = crch;
+  buffer[168] = crcl;
+  buffer[169] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_OBSTACLE_DISTANCE : " +   "  time_usec="+time_usec+  "  estimator_type="+estimator_type+  "  distances="+distances+  "  increment="+increment;}
+return "MAVLINK_MSG_ID_OBSTACLE_DISTANCE : " +   "  time_usec="+time_usec+  "  distances="+distances+  "  min_distance="+min_distance+  "  max_distance="+max_distance+  "  sensor_type="+sensor_type+  "  increment="+increment;}
 }
