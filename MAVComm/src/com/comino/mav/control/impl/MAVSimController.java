@@ -145,6 +145,12 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.base.altitude = 520;
 			model.base.numsat = 9;
 
+			model.home_state.g_lat = 42.406314f;
+			model.home_state.g_lon = 8.730709;
+
+			model.state.g_lat = 42.406314f;
+			model.state.g_lon = 8.730709;
+
 			count++;
 			if(model.state.l_z > -5.0f)
 				model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
