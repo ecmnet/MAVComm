@@ -73,7 +73,7 @@ public class LogMessage extends Segment {
 	public boolean isEqual(LogMessage m) {
 		if(m.msg==null)
 			return false;
-		return m.msg.contains(this.msg);
+		return m.msg.contains(this.msg) || (m.tms - this.tms) > 500 ;
 	}
 
 	public void clear() {
