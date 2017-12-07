@@ -70,6 +70,12 @@ public class LogMessage extends Segment {
 		this.tms = m.tms;
 	}
 
+	public boolean isEqual(LogMessage m) {
+		if(m.msg==null)
+			return false;
+		return m.msg.contains(this.msg);
+	}
+
 	public void clear() {
 		this.msg = null;
 		this.severity = 0;
