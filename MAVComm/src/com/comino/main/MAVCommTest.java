@@ -43,7 +43,7 @@ import com.comino.mav.control.impl.MAVUdpController;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 
-public class MAVCommTest implements Runnable, IMAVLinkListener {
+public class MAVCommTest implements IMAVLinkListener {
 
 	private IMAVController control = null;
 	MSPConfig	           config  = null;
@@ -77,7 +77,7 @@ public class MAVCommTest implements Runnable, IMAVLinkListener {
 
 		MSPLogger.getInstance(control);
 
-		new Thread(this).start();
+	//	new Thread(this).start();
 
 	}
 
@@ -86,23 +86,6 @@ public class MAVCommTest implements Runnable, IMAVLinkListener {
 
 	}
 
-	@Override
-	public void run() {
-		while(true) {
-			try {
-				Thread.sleep(1000);
-                msg_heartbeat beat = new msg_heartbeat(255,1);
-                beat.type = MAV_TYPE.MAV_TYPE_GCS;
-                control.sendMAVLinkMessage(beat);
-
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-
-
-		}
-
-	}
 
 	@Override
 	public void received(Object o) {

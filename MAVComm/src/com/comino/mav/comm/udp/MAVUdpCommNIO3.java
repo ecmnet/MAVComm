@@ -102,6 +102,9 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	public boolean open() {
 
+		if(isConnected)
+			return true;
+
 		if(channel!=null && channel.isOpen() && parser.isConnected()) {
 			isConnected = true;
 			return true;
@@ -111,7 +114,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 		try {
 			channel = DatagramChannel.open();
-			channel.bind(bindPort);
+		    channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
 			channel.socket().setBroadcast(true);
 			channel.socket().setReceiveBufferSize(512*1024);
@@ -131,7 +134,13 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 
 		} catch(Exception e) {
-			close();
+			System.err.println(e.getMessage());
+			try {
+				channel.close();
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
 			isConnected = false;
 			return false;
@@ -188,6 +197,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 				errors++;
 				rxBuffer.clear();
 				model.sys.setStatus(Status.MSP_CONNECTED,false);
+				try { channel.close(); } catch (IOException e1) { 	}
 				isConnected = false;
 			}
 		}
@@ -243,10 +253,9 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			if(selector!=null )
 				selector.close();
 			if (channel != null ) {
-				channel.socket().close();
+				channel.close();
 			}
-			LockSupport.parkNanos(10000000);
-		} catch(Exception e) { }
+		} catch(Exception e) {  e.printStackTrace(); }
 	}
 
 

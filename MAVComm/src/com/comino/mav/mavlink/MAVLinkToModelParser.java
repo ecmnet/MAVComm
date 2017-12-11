@@ -387,8 +387,8 @@ public class MAVLinkToModelParser {
 				model.gps.setFlag(GPS.GPS_SAT_RTKFIX, gps.fix_type > 4);
 				model.gps.setFlag(GPS.GPS_SAT_VALID, true);
 
-				model.gps.eph = gps.h_acc < 100000 && gps.h_acc > 0 ? gps.h_acc/1000f : Float.NaN;
-				model.gps.epv = gps.v_acc < 100000 && gps.v_acc > 0 ? gps.v_acc/1000f : Float.NaN;
+				model.gps.eph = gps.h_acc < 90000 && gps.h_acc > 0 ? gps.h_acc/1000f : Float.NaN;
+				model.gps.epv = gps.v_acc < 90000 && gps.v_acc > 0 ? gps.v_acc/1000f : Float.NaN;
 				model.gps.hdop = gps.eph / 100f;
 
 				model.gps.latitude =  gps.lat / 1e7;

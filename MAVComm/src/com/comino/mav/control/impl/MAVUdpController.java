@@ -59,9 +59,12 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 
 	@Override
 	public boolean connect() {
+		if(this.connect)
+			return true;
 		this.connect = true;
 		Thread t = new Thread(this);
 		t.setName("UDP Controller");
+		t.setDaemon(true);
 		t.start();
 		return connect;
 	}
@@ -87,7 +90,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 				model.sys.setStatus(Status.MSP_SITL, isSITL);
 				Thread.sleep(1000);
 				if(!comm.isConnected()) {
-					comm.close(); Thread.sleep(100); comm.open();
+					Thread.sleep(500); comm.open();
 				}
 				msg_heartbeat beat = new msg_heartbeat(255,1);
 				beat.type = MAV_TYPE.MAV_TYPE_GCS;
