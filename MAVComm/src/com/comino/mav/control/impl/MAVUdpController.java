@@ -89,6 +89,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 	@Override
 	public void run() {
 
+		// If not checked here, the thread is started twice (not by connect) ??
 		if(connect)
 			return;
 
