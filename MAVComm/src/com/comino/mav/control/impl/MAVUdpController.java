@@ -44,7 +44,6 @@ import com.comino.msp.model.segment.Status;
 
 public class MAVUdpController extends MAVController implements IMAVController, Runnable {
 
-
 	private boolean connect;
 
 	public MAVUdpController(String peerAddress, int peerPort, int bindPort, boolean isSITL) {
@@ -59,13 +58,17 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 
 	@Override
 	public boolean connect() {
+
+		System.out.print("Try to start..");
 		if(this.connect)
 			return true;
-		this.connect = true;
+
+
 		Thread t = new Thread(this);
 		t.setName("UDP Controller");
 		t.setDaemon(true);
 		t.start();
+
 		return connect;
 	}
 
@@ -85,16 +88,23 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 
 	@Override
 	public void run() {
+
+		if(connect)
+			return;
+
+		this.connect = true;
+		System.out.println("UDP connection Thread started");
 		while(connect) {
 			try {
 				model.sys.setStatus(Status.MSP_SITL, isSITL);
-				Thread.sleep(1000);
+				System.out.println(comm.isConnected());
 				if(!comm.isConnected()) {
-					Thread.sleep(500); comm.open();
+					comm.open();
 				}
 				msg_heartbeat beat = new msg_heartbeat(255,1);
 				beat.type = MAV_TYPE.MAV_TYPE_GCS;
 				comm.write(beat);
+				Thread.sleep(1000);
 			} catch (Exception e) {  }
 		}
 		collector.stop();
