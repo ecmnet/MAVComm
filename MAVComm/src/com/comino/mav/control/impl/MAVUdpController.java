@@ -97,7 +97,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		while(connect) {
 			try {
 				model.sys.setStatus(Status.MSP_SITL, isSITL);
-				System.out.println(comm.isConnected());
+				//System.out.println(comm.isConnected());
 				if(!comm.isConnected()) {
 					comm.open();
 				}
