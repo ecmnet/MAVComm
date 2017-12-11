@@ -69,7 +69,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		t.setDaemon(true);
 		t.start();
 
-		return connect;
+		return true;
 	}
 
 	@Override

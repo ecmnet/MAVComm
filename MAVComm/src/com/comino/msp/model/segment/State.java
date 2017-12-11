@@ -43,7 +43,7 @@ public class State extends Segment {
 
 	public static final int 	STATE_Z_AVAILABLE  = 0;
 	public static final int 	STATE_H_AVAILABLE  = 1;
-	public static final int		STATE_XY_AVAILABLE = 2;
+	public static final int	STATE_XY_AVAILABLE = 2;
 
 	// flags
 
