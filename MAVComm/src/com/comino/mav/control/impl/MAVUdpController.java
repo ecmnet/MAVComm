@@ -63,7 +63,6 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		if(this.connect)
 			return true;
 
-
 		Thread t = new Thread(this);
 		t.setName("UDP Controller");
 		t.setDaemon(true);
