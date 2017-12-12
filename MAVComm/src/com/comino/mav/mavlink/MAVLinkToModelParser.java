@@ -477,6 +477,8 @@ public class MAVLinkToModelParser {
 
 				model.state.tms = model.sys.getSynchronizedPX4Time_us();
 
+				model.sys.setStatus(Status.MSP_LPOS_VALID, true);
+
 			}
 		});
 
@@ -523,8 +525,6 @@ public class MAVLinkToModelParser {
 
 				model.target_state.tms = model.sys.getSynchronizedPX4Time_us();
 
-				model.sys.setStatus(Status.MSP_LPOS_AVAILABILITY, true);
-
 			}
 		});
 
@@ -543,7 +543,7 @@ public class MAVLinkToModelParser {
 				model.state.g_vz = pos.vz / 100f;
 
 				gpos_tms = model.sys.getSynchronizedPX4Time_us();
-				model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, true);
+				model.sys.setStatus(Status.MSP_GPOS_VALID, true);
 
 			}
 		});
@@ -843,7 +843,7 @@ public class MAVLinkToModelParser {
 		}
 
 		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS))
-			model.sys.setStatus(Status.MSP_GPOS_AVAILABILITY, false);
+			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
 
 		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);

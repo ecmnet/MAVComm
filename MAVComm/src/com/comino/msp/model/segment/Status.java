@@ -65,8 +65,8 @@ public class Status extends Segment {
 
 	public static final int MSP_MODE_RTL					    = 19;
 
-	public static final int MSP_GPOS_AVAILABILITY            = 20;
-	public static final int MSP_LPOS_AVAILABILITY            = 21;
+	public static final int MSP_GPOS_VALID		            = 20;
+	public static final int MSP_LPOS_VALID         		    = 21;
 
 	public static final int MSP_LANDED						= 24;
 	public static final int MSP_INAIR						= 25;
