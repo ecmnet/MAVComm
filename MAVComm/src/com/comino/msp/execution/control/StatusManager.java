@@ -78,7 +78,7 @@ public class StatusManager implements Runnable {
 
 		while(true) {
 
-			try { Thread.sleep(20); } catch(Exception e) { }
+			try { Thread.sleep(50); } catch(Exception e) { }
 
 			status_current.set(model.sys);
 
