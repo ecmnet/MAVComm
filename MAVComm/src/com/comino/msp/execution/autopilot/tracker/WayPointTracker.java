@@ -35,10 +35,13 @@ package com.comino.msp.execution.autopilot.tracker;
 
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.point.Vector4D_F32;
@@ -57,6 +60,9 @@ public class WayPointTracker implements Runnable {
 	private static final int RATE_MS         = 200;
 
 	private boolean          enabled 		= false;
+
+	private long tms = 0;
+	private ScheduledFuture<?> future = null;
 
 	public WayPointTracker(IMAVController control) {
 		this.list    = new TreeMap<Long,Vector4D_F32>();
@@ -115,12 +121,14 @@ public class WayPointTracker implements Runnable {
 
 	public void start() {
 		if(!enabled) {
+			list.clear(); freezed.clear();
 			enabled = true;
-			new Thread(this).start();
+			future = ExecutorService.get().scheduleAtFixedRate(this, 50, RATE_MS, TimeUnit.MILLISECONDS);
 		}
 	}
 
 	public void stop() {
+		future.cancel(false);
 		enabled = false;
 	}
 
@@ -135,26 +143,18 @@ public class WayPointTracker implements Runnable {
 	@Override
 	public void run() {
 
-		list.clear(); freezed.clear(); long tms = 0; long sleep_tms = 0; float distance = Float.MAX_VALUE;
+		float distance = Float.MAX_VALUE;
 
-		while(enabled) {
-			tms = model.sys.getSynchronizedPX4Time_us()/1000;
-			Vector4D_F32 waypoint = new Vector4D_F32(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.y);
+		tms = model.sys.getSynchronizedPX4Time_us()/1000;
+		Vector4D_F32 waypoint = new Vector4D_F32(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.y);
 
-			if(!list.isEmpty())
-				distance = MSP3DUtils.distance3D(waypoint, list.lastEntry().getValue());
+		if(!list.isEmpty())
+			distance = MSP3DUtils.distance3D(waypoint, list.lastEntry().getValue());
 
-			if((distance > 0.1f || list.isEmpty()) && freezed.isEmpty() && model.hud.ar > 0.4f) {
-				if(list.size()>=MAX_WAYPOINTS)
-					list.pollFirstEntry();
-				list.put(tms, waypoint);
-			}
-
-			sleep_tms = RATE_MS - (model.sys.getSynchronizedPX4Time_us()/1000 - tms );
-			tms = model.sys.getSynchronizedPX4Time_us();
-
-			if(sleep_tms> 0 && enabled)
-				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
+		if((distance > 0.1f || list.isEmpty()) && freezed.isEmpty() && model.hud.ar > 0.4f) {
+			if(list.size()>=MAX_WAYPOINTS)
+				list.pollFirstEntry();
+			list.put(tms, waypoint);
 		}
 	}
 
