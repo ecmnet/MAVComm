@@ -99,26 +99,25 @@ public class Status extends Segment {
 
 	};
 
-	public  int     autopilot    = 0;
-	public  int     px4_status   = 0;
+	public  int     autopilot    	= 0;
+	public  int     px4_status   	= 0;
 
-	private int     sensors      = 0;
-	private int     status       = 0;
+	private int     sensors      	= 0;
+	private int     status       	= 0;
 
-	public int      error1       = 0;
-	public float    load_p       = Float.NaN;
-	public float   drops_p       = Float.NaN;
-	public byte    imu_temp	     = 0;
+	public int      error1      		= 0;
+	public float    load_p       	= Float.NaN;
+	public float   drops_p       	= Float.NaN;
+	public byte    imu_temp	     	= 0;
+	public byte      msp_temp    	= 0;
 
-	public float	    load_m	     = Float.NaN;	  	//MSP
-	public float    t_armed_ms    = Float.NaN;
-	public float    t_boot_ms     = Float.NaN;
-	public float    wifi_quality = Float.NaN;
+	public float	    load_m	     	= Float.NaN;	  	//MSP
+	public float    t_armed_ms    	= Float.NaN;
+	public float    t_boot_ms     	= Float.NaN;
+	public float    wifi_quality 	= Float.NaN;
 
-	public byte      msp_temp    = 0;
-
-	public long     t_offset_ns = 0;
-	public String   version    = "";
+	public long     t_offset_ns =	 0;
+	public String   version    		= "";
 
 
 	public void set(Status s) {

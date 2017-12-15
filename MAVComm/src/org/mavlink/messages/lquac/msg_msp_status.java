@@ -24,7 +24,7 @@ public class msg_msp_status extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 58;
+    payload_length = 59;
 }
 
   /**
@@ -55,6 +55,10 @@ public class msg_msp_status extends MAVLinkMessage {
    * Memory usage of the companion
    */
   public int memory;
+  /**
+   * Threads
+   */
+  public int threads;
   /**
    * Quality of Wifi connection in %
    */
@@ -114,6 +118,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   autopilot_mode = (int)dis.readInt()&0x00FFFFFFFF;
   load = (int)dis.readUnsignedByte()&0x00FF;
   memory = (int)dis.readUnsignedByte()&0x00FF;
+  threads = (int)dis.readUnsignedByte()&0x00FF;
   wifi_quality = (int)dis.readUnsignedByte()&0x00FF;
   cpu_temp = (int)dis.readUnsignedByte()&0x00FF;
   for (int i=0; i<16; i++) {
@@ -127,7 +132,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+58];
+  byte[] buffer = new byte[12+59];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -146,6 +151,7 @@ public byte[] encode() throws IOException {
   dos.writeInt((int)(autopilot_mode&0x00FFFFFFFF));
   dos.writeByte(load&0x00FF);
   dos.writeByte(memory&0x00FF);
+  dos.writeByte(threads&0x00FF);
   dos.writeByte(wifi_quality&0x00FF);
   dos.writeByte(cpu_temp&0x00FF);
   for (int i=0; i<16; i++) {
@@ -157,15 +163,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 58);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 59);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[68] = crcl;
-  buffer[69] = crch;
+  buffer[69] = crcl;
+  buffer[70] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms+  "  unix_time_us="+unix_time_us+  "  com_error="+com_error+  "  status="+status+  "  autopilot_mode="+autopilot_mode+  "  load="+load+  "  memory="+memory+  "  wifi_quality="+wifi_quality+  "  cpu_temp="+cpu_temp+  "  version="+getVersion()+  "  arch="+getArch();}
+return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms+  "  unix_time_us="+unix_time_us+  "  com_error="+com_error+  "  status="+status+  "  autopilot_mode="+autopilot_mode+  "  load="+load+  "  memory="+memory+  "  threads="+threads+  "  wifi_quality="+wifi_quality+  "  cpu_temp="+cpu_temp+  "  version="+getVersion()+  "  arch="+getArch();}
 }

@@ -115,6 +115,7 @@
                <description>MSP Status message.</description>
                <field type="uint8_t"       name="load">CPU load of the companion</field>
                <field type="uint8_t"       name="memory">Memory usage of the companion</field>
+               <field type="uint8_t"       name="threads">Threads</field>
                <field type="uint8_t"       name="wifi_quality">Quality of Wifi connection in %</field>
                <field type="uint8_t"       name="cpu_temp">CPU Temperature</field>
                <field type="uint64_t"      name="uptime_ms">Boot time ms</field>

@@ -97,6 +97,10 @@ public class Autopilot2D implements Runnable {
 	private boolean				mapForget   		= false;
 	private float             	nearestTarget 	= 0;
 
+	private Vector3D_F32 current = new Vector3D_F32();
+	private boolean		 tooClose = false;
+	private float		 min_distance;
+
 
 	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
 		if(autopilot == null)
@@ -156,17 +160,12 @@ public class Autopilot2D implements Runnable {
 			offboard.stop();
 		});
 
-		new Thread(this).start();
+		ExecutorService.get().scheduleAtFixedRate(this, 500, CYCLE_MS, TimeUnit.MILLISECONDS);
 
 	}
 
 	@Override
 	public void run() {
-
-		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false; float min_distance;
-
-		while(true) {
-			try { Thread.sleep(CYCLE_MS); } catch(Exception s) { }
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
 			map.toDataModel(model, false);
@@ -197,7 +196,6 @@ public class Autopilot2D implements Runnable {
 			}
 			if(mapForget)
 			  map.forget();
-		}
 	}
 
 	public void reset() {
