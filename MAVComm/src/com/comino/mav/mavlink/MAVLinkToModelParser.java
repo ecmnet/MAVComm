@@ -57,6 +57,7 @@ import org.mavlink.messages.lquac.msg_debug_vect;
 import org.mavlink.messages.lquac.msg_distance_sensor;
 import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_extended_sys_state;
+import org.mavlink.messages.lquac.msg_flight_information;
 import org.mavlink.messages.lquac.msg_global_position_int;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
 import org.mavlink.messages.lquac.msg_heartbeat;
@@ -751,6 +752,14 @@ public class MAVLinkToModelParser {
 				model.debug.y = vec.y;
 				model.debug.z = vec.z;
 
+			}
+		});
+
+		registerListener(msg_flight_information.class, new IMAVLinkListener() {
+			@Override
+			public void received(Object o) {
+				msg_flight_information info = (msg_flight_information) o;
+				//TODO: implement
 			}
 		});
 
