@@ -35,20 +35,20 @@
 package com.comino.msp.utils;
 
 import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class ExecutorService {
 
 
-	private static final int MAXTHREADS = 50;
+	private static final int MAXTHREADS = 20;
 
 	private static ScheduledThreadPoolExecutor schedThPoolExec =
 			new ScheduledThreadPoolExecutor(MAXTHREADS);
 
 	{
 
+		schedThPoolExec.allowCoreThreadTimeOut(false);
 		schedThPoolExec.prestartAllCoreThreads();
-		schedThPoolExec.setKeepAliveTime(2, TimeUnit.SECONDS);
+//		schedThPoolExec.setKeepAliveTime(2, TimeUnit.SECONDS);
 
 	}
 

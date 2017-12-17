@@ -2,12 +2,10 @@ package com.comino.msp.execution.control;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.utils.ExecutorService;
 
 public class StatusManager implements Runnable {
 
@@ -37,9 +35,10 @@ public class StatusManager implements Runnable {
 		this.status_current = new Status();
 		this.status_old     = new Status();
 		this.list  = new ArrayList<StatusListenerEntry>();
-		ExecutorService.get().scheduleAtFixedRate(this, 100, 20, TimeUnit.MILLISECONDS);
+		Thread t = new Thread(this);
+		t.setPriority(Thread.NORM_PRIORITY);
+		t.start();
 		System.out.println("StatusManager started");
-
 	}
 
 
@@ -76,13 +75,17 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
+		while(true) {
+
+			try { Thread.sleep(50); } catch(Exception e) { }
+
 			status_current.set(model.sys);
 
 			if (status_current.isStatus(Status.MSP_ARMED))
 				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
 			if(status_old.isEqual(status_current))
-				return;
+				continue;
 
 			if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
@@ -132,6 +135,7 @@ public class StatusManager implements Runnable {
 				e.printStackTrace();
 			}
 			status_old.set(status_current);
+		}
 
 	}
 

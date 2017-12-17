@@ -102,7 +102,9 @@ public class OffboardManager implements Runnable {
 		mode = m;
 		if(!enabled) {
 			enabled = true;
-			new Thread(this).start();
+			Thread worker = new Thread(this);
+			worker.setPriority(Thread.MIN_PRIORITY);
+			worker.start();
 		}
 	}
 
