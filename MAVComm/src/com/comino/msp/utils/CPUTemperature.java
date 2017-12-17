@@ -10,7 +10,7 @@ public class CPUTemperature {
 	private int  temperature = 0;
 
 	public void getTemperature() {
-		if(System.currentTimeMillis()-tms < 2000)
+		if(System.currentTimeMillis()-tms < 10000)
 			return;
 		try {
 			String line = null;
