@@ -36,6 +36,7 @@ package com.comino.main;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_TYPE;
+import org.mavlink.messages.lquac.msg_autopilot_version;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.control.IMAVController;
@@ -43,7 +44,7 @@ import com.comino.mav.control.impl.MAVUdpController;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 
-public class MAVCommTest implements IMAVLinkListener {
+public class MAVCommTest implements IMAVLinkListener, Runnable {
 
 	private IMAVController control = null;
 	MSPConfig	           config  = null;
@@ -59,7 +60,7 @@ public class MAVCommTest implements IMAVLinkListener {
 
 //		if(args.length>0)
 			control = new MAVUdpController("172.168.178.1",14555,14550, false);
-	//	control = new MAVUdpController("127.0.0.1",14556,14550, true);
+//		control = new MAVUdpController("127.0.0.1",14556,14550, true);
 //		else
 //		  System.exit(-1);
 
@@ -77,7 +78,7 @@ public class MAVCommTest implements IMAVLinkListener {
 
 		MSPLogger.getInstance(control);
 
-	//	new Thread(this).start();
+		new Thread(this).start();
 
 	}
 
@@ -86,11 +87,22 @@ public class MAVCommTest implements IMAVLinkListener {
 
 	}
 
+	public void run() {
+      while(true) {
+    	  try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+
+			}
+
+      }
+	}
+
 
 	@Override
 	public void received(Object o) {
 		MAVLinkMessage m = (MAVLinkMessage)o;
-    if(m.messageType==253)
+		if(o instanceof msg_autopilot_version)
 	    System.out.println(m.messageType+"-"+m.componentId+" "+control.getErrorCount()+":"+o);
 
 	}
