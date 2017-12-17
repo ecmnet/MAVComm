@@ -383,7 +383,6 @@ public class MAVLinkReader {
 		byte crcl = (byte) (crc & 0x00FF);
 		byte crch = (byte) ((crc >> 8) & 0x00FF);
 
-		//TODO: Handle extensions properly
 		if ((crcl == crcLow) && (crch == crcHigh) || msgId==36 ) {
 			msg = MAVLinkMessageFactory.getMessage(msgId, sysId, componentId, rawData);
 			if (msg != null) {
