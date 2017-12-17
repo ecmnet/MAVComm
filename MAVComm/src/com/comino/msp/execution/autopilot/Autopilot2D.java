@@ -158,6 +158,7 @@ public class Autopilot2D implements Runnable {
 
 		Thread worker = new Thread(this);
 		worker.setPriority(Thread.MIN_PRIORITY);
+		worker.setName("AutoPilot");
 		worker.start();
 
 	}

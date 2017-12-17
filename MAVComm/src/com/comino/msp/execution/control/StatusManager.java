@@ -35,9 +35,10 @@ public class StatusManager implements Runnable {
 		this.status_current = new Status();
 		this.status_old     = new Status();
 		this.list  = new ArrayList<StatusListenerEntry>();
-		Thread t = new Thread(this);
-		t.setPriority(Thread.NORM_PRIORITY);
-		t.start();
+		Thread worker = new Thread(this);
+		worker.setName("StatusManager");
+		worker.setPriority(Thread.NORM_PRIORITY);
+		worker.start();
 		System.out.println("StatusManager started");
 	}
 

@@ -104,6 +104,7 @@ public class OffboardManager implements Runnable {
 			enabled = true;
 			Thread worker = new Thread(this);
 			worker.setPriority(Thread.MIN_PRIORITY);
+			worker.setName("OffboardManager");
 			worker.start();
 		}
 	}
