@@ -210,7 +210,9 @@ public class OffboardManager implements Runnable {
 
 			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS  && !step_mode) {
 				valid_setpoint = false; mode = MODE_POSITION;
-				logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+
+				if(model.sys.isStatus(Status.MSP_MODE_OFFBOARD))
+					logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			}
 
 			if(new_setpoint) {
