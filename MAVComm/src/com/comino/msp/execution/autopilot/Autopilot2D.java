@@ -259,7 +259,7 @@ public class Autopilot2D implements Runnable {
 		if(enable) {
 			offboard.setCurrentAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
-			if(!model.sys.isStatus(Status.MSP_LANDED)) {
+			if(!model.sys.isStatus(Status.MSP_LANDED) && !model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
