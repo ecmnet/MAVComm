@@ -8,6 +8,8 @@ This Java based tool enables companions to be connected to PixHawk and serves as
 
 It also provides a MAVLink parser and a flat data model to https://github.com/ecmnet/MAVGCL and to the visual odometry https://github.com/ecmnet/MAVSlam.
 
+Additionally, it offers an experimental LVH+ based autopilot (integrates with MAVSLAM), which provides local path planning as 2D proof of concept.
+
 **Supported companion platforms:**
 
 MAVComm supports any platform which is capable to run Java8 and can be connected to PixHawk or PixRacer via a high speed serial link. 
