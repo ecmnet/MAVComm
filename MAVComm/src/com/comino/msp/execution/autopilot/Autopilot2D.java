@@ -196,7 +196,8 @@ public class Autopilot2D implements Runnable {
 
 			if(nearestTarget > (min_distance + MIN_DISTANCE_HYSTERESIS) && isAvoiding) {
 				offboard.removeExternalControlListener();
-				isAvoiding = false;
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
+				   isAvoiding = false;
 			}
 			if(mapForget)
 			  map.forget();
@@ -316,7 +317,6 @@ public class Autopilot2D implements Runnable {
 
 	public void jumpback(float distance) {
 
-		isAvoiding = false;
 		if(!tracker.freeze())
 			return;
 
@@ -337,6 +337,7 @@ public class Autopilot2D implements Runnable {
 				offboard.setTarget(e.getValue());
 			else {
 				abort();
+			    isAvoiding = false;
 				tracker.unfreeze();
 			}
 		});
