@@ -89,7 +89,7 @@ public class MAVCommTest implements IMAVLinkListener, Runnable {
 
 	public void run() {
       while(true) {
-    	  control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+ //   	  control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
     	  try {
 				Thread.sleep(200);
 			} catch (InterruptedException e) {

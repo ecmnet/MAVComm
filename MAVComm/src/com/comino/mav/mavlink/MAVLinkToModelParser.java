@@ -713,7 +713,7 @@ public class MAVLinkToModelParser {
 				msg_autopilot_version version = (msg_autopilot_version) o;
 				model.sys.version = String.format("%d.%d.%d", (version.flight_sw_version >> (8 * 3)) & 0xFF,
 						(version.flight_sw_version >> (8 * 2)) & 0xFF, (version.flight_sw_version >> (8 * 1)) & 0xFF);
-				System.out.println("Version: " + model.sys.version);
+			//	System.out.println("Version: " + model.sys.version);
 			}
 		});
 
