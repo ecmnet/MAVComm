@@ -327,7 +327,7 @@ public class MAVLinkToModelParser {
 				model.attitude.r = att.roll;
 				model.attitude.p = att.pitch;
 				model.attitude.y = att.yaw;
-				model.state.h = model.hud.h;
+				model.state.h    = model.hud.h;
 
 				model.attitude.rr = att.rollspeed;
 				model.attitude.pr = att.pitchspeed;

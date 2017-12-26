@@ -75,13 +75,12 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	private MAVLinkReader2 reader;
 
-	private int errors = 0;
 
 	private Selector selector;
 
 	private static MAVUdpCommNIO3 com = null;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(48*1024);
+	private ByteBuffer rxBuffer = ByteBuffer.allocate(16*1024);
 
 	public static MAVUdpCommNIO3 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
@@ -110,8 +109,6 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			return true;
 		}
 
-		errors = 0;
-
 		try {
 			channel = DatagramChannel.open();
 		    channel.bind(bindPort);
@@ -138,7 +135,6 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			try {
 				channel.close();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
@@ -194,7 +190,6 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 					}
 				}
 			} catch(Exception e) {
-				errors++;
 				rxBuffer.clear();
 				model.sys.setStatus(Status.MSP_CONNECTED,false);
 				try { channel.close(); } catch (IOException e1) { 	}

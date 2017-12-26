@@ -223,7 +223,7 @@ public class MAVLinkReader2 {
 					// CRC workaraounds
 					if(rxmsg.msgId == 36 || rxmsg.msgId == 140 || rxmsg.msgId == 74 || rxmsg.msgId == 83 || rxmsg.msgId == 30
 						|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 || rxmsg.msgId == 24
-						|| rxmsg.msgId == 242)
+						|| rxmsg.msgId == 242|| rxmsg.msgId ==77 || rxmsg.msgId ==148)
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
 					else {
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
@@ -255,7 +255,7 @@ public class MAVLinkReader2 {
 						//System.out.println(rxmsg);
 					}
 				} else {
-					//System.out.println(rxmsg);
+					System.out.println(rxmsg);
 					packet_lost++;
 				}
 				break;
@@ -272,7 +272,7 @@ public class MAVLinkReader2 {
 						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 							msg.packet = rxmsg.packet;
 							packets.addElement(msg);
-							//System.out.println("added: "+rxmsg.packet+":"+msg);
+//							System.out.println("added: "+rxmsg.packet+":"+msg);
 						} else {
 							packet_lost++;
 						}
