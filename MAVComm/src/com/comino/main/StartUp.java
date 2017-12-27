@@ -101,15 +101,6 @@ public class StartUp implements Runnable {
 					control.writeLogMessage(new LogMessage("[sitl] map transfer request",
 							MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 					break;
-				case MSP_CMD.MSP_CMD_MICROSLAM:
-					switch((int)cmd.param1) {
-					case MSP_COMPONENT_CTRL.RESET:
-						Autopilot2D.getInstance().reset(true);
-						control.writeLogMessage(new LogMessage("[sitl] reset local map",
-								MAV_SEVERITY.MAV_SEVERITY_NOTICE));
-						break;
-					}
-					break;
 				}
 			}
 		});

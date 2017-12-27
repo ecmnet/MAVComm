@@ -205,8 +205,8 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void reset() {
-		logger.writeLocalMsg("[vis] reset local map",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
-		map.reset(); lvfh.reset();
+		logger.writeLocalMsg("[msp] reset local map",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
+		reset(true);
 	}
 
 	public void saveMap2D() {
@@ -232,7 +232,7 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void reset(boolean grid) {
-		clearAutopilotActions();
+		clearAutopilotActions(); lvfh.reset();
 		if(grid)
 			map.reset();
 	}
