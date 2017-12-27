@@ -105,14 +105,10 @@ public class StartUp implements Runnable {
 			}
 		});
 		Autopilot2D.getInstance().reset(true);
-
 	}
-
-
 
 	public static void main(String[] args) {
 		new StartUp(args);
-
 	}
 
     boolean isAvoiding = true;
