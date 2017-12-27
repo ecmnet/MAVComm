@@ -97,6 +97,7 @@ public class MAVLinkToModelParser {
 	private static final long TIMEOUT_CONNECTED   = 10000000;
 	private static final long TIMEOUT_RC_ATTACHED = 5000000;
 	private static final long TIMEOUT_GPOS        = 10000000;
+	private static final long TIMEOUT_GPS         = 2000000;
 
 	private static int TIME_SYNC_CYCLE_MS = 1000;
 	private static double OFFSET_AVG_ALPHA = 0.6d;
@@ -857,6 +858,10 @@ public class MAVLinkToModelParser {
 
 		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
+		}
+
+		if (checkTimeOut(model.gps.tms, TIMEOUT_GPS)) {
+			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, false);
 		}
 
 		if(!model.sys.isStatus(Status.MSP_SITL)) {
