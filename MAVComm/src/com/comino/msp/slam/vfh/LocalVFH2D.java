@@ -141,6 +141,10 @@ public class LocalVFH2D {
 		return hist;
 	}
 
+	public void reset() {
+		Arrays.fill(hist, 0);
+	}
+
 	public void init(float current_speed) {
 		selected_speed = Math.min(current_speed * 1000.0f, max_speed_for_selected_angle );
 		last_selected_speed = selected_speed;
