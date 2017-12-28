@@ -306,8 +306,10 @@ public class MAVLinkToModelParser {
 
 			@Override
 			public void received(Object o) {
+
 				if(model.sys.isStatus(Status.MSP_PROXY))
 					return;
+
 				if(logger==null)
 					logger = MSPLogger.getInstance();
 				msg_command_ack ack = (msg_command_ack) o;
