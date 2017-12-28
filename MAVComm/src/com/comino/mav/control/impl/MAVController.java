@@ -289,7 +289,8 @@ public class MAVController implements IMAVController, Runnable {
 	public void writeLogMessage(LogMessage m) {
 		if(comm!=null)
 			comm.writeMessage(m);
-		model.msg.set(m);
+		else
+	     model.msg.set(m);
 	}
 
 

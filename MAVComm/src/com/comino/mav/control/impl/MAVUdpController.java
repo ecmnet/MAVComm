@@ -54,6 +54,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		this.bindPort = bindPort;
 		System.out.println("UDP Controller loaded ("+peerAddress+":"+peerPort+")");
 		comm = MAVUdpCommNIO3.getInstance(model, peerAddress,peerPort, bindPort);
+		model.sys.setStatus(Status.MSP_PROXY, false);
 	}
 
 	@Override

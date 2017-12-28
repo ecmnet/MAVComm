@@ -44,6 +44,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_LANDED_STATE;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_MODE_FLAG_DECODE_POSITION;
+import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MAV_STATE;
 import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_altitude;
@@ -85,6 +86,7 @@ import org.mavlink.messages.lquac.msg_vision_position_estimate;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
+import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.LogMessage;
@@ -103,6 +105,7 @@ public class MAVLinkToModelParser {
 	private static double OFFSET_AVG_ALPHA = 0.6d;
 
 	private DataModel model;
+	private MSPLogger logger = null;
 
 	private HashMap<Class<?>, MAVLinkMessage> mavList = null;
 
@@ -303,17 +306,20 @@ public class MAVLinkToModelParser {
 
 			@Override
 			public void received(Object o) {
+				if(model.sys.isStatus(Status.MSP_PROXY))
+					return;
+				if(logger==null)
+					logger = MSPLogger.getInstance();
 				msg_command_ack ack = (msg_command_ack) o;
 				switch (ack.result) {
 				case 1:
-					System.err.println("Command " + ack.command + " failed");
+					logger.writeLocalMsg("Command " + ack.command + " failed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 					break;
 				case 2:
-					System.err.println("Command " + ack.command + " is denied");
+					logger.writeLocalMsg("Command " + ack.command + " denied",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 					break;
 				case 3:
-					System.err.println("Command " + ack.command + " is unsupported");
-					break;
+					logger.writeLocalMsg("Command " + ack.command + " is unsupported",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 				default:
 				}
 			}

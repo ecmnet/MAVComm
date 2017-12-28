@@ -85,6 +85,7 @@ public class MAVProxyController implements IMAVMSPController {
 		status_manager = new StatusManager(model);
 
 		model.sys.setStatus(Status.MSP_SITL, sitl);
+		model.sys.setStatus(Status.MSP_PROXY, true);
 
 		if(sitl) {
 			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14556, 14550);
