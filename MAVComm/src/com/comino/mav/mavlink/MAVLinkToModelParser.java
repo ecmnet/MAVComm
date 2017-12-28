@@ -99,7 +99,7 @@ public class MAVLinkToModelParser {
 	private static final long TIMEOUT_CONNECTED   = 10000000;
 	private static final long TIMEOUT_RC_ATTACHED = 5000000;
 	private static final long TIMEOUT_GPOS        = 10000000;
-	private static final long TIMEOUT_GPS         = 2000000;
+	private static final long TIMEOUT_GPS         = 1000000;
 
 	private static int TIME_SYNC_CYCLE_MS = 1000;
 	private static double OFFSET_AVG_ALPHA = 0.6d;
@@ -409,7 +409,7 @@ public class MAVLinkToModelParser {
 					model.gps.fixtype = (byte) gps.fix_type;
 					model.gps.tms = model.sys.getSynchronizedPX4Time_us();
 
-					model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, model.gps.numsat > 3);
+					model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, true);
 					model.sys.setSensor(Status.MSP_RTK_AVAILABILITY, gps.fix_type > 3);
 				}
 			}
