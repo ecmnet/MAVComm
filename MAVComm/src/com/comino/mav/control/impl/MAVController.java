@@ -49,6 +49,7 @@ import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
@@ -160,7 +161,6 @@ public class MAVController implements IMAVController, Runnable {
 	@Override
 	public boolean sendMAVLinkCmd(int command, float...params) {
 
-
 		msg_command_long cmd = new msg_command_long(255,1);
 		cmd.target_system = 1;
 		cmd.target_component = 1;
@@ -181,6 +181,12 @@ public class MAVController implements IMAVController, Runnable {
 		}
 
 		return sendMAVLinkMessage(cmd);
+	}
+
+	@Override
+	public boolean sendMAVLinkCmd(int command, IMAVCmdAcknowledge ack, float...params) {
+		 comm.setCmdAcknowledgeListener(ack);
+		return sendMAVLinkCmd(command, params);
 	}
 
 	public boolean sendMSPLinkCmd(int command, float...params) {

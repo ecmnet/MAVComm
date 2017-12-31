@@ -39,6 +39,7 @@ import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
 
+import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.model.DataModel;
@@ -59,6 +60,8 @@ public interface IMAVComm {
 	public void addMAVLinkListener(IMAVLinkListener listener);
 
 	public void addMAVMessageListener(IMAVMessageListener listener);
+
+	public void setCmdAcknowledgeListener(IMAVCmdAcknowledge ack);
 
 	public boolean isConnected();
 

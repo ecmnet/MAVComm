@@ -46,6 +46,7 @@ import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.proxy.MAVUdpProxyNIO3;
 import com.comino.mav.comm.serial.MAVSerialComm;
 import com.comino.mav.comm.udp.MAVUdpCommNIO3;
+import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.execution.control.StatusManager;
@@ -165,6 +166,12 @@ public class MAVProxyController implements IMAVMSPController {
 		}
 
 		return sendMAVLinkMessage(cmd);
+	}
+
+	@Override
+	public boolean sendMAVLinkCmd(int command, IMAVCmdAcknowledge ack, float...params) {
+        comm.setCmdAcknowledgeListener(ack);
+		return sendMAVLinkCmd(command, params);
 	}
 
 

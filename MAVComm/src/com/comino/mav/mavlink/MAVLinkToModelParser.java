@@ -84,6 +84,7 @@ import org.mavlink.messages.lquac.msg_vibration;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.log.MSPLogger;
@@ -123,6 +124,8 @@ public class MAVLinkToModelParser {
 	private LogMessage lastMessage = null;
 
 	private long time_sync_cycle;
+
+	private IMAVCmdAcknowledge cmd_ack = null;
 
 	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
 
@@ -307,12 +310,18 @@ public class MAVLinkToModelParser {
 			@Override
 			public void received(Object o) {
 
-				if(model.sys.isStatus(Status.MSP_PROXY))
+				msg_command_ack ack = (msg_command_ack) o;
+
+				if(cmd_ack!=null) {
+					cmd_ack.received(ack.command, ack.result);
+					cmd_ack = null;
+				}
+				if(model.sys.isStatus(Status.MSP_PROXY)) {
 					return;
+				}
 
 				if(logger==null)
 					logger = MSPLogger.getInstance();
-				msg_command_ack ack = (msg_command_ack) o;
 				switch (ack.result) {
 				case 1:
 					logger.writeLocalMsg("Command " + ack.command + " failed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
@@ -811,6 +820,10 @@ public class MAVLinkToModelParser {
 			return false;
 		}
 		return model.sys.isStatus(Status.MSP_CONNECTED);
+	}
+
+	public void setCmdAcknowledgeListener(IMAVCmdAcknowledge ack) {
+		this.cmd_ack = ack;
 	}
 
 	public void writeMessage(LogMessage m) {

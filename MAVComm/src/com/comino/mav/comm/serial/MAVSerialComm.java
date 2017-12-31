@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017,2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,6 +41,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.mav.mavlink.MAVLinkReader2;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
@@ -254,6 +255,11 @@ public class MAVSerialComm implements IMAVComm {
 		return reader.getLostPackages();
 	}
 
+	@Override
+	public void setCmdAcknowledgeListener(IMAVCmdAcknowledge ack) {
+		parser.setCmdAcknowledgeListener(ack);
+	}
+
 
 
 
@@ -329,6 +335,7 @@ public class MAVSerialComm implements IMAVComm {
 
 
 	}
+
 
 
 }

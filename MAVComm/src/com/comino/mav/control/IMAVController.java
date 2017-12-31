@@ -70,6 +70,7 @@ public interface IMAVController {
 	public Map<Class<?>,MAVLinkMessage> getMavLinkMessageMap();
 
 	public boolean sendMAVLinkCmd(int command, float...params);
+	public boolean sendMAVLinkCmd(int command, IMAVCmdAcknowledge ack, float...params);
 	public boolean sendMAVLinkMessage(MAVLinkMessage msg);
 	public boolean sendMSPLinkCmd(int command, float...params);
 

@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017,2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,6 +50,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
@@ -306,6 +307,11 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 	public void writeMessage(LogMessage m) {
 		parser.writeMessage(m);
 
+	}
+
+	@Override
+	public void setCmdAcknowledgeListener(IMAVCmdAcknowledge ack) {
+		parser.setCmdAcknowledgeListener(ack);
 	}
 
 }
