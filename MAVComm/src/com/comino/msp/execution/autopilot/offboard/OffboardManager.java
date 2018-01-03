@@ -33,13 +33,16 @@
 
 package com.comino.msp.execution.autopilot.offboard;
 
+import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
+import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.mav.control.IMAVController;
+import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -52,6 +55,8 @@ import georegression.struct.point.Vector4D_F32;
 public class OffboardManager implements Runnable {
 
 	private static final float MAX_SPEED					= 0.8f;
+
+	private static final int   RC_DEADBAND               = 20;
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
@@ -204,7 +209,15 @@ public class OffboardManager implements Runnable {
 
 		while(enabled) {
 
-			// TODO: Security checks: XY Sticks and altitude
+			if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+				// Safety check: if RC attached, check XY sticks and fallback to POSHOLD if moved
+				if(Math.abs(model.rc.s1 -1500) > RC_DEADBAND || Math.abs(model.rc.s2 -1500) > RC_DEADBAND) {
+					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+					continue;
+				}
+			}
 
 			delta_sec = UPDATE_RATE / 1000.0f;
 
