@@ -54,18 +54,17 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 0.8f;
-
-	private static final int   RC_DEADBAND               = 20;
+	private static final float MAX_SPEED						= 0.8f;
+	private static final int   RC_DEADBAND               		= 20;		// RC XY deadband for safety check
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
-	private static final int UPDATE_RATE                 = 50;
-	private static final int SETPOINT_TIMEOUT_MS         = 15000;
+	private static final int UPDATE_RATE                 		= 50;
+	private static final int SETPOINT_TIMEOUT_MS         		= 15000;
 
-	public static final int MODE_POSITION	 		    = 1;
-	public static final int MODE_SPEED	 		        = 2;
-	public static final int MODE_SPEED_POSITION	 	    = 3;
+	public static final int MODE_POSITION	 		   		= 1;
+	public static final int MODE_SPEED	 		        		= 2;
+	public static final int MODE_SPEED_POSITION	 	    		= 3;
 
 	private MSPLogger 				logger					= null;
 	private DataModel 				model					= null;
@@ -83,9 +82,9 @@ public class OffboardManager implements Runnable {
 	private float		acceptance_radius_speed				= 0.05f;
 	private boolean     already_fired				    		= false;
 	private boolean     valid_setpoint                   		= false;
-	private boolean     new_setpoint                    	 = false;
-	private boolean     step_mode                        = false;
-	private boolean     step_trigger                     = false;
+	private boolean     new_setpoint                    	 	= false;
+	private boolean     step_mode                        		= false;
+	private boolean     step_trigger                     		= false;
 
 
 	public OffboardManager(IMAVController control) {
