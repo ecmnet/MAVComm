@@ -15,7 +15,7 @@ public interface MAV_ROI {
      */
     public final static int MAV_ROI_NONE = 0;
     /**
-     * Point toward next waypoint.
+     * Point toward next waypoint, with optional pitch/roll/yaw offset.
      */
     public final static int MAV_ROI_WPNEXT = 1;
     /**

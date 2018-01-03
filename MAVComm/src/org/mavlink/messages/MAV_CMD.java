@@ -520,9 +520,9 @@ public interface MAV_CMD {
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
      * PARAM 4 : Empty
-     * PARAM 5 : x the location of the fixed ROI (see MAV_FRAME)
-     * PARAM 6 : y
-     * PARAM 7 : z
+     * PARAM 5 : MAV_ROI_WPNEXT: pitch offset from next waypoint, MAV_ROI_LOCATION: latitude
+     * PARAM 6 : MAV_ROI_WPNEXT: roll offset from next waypoint, MAV_ROI_LOCATION: longitude
+     * PARAM 7 : MAV_ROI_WPNEXT: yaw offset from next waypoint, MAV_ROI_LOCATION: altitude
      */
     public final static int MAV_CMD_DO_SET_ROI = 201;
     /**
