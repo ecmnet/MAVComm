@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.slam.map;
+package com.comino.msp.slam.map2D;
 
 import com.comino.msp.model.DataModel;
 

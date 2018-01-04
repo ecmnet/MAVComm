@@ -1,11 +1,11 @@
-package com.comino.msp.slam.map;
+package com.comino.msp.slam.map2D;
 
 import java.util.ArrayList;
 
 import com.comino.dev.CoreSLAM;
 import com.comino.dev.LocalMap2DGrayU8;
-import com.comino.msp.slam.map.impl.LocalMap2DArray;
-import com.comino.msp.slam.map.store.LocaMap2DStorage;
+import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
+import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 
 import boofcv.abst.denoise.FactoryImageDenoise;
 import boofcv.abst.denoise.WaveletDenoiseFilter;

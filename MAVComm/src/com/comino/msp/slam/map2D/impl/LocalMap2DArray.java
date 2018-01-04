@@ -31,12 +31,12 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.slam.map.impl;
+package com.comino.msp.slam.map2D.impl;
 
 import java.util.Arrays;
 
 import com.comino.msp.model.DataModel;
-import com.comino.msp.slam.map.ILocalMap;
+import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.utils.MSPArrayUtils;
 
 import boofcv.struct.image.GrayU8;

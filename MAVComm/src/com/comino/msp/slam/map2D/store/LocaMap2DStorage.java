@@ -1,4 +1,4 @@
-package com.comino.msp.slam.map.store;
+package com.comino.msp.slam.map2D.store;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.comino.main.MSPConfig;
-import com.comino.msp.slam.map.ILocalMap;
-import com.comino.msp.slam.map.impl.LocalMap2DArray;
+import com.comino.msp.slam.map2D.ILocalMap;
+import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.utils.MSPMathUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

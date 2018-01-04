@@ -40,7 +40,7 @@ import java.util.List;
 import org.mavlink.messages.MAV_SEVERITY;
 
 import com.comino.dev.LocalMap2DGrayU8;
-import com.comino.msp.slam.map.ILocalMap;
+import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;

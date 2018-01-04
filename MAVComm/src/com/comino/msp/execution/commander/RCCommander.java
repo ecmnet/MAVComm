@@ -42,18 +42,14 @@ public class RCCommander {
 
 	private IMAVMSPController        control 	= null;
 	private DataModel                  model 	= null;
+	private MSPConfig				 config		= null;
 
 	public RCCommander(IMAVMSPController control, MSPConfig config) {
 
 		this.control = control;
 		this.model   = control.getCurrentModel();
+		this.config  = config;
 	}
-
-
-
-
-
-
 
 
 }

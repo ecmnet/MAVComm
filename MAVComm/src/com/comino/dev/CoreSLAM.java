@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.comino.msp.slam.map.ILocalMap;
-import com.comino.msp.slam.map.impl.LocalMap2DArray;
+import com.comino.msp.slam.map2D.ILocalMap;
+import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.utils.MSPArrayUtils;
 import com.comino.msp.utils.MSPMathUtils;
 
