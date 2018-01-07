@@ -15,6 +15,8 @@ public class RingBufferBase<T> {
 	private   int				mask				= 0;
 	private   int 				neg_mask			= 0;
 
+	private   int				last_index      = 0;
+
 	protected T					empty_element   = null;
 	protected Point3D_I32 		offset			= new Point3D_I32();
 	protected T[]			    buffer			= null;
@@ -46,11 +48,26 @@ public class RingBufferBase<T> {
 	}
 
 	public void set(Point3D_I32 index, T e) {
-		buffer[size*size * (index.x & mask) + size * (index.y & mask) + (index.z & mask)] = e;
+		last_index = size*size * (index.x & mask) + size * (index.y & mask) + (index.z & mask);
+		buffer[last_index] = e;
 	}
 
 	public T get(Point3D_I32 index) {
-		return buffer[size*size * (index.x & mask) + size * (index.y & mask) + (index.z & mask)];
+		last_index = size*size * (index.x & mask) + size * (index.y & mask) + (index.z & mask);
+		return buffer[last_index];
+	}
+
+	public T get() {
+		return buffer[last_index];
+	}
+
+	public void set(T e) {
+		buffer[last_index] = e;
+	}
+
+	public Point3D_I32 getOffset(Point3D_I32 offset) {
+		offset.set(this.offset);
+		return offset;
 	}
 
 	public T get(Vector3D_F32 point) {
@@ -166,9 +183,9 @@ public class RingBufferBase<T> {
 		System.out.println(index);
 		test.set(index, 64);
 
-		System.out.println(test.get(index));
+		System.out.println(test.get());
 
-		p.set(6.4f, 5.2f,4.5f);
+		p.set(6.4f, 5.2f,4.23f);
 
 		System.out.println(test.get(p));
 
