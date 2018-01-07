@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017-2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -42,6 +42,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.comino.msp.model.segment.generic.Segment;
 import com.comino.msp.model.utils.BlockPoint2D;
 
+import georegression.struct.point.Point3D_F32;
+
 public class Grid extends Segment {
 
 	public static final float GRID_EXTENSION_M  = 20.0f;
@@ -57,14 +59,14 @@ public class Grid extends Segment {
 	private int      max_length;
 
 	private static List<Integer>  transfer  = new ArrayList<Integer>();
-	private static Map<Integer,BlockPoint2D>   data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
+	private static Map<Integer,Point3D_F32>   data  = new ConcurrentHashMap<Integer, Point3D_F32>(0);
 
 	//	private  Map<Integer,BlockPoint2D> data = null;
 
 	public int      count;
 
-	private int      cx,cy;
-	private int      vx,vy;
+	private int      cx,cy, cz;
+	private int      vx,vy, vz;
 
 	public Grid() {
 		this(GRID_EXTENSION_M, GRID_RESOLUTION_M);
@@ -79,7 +81,7 @@ public class Grid extends Segment {
 		this.resolution_cm = (int)(resolution_m*100f);
 		this.cx = dimension / 2;
 		this.cy = dimension / 2;
-		this.max_length = dimension * dimension;
+		this.max_length = dimension * dimension * dimension;
 	}
 
 	public void set(Grid a) {
@@ -117,9 +119,11 @@ public class Grid extends Segment {
 			if(data.containsKey(array[i]))
 				return;
 			if(array[i]>0) {
-				data.put((int)array[i],new BlockPoint2D(
+				data.put((int)array[i],new Point3D_F32(
 						((int)(array[i] % dimension)-cx)*resolution_cm/100f,
-						((int)(array[i] / dimension)-cy)*resolution_cm/100f));
+						((int)((array[i] / dimension) % dimension)-cy)*resolution_cm/100f,
+						((int)(array[i] / (dimension* dimension))-cy)*resolution_cm/100f
+						));
 			}
 			if(array[i]<0)
 				data.remove(-(int)array[i]);
@@ -134,20 +138,20 @@ public class Grid extends Segment {
 		count = -1;
 	}
 
-	public void translate(float dx, float dy) {
+	public void translate(float dx, float dy, float dz) {
 
-		List<BlockPoint2D> tmp = copy();
+		List<Point3D_F32> tmp = copy();
 		if(tmp != null) {
 			data.clear();
 
 			if(tmp.size()>0) {
 				tmp.forEach((p) -> {
-					setBlock(p.x+dx,p.y+dy);
+					setBlock(p.x+dx,p.y+dy, p.z+dz);
 				});
 				invalidateTransfer();
 			}
 		}
-		setIndicator(getIndicatorX()+dx, getIndicatorY()+dy);
+		setIndicator(getIndicatorX()+dx, getIndicatorY()+dy, getIndicatorZ()+dz);
 	}
 
 	public void setProperties(float extension_m, float resolution_m) {
@@ -165,37 +169,39 @@ public class Grid extends Segment {
 		this.cy = dimension / 2;
 		this.max_length = dimension * dimension;
 
-		List<BlockPoint2D> tmp = copy();
+		List<Point3D_F32> tmp = copy();
 		if(tmp != null) {
 			data.clear();
 
 			if(tmp.size()>0) {
 				tmp.forEach((p) -> {
-					setBlock(p.x,p.y);
+					setBlock(p.x,p.y,p.z);
 				});
 				invalidateTransfer();
 			}
 		}
 	}
 
-	public void setIndicator(double vx, double vy) {
+	public void setIndicator(double vx, double vy, double vz) {
 		this.vx = (int)Math.round((vx) * 100f/resolution_cm)+cx;
 		this.vy = (int)Math.round((vy) * 100f/resolution_cm)+cy;
+		this.vz = (int)Math.round((vz) * 100f/resolution_cm)+cz;
 	}
 
-	public boolean setBlock(double xpos, double ypos) {
-		return setBlock(xpos,ypos,true);
+	public boolean setBlock(double xpos, double ypos, double zpos) {
+		return setBlock(xpos,ypos,zpos,true);
 	}
 
-	public boolean  setBlock(double xpos, double ypos, boolean set) {
-		int block = calculateBlock(xpos, ypos);
+	public boolean  setBlock(double xpos, double ypos, double zpos, boolean set) {
+		int block = calculateBlock(xpos, ypos, zpos);
 		if(block< 0 || block > max_length)
 			return false;
 
 		if(set) {
 			if(!data.containsKey(block)) {
-				data.put(block,new BlockPoint2D((float)Math.round(xpos * resolution_cm)/resolution_cm ,
-						(float)Math.round(ypos * resolution_cm)/resolution_cm ));
+				data.put(block,new Point3D_F32((float)Math.round(xpos * resolution_cm)/resolution_cm ,
+						                       (float)Math.round(ypos * resolution_cm)/resolution_cm ,
+						                       (float)Math.round(zpos * resolution_cm)/resolution_cm));
 				transfer.add(block);
 			}
 		}
@@ -216,9 +222,11 @@ public class Grid extends Segment {
 
 		if(set) {
 			if(!data.containsKey(block)) {
-				data.put(block,new BlockPoint2D(
+				data.put(block,new Point3D_F32(
 						((int)(block % dimension)-cx)*resolution_cm/100f,
-						((int)(block / dimension)-cy)*resolution_cm/100f));
+						((int)((block / dimension) % dimension)-cy)*resolution_cm/100f,
+						((int)(block / (dimension * dimension))-cy)*resolution_cm/100f
+						));
 				transfer.add(block);
 			}
 		}
@@ -233,15 +241,15 @@ public class Grid extends Segment {
 		return true;
 	}
 
-	public boolean isBlocked(double xpos, double ypos) {
-		return data.containsKey(calculateBlock(xpos, ypos));
+	public boolean isBlocked(double xpos, double ypos, double zpos) {
+		return data.containsKey(calculateBlock(xpos, ypos, zpos));
 	}
 
 	public boolean hasBlocked() {
 		return !data.isEmpty();
 	}
 
-	public Map<Integer, BlockPoint2D> getData() {
+	public Map<Integer, Point3D_F32> getData() {
 		return data;
 	}
 
@@ -261,8 +269,12 @@ public class Grid extends Segment {
 		return (float)(vy-cy)*resolution_cm/100f;
 	}
 
+	public float getIndicatorZ() {
+		return (float)(vz-cz)*resolution_cm/100f;
+	}
 
-	private int calculateBlock(double xpos, double ypos) {
+
+	private int calculateBlock(double xpos, double ypos, double zpos) {
 		int blockx  =  (int)Math.round(xpos * 100.0/resolution_cm) + cx;
 		if(blockx > dimension-1)
 			blockx = dimension -1;
@@ -273,7 +285,12 @@ public class Grid extends Segment {
 			blocky = dimension -1;
 		if(blocky < 0)
 			blocky = 0;
-		return blockx + blocky * dimension;
+		int blockz = (int)Math.round(zpos * 100.0/resolution_cm ) + cy;
+		if(blockz > dimension-1)
+			blockz = dimension -1;
+		if(blockz < 0)
+			blockz = 0;
+		return blockx + blocky * dimension + blockz * dimension * dimension;
 	}
 
 
@@ -290,7 +307,7 @@ public class Grid extends Segment {
 					b.append("+");
 					continue;
 				}
-				if(isBlocked((c-cx)*resolution_cm/100f,(r-cy)*resolution_cm/100f )) {
+				if(isBlocked((c-cx)*resolution_cm/100f,(r-cy)*resolution_cm/100f,0 )) {
 					b.append("X");
 					//					System.out.println((c-cx)*resolution_cm/100f);
 				}
@@ -303,12 +320,12 @@ public class Grid extends Segment {
 		return b.toString();
 	}
 
-	private List<BlockPoint2D> copy() {
-		List<BlockPoint2D> tmp = new ArrayList<BlockPoint2D>();
+	private List<Point3D_F32> copy() {
+		List<Point3D_F32> tmp = new ArrayList<Point3D_F32>();
 
 		if(!data.isEmpty()) {
 			data.forEach((i,p) -> {
-				tmp.add(new BlockPoint2D(p.x,p.y));
+				tmp.add(new Point3D_F32(p.x,p.y, p.z));
 			});
 			return tmp;
 		}
@@ -322,9 +339,9 @@ public class Grid extends Segment {
 
 		Grid s = new Grid(10,0.05f);
 
-		s.setBlock(1.77, 0.0);
-		s.setBlock(0.0, 1.0);
-		s.setBlock(1.0, 1.0);
+		s.setBlock(1.77, 0.0, 1);
+		s.setBlock(0.0, 1.0, 1);
+		s.setBlock(1.0, 1.0, 1);
 
 		s.getData().entrySet().forEach((e) -> {
 			System.out.println(e.getKey()+":"+e.getValue());
@@ -346,7 +363,7 @@ public class Grid extends Segment {
 
 		System.out.println(t);
 
-		t.translate(1, 1);
+		t.translate(1, 1, 1);
 
 		System.out.println(t);
 
