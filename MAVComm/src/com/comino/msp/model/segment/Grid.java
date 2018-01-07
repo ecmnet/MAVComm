@@ -40,7 +40,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.comino.msp.model.segment.generic.Segment;
-import com.comino.msp.model.utils.BlockPoint2D;
 
 import georegression.struct.point.Point3D_F32;
 
