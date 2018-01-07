@@ -80,6 +80,7 @@ public class Grid extends Segment {
 		this.resolution_cm = (int)(resolution_m*100f);
 		this.cx = dimension / 2;
 		this.cy = dimension / 2;
+		this.cz = dimension / 2;
 		this.max_length = dimension * dimension * dimension;
 	}
 
@@ -113,6 +114,7 @@ public class Grid extends Segment {
 		return true;
 	}
 
+	@SuppressWarnings("unlikely-arg-type")
 	public void fromArray(long[] array) {
 		for(int i=0; i< array.length;i++) {
 			if(data.containsKey(array[i]))
@@ -121,7 +123,7 @@ public class Grid extends Segment {
 				data.put((int)array[i],new Point3D_F32(
 						((int)(array[i] % dimension)-cx)*resolution_cm/100f,
 						((int)((array[i] / dimension) % dimension)-cy)*resolution_cm/100f,
-						((int)(array[i] / (dimension* dimension))-cy)*resolution_cm/100f
+						((int)(array[i] / (dimension* dimension))-cz)*resolution_cm/100f
 						));
 			}
 			if(array[i]<0)
@@ -224,7 +226,7 @@ public class Grid extends Segment {
 				data.put(block,new Point3D_F32(
 						((int)(block % dimension)-cx)*resolution_cm/100f,
 						((int)((block / dimension) % dimension)-cy)*resolution_cm/100f,
-						((int)(block / (dimension * dimension))-cy)*resolution_cm/100f
+						((int)(block / (dimension * dimension))-cz)*resolution_cm/100f
 						));
 				transfer.add(block);
 			}
