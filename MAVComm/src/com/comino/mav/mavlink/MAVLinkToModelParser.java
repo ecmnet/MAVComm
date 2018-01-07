@@ -145,7 +145,7 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_msp_micro_grid grid = (msg_msp_micro_grid) o;
 				model.grid.fromArray(grid.data);
-				model.grid.setIndicator(grid.cx, grid.cy, 0);
+				model.grid.setIndicator(grid.cx, grid.cy, grid.cz);
 				model.grid.setProperties(grid.extension, grid.resolution);
 				model.grid.count = (int) grid.count;
 				model.grid.tms = model.sys.getSynchronizedPX4Time_us();
