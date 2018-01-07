@@ -43,7 +43,6 @@ import com.comino.msp.model.segment.Debug;
 import com.comino.msp.model.segment.EstStatus;
 import com.comino.msp.model.segment.GPS;
 import com.comino.msp.model.segment.Grid;
-import com.comino.msp.model.segment.Grid3D;
 import com.comino.msp.model.segment.Hud;
 import com.comino.msp.model.segment.Imu;
 import com.comino.msp.model.segment.LogMessage;
@@ -89,7 +88,6 @@ public class DataModel extends Segment implements Serializable {
 	public   Vision        vision = null;
 	public   EstStatus       est  = null;
 	public   Grid           grid  = null;
-	public   Grid3D         grid3  = null;
 	public   Slam           slam  = null;
 
 
@@ -115,7 +113,6 @@ public class DataModel extends Segment implements Serializable {
 		this.est            = new EstStatus();
 		this.slam           = new Slam();
 		this.grid           = new Grid();
-		this.grid3          = new Grid3D();
 	}
 
 	public DataModel(DataModel m) {
