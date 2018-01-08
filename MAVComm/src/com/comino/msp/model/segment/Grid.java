@@ -114,6 +114,10 @@ public class Grid extends Segment {
 		return true;
 	}
 
+	public boolean hasTransfers() {
+		return transfer!=null && !transfer.isEmpty();
+	}
+
 	@SuppressWarnings("unlikely-arg-type")
 	public void fromArray(long[] array) {
 		for(int i=0; i< array.length;i++) {
