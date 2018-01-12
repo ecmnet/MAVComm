@@ -186,7 +186,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.slam.py = model.state.l_y+(float)Math.sin(model.slam.pd);
 
 			for(int i=0;i<5;i++)
-			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, -(float)Math.random()*3, Math.random()>0.5);
+			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, -(float)Math.random()*3, Math.random()>0.8);
 
 			model.grid.setIndicator(model.state.l_x, model.state.l_y,0);
 
