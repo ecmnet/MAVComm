@@ -154,9 +154,9 @@ public class MAVSimController extends MAVController implements IMAVController {
 			count++;
 //			if(model.state.l_z > -5.0f)
 //				model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
-			model.state.l_z = -(float)(Math.sin(count/200f))*2f;
-			model.state.l_x = (float)(Math.sin(count/100f))*1f;
-			model.state.l_y = (float)(Math.cos(count/100f))*1f;
+			model.state.l_z = -(float)(Math.sin(count/400f))*2f;
+			model.state.l_x = (float)(Math.sin(count/200f))*1f;
+			model.state.l_y = (float)(Math.cos(count/200f))*1f;
 
 			model.vision.x = model.state.l_x + (float)Math.random()*0.2f-0.1f;
 			model.vision.y = model.state.l_y + (float)Math.random()*0.2f-0.1f;
@@ -185,7 +185,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.slam.px = model.state.l_x+(float)Math.cos(model.slam.pd);
 			model.slam.py = model.state.l_y+(float)Math.sin(model.slam.pd);
 
-			for(int i=0;i<10;i++)
+			for(int i=0;i<5;i++)
 			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, -(float)Math.random()*3, Math.random()>0.5);
 
 			model.grid.setIndicator(model.state.l_x, model.state.l_y,0);
