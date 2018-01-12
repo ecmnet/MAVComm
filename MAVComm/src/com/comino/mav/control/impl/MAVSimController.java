@@ -165,7 +165,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.raw.di = (float)Math.random()*0.5f+1;
 			model.attitude.r = 0;
 			model.attitude.p = (float)(Math.PI/4);
-			model.attitude.y = (float)(count/100f % 2*Math.PI);
+			model.attitude.y = (float)(count/1000f % (2*Math.PI));
 			model.imu.accx = (float)Math.random()*0.5f-0.25f;
 			model.imu.accy = (float)Math.random()*0.5f-0.25f;
 			model.imu.accz = (float)Math.random()*0.5f-9.81f;
@@ -174,7 +174,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.imu.gyroy = (float)Math.random()*0.5f-0.25f;
 			model.imu.gyroz = (float)Math.random()*0.5f-0.25f;
 
-			model.sys.setStatus(Status.MSP_LANDED, true);
+			model.sys.setStatus(Status.MSP_LANDED, false);
 
 			model.gps.latitude = 47.37174f;
 			model.gps.longitude = 8.54226f;
@@ -186,7 +186,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.slam.py = model.state.l_y+(float)Math.sin(model.slam.pd);
 
 			for(int i=0;i<10;i++)
-			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, 0, Math.random()>0.5);
+			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, -(float)Math.random()*3, Math.random()>0.5);
 
 			model.grid.setIndicator(model.state.l_x, model.state.l_y,0);
 
