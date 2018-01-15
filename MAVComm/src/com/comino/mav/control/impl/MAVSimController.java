@@ -46,6 +46,7 @@ import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.collector.ModelCollectorService;
+import com.comino.msp.model.segment.Grid;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
@@ -154,6 +155,8 @@ public class MAVSimController extends MAVController implements IMAVController {
 			count++;
 //			if(model.state.l_z > -5.0f)
 //				model.state.l_z = model.state.l_z - 0.001f - (float)Math.random()*0.001f;
+
+
 			model.state.l_z = -(float)(Math.sin(count/400f))*2f;
 			model.state.l_x = (float)(Math.sin(count/200f))*1f;
 			model.state.l_y = (float)(Math.cos(count/200f))*1f;
@@ -185,8 +188,10 @@ public class MAVSimController extends MAVController implements IMAVController {
 			model.slam.px = model.state.l_x+(float)Math.cos(model.slam.pd);
 			model.slam.py = model.state.l_y+(float)Math.sin(model.slam.pd);
 
-			for(int i=0;i<5;i++)
-			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, -(float)Math.random()*3, Math.random()>0.8);
+			buildWall(model.grid);
+
+//			for(int i=0;i<5;i++)
+//			  model.grid.setBlock((float)Math.random()*20f-10,(float)Math.random()*20f-10, -(float)Math.random()*3, Math.random()>0.8);
 
 			model.grid.setIndicator(model.state.l_x, model.state.l_y,0);
 
@@ -222,6 +227,15 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 		}
 
+	}
+
+	public void buildWall(Grid g) {
+		double x0 = 1.0f; double y0 = 1.0f;
+
+		for(double i= -40;i < 40;i++) {
+			for(double z=0; z< 60;z++)
+			  g.setBlock(x0, y0+i*0.05, -z*0.05f, true);
+		}
 	}
 
 
