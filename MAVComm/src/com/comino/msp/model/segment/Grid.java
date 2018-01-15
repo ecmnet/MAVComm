@@ -56,6 +56,7 @@ public class Grid extends Segment {
 	private int      resolution_cm 	= 0;
 	private int      extension_cm    = 0;
 	private int      max_length;
+	private int      blocks_per_m    = 0;
 
 	private static List<Integer>  transfer  = new ArrayList<Integer>();
 	private static Map<Integer,Point3D_F32>   data  = new ConcurrentHashMap<Integer, Point3D_F32>(0);
@@ -78,6 +79,7 @@ public class Grid extends Segment {
 		this.extension_cm = (int)(extension_m) * 100 * 2;
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);
+		this.blocks_per_m = 100/resolution_cm;
 		this.cx = dimension / 2;
 		this.cy = dimension / 2;
 		this.cz = dimension / 2;
@@ -188,9 +190,9 @@ public class Grid extends Segment {
 	}
 
 	public void setIndicator(double vx, double vy, double vz) {
-		this.vx = (int)Math.round((vx) * 100f/resolution_cm)+cx;
-		this.vy = (int)Math.round((vy) * 100f/resolution_cm)+cy;
-		this.vz = (int)Math.round((vz) * 100f/resolution_cm)+cz;
+		this.vx = (int)Math.round((vx) * blocks_per_m)+cx;
+		this.vy = (int)Math.round((vy) * blocks_per_m)+cy;
+		this.vz = (int)Math.round((vz) * blocks_per_m)+cz;
 	}
 
 	public boolean setBlock(double xpos, double ypos, double zpos) {
@@ -204,9 +206,10 @@ public class Grid extends Segment {
 
 		if(set) {
 			if(!data.containsKey(block)) {
-				data.put(block,new Point3D_F32((float)Math.round(xpos * resolution_cm)/resolution_cm ,
-						                       (float)Math.round(ypos * resolution_cm)/resolution_cm ,
-						                       (float)Math.round(zpos * resolution_cm)/resolution_cm));
+				Point3D_F32 p = new Point3D_F32((float)Math.round(xpos * blocks_per_m)/blocks_per_m,
+	                                            (float)Math.round(ypos * blocks_per_m)/blocks_per_m,
+	                                            (float)Math.round(zpos * blocks_per_m)/blocks_per_m);
+				data.put(block,p);
 				transfer.add(block);
 			}
 		}
@@ -280,17 +283,17 @@ public class Grid extends Segment {
 
 
 	private int calculateBlock(double xpos, double ypos, double zpos) {
-		int blockx  =  (int)Math.round(xpos * 100.0/resolution_cm) + cx;
+		int blockx  =  (int)Math.round(xpos * blocks_per_m) + cx;
 		if(blockx > dimension-1)
 			blockx = dimension -1;
 		if(blockx < 0)
 			blockx = 0;
-		int blocky = (int)Math.round(ypos * 100.0/resolution_cm ) + cy;
+		int blocky = (int)Math.round(ypos * blocks_per_m ) + cy;
 		if(blocky > dimension-1)
 			blocky = dimension -1;
 		if(blocky < 0)
 			blocky = 0;
-		int blockz = (int)Math.round(zpos * 100.0/resolution_cm ) + cy;
+		int blockz = (int)Math.round(zpos * blocks_per_m ) + cy;
 		if(blockz > dimension-1)
 			blockz = dimension -1;
 		if(blockz < 0)
