@@ -223,20 +223,15 @@ public class MAVSimController extends MAVController implements IMAVController {
 						msglistener.messageReceived(msgList.get(msg_count-1));
 				}
 			}
-
-
 		}
-
 	}
 
 	public void buildWall(Grid g) {
-		double x0 = 1.0f; double y0 = 1.0f;
+		double x0 = 2.0f; double y0 = 1.0f;
 
-		for(double i= -40;i < 40;i++) {
-			for(double z=0; z< 60;z++)
+		for(double i= -10;i < 10;i++) {
+			for(double z=0; z< 40;z++)
 			  g.setBlock(x0, y0+i*0.05, -z*0.05f, true);
 		}
 	}
-
-
 }
