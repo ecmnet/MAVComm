@@ -345,10 +345,8 @@ public class Autopilot2D implements Runnable {
 
 	public void obstacleAvoidance() {
 
-		float angle=0;  float projected_distance = 2.5f;
 
 		final Vector3D_F32 current    = new Vector3D_F32();
-		final Vector3D_F32 delta      = new Vector3D_F32();
 		final Vector3D_F32 projected  = new Vector3D_F32();
 
 		float[] ctl = new float[2];
@@ -362,16 +360,8 @@ public class Autopilot2D implements Runnable {
 		// Determine projected position via CB
 		if(targetListener!=null) {
 			targetListener.getTarget(projected);
-		} else {
-			// If no target by CB available => use last direction and project project
-			projected.set(current);
-			if(tracker.getList().size()>0)
-			 angle = MSP3DUtils.angleXY(current, MSP3DUtils.convertTo3D(tracker.pollLastWaypoint().getValue()))+(float)Math.PI;
-
-			delta.set((float)Math.sin(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance,
-				     (float)Math.cos(2*Math.PI-angle-(float)Math.PI/2f)*projected_distance, 0);
-			projected.plusIP(delta);
-		}
+		} else
+			return;
 
 		offboard.setTarget(projected);
 

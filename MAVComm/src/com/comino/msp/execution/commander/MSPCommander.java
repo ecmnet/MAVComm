@@ -112,7 +112,7 @@ public class MSPCommander {
 			break;
 		case MSP_AUTOCONTROL_ACTION.RTL:
 			if(enable)
-			   autopilot.returnToLand(3000);
+				autopilot.returnToLand(3000);
 			break;
 		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
 			autopilot.return_along_path(enable);
@@ -124,12 +124,10 @@ public class MSPCommander {
 
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
-			if(enable)
 				setXObstacleForSITL();
-			autopilot.enableDebugMode1(enable, 0.1f);
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
-			setYObstacleForSITL();
+				setYObstacleForSITL();
 			break;
 		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
 			autopilot.offboardPosHold(enable);
