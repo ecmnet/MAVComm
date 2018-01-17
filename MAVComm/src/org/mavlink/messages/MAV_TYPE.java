@@ -124,4 +124,8 @@ public interface MAV_TYPE {
      * Steerable, nonrigid airfoil
      */
     public final static int MAV_TYPE_PARAFOIL = 28;
+    /**
+     * Dodecarotor
+     */
+    public final static int MAV_TYPE_DODECAROTOR = 29;
 }

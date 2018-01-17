@@ -76,7 +76,7 @@ public class msg_gps_rtk extends MAVLinkMessage {
    */
   public int nsats;
   /**
-   * Coordinate system of baseline. 0 == ECEF, 1 == NED
+   * Coordinate system of baseline
    */
   public int baseline_coords_type;
 /**

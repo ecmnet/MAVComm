@@ -148,6 +148,7 @@ public class MAVLinkToModelParser {
 				model.grid.setIndicator(grid.cx, grid.cy, grid.cz);
 				model.grid.setProperties(grid.extension, grid.resolution);
 				model.grid.count = (int) grid.count;
+				model.grid.status = (byte)grid.status;
 				model.grid.tms = model.sys.getSynchronizedPX4Time_us();
 
 			}
@@ -158,9 +159,11 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_msp_micro_slam slam = (msg_msp_micro_slam) o;
 				model.slam.pd = slam.pd;
+				model.slam.pp = slam.pp;
 				model.slam.pv = slam.pv;
 				model.slam.px = slam.px;
 				model.slam.py = slam.py;
+				model.slam.pz = slam.pz;
 				model.slam.di = slam.md;
 				model.grid.tms = model.sys.getSynchronizedPX4Time_us();
 

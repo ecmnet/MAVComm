@@ -32,7 +32,7 @@ public class msg_set_gps_global_origin extends MAVLinkMessage {
    */
   public long latitude;
   /**
-   * Longitude (WGS84, in degrees * 1E7
+   * Longitude (WGS84), in degrees * 1E7
    */
   public long longitude;
   /**

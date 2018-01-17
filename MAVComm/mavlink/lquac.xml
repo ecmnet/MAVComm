@@ -107,6 +107,14 @@
                   <description>Controls offboard updater</description>
               </entry>
            </enum>
+            <enum name="MSP_GRID_STATUS">
+              <entry value="0" name="GRID_2D">
+                  <description>Grid has a 2D map stored</description>
+              </entry>
+               <entry value="1" name="GRID_3D">
+                  <description>Grid has a 3D map stored</description>
+              </entry>
+            </enum>
       </enums>
 
 
@@ -158,6 +166,7 @@
            <message id="183" name="MSP_MICRO_GRID">
                <description>MSP MICRO GRID Data encoded in longs</description>
                <field type="int32_t[40]"   name="data">SLAM data integers</field>
+               <field type="uint8_t"       name="status">Grid Status</field>
                <field type="float"         name="cx" >CenterX</field>
                <field type="float"         name="cy" >CenterY</field>
                <field type="float"         name="cz" >CenterZ</field>
@@ -170,7 +179,9 @@
                <description>MSP MICRO SLAM Data encoded in longs</description>
                <field type="float"         name="px" >Planned path X</field>
                <field type="float"         name="py" >Planned path Y</field>
-               <field type="float"         name="pd" >Planned direction</field>
+               <field type="float"         name="pz" >Planned path Z</field>
+               <field type="float"         name="pd" >Planned direction XY</field>
+               <field type="float"         name="pp" >Planned direction YZ</field>
                <field type="float"         name="pv" >Planned speed</field>
                <field type="float"         name="md" >Distance to neearest obstacle</field>
                <field type="uint32_t"      name="wpcount">Counter of waypoints</field>

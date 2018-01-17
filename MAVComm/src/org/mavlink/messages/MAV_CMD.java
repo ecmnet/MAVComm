@@ -66,7 +66,7 @@ public interface MAV_CMD {
     /**
      * Land at location
      * PARAM 1 : Abort Alt
-     * PARAM 2 : Empty
+     * PARAM 2 : Precision land mode. (0 = normal landing, 1 = opportunistic precision landing, 2 = required precsion landing)
      * PARAM 3 : Empty
      * PARAM 4 : Desired yaw angle. NaN for unchanged.
      * PARAM 5 : Latitude
@@ -163,7 +163,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_FOLLOW_REPOSITION = 33;
     /**
-     * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
+     * THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
@@ -504,6 +504,39 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_SET_REVERSE = 194;
     /**
+     * Sets the region of interest (ROI) to a location. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
+     * PARAM 1 : Empty
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Altitude
+     */
+    public final static int MAV_CMD_DO_SET_ROI_LOCATION = 195;
+    /**
+     * Sets the region of interest (ROI) to be toward next waypoint, with optional pitch/roll/yaw offset. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
+     * PARAM 1 : Empty
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : pitch offset from next waypoint
+     * PARAM 6 : roll offset from next waypoint
+     * PARAM 7 : yaw offset from next waypoint
+     */
+    public final static int MAV_CMD_DO_SET_ROI_WPNEXT_OFFSET = 196;
+    /**
+     * Cancels any previous ROI command returning the vehicle/sensors to default flight characteristics. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
+     * PARAM 1 : Empty
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_DO_SET_ROI_NONE = 197;
+    /**
      * Control onboard camera system.
      * PARAM 1 : Camera ID (-1 for all)
      * PARAM 2 : Transmission: 0: disabled, 1: enabled compressed, 2: enabled raw
@@ -515,7 +548,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_CONTROL_VIDEO = 200;
     /**
-     * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
+     * THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
@@ -604,12 +637,12 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_PARACHUTE = 208;
     /**
      * Mission command to perform motor test
-     * PARAM 1 : motor sequence number (a number from 1 to max number of motors on the vehicle)
+     * PARAM 1 : motor number (a number from 1 to max number of motors on the vehicle)
      * PARAM 2 : throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)
      * PARAM 3 : throttle
      * PARAM 4 : timeout (in seconds)
-     * PARAM 5 : Empty
-     * PARAM 6 : Empty
+     * PARAM 5 : motor count (number of motors to test to test in sequence, waiting for the timeout above between them; 0=1 motor, 1=1 motor, 2=2 motors...)
+     * PARAM 6 : motor test order (See MOTOR_TEST_ORDER enum)
      * PARAM 7 : Empty
      */
     public final static int MAV_CMD_DO_MOTOR_TEST = 209;
@@ -708,7 +741,7 @@ public interface MAV_CMD {
      * PARAM 2 : 1: magnetometer calibration
      * PARAM 3 : 1: ground pressure calibration
      * PARAM 4 : 1: radio RC calibration, 2: RC trim calibration
-     * PARAM 5 : 1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration
+     * PARAM 5 : 1: accelerometer calibration, 2: board level calibration, 3: accelerometer temperature calibration, 4: simple accelerometer calibration
      * PARAM 6 : 1: APM: compass/motor interference calibration (PX4: airspeed calibration, deprecated), 2: airspeed calibration
      * PARAM 7 : 1: ESC calibration, 3: barometer temperature calibration
      */

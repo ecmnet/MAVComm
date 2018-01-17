@@ -32,11 +32,11 @@ public class msg_set_position_target_global_int extends MAVLinkMessage {
    */
   public long time_boot_ms;
   /**
-   * X Position in WGS84 frame in 1e7 * meters
+   * X Position in WGS84 frame in 1e7 * degrees
    */
   public long lat_int;
   /**
-   * Y Position in WGS84 frame in 1e7 * meters
+   * Y Position in WGS84 frame in 1e7 * degrees
    */
   public long lon_int;
   /**

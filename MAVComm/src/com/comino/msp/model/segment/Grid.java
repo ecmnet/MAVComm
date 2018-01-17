@@ -64,6 +64,7 @@ public class Grid extends Segment {
 	//	private  Map<Integer,BlockPoint2D> data = null;
 
 	public int      count;
+	public byte    status;
 
 	private int      cx,cy, cz;
 	private int      vx,vy, vz;
@@ -76,6 +77,7 @@ public class Grid extends Segment {
 	public Grid(float extension_m, float resolution_m) {
 		//		this.data  = new ConcurrentHashMap<Integer, BlockPoint2D>(0);
 		this.count    = 0;
+		this.status   = 0;
 		this.extension_cm = (int)(extension_m) * 100 * 2;
 		this.dimension = (int)(extension_m/resolution_m)*2;
 		this.resolution_cm = (int)(resolution_m*100f);

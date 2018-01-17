@@ -20,4 +20,8 @@ public interface MOTOR_TEST_THROTTLE_TYPE {
      * throttle pass-through from pilot's transmitter
      */
     public final static int MOTOR_TEST_THROTTLE_PILOT = 2;
+    /**
+     * per-motor compass calibration test
+     */
+    public final static int MOTOR_TEST_COMPASS_CAL = 3;
 }

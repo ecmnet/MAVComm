@@ -56,11 +56,11 @@ public class msg_hil_state extends MAVLinkMessage {
    */
   public float yawspeed;
   /**
-   * Latitude, expressed as * 1E7
+   * Latitude, expressed as degrees * 1E7
    */
   public long lat;
   /**
-   * Longitude, expressed as * 1E7
+   * Longitude, expressed as degrees * 1E7
    */
   public long lon;
   /**

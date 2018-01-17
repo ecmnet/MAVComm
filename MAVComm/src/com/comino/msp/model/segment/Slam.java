@@ -43,7 +43,9 @@ public class Slam extends Segment {
 
 	public float    px;		// planned path x
 	public float    py;		// planned path y
-	public float    pd;		// planned direction
+	public float    pz;		// planned path y
+	public float    pd;		// planned direction XY
+	public float    pp;		// planned direction YZ
 	public float    pv;		// planned speed
 	public float    di;      // distance to nearest obstacle
 
@@ -54,8 +56,10 @@ public class Slam extends Segment {
 	public void set(Slam a) {
 		pv = a.pv;
 		pd = a.pd;
+		pp = a.pp;
 		px = a.px;
 		py = a.py;
+		pz = a.pz;
 		di = a.di;
 	}
 
@@ -63,8 +67,10 @@ public class Slam extends Segment {
 		Slam at = new Slam();
 		at.pv = pv;
 		at.pd = pd;
+		at.pp = pp;
 		at.px = px;
 		at.py = py;
+		at.pz = pz;
 		at.di = di;
 		return at;
 	}
@@ -72,8 +78,10 @@ public class Slam extends Segment {
 	public void clear() {
 		pv = 0;
 		pd = 0;
+		pp = 0;
 		px = 0;
 		py = 0;
+		pz = 0;
 		di = 0;
 	}
 

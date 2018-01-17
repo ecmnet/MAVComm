@@ -24,7 +24,7 @@ public class msg_msp_micro_grid extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_MICRO_GRID;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 192;
+    payload_length = 193;
 }
 
   /**
@@ -59,6 +59,10 @@ public class msg_msp_micro_grid extends MAVLinkMessage {
    * BlockCount
    */
   public long count;
+  /**
+   * Grid Status
+   */
+  public int status;
 /**
  * Decode message with raw data
  */
@@ -73,12 +77,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   resolution = (float)dis.readFloat();
   extension = (float)dis.readFloat();
   count = (int)dis.readInt()&0x00FFFFFFFF;
+  status = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+192];
+  byte[] buffer = new byte[12+193];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -100,18 +105,19 @@ public byte[] encode() throws IOException {
   dos.writeFloat(resolution);
   dos.writeFloat(extension);
   dos.writeInt((int)(count&0x00FFFFFFFF));
+  dos.writeByte(status&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 192);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 193);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[202] = crcl;
-  buffer[203] = crch;
+  buffer[203] = crcl;
+  buffer[204] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_MICRO_GRID : " +   "  tms="+tms+  "  data="+data+  "  cx="+cx+  "  cy="+cy+  "  cz="+cz+  "  resolution="+resolution+  "  extension="+extension+  "  count="+count;}
+return "MAVLINK_MSG_ID_MSP_MICRO_GRID : " +   "  tms="+tms+  "  data="+data+  "  cx="+cx+  "  cy="+cy+  "  cz="+cz+  "  resolution="+resolution+  "  extension="+extension+  "  count="+count+  "  status="+status;}
 }
