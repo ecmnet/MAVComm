@@ -559,7 +559,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_SET_ROI = 201;
     /**
-     * Mission command to configure an on-board camera controller system.
+     * THIS INTERFACE IS DEPRECATED since 2018-01. Please use PARAM_EXT_XXX messages and the camera definition format described in https://mavlink.io/en/protocol/camera_def.html.
      * PARAM 1 : Modes: P, TV, AV, M, Etc
      * PARAM 2 : Shutter speed: Divisor number for one second
      * PARAM 3 : Aperture: F stop number
@@ -570,7 +570,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_DIGICAM_CONFIGURE = 202;
     /**
-     * Mission command to control an on-board camera controller system.
+     * THIS INTERFACE IS DEPRECATED since 2018-01. Please use PARAM_EXT_XXX messages and the camera definition format described in https://mavlink.io/en/protocol/camera_def.html.
      * PARAM 1 : Session control e.g. show/hide lens
      * PARAM 2 : Zoom's absolute position
      * PARAM 3 : Zooming step value to offset zoom from the current position
@@ -853,13 +853,13 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES = 520;
     /**
-     * WIP: Request camera information (CAMERA_INFORMATION).
+     * Request camera information (CAMERA_INFORMATION).
      * PARAM 1 : 0: No action 1: Request camera capabilities
      * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_CAMERA_INFORMATION = 521;
     /**
-     * WIP: Request camera settings (CAMERA_SETTINGS).
+     * Request camera settings (CAMERA_SETTINGS).
      * PARAM 1 : 0: No Action 1: Request camera settings
      * PARAM 2 : Reserved (all remaining params)
      */
@@ -879,7 +879,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_STORAGE_FORMAT = 526;
     /**
-     * WIP: Request camera capture status (CAMERA_CAPTURE_STATUS)
+     * Request camera capture status (CAMERA_CAPTURE_STATUS)
      * PARAM 1 : 0: No Action 1: Request camera capture status
      * PARAM 2 : Reserved (all remaining params)
      */
@@ -891,7 +891,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_FLIGHT_INFORMATION = 528;
     /**
-     * WIP: Reset all camera settings to Factory Default
+     * Reset all camera settings to Factory Default
      * PARAM 1 : 0: No Action 1: Reset all settings
      * PARAM 2 : Reserved (all remaining params)
      */

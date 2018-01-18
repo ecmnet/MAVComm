@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_camera_settings
- * WIP: Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS.
+ * Settings of a camera, can be requested using MAV_CMD_REQUEST_CAMERA_SETTINGS.
  **/
 public class msg_camera_settings extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_CAMERA_SETTINGS = 260;
