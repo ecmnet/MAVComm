@@ -171,6 +171,8 @@ public class Autopilot2D implements Runnable {
 		while(true) {
 			try { Thread.sleep(CYCLE_MS); } catch(Exception s) { }
 
+			//System.out.println(model.sys.getSensorString());
+
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
 			map.toDataModel(model, false);
 			lvfh.update_histogram(current, model.hud.s);

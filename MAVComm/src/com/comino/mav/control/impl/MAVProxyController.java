@@ -85,6 +85,7 @@ public class MAVProxyController implements IMAVMSPController {
 		model = new DataModel();
 		status_manager = new StatusManager(model);
 
+		model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
 		model.sys.setStatus(Status.MSP_SITL, sitl);
 		model.sys.setStatus(Status.MSP_PROXY, true);
 
