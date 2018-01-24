@@ -97,10 +97,10 @@ import com.comino.msp.utils.MSPMathUtils;
 public class MAVLinkToModelParser {
 
 	private static final long TIMEOUT_VISION      = 2000000;
-	private static final long TIMEOUT_CONNECTED   = 10000000;
+	private static final long TIMEOUT_CONNECTED   = 1000000;
 	private static final long TIMEOUT_RC_ATTACHED = 5000000;
-	private static final long TIMEOUT_GPOS        = 10000;
-	private static final long TIMEOUT_GPS         = 1000000;
+	private static final long TIMEOUT_GPOS        = 20000;
+	private static final long TIMEOUT_GPS         = 100000;
 
 	private static int TIME_SYNC_CYCLE_MS = 1000;
 	private static double OFFSET_AVG_ALPHA = 0.6d;
