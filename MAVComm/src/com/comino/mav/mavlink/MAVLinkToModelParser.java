@@ -877,8 +877,9 @@ public class MAVLinkToModelParser {
 
 		}
 
-		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS))
+		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS)) {
 			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
+		}
 
 		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
