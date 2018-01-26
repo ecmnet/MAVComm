@@ -70,7 +70,6 @@ public class MAVSerialComm implements IMAVComm {
 	private MAVLinkReader2 reader;
 
 	private static IMAVComm com = null;
-	private MAVLinkMessage  msg = null;
 
 	private int baudrate = 921600;
 

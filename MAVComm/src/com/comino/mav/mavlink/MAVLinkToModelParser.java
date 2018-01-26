@@ -357,7 +357,6 @@ public class MAVLinkToModelParser {
 				model.hud.aX = att.roll;
 				model.hud.aY = att.pitch;
 				model.hud.tms = model.sys.getSynchronizedPX4Time_us();
-				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 
 				// System.out.println(att.toString());
 			}
@@ -756,6 +755,8 @@ public class MAVLinkToModelParser {
 				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, (sys.onboard_control_sensors_enabled
 						& MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW) > 0);
 
+				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
+
 				//
 				// model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
 				// (sys.onboard_control_sensors_enabled &
@@ -874,7 +875,11 @@ public class MAVLinkToModelParser {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
 
+		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS)) {
+			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
+			gpos_tms = 0;
 		}
 
 		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS)) {
