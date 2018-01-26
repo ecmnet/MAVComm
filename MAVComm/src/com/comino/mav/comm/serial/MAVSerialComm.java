@@ -161,7 +161,7 @@ public class MAVSerialComm implements IMAVComm {
 
 	private boolean open(String portName, int baudRate, int dataBits, int stopBits, int parity) {
 
-		byte[] buf = new byte[4096];
+		byte[] buf = new byte[16384];
 
 		if(serialPort.isOpen())
 			return true;
