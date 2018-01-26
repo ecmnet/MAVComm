@@ -45,8 +45,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
@@ -60,25 +58,17 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 	private SocketAddress 			bindPort = null;
 	private SocketAddress 			peerPort;
-	private DatagramChannel 		channel = null;
+	private DatagramChannel 			channel = null;
 
 	private HashMap<Class<?>,List<IMAVLinkListener>> listeners = null;
 
-	private MAVLinkReader2 reader;
+	private MAVLinkReader2 			reader;
+	private Selector 				selector;
+	private IMAVComm 				comm;
 
-	private Selector selector;
+	private boolean 					isConnected = false;
 
-	private IMAVComm comm;
-
-	private boolean 			isConnected = false;
-
-	private final ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
-	private final ArrayBlockingQueue<MAVLinkMessage>queue = new ArrayBlockingQueue<MAVLinkMessage>(20);
-
-
-	//	public MAVUdpProxy() {
-	//		this("172.168.178.2",14550,"172.168.178.1",14555);
-	//	}
+	private final ByteBuffer 		rxBuffer = ByteBuffer.allocate(32768);
 
 
 	public MAVUdpProxyNIO3(String peerAddress, int pPort, String bindAddress, int bPort, IMAVComm comm) {
@@ -126,21 +116,6 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				t.setName("Proxy worker");
 				t.start();
 
-				Thread s = new Thread(() -> {
-					MAVLinkMessage msg = null;
-					while(true) {
-						try {
-							if(channel!=null && channel.isConnected()) {
-								msg = queue.poll(1000,TimeUnit.SECONDS);
-								channel.write(ByteBuffer.wrap(msg.encode()));
-							}
-							else
-								Thread.sleep(20);
-						} catch (Exception e) { 	}
-					}
-				});
-				s.setName("Proxy queue worker");
-				s.start();
 
 				return true;
 			} catch(Exception e) {
@@ -194,7 +169,6 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 		Iterator<?> selectedKeys = null;
 		List<IMAVLinkListener> listener_list = null;
 
-
 		try {
 			channel.register(selector, SelectionKey.OP_READ );
 
@@ -209,9 +183,8 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 			while(isConnected) {
 
-				if(selector.select(2000)==0) {
+				if(selector.select(2000)==0)
 					continue;
-				}
 
 				selectedKeys = selector.selectedKeys().iterator();
 
@@ -257,20 +230,18 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 		return 0;
 	}
 
-	public void write(MAVLinkMessage msg)  {
-		try {
-			queue.add(msg);
-		} catch (Exception e) {
+	public  void write(MAVLinkMessage msg)  {
+		if(msg!=null && channel!=null && channel.isConnected()) {
+			try {
+				channel.write(ByteBuffer.wrap(msg.encode()));
+			} catch (IOException e) {}
 		}
+
 	}
 
 	@Override
 	public void received(Object o) {
-		try {
-			queue.add((MAVLinkMessage) o);
-			//	write((MAVLinkMessage) o);
-		} catch (Exception e) {
-		}
+		write((MAVLinkMessage) o);
 	}
 
 }
