@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
@@ -70,7 +72,8 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 	private boolean 			isConnected = false;
 
-	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
+	private final ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
+	private final ArrayBlockingQueue<MAVLinkMessage>queue = new ArrayBlockingQueue<MAVLinkMessage>(20);
 
 
 	//	public MAVUdpProxy() {
@@ -123,6 +126,21 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				t.setName("Proxy worker");
 				t.start();
 
+				Thread s = new Thread(() -> {
+					MAVLinkMessage msg = null;
+					while(true) {
+						try {
+							if(channel!=null && channel.isConnected()) {
+								msg = queue.poll(1000,TimeUnit.SECONDS);
+								channel.write(ByteBuffer.wrap(msg.encode()));
+							}
+							else
+								Thread.sleep(20);
+						} catch (Exception e) { 	}
+					}
+				});
+				s.setName("Proxy queue worker");
+				s.start();
 
 				return true;
 			} catch(Exception e) {
@@ -175,7 +193,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 		MAVLinkMessage msg = null;
 		Iterator<?> selectedKeys = null;
 		List<IMAVLinkListener> listener_list = null;
-		byte[] buffer = new byte[8192];
+
 
 		try {
 			channel.register(selector, SelectionKey.OP_READ );
@@ -191,8 +209,9 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 			while(isConnected) {
 
-				if(selector.select(2000)==0)
+				if(selector.select(2000)==0) {
 					continue;
+				}
 
 				selectedKeys = selector.selectedKeys().iterator();
 
@@ -238,19 +257,19 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 		return 0;
 	}
 
-	public  void write(MAVLinkMessage msg) throws IOException {
-		if(msg!=null && channel!=null && channel.isConnected()) {
-			channel.write(ByteBuffer.wrap(msg.encode()));
+	public void write(MAVLinkMessage msg)  {
+		try {
+			queue.add(msg);
+		} catch (Exception e) {
 		}
-
 	}
 
 	@Override
 	public void received(Object o) {
-
 		try {
-			write((MAVLinkMessage) o);
-		} catch (IOException e) {
+			queue.add((MAVLinkMessage) o);
+			//	write((MAVLinkMessage) o);
+		} catch (Exception e) {
 		}
 	}
 

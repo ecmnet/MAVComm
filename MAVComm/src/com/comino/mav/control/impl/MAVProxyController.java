@@ -98,11 +98,11 @@ public class MAVProxyController implements IMAVMSPController {
 		else {
 
 			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-			    comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
+				comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			else
-		      	comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
+				comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			comm.open();
-		//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
+			//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
 			try {
 				Thread.sleep(500);
 			} catch (InterruptedException e) {
@@ -111,8 +111,8 @@ public class MAVProxyController implements IMAVMSPController {
 			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
 
-//			proxy = new MAVUdpProxyNIO3("192.168.178.20",14550,"192.168.178.22",14555,comm);
-//			peerAddress = "192.168.178.20";
+			//			proxy = new MAVUdpProxyNIO3("192.168.178.20",14550,"192.168.178.22",14555,comm);
+			//			peerAddress = "192.168.178.20";
 
 			System.out.println("Proxy Controller loaded: "+peerAddress);
 
@@ -171,7 +171,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean sendMAVLinkCmd(int command, IMAVCmdAcknowledge ack, float...params) {
-        comm.setCmdAcknowledgeListener(ack);
+		comm.setCmdAcknowledgeListener(ack);
 		return sendMAVLinkCmd(command, params);
 	}
 
@@ -255,10 +255,7 @@ public class MAVProxyController implements IMAVMSPController {
 		msg.setText(m.msg);
 		msg.componentId = 1;
 		msg.severity =m.severity;
-		try {
-			proxy.write(msg);
-		} catch (IOException e) {
-		}
+		proxy.write(msg);
 	}
 
 
@@ -276,7 +273,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public String enableFileLogging(boolean enable, String directory) {
-       return null;
+		return null;
 	}
 
 	@Override
