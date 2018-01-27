@@ -101,6 +101,7 @@ public class MAVLinkToModelParser {
 	private static final long TIMEOUT_RC_ATTACHED = 5000000;
 	private static final long TIMEOUT_GPOS        = 1000000;
 	private static final long TIMEOUT_GPS         = 1000000;
+	private static final long TIMEOUT_IMU         = 5000000;
 
 	private static int TIME_SYNC_CYCLE_MS = 1000;
 	private static double OFFSET_AVG_ALPHA = 0.6d;
@@ -221,6 +222,7 @@ public class MAVLinkToModelParser {
 				model.sys.setStatus(Status.MSP_ACTIVE, true);
 				model.sys.wifi_quality = status.wifi_quality/100f;
 				model.sys.msp_temp = (byte)status.cpu_temp;
+				model.sys.setStatus(Status.MSP_READY, true);
 			}
 		});
 
@@ -304,6 +306,7 @@ public class MAVLinkToModelParser {
 				model.hud.at = alt.altitude_terrain;
 				model.hud.ar = alt.altitude_relative;
 				model.hud.bc = alt.bottom_clearance;
+				model.hud.tms = model.sys.getSynchronizedPX4Time_us();
 
 			}
 		});
@@ -354,9 +357,12 @@ public class MAVLinkToModelParser {
 				model.attitude.pr = att.pitchspeed;
 				model.attitude.yr = att.yawspeed;
 
+				model.attitude.tms = model.sys.getSynchronizedPX4Time_us();
+
 				model.hud.aX = att.roll;
 				model.hud.aY = att.pitch;
-				model.hud.tms = model.sys.getSynchronizedPX4Time_us();
+
+				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 
 				// System.out.println(att.toString());
 			}
@@ -391,7 +397,6 @@ public class MAVLinkToModelParser {
 				model.attitude.srr = att.body_roll_rate;
 				model.attitude.spr = att.body_pitch_rate;
 				model.attitude.syr = att.body_yaw_rate;
-				model.attitude.tms = model.sys.getSynchronizedPX4Time_us();
 
 				// System.out.println(att.toString());
 			}
@@ -590,10 +595,7 @@ public class MAVLinkToModelParser {
 				model.imu.abs_pressure = imu.abs_pressure;
 
 				model.sys.imu_temp = (byte) imu.temperature;
-				model.imu.tms = imu.time_usec;
-				model.sys.tms = model.sys.getSynchronizedPX4Time_us();
-
-				model.sys.setStatus(Status.MSP_READY, true);
+				model.imu.tms = model.sys.getSynchronizedPX4Time_us();
 
 			}
 		});
@@ -754,14 +756,6 @@ public class MAVLinkToModelParser {
 
 				model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, (sys.onboard_control_sensors_enabled
 						& MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW) > 0);
-
-				model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
-
-				//
-				// model.sys.setSensor(Status.MSP_GPS_AVAILABILITY,
-				// (sys.onboard_control_sensors_enabled &
-				// MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_GPS)>0);
-
 			}
 		});
 
@@ -882,8 +876,8 @@ public class MAVLinkToModelParser {
 			gpos_tms = 0;
 		}
 
-		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS)) {
-			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
+		if (checkTimeOut(model.attitude.tms, TIMEOUT_IMU)) {
+			model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, false);
 		}
 
 		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
