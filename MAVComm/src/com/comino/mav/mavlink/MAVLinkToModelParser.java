@@ -96,12 +96,6 @@ import com.comino.msp.utils.MSPMathUtils;
 
 public class MAVLinkToModelParser {
 
-	private static final long TIMEOUT_VISION      = 2000000;
-	private static final long TIMEOUT_CONNECTED   = 1000000;
-	private static final long TIMEOUT_RC_ATTACHED = 5000000;
-	private static final long TIMEOUT_GPOS        = 1000000;
-	private static final long TIMEOUT_GPS         = 1000000;
-	private static final long TIMEOUT_IMU         = 5000000;
 
 	private static int TIME_SYNC_CYCLE_MS = 1000;
 	private static double OFFSET_AVG_ALPHA = 0.6d;
@@ -564,12 +558,11 @@ public class MAVLinkToModelParser {
 				model.state.g_alt = (pos.alt / 1000);
 				model.gps.heading = (short) (pos.hdg / 1000f);
 				model.gps.altitude = (short) (pos.alt / 1000);
-				model.gps.tms = model.sys.getSynchronizedPX4Time_us();
 				model.state.g_vx = pos.vx / 100f;
 				model.state.g_vy = pos.vy / 100f;
 				model.state.g_vz = pos.vz / 100f;
 
-				gpos_tms = model.sys.getSynchronizedPX4Time_us();
+				model.state.gpos_tms = model.sys.getSynchronizedPX4Time_us();
 				model.sys.setStatus(Status.MSP_GPOS_VALID, true);
 
 			}
@@ -871,38 +864,6 @@ public class MAVLinkToModelParser {
 			}
 		}
 
-		if (checkTimeOut(gpos_tms, TIMEOUT_GPOS)) {
-			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
-			gpos_tms = 0;
-		}
-
-		if (checkTimeOut(model.attitude.tms, TIMEOUT_IMU)) {
-			model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, false);
-		}
-
-		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
-			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
-		}
-
-		if (checkTimeOut(model.gps.tms, TIMEOUT_GPS)) {
-			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, false);
-		}
-
-		if(!model.sys.isStatus(Status.MSP_SITL)) {
-			if (checkTimeOut(model.rc.tms, TIMEOUT_RC_ATTACHED)) {
-				model.sys.setStatus(Status.MSP_RC_ATTACHED, (false));
-				model.rc.rssi = 0;
-			}
-		}
-
-		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {
-			//System.out.println("MSP=" + model.sys.getSynchronizedPX4Time_us() + " PX4=" + model.sys.tms);
-			model.sys.setStatus(Status.MSP_CONNECTED, false);
-			model.sys.setStatus(Status.MSP_ACTIVE, false);
-			link.close();
-			link.open();
-			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
-		}
 
 		if ((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS && TIME_SYNC_CYCLE_MS > 0) {
 
@@ -918,9 +879,7 @@ public class MAVLinkToModelParser {
 
 	}
 
-	private boolean checkTimeOut(long tms, long timeout) {
-		return model.sys.getSynchronizedPX4Time_us() > (tms + timeout);
-	}
+
 
 
 }

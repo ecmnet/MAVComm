@@ -42,6 +42,14 @@ import com.comino.msp.model.segment.Status;
 
 public class StatusManager implements Runnable {
 
+	private static final long TIMEOUT_IMU         = 5000000;
+	private static final long TIMEOUT_VISION      = 2000000;
+	private static final long TIMEOUT_CONNECTED   = 1000000;
+	private static final long TIMEOUT_RC_ATTACHED = 5000000;
+	private static final long TIMEOUT_GPOS        = 1000000;
+	private static final long TIMEOUT_LPOS        = 1000000;
+	private static final long TIMEOUT_GPS         = 1000000;
+
 	public static final byte  TYPE_ALL             = 0;
 	public static final byte  TYPE_PX4_STATUS      = 1;
 	public static final byte  TYPE_MSP_STATUS      = 2;
@@ -169,8 +177,51 @@ public class StatusManager implements Runnable {
 				e.printStackTrace();
 			}
 			status_old.set(status_current);
+
+			checkTimeouts();
+
+		}
+	}
+
+	private void checkTimeouts() {
+
+		if (checkTimeOut(model.attitude.tms, TIMEOUT_IMU)) {
+			model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, false);
 		}
 
+		if (checkTimeOut(model.state.tms, TIMEOUT_LPOS)) {
+			model.sys.setStatus(Status.MSP_LPOS_VALID, false);
+		}
+
+		if (checkTimeOut(model.state.gpos_tms, TIMEOUT_GPOS)) {
+			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
+		}
+
+
+		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
+			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
+		}
+
+		if (checkTimeOut(model.gps.tms, TIMEOUT_GPS)) {
+			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, false);
+		}
+
+		if(!model.sys.isStatus(Status.MSP_SITL)) {
+			if (checkTimeOut(model.rc.tms, TIMEOUT_RC_ATTACHED)) {
+				model.sys.setStatus(Status.MSP_RC_ATTACHED, (false));
+				model.rc.rssi = 0;
+			}
+		}
+
+		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {
+			model.sys.setStatus(Status.MSP_CONNECTED, false);
+			model.sys.setStatus(Status.MSP_ACTIVE, false);
+			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
+		}
+	}
+
+	private boolean checkTimeOut(long tms, long timeout) {
+		return model.sys.getSynchronizedPX4Time_us() > (tms + timeout);
 	}
 
 	private class StatusListenerEntry {

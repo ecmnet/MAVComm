@@ -78,6 +78,7 @@ public class State extends Segment {
 	public float    g_vz	= Float.NaN;
 
 	public int      c_frame = 0;
+	public long     gpos_tms = 0;
 
 
 	// helpers
