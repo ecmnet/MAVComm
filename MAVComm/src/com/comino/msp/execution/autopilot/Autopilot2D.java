@@ -67,6 +67,7 @@ import georegression.struct.point.Vector4D_F32;
 public class Autopilot2D implements Runnable {
 
 	private static final int   CYCLE_MS					= 100;
+	private static final int   CYCLE_MS_MODEL_MAP		= 500;
 
 	private static final int   CERTAINITY_THRESHOLD      = 10;
 	private static final float ROBOT_RADIUS         		= 0.3f;
@@ -96,6 +97,8 @@ public class Autopilot2D implements Runnable {
 	private boolean            	isAvoiding  		= false;
 	private boolean				mapForget   		= false;
 	private float             	nearestTarget 	= 0;
+
+	private long					model_update_tms = 0;
 
 
 	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
@@ -129,8 +132,8 @@ public class Autopilot2D implements Runnable {
 		// TODO: Landing during takeoff switches to offboard mode here => should directly land instead
 		//       Update: works in SITL, but not on vehicle (timing?)
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-            if(n.isStatus(Status.MSP_MODE_LANDING))
-            	  return;
+			if(n.isStatus(Status.MSP_MODE_LANDING))
+				return;
 			offboard.setCurrentAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
 			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
@@ -140,7 +143,7 @@ public class Autopilot2D implements Runnable {
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 				control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 			}
-		//	loadMap2D();
+			//	loadMap2D();
 		});
 
 		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT, MSP_AUTOCONTROL_MODE.STEP_MODE,(o,n) -> {
@@ -174,7 +177,6 @@ public class Autopilot2D implements Runnable {
 			//System.out.println(model.sys.getSensorString());
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
-			map.toDataModel(model, false);
 			lvfh.update_histogram(current, model.hud.s);
 
 			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
@@ -189,20 +191,25 @@ public class Autopilot2D implements Runnable {
 			min_distance = getAvoidanceDistance(model.hud.s);
 
 			if(nearestTarget < min_distance && !isAvoiding) {
-					isAvoiding = true;
-					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-						obstacleAvoidance();
-					if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK))
-						jumpback(0.3f);
+				isAvoiding = true;
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
+					obstacleAvoidance();
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK))
+					jumpback(0.3f);
 			}
 
 			if(nearestTarget > (min_distance + MIN_DISTANCE_HYSTERESIS) && isAvoiding) {
 				offboard.removeExternalControlListener();
 				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-				   isAvoiding = false;
+					isAvoiding = false;
 			}
 			if(mapForget)
-			  map.forget();
+				map.forget();
+
+			if((System.currentTimeMillis() - model_update_tms) > CYCLE_MS_MODEL_MAP) {
+				model_update_tms = System.currentTimeMillis();
+				map.toDataModel(model, false);
+			}
 		}
 	}
 
@@ -339,7 +346,7 @@ public class Autopilot2D implements Runnable {
 				offboard.setTarget(e.getValue());
 			else {
 				abort();
-			    isAvoiding = false;
+				isAvoiding = false;
 				tracker.unfreeze();
 			}
 		});
@@ -422,7 +429,7 @@ public class Autopilot2D implements Runnable {
 			}
 			else {
 				tracker.unfreeze();
-				  logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
+				logger.writeLocalMsg("[msp] Return finalized",MAV_SEVERITY.MAV_SEVERITY_INFO);
 				clearAutopilotActions() ;
 			}
 		});
