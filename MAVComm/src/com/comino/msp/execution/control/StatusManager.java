@@ -121,6 +121,8 @@ public class StatusManager implements Runnable {
 
 			try { Thread.sleep(100); } catch(Exception e) { }
 
+			checkTimeouts();
+
 			status_current.set(model.sys);
 
 			if (status_current.isStatus(Status.MSP_ARMED))
@@ -177,8 +179,6 @@ public class StatusManager implements Runnable {
 				e.printStackTrace();
 			}
 			status_old.set(status_current);
-
-			checkTimeouts();
 
 		}
 	}
