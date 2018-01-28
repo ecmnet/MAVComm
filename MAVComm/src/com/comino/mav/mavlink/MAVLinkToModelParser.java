@@ -58,7 +58,6 @@ import org.mavlink.messages.lquac.msg_debug_vect;
 import org.mavlink.messages.lquac.msg_distance_sensor;
 import org.mavlink.messages.lquac.msg_estimator_status;
 import org.mavlink.messages.lquac.msg_extended_sys_state;
-import org.mavlink.messages.lquac.msg_flight_information;
 import org.mavlink.messages.lquac.msg_global_position_int;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
 import org.mavlink.messages.lquac.msg_heartbeat;
@@ -111,8 +110,6 @@ public class MAVLinkToModelParser {
 
 	private List<IMAVLinkListener> mavListener = null;
 	private List<IMAVMessageListener> msgListener = null;
-
-	private long gpos_tms = 0;
 
 	private long time_offset_ns = 0;
 
@@ -764,14 +761,6 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		registerListener(msg_flight_information.class, new IMAVLinkListener() {
-			@Override
-			public void received(Object o) {
-				msg_flight_information info = (msg_flight_information) o;
-				//TODO: implement
-			}
-		});
-
 		registerListener(msg_extended_sys_state.class, new IMAVLinkListener() {
 			@Override
 			public void received(Object o) {
@@ -863,7 +852,6 @@ public class MAVLinkToModelParser {
 				e.printStackTrace();
 			}
 		}
-
 
 		if ((System.currentTimeMillis() - time_sync_cycle) > TIME_SYNC_CYCLE_MS && TIME_SYNC_CYCLE_MS > 0) {
 
