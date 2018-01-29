@@ -21,7 +21,7 @@ public class MSP3DUtils {
 
 	private static Point3D_F64  tmp_p = new Point3D_F64();
 
-	public static Point3D_F64 swap(Point3D_F64 p) {
+	public static Point3D_F64 toNED(Point3D_F64 p) {
 		tmp_p.set(p);
 		p.x =  tmp_p.z;
 		p.y =  tmp_p.x;
