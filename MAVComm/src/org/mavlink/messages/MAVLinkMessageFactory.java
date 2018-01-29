@@ -94,6 +94,7 @@ import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
 import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_wind_cov;
+import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
 import org.mavlink.messages.lquac.msg_gps2_rtk;
@@ -257,6 +258,7 @@ import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
 import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_wind_cov;
+import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
 import org.mavlink.messages.lquac.msg_gps2_rtk;
@@ -694,6 +696,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_WIND_COV:
       msg = new msg_wind_cov(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_HIGH_LATENCY2:
+      msg = new msg_high_latency2(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_LOCAL_POSITION_NED:

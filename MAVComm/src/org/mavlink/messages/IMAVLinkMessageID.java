@@ -96,6 +96,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_RAW_PRESSURE = 28;
   public static int MAVLINK_MSG_ID_CAMERA_SETTINGS = 260;
   public static int MAVLINK_MSG_ID_WIND_COV = 231;
+  public static int MAVLINK_MSG_ID_HIGH_LATENCY2 = 235;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED = 32;
   public static int MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT = 62;
   public static int MAVLINK_MSG_ID_GPS2_RTK = 128;
