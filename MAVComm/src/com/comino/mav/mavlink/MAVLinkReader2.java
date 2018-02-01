@@ -287,7 +287,7 @@ public class MAVLinkReader2 {
 						//System.out.println(rxmsg);
 					}
 				} else {
-					System.out.println(rxmsg);
+				//	System.out.println(rxmsg);
 					packet_lost++;
 				}
 				break;
