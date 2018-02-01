@@ -177,11 +177,11 @@ public class LocalMap2DRaycast implements ILocalMap {
 	}
 
 	public boolean set(double xpos1, double ypos1, double xpos2, double ypos2, int value) {
-		int x = (int)Math.floor((xpos1*1000f+center_x_mm)/cell_size_mm);
-		int y = (int)Math.floor((ypos1*1000f+center_y_mm)/cell_size_mm);
+		int x1 = (int)Math.floor((xpos1*1000f+center_x_mm)/cell_size_mm);
+		int y1 = (int)Math.floor((ypos1*1000f+center_y_mm)/cell_size_mm);
 		int x2 = (int)Math.floor((xpos2*1000f+center_x_mm)/cell_size_mm);
 		int y2 = (int)Math.floor((ypos2*1000f+center_y_mm)/cell_size_mm);
-		drawBresenhamLine(x,y,x2,y2,value);
+		drawBresenhamLine(x1,y1,x2,y2,value);
 		return true;
 	}
 
