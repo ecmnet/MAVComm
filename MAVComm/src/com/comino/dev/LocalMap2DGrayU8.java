@@ -267,4 +267,10 @@ public class LocalMap2DGrayU8 implements ILocalMap {
 		b.append("\n");
 		return b.toString();
 	}
+
+	@Override
+	public boolean update(float lpos_x, float lpos_y, Point3D_F64 point) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

@@ -44,9 +44,8 @@ import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F64;
 
-public class LocalMap2DArray implements ILocalMap {
+public class LocalMap2DRaycast implements ILocalMap {
 
-	private static int        FILTER_SIZE_PX     = 2;
 
 	private static final long OBLIVISION_TIME_MS = 500;
 	private static final int  MAX_CERTAINITY     = 400;
@@ -68,15 +67,15 @@ public class LocalMap2DArray implements ILocalMap {
 
 	private int				threshold = 0;
 
-	public LocalMap2DArray() {
+	public LocalMap2DRaycast() {
 		this(40.0f,0.05f,2.0f,2);
 	}
 
-	public LocalMap2DArray(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
+	public LocalMap2DRaycast(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
 		this(diameter_m, cell_size_m, window_diameter_m, diameter_m/2f, diameter_m/2f, threshold );
 	}
 
-	public LocalMap2DArray(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m,  int threshold) {
+	public LocalMap2DRaycast(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m,  int threshold) {
 		cell_size_mm = (int)(cell_size_m * 1000f);
 		this.threshold = threshold;
 
@@ -91,8 +90,7 @@ public class LocalMap2DArray implements ILocalMap {
 		this.center_x_mm = center_x_m * 1000f;
 		this.center_y_mm = center_y_m * 1000f;
 
-		System.out.println("LocalMap2D initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
-		System.out.println(" and filter radius  "+FILTER_SIZE_PX*cell_size_mm+"mm");
+		System.out.println("LocalMap2DRayCast initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
 	}
 
 	public void 	setLocalPosition(Vector3D_F32 point) {
@@ -101,27 +99,27 @@ public class LocalMap2DArray implements ILocalMap {
 	}
 
 	public boolean update(Vector3D_F32 point) {
-		return set(point.x, point.y,CERTAINITY_INCR);
+		return false;
 	}
 
 	public boolean update(Point3D_F64 point) {
-		return set((float)point.x, (float)point.y,CERTAINITY_INCR);
+		return false;
 	}
 
 	public boolean update(Point3D_F64 point, Vector4D_F64 pos) {
-		return set((float)(point.x+pos.x), (float)(point.y+pos.y),CERTAINITY_INCR);
-	}
-
-	public boolean update(float lpos_x, float lpos_y, Point3D_F64 point) {
-		return set(lpos_x+(float)point.x, lpos_y+(float)point.y,CERTAINITY_INCR);
+		return set(pos.x,pos.y, point.x,point.y,CERTAINITY_INCR) ;
 	}
 
 
 	public boolean update(float lpos_x, float lpos_y, Vector3D_F32 point) {
-		return set(lpos_x+point.x, lpos_y+point.y,CERTAINITY_INCR);
+		return set(lpos_x,lpos_y, point.x,point.y,CERTAINITY_INCR) ;
 	}
 
-	public boolean merge(LocalMap2DArray m, float weight) {
+	public boolean update(float lpos_x, float lpos_y, Point3D_F64 point) {
+		return set(lpos_x,lpos_y, point.x,point.y,CERTAINITY_INCR) ;
+	}
+
+	public boolean merge(LocalMap2DRaycast m, float weight) {
 		return true;
 	}
 
@@ -178,13 +176,14 @@ public class LocalMap2DArray implements ILocalMap {
 		return -1;
 	}
 
-	public boolean set(float xpos, float ypos, int value) {
-		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
-		int y = (int)Math.floor((ypos*1000f+center_y_mm)/cell_size_mm);
-		draw_into_map(x, y, FILTER_SIZE_PX, value);
+	public boolean set(double xpos1, double ypos1, double xpos2, double ypos2, int value) {
+		int x = (int)Math.floor((xpos1*1000f+center_x_mm)/cell_size_mm);
+		int y = (int)Math.floor((ypos1*1000f+center_y_mm)/cell_size_mm);
+		int x2 = (int)Math.floor((xpos2*1000f+center_x_mm)/cell_size_mm);
+		int y2 = (int)Math.floor((ypos2*1000f+center_y_mm)/cell_size_mm);
+		drawBresenhamLine(x,y,x2,y2,value);
 		return true;
 	}
-
 
 	public void toDataModel(DataModel model,  boolean debug) {
 
@@ -241,48 +240,74 @@ public class LocalMap2DArray implements ILocalMap {
 		return MSPArrayUtils.convertToGrayU8(map);
 	}
 
+	private void drawBresenhamLine( int x1, int y1, int x2, int y2, int value)
+	{
+		int xIncrement = 1,
+				yIncrement = 1,
+				dy = 2*(y2-y1),
+				dx = 2*(x1-x2),
+				tmp;
 
-	private void draw_into_map(int xm, int ym, int radius, int value) {
+		if ( x1 > x2 ) {      // Spiegeln an Y-Achse
+			xIncrement = -1;
+			dx = -dx;
+		}
+
+		if ( y1 > y2 ) {      // Spiegeln an X-Achse
+			yIncrement= -1;
+			dy= -dy;
+		}
+
+		int e = 2*dy + dx;
+		int x = x1;           // Startpunkte setzen
+		int y = y1;
+
+		if ( dy < -dx )       // Steigung < 1
+		{
+			while( x != (x2+1) )
+			{
+				e += dy;
+				if ( e > 0)
+				{
+					e += dx;
+					y += yIncrement;
+				}
+				draw_into_map(x,y,0);
+				x += xIncrement;
+			}
+		}
+		else // ( dy >= -dx )   Steigung >=1
+		{
+			tmp = -dx;
+			dx = -dy;
+			dy = tmp;
+
+			e = 2*dy + dx;
+
+			while( y != (y2+1) )
+			{
+				e += dy;
+				if( e > 0 ) {
+					e += dx;
+					x += xIncrement;
+				}
+				draw_into_map(x,y,0);
+				y += yIncrement;
+			}
+		}
+		draw_into_map(x,y,value);
+	}
+
+	private void draw_into_map(int xm, int ym, int value) {
 
 		if (xm< 0 || xm >= map.length || ym < 0 || ym >= map.length)
 			return;
 
-		if(!set_map_point(xm,ym,value))
-			return;
-		if(radius == 0)
-			return;
-
-		int i=0; int y_old=0; int dr=0;
-		int r = radius, x = -r, y = 0, err = 2-2*r;
-		do {
-			for(i=x;i<=0;i++) {
-				if(y!=y_old) {
-						dr = ( value - sqrt(y*y+i*i) * value / radius );
-						dr = dr < 0 ? 0 : dr;
-						if(dr!=0) {
-							set_map_point(xm-i,ym+y,dr);
-							set_map_point(xm-y,ym-i,dr);
-							set_map_point(xm+i,ym-y,dr);
-							set_map_point(xm+y,ym+i,dr);
-						}
-				}
-			}
-			y_old = y;
-			r = err;
-			if (r < y) err += ++y*2+1;            /* e_xy+e_y < 0 */
-			if (r > x || err > y) err += ++x*2+1; /* e_xy+e_x > 0 or no 2nd y-step */
-		} while (x <= 0);
-	}
-
-	private int sqrt(int n) {
-		int sc, lc;
-		if(n < 2) return 1;
-		sc = sqrt( n >> 2) << 1;
-		lc = sc + 1;
-		if((lc*lc > n))
-			return sc;
+		if(value > 0)
+			set_map_point(xm,ym,value);
 		else
-			return lc;
+			clear_map_point(xm,ym);
+
 	}
 
 	private boolean set_map_point(int x,int y, int dr) {
@@ -291,6 +316,14 @@ public class LocalMap2DArray implements ILocalMap {
 				map[x][y] +=dr;
 				return true;
 			}
+		}
+		return false;
+	}
+
+	private boolean clear_map_point(int x,int y) {
+		if(x >=0 && y>=0 && x < map.length && y < map.length) {
+			map[x][y] = 0;
+			return true;
 		}
 		return false;
 	}
@@ -331,7 +364,7 @@ public class LocalMap2DArray implements ILocalMap {
 	}
 
 	public static void main(String[] args) {
-		LocalMap2DArray map = new LocalMap2DArray(11,1,2, 1);
+		LocalMap2DRaycast map = new LocalMap2DRaycast(11,1,2, 1);
 		System.out.println(map);
 
 	}

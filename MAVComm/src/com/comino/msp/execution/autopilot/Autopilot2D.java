@@ -56,6 +56,7 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
+import com.comino.msp.slam.map2D.impl.LocalMap2DRaycast;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.ExecutorService;
@@ -124,7 +125,9 @@ public class Autopilot2D implements Runnable {
 		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
 		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
 
-		this.map      = new LocalMap2DArray(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+//		this.map      = new LocalMap2DArray(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+		this.map      = new LocalMap2DRaycast(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed

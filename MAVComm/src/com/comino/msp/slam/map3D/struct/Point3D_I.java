@@ -4,6 +4,8 @@ import georegression.struct.point.Point3D_I32;
 
 public class Point3D_I extends Point3D_I32 {
 
+	private static final long serialVersionUID = 5938524026484493659L;
+
 	public Point3D_I(Point3D_I32 i) {
 		super(i);
 	}
