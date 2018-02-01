@@ -493,9 +493,10 @@ public class MAVLinkToModelParser {
 
 				model.state.v = (float) Math.sqrt(ned.vx * ned.vx + ned.vy * ned.vy);
 
-				model.state.tms = model.sys.getSynchronizedPX4Time_us();
-
-				model.sys.setStatus(Status.MSP_LPOS_VALID, true);
+				if((ned.x!=0 || ned.y!=0) && Float.isFinite(ned.x) && Float.isFinite(ned.y)) {
+				  model.state.tms = model.sys.getSynchronizedPX4Time_us();
+				  model.sys.setStatus(Status.MSP_LPOS_VALID, true);
+				}
 
 			}
 		});
