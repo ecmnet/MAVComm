@@ -183,8 +183,10 @@ public class MAVLinkToModelParser {
 
 				model.vision.flags = (int) mocap.flags;
 				model.vision.fps = mocap.fps;
-				if (model.vision.errors < 5)
+				if (model.vision.errors < 5 && ( mocap.vx !=0 || mocap.vy!=0)) {
+					model.vision.tms = model.sys.getSynchronizedPX4Time_us();
 					model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, true);
+				}
 			}
 		});
 
@@ -199,7 +201,6 @@ public class MAVLinkToModelParser {
 				model.vision.h = MSPMathUtils.fromRad(mocap.yaw);
 				model.vision.p = mocap.pitch;
 				model.vision.r = mocap.roll;
-				model.vision.tms = model.sys.getSynchronizedPX4Time_us();
 			}
 		});
 
@@ -494,8 +495,8 @@ public class MAVLinkToModelParser {
 				model.state.v = (float) Math.sqrt(ned.vx * ned.vx + ned.vy * ned.vy);
 
 				if((ned.x!=0 || ned.y!=0) && Float.isFinite(ned.x) && Float.isFinite(ned.y)) {
-				  model.state.tms = model.sys.getSynchronizedPX4Time_us();
-				  model.sys.setStatus(Status.MSP_LPOS_VALID, true);
+					model.state.tms = model.sys.getSynchronizedPX4Time_us();
+					model.sys.setStatus(Status.MSP_LPOS_VALID, true);
 				}
 
 			}
@@ -560,8 +561,10 @@ public class MAVLinkToModelParser {
 				model.state.g_vy = pos.vy / 100f;
 				model.state.g_vz = pos.vz / 100f;
 
-				model.state.gpos_tms = model.sys.getSynchronizedPX4Time_us();
-				model.sys.setStatus(Status.MSP_GPOS_VALID, true);
+				if(pos.lat!=0 && pos.lon!=0) {
+					model.state.gpos_tms = model.sys.getSynchronizedPX4Time_us();
+					model.sys.setStatus(Status.MSP_GPOS_VALID, true);
+				}
 
 			}
 		});
@@ -726,7 +729,7 @@ public class MAVLinkToModelParser {
 				msg_autopilot_version version = (msg_autopilot_version) o;
 				model.sys.version = String.format("%d.%d.%d", (version.flight_sw_version >> (8 * 3)) & 0xFF,
 						(version.flight_sw_version >> (8 * 2)) & 0xFF, (version.flight_sw_version >> (8 * 1)) & 0xFF);
-			//	System.out.println("Version: " + model.sys.version);
+				//	System.out.println("Version: " + model.sys.version);
 			}
 		});
 

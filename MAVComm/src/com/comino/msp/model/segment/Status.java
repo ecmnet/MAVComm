@@ -149,7 +149,7 @@ public class Status extends Segment {
 	}
 
 	public long getSynchronizedPX4Time_us() {
-		return System.currentTimeMillis()*1000 - t_offset_ns/1000;
+		return (System.currentTimeMillis()*1000l) - (t_offset_ns/1000l);
 	}
 
 	public void  setSensor(int box, boolean val) {
