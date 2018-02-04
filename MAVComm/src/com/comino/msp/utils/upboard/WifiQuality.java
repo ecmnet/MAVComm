@@ -1,4 +1,4 @@
-package com.comino.msp.utils;
+package com.comino.msp.utils.upboard;
 
 import java.io.BufferedReader;
 import java.io.IOException;
