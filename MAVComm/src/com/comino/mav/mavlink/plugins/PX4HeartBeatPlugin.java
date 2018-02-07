@@ -19,6 +19,7 @@ public class PX4HeartBeatPlugin extends MAVLinkPluginBase {
 		msg_heartbeat hb = (msg_heartbeat) o;
 
 		model.sys.px4_status = hb.system_status;
+		model.sys.px4_mode   = (int)hb.custom_mode;
 
 		model.sys.setStatus(Status.MSP_ARMED,
 				(hb.base_mode & MAV_MODE_FLAG_DECODE_POSITION.MAV_MODE_FLAG_DECODE_POSITION_SAFETY) > 0);

@@ -102,6 +102,7 @@ public class Status extends Segment {
 
 	public  int     autopilot    	= 0;
 	public  int     px4_status   	= 0;
+	public  int     px4_mode         = 0;
 
 	private int     sensors      	= 0;
 	private int     status       	= 0;
@@ -130,6 +131,7 @@ public class Status extends Segment {
 		drops_p  = s.drops_p;
 		imu_temp = s.imu_temp;
 		px4_status = s.px4_status;
+		px4_mode   = s.px4_mode;
 		autopilot  = s.autopilot;
 
 		t_armed_ms = s.t_armed_ms;
@@ -235,6 +237,7 @@ public class Status extends Segment {
 		t_armed_ms    = 0;
 		t_boot_ms     = 0;
 		px4_status    = 0;
+		px4_mode      = 0;
 		status        = 0;
 		autopilot     = 0;
 		wifi_quality  = 0;
