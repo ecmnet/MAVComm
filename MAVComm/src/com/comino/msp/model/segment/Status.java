@@ -38,6 +38,8 @@ import com.comino.msp.model.segment.generic.Segment;
 
 public class Status extends Segment {
 
+	// TODO: CleanUp and Refactoring: remove MODES an replace by NAV STATE
+
 
 	private static final long serialVersionUID = -8811124897034255443L;
 
@@ -124,9 +126,7 @@ public class Status extends Segment {
 							uint8 NAVIGATION_STATE_MAX = 21
 */
 
-							private static final String[] sensor_names = {
-
-									"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
+private static final String[] sensor_names = { "IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
 
 	};
 
