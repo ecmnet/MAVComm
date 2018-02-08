@@ -93,16 +93,46 @@ public class Status extends Segment {
 	public static final  int MSP_BASE_AVAILABILITY    		= 9;
 	public static final  int MSP_RTK_AVAILABILITY    		    =10;
 
+	// Navigation states
 
-	private static final String[] sensor_names = {
+	public static final  int NAVIGATION_STATE_MANUAL 				= 0;		// Manual mode
+	public static final  int NAVIGATION_STATE_ALTCTL 				= 1;		// Altitude control mode
+	public static final  int NAVIGATION_STATE_POSCTL 				= 2;		// Position control mode
+	public static final  int NAVIGATION_STATE_AUTO_MISSION 		= 3;		// Auto mission mode
+	public static final  int NAVIGATION_STATE_AUTO_LOITER 		= 4;		// Auto loiter mode
+	public static final  int NAVIGATION_STATE_AUTO_RTL 			= 5;		//Auto return to launch mode
+	public static final  int NAVIGATION_STATE_AUTO_RCRECOVER 		= 6;		// RC recover mode
+	public static final  int NAVIGATION_STATE_AUTO_RTGS 			= 7;		// Auto return to groundstation on data link loss
+	public static final  int NAVIGATION_STATE_AUTO_LANDENGFAIL 	= 8;	 	// Auto land on engine failure
+	public static final  int NAVIGATION_STATE_AUTO_LANDGPSFAIL 	= 9;		// Auto land on gps failure (e.g. open loop loiter down)
+	/*
+	uint8 NAVIGATION_STATE_ACRO = 10		# Acro mode
+							uint8 NAVIGATION_STATE_UNUSED = 11		# Free slot
+							uint8 NAVIGATION_STATE_DESCEND = 12		# Descend mode (no position control)
+							uint8 NAVIGATION_STATE_TERMINATION = 13		# Termination mode
+	*/
+	public static final  int NAVIGATION_STATE_OFFBOARD 			= 14;
+	/*
+							uint8 NAVIGATION_STATE_STAB = 15		# Stabilized mode
+							uint8 NAVIGATION_STATE_RATTITUDE = 16		# Rattitude (aka "flip") mode
+	*/
+	public static final  int NAVIGATION_STATE_AUTO_TAKEOFF 		= 17;	// Takeoff
+	public static final  int NAVIGATION_STATE_AUTO_LAND 			= 18	;	// Land
+/*
+							uint8 NAVIGATION_STATE_AUTO_FOLLOW_TARGET = 19	# Auto Follow
+							uint8 NAVIGATION_STATE_AUTO_PRECLAND = 20	# Precision land with landing target
+							uint8 NAVIGATION_STATE_MAX = 21
+*/
 
-			"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
+							private static final String[] sensor_names = {
+
+									"IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
 
 	};
 
 	public  int     autopilot    	= 0;
 	public  int     px4_status   	= 0;
-	public  int     px4_mode         = 0;
+	public  int     nav_state        = 0;
 
 	private int     sensors      	= 0;
 	private int     status       	= 0;
@@ -131,7 +161,7 @@ public class Status extends Segment {
 		drops_p  = s.drops_p;
 		imu_temp = s.imu_temp;
 		px4_status = s.px4_status;
-		px4_mode   = s.px4_mode;
+		nav_state   = s.nav_state;
 		autopilot  = s.autopilot;
 
 		t_armed_ms = s.t_armed_ms;
@@ -210,8 +240,8 @@ public class Status extends Segment {
 
 	public boolean isStatusChanged(Status old, int mask, boolean edge) {
 		if(edge)
-		  return ((old.status & mask) != (status & mask) && ((status & mask) == mask));
-		 return ((old.status & mask) != (status & mask) && ((status & mask) == 0));
+			return ((old.status & mask) != (status & mask) && ((status & mask) == mask));
+		return ((old.status & mask) != (status & mask) && ((status & mask) == 0));
 	}
 
 	public boolean isAutopilotModeChanged(Status old,int mask) {
@@ -237,7 +267,7 @@ public class Status extends Segment {
 		t_armed_ms    = 0;
 		t_boot_ms     = 0;
 		px4_status    = 0;
-		px4_mode      = 0;
+		nav_state     = 0;
 		status        = 0;
 		autopilot     = 0;
 		wifi_quality  = 0;
