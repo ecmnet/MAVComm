@@ -56,17 +56,6 @@ public class Status extends Segment {
 	public static final int MSP_PROXY                        		= 7;
 
 	public static final int MSP_ARMED							= 8;
-//	public static final int MSP_MODE_MANUAL			        		= 9;
-//	public static final int MSP_MODE_STABILIZED			    		= 10;
-//	public static final int MSP_MODE_ALTITUDE			    		= 11;
-//	public static final int MSP_MODE_POSITION			    		= 12;
-//	public static final int MSP_MODE_LOITER						= 13;
-//	public static final int MSP_MODE_MISSION				    		= 14;
-//	public static final int MSP_MODE_OFFBOARD					= 15;
-//	public static final int MSP_MODE_LANDING				    		= 16;
-//	public static final int MSP_MODE_TAKEOFF				    		= 17;
-//
-//	public static final int MSP_MODE_RTL					    		= 19;
 
 	public static final int MSP_GPOS_VALID		            		= 20;
 	public static final int MSP_LPOS_VALID         		    		= 21;
