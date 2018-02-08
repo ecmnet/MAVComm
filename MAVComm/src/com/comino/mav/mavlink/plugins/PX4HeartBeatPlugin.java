@@ -29,46 +29,31 @@ public class PX4HeartBeatPlugin extends MAVLinkPluginBase {
 
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
 
-		model.sys.setStatus(Status.MSP_MODE_ALTITUDE,
-				MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_ALTCTL));
-		if(model.sys.isStatus(Status.MSP_MODE_ALTITUDE))
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_ALTCTL))
 			model.sys.nav_state = Status.NAVIGATION_STATE_ALTCTL;
 
-
-		model.sys.setStatus(Status.MSP_MODE_POSITION,
-				MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL));
-		if(model.sys.isStatus(Status.MSP_MODE_POSITION))
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL))
 			model.sys.nav_state = Status.NAVIGATION_STATE_POSCTL;
 
-		model.sys.setStatus(Status.MSP_MODE_OFFBOARD,
-				MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD));
-		if(model.sys.isStatus(Status.MSP_MODE_OFFBOARD))
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD))
 			model.sys.nav_state = Status.NAVIGATION_STATE_OFFBOARD;
 
-		model.sys.setStatus(Status.MSP_MODE_STABILIZED,
-				MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_STABILIZED));
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_STABILIZED))
+			model.sys.nav_state = Status.NAVIGATION_STATE_STAB;
 
-		model.sys.setStatus(Status.MSP_MODE_LOITER, MAV_CUST_MODE.is(hb.custom_mode,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LOITER));
-		if(model.sys.isStatus(Status.MSP_MODE_LOITER))
+		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LOITER))
 			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_LOITER;
 
-		model.sys.setStatus(Status.MSP_MODE_MISSION, MAV_CUST_MODE.is(hb.custom_mode,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_MISSION));
-		if(model.sys.isStatus(Status.MSP_MODE_MISSION))
+		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_MISSION))
 			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_MISSION;
 
-		model.sys.setStatus(Status.MSP_MODE_LANDING, MAV_CUST_MODE.is(hb.custom_mode,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LAND));
-		if(model.sys.isStatus(Status.MSP_MODE_LANDING))
+		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LAND))
 			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_LAND;
 
-		model.sys.setStatus(Status.MSP_MODE_RTL, MAV_CUST_MODE.is(hb.custom_mode,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_RTL));
+		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_RTL))
+			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_RTL;
 
-		model.sys.setStatus(Status.MSP_MODE_TAKEOFF, MAV_CUST_MODE.is(hb.custom_mode,
-				MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF));
-		if(model.sys.isStatus(Status.MSP_MODE_TAKEOFF))
+		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF))
 			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_TAKEOFF;
 
 		//System.err.println(Long.toBinaryString(hb.custom_mode));

@@ -46,54 +46,54 @@ public class Status extends Segment {
 
 	// Status
 
-	public static final int MSP_CONNECTED					= 0;
-	public static final int MSP_READY						= 1;
-	public static final int MSP_ACTIVE						= 2;
-	public static final int MSP_RC_ATTACHED					= 3;
-	public static final int MSP_JOY_ATTACHED			        = 4;
-	public static final int MSP_OFFBOARD_UPDATER_STARTED     = 5;
-	public static final int MSP_SITL                         = 6;
-	public static final int MSP_PROXY                        = 7;
+	public static final int MSP_CONNECTED						= 0;
+	public static final int MSP_READY							= 1;
+	public static final int MSP_ACTIVE							= 2;
+	public static final int MSP_RC_ATTACHED						= 3;
+	public static final int MSP_JOY_ATTACHED			        		= 4;
+	public static final int MSP_OFFBOARD_UPDATER_STARTED     		= 5;
+	public static final int MSP_SITL                         		= 6;
+	public static final int MSP_PROXY                        		= 7;
 
-	public static final int MSP_ARMED						= 8;
-	public static final int MSP_MODE_MANUAL			        = 9;
-	public static final int MSP_MODE_STABILIZED			    = 10;
-	public static final int MSP_MODE_ALTITUDE			    = 11;
-	public static final int MSP_MODE_POSITION			    = 12;
-	public static final int MSP_MODE_LOITER					= 13;
-	public static final int MSP_MODE_MISSION				    = 14;
-	public static final int MSP_MODE_OFFBOARD				= 15;
-	public static final int MSP_MODE_LANDING				    = 16;
-	public static final int MSP_MODE_TAKEOFF				    = 17;
+	public static final int MSP_ARMED							= 8;
+//	public static final int MSP_MODE_MANUAL			        		= 9;
+//	public static final int MSP_MODE_STABILIZED			    		= 10;
+//	public static final int MSP_MODE_ALTITUDE			    		= 11;
+//	public static final int MSP_MODE_POSITION			    		= 12;
+//	public static final int MSP_MODE_LOITER						= 13;
+//	public static final int MSP_MODE_MISSION				    		= 14;
+//	public static final int MSP_MODE_OFFBOARD					= 15;
+//	public static final int MSP_MODE_LANDING				    		= 16;
+//	public static final int MSP_MODE_TAKEOFF				    		= 17;
+//
+//	public static final int MSP_MODE_RTL					    		= 19;
 
-	public static final int MSP_MODE_RTL					    = 19;
+	public static final int MSP_GPOS_VALID		            		= 20;
+	public static final int MSP_LPOS_VALID         		    		= 21;
 
-	public static final int MSP_GPOS_VALID		            = 20;
-	public static final int MSP_LPOS_VALID         		    = 21;
-
-	public static final int MSP_LANDED						= 24;
-	public static final int MSP_INAIR						= 25;
-	public static final int MSP_LANDING			     		= 26;
-	public static final int MSP_FAILSAFE         			= 27;
+	public static final int MSP_LANDED							= 24;
+	public static final int MSP_INAIR							= 25;
+	public static final int MSP_LANDING			     			= 26;
+	public static final int MSP_FAILSAFE         				= 27;
 
 
 	// Low level sensors
 
-	public static final  int MSP_IMU_AVAILABILITY     		= 0;
-	public static final  int MSP_LIDAR_AVAILABILITY   		= 1;
-	public static final  int MSP_SONAR_AVAILABILITY   		= 2;
-	public static final  int MSP_GPS_AVAILABILITY     		= 3;
-	public static final  int MSP_PIX4FLOW_AVAILABILITY    	= 4;
+	public static final  int MSP_IMU_AVAILABILITY     			= 0;
+	public static final  int MSP_LIDAR_AVAILABILITY   			= 1;
+	public static final  int MSP_SONAR_AVAILABILITY   			= 2;
+	public static final  int MSP_GPS_AVAILABILITY     			= 3;
+	public static final  int MSP_PIX4FLOW_AVAILABILITY    		= 4;
 
 
 	// High level services
 
-	public static final  int MSP_MSP_AVAILABILITY    		    = 5;
-	public static final  int MSP_OPCV_AVAILABILITY    		= 6;
-	public static final  int MSP_SYSM_AVAILABILITY    		= 7;
-	public static final  int MSP_SLAM_AVAILABILITY    		= 8;
-	public static final  int MSP_BASE_AVAILABILITY    		= 9;
-	public static final  int MSP_RTK_AVAILABILITY    		    =10;
+	public static final  int MSP_MSP_AVAILABILITY    		    		= 5;
+	public static final  int MSP_OPCV_AVAILABILITY    			= 6;
+	public static final  int MSP_SYSM_AVAILABILITY    			= 7;
+	public static final  int MSP_SLAM_AVAILABILITY    			= 8;
+	public static final  int MSP_BASE_AVAILABILITY    			= 9;
+	public static final  int MSP_RTK_AVAILABILITY    		    		=10;
 
 	// Navigation states
 
@@ -107,26 +107,20 @@ public class Status extends Segment {
 	public static final  int NAVIGATION_STATE_AUTO_RTGS 			= 7;		// Auto return to groundstation on data link loss
 	public static final  int NAVIGATION_STATE_AUTO_LANDENGFAIL 	= 8;	 	// Auto land on engine failure
 	public static final  int NAVIGATION_STATE_AUTO_LANDGPSFAIL 	= 9;		// Auto land on gps failure (e.g. open loop loiter down)
-	/*
-	uint8 NAVIGATION_STATE_ACRO = 10		# Acro mode
-							uint8 NAVIGATION_STATE_UNUSED = 11		# Free slot
-							uint8 NAVIGATION_STATE_DESCEND = 12		# Descend mode (no position control)
-							uint8 NAVIGATION_STATE_TERMINATION = 13		# Termination mode
-	*/
+	public static final  int NAVIGATION_STATE_ACRO 				= 10	;	// Acro mode
+	public static final  int NAVIGATION_STATE_UNUSED 				= 11	;	// Free slot
+	public static final  int NAVIGATION_STATE_DESCEND 			= 12	;	// Descend mode (no position control)
+	public static final  int NAVIGATION_STATE_TERMINATION 		= 13	;	// Termination mode
 	public static final  int NAVIGATION_STATE_OFFBOARD 			= 14;
-	/*
-							uint8 NAVIGATION_STATE_STAB = 15		# Stabilized mode
-							uint8 NAVIGATION_STATE_RATTITUDE = 16		# Rattitude (aka "flip") mode
-	*/
+	public static final  int NAVIGATION_STATE_STAB 				= 15;	// Stabilized mode
+	public static final  int NAVIGATION_STATE_RATTITUDE 			= 16	;	// Rattitude (aka "flip") mode
 	public static final  int NAVIGATION_STATE_AUTO_TAKEOFF 		= 17;	// Takeoff
 	public static final  int NAVIGATION_STATE_AUTO_LAND 			= 18	;	// Land
-/*
-							uint8 NAVIGATION_STATE_AUTO_FOLLOW_TARGET = 19	# Auto Follow
-							uint8 NAVIGATION_STATE_AUTO_PRECLAND = 20	# Precision land with landing target
-							uint8 NAVIGATION_STATE_MAX = 21
-*/
+ 	public static final  int NAVIGATION_STATE_AUTO_FOLLOW_TARGET 	= 19;	// Auto Follow
+	public static final  int NAVIGATION_STATE_AUTO_PRECLAND 		= 20	; 	// Precision land with landing target
 
-private static final String[] sensor_names = { "IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
+
+	private static final String[] sensor_names = { "IMU","LIDAR","SONAR","GPS","FLOW","MSP","CV","SYSM","SLAM","BASE","RTK",
 
 	};
 
