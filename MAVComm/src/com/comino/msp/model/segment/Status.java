@@ -44,7 +44,7 @@ public class Status extends Segment {
 	private static final long serialVersionUID = -8811124897034255443L;
 
 
-	// Status
+	// States
 
 	public static final int MSP_CONNECTED						= 0;
 	public static final int MSP_READY							= 1;
@@ -54,16 +54,11 @@ public class Status extends Segment {
 	public static final int MSP_OFFBOARD_UPDATER_STARTED     		= 5;
 	public static final int MSP_SITL                         		= 6;
 	public static final int MSP_PROXY                        		= 7;
-
 	public static final int MSP_ARMED							= 8;
-
-	public static final int MSP_GPOS_VALID		            		= 20;
-	public static final int MSP_LPOS_VALID         		    		= 21;
-
-	public static final int MSP_LANDED							= 24;
-	public static final int MSP_INAIR							= 25;
-	public static final int MSP_LANDING			     			= 26;
-	public static final int MSP_FAILSAFE         				= 27;
+	public static final int MSP_LANDED							= 9;
+	public static final int MSP_INAIR							= 10;
+	public static final int MSP_GPOS_VALID		            		= 11;
+	public static final int MSP_LPOS_VALID         		    		= 12;
 
 
 	// Low level sensors
