@@ -29,18 +29,6 @@ public class PX4HeartBeatPlugin extends MAVLinkPluginBase {
 
 		model.sys.setStatus(Status.MSP_CONNECTED, true);
 
-		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_ALTCTL))
-			model.sys.nav_state = Status.NAVIGATION_STATE_ALTCTL;
-
-		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL))
-			model.sys.nav_state = Status.NAVIGATION_STATE_POSCTL;
-
-		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD))
-			model.sys.nav_state = Status.NAVIGATION_STATE_OFFBOARD;
-
-		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_STABILIZED))
-			model.sys.nav_state = Status.NAVIGATION_STATE_STAB;
-
 		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LOITER))
 			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_LOITER;
 
@@ -56,7 +44,21 @@ public class PX4HeartBeatPlugin extends MAVLinkPluginBase {
 		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_TAKEOFF))
 			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_TAKEOFF;
 
-		//System.err.println(Long.toBinaryString(hb.custom_mode));
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_ALTCTL))
+			model.sys.nav_state = Status.NAVIGATION_STATE_ALTCTL;
+
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL))
+			model.sys.nav_state = Status.NAVIGATION_STATE_POSCTL;
+
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD))
+			model.sys.nav_state = Status.NAVIGATION_STATE_OFFBOARD;
+
+		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_STABILIZED))
+			model.sys.nav_state = Status.NAVIGATION_STATE_STAB;
+
+
+		System.err.println(Long.toBinaryString(hb.custom_mode));
+		System.err.println(MAV_CUST_MODE.getName(hb.custom_mode));
 
 	}
 }

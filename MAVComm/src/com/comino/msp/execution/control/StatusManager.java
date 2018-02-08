@@ -92,6 +92,7 @@ public class StatusManager implements Runnable {
 		entry.mask        = mask;
 		entry.timeout_ms  = timeout_ms;
 		entry.state       = edge;
+		System.out.println(entry.type+":"+entry.mask+" =>"+entry.state);
 		list.add(entry);
 	}
 
@@ -104,7 +105,10 @@ public class StatusManager implements Runnable {
 	}
 
 	public void addListener(byte type, int box, IMSPStatusChangedListener listener) {
-		addListener(type, 1 << box, 0, EDGE_BOTH, listener);
+		if(type == TYPE_PX4_NAVSTATE)
+			addListener(type, box, 0, EDGE_BOTH, listener);
+		else
+			addListener(type, 1 << box, 0, EDGE_BOTH, listener);
 	}
 
 	public void addListener(int box, IMSPStatusChangedListener listener) {
@@ -168,32 +172,40 @@ public class StatusManager implements Runnable {
 						}
 						break;
 					case TYPE_PX4_NAVSTATE:
-						switch(entry.state) {
-						case EDGE_BOTH:
-							if(status_current.nav_state != entry.mask) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
+
+					    if(status_current.nav_state != status_old.nav_state) {
+					       	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
+							switch(entry.state) {
+							case EDGE_BOTH:
+								if(status_current.nav_state != entry.mask) {
+									entry.listener.update(status_old, status_current);
+									entry.last_triggered = System.currentTimeMillis();
+									System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
+								}
+								break;
+							case EDGE_RISING:
+								if(status_current.nav_state != entry.mask && status_old.nav_state!=entry.mask) {
+									entry.listener.update(status_old, status_current);
+									entry.last_triggered = System.currentTimeMillis();
+									System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => R "+entry.mask);
+								}
+								break;
+							case EDGE_FALLING:
+
+								if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
+									entry.listener.update(status_old, status_current);
+									entry.last_triggered = System.currentTimeMillis();
+									System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => F "+entry.mask);
+								}
+								break;
 							}
-							break;
-						case EDGE_RISING:
-							if(status_current.nav_state != entry.mask && status_old.nav_state!=entry.mask) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
-						case EDGE_FALLING:
-							if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
 						}
 						break;
 					case TYPE_MSP_STATUS:
 
 						// TODO:
 
-							break;
+						break;
 					case TYPE_MSP_AUTOPILOT:
 						if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
 							entry.listener.update(status_old, status_current);

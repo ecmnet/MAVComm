@@ -211,6 +211,7 @@ public class OffboardManager implements Runnable {
 			if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				// Safety check: if RC attached, check XY sticks and fallback to POSHOLD if moved
 				if(Math.abs(model.rc.s1 -1500) > RC_DEADBAND || Math.abs(model.rc.s2 -1500) > RC_DEADBAND) {
+					logger.writeLocalMsg("[msp] OffboardUpdater stopped: RC",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );

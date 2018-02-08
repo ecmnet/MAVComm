@@ -86,7 +86,7 @@ public class Status extends Segment {
 	public static final  int NAVIGATION_STATE_POSCTL 				= 2;		// Position control mode
 	public static final  int NAVIGATION_STATE_AUTO_MISSION 		= 3;		// Auto mission mode
 	public static final  int NAVIGATION_STATE_AUTO_LOITER 		= 4;		// Auto loiter mode
-	public static final  int NAVIGATION_STATE_AUTO_RTL 			= 5;		//Auto return to launch mode
+	public static final  int NAVIGATION_STATE_AUTO_RTL 			= 5;		// Auto return to launch mode
 	public static final  int NAVIGATION_STATE_AUTO_RCRECOVER 		= 6;		// RC recover mode
 	public static final  int NAVIGATION_STATE_AUTO_RTGS 			= 7;		// Auto return to groundstation on data link loss
 	public static final  int NAVIGATION_STATE_AUTO_LANDENGFAIL 	= 8;	 	// Auto land on engine failure
@@ -259,7 +259,7 @@ public class Status extends Segment {
 
 
 	public boolean isEqual(Status m) {
-		return (status == m.status)	&& (autopilot == m.autopilot);
+		return (status == m.status)	&& (autopilot == m.autopilot) && (nav_state == m.nav_state);
 	}
 
 
