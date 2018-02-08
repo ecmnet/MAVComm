@@ -56,9 +56,5 @@ public class PX4HeartBeatPlugin extends MAVLinkPluginBase {
 		if(MAV_CUST_MODE.is(hb.custom_mode, MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_STABILIZED))
 			model.sys.nav_state = Status.NAVIGATION_STATE_STAB;
 
-
-		System.err.println(Long.toBinaryString(hb.custom_mode));
-		System.err.println(MAV_CUST_MODE.getName(hb.custom_mode));
-
 	}
 }

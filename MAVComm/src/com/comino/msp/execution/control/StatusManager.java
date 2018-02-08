@@ -92,7 +92,6 @@ public class StatusManager implements Runnable {
 		entry.mask        = mask;
 		entry.timeout_ms  = timeout_ms;
 		entry.state       = edge;
-		System.out.println(entry.type+":"+entry.mask+" =>"+entry.state);
 		list.add(entry);
 	}
 
@@ -174,20 +173,22 @@ public class StatusManager implements Runnable {
 					case TYPE_PX4_NAVSTATE:
 
 					    if(status_current.nav_state != status_old.nav_state) {
-					       	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
+					     //  	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
 							switch(entry.state) {
 							case EDGE_BOTH:
-								if(status_current.nav_state != entry.mask) {
+								if((status_current.nav_state != entry.mask && status_old.nav_state == entry.mask ) ||
+								   (status_current.nav_state == entry.mask && status_old.nav_state != entry.mask )
+										) {
 									entry.listener.update(status_old, status_current);
 									entry.last_triggered = System.currentTimeMillis();
-									System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
+							//		System.out.println("Trigger:"+status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
 								}
 								break;
 							case EDGE_RISING:
 								if(status_current.nav_state != entry.mask && status_old.nav_state!=entry.mask) {
 									entry.listener.update(status_old, status_current);
 									entry.last_triggered = System.currentTimeMillis();
-									System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => R "+entry.mask);
+							//		System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => R "+entry.mask);
 								}
 								break;
 							case EDGE_FALLING:
@@ -195,7 +196,7 @@ public class StatusManager implements Runnable {
 								if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
 									entry.listener.update(status_old, status_current);
 									entry.last_triggered = System.currentTimeMillis();
-									System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => F "+entry.mask);
+								//	System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => F "+entry.mask);
 								}
 								break;
 							}
