@@ -96,8 +96,8 @@ public class OffboardManager implements Runnable {
 
 		this.current_speed  = new Vector3D_F32();
 
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS,
-				Status.MSP_MODE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE,
+				Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
 					valid_setpoint = false;
 				});
 	}
@@ -223,7 +223,7 @@ public class OffboardManager implements Runnable {
 			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS  && !step_mode) {
 				valid_setpoint = false; mode = MODE_POSITION;
 
-				if(model.sys.isStatus(Status.MSP_MODE_OFFBOARD))
+				if(model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD)
 					logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			}
 
@@ -423,7 +423,7 @@ public class OffboardManager implements Runnable {
 
 	private void publishSLAM(float speed, Vector4D_F32 target, Vector4D_F32 current) {
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-		if(speed>0.05 && model.sys.isStatus(Status.MSP_MODE_OFFBOARD)) {
+		if(speed>0.05 && model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD) {
 			slam.px = target.getX();
 			slam.py = target.getY();
 			slam.pd = MSP3DUtils.getXYDirection(target, current);

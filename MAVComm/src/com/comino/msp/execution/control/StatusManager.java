@@ -52,8 +52,9 @@ public class StatusManager implements Runnable {
 
 	public static final byte  TYPE_ALL             = 0;
 	public static final byte  TYPE_PX4_STATUS      = 1;
-	public static final byte  TYPE_MSP_STATUS      = 2;
-	public static final byte  TYPE_MSP_AUTOPILOT   = 3;
+	public static final byte  TYPE_PX4_NAVSTATE    = 2;
+	public static final byte  TYPE_MSP_STATUS      = 3;
+	public static final byte  TYPE_MSP_AUTOPILOT   = 4;
 
 	public static final byte  EDGE_BOTH            = 0;
 	public static final byte  EDGE_RISING          = 1;
@@ -95,7 +96,11 @@ public class StatusManager implements Runnable {
 	}
 
 	public void addListener(byte type, int box, int edge, IMSPStatusChangedListener listener) {
-		addListener(type, 1 << box, 0, edge, listener);
+		// For NAV State use mask as comparison value
+		if(type == TYPE_PX4_NAVSTATE)
+			addListener(type, box, 0, edge, listener);
+		else
+			addListener(type, 1 << box, 0, edge, listener);
 	}
 
 	public void addListener(byte type, int box, IMSPStatusChangedListener listener) {
@@ -162,11 +167,33 @@ public class StatusManager implements Runnable {
 							break;
 						}
 						break;
+					case TYPE_PX4_NAVSTATE:
+						switch(entry.state) {
+						case EDGE_BOTH:
+							if(status_current.nav_state != entry.mask) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						case EDGE_RISING:
+							if(status_current.nav_state != entry.mask && status_old.nav_state!=entry.mask) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						case EDGE_FALLING:
+							if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						}
+						break;
 					case TYPE_MSP_STATUS:
 
 						// TODO:
 
-						break;
+							break;
 					case TYPE_MSP_AUTOPILOT:
 						if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
 							entry.listener.update(status_old, status_current);

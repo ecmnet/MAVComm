@@ -134,8 +134,8 @@ public class Autopilot2D implements Runnable {
 		//
 		// TODO: Landing during takeoff switches to offboard mode here => should directly land instead
 		//       Update: works in SITL, but not on vehicle (timing?)
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-			if(n.isStatus(Status.MSP_MODE_LANDING))
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
+			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
 				return;
 			offboard.setCurrentAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
@@ -153,7 +153,7 @@ public class Autopilot2D implements Runnable {
 			offboard.setStepMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.STEP_MODE));
 		});
 
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_MODE_RTL, StatusManager.EDGE_RISING, (o,n) -> {
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_RTL, StatusManager.EDGE_RISING, (o,n) -> {
 			offboard.stop();
 		});
 
@@ -278,7 +278,7 @@ public class Autopilot2D implements Runnable {
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 			}
 		} else {
-			if(model.sys.isStatus(Status.MSP_MODE_OFFBOARD)) {
+			if(model.sys.nav_state==Status.NAVIGATION_STATE_OFFBOARD) {
 				model.sys.autopilot = 0;
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
