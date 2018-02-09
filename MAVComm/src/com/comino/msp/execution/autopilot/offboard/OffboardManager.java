@@ -332,7 +332,7 @@ public class OffboardManager implements Runnable {
 			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
 
 		}
-		action_listener = null;
+		action_listener = null; ext_control_listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, false);
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		publishSLAM(0,target,current);
