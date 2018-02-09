@@ -165,7 +165,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 			try {
 
-				if(selector.select(5000)==0)
+				if(selector.select(1000)==0)
 					throw new IOException("UDP NIO Timeout");
 
 				selectedKeys = selector.selectedKeys().iterator();

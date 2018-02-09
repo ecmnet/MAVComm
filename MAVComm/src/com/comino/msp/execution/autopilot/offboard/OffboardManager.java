@@ -215,7 +215,7 @@ public class OffboardManager implements Runnable {
 					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-					continue;
+					enabled = false;
 				}
 			}
 
