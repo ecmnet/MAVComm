@@ -183,7 +183,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 			while(isConnected) {
 
-				if(selector.select(2000)==0)
+				if(selector.select(5000)==0)
 					continue;
 
 				selectedKeys = selector.selectedKeys().iterator();
