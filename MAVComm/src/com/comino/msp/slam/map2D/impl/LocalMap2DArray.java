@@ -91,7 +91,7 @@ public class LocalMap2DArray implements ILocalMap {
 		this.center_x_mm = center_x_m * 1000f;
 		this.center_y_mm = center_y_m * 1000f;
 
-		System.out.println("LocalMap2D initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
+		System.out.println("LocalMap2DArray initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
 		System.out.println(" and filter radius  "+FILTER_SIZE_PX*cell_size_mm+"mm");
 	}
 

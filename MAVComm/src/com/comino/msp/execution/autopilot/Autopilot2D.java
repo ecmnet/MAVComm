@@ -125,8 +125,10 @@ public class Autopilot2D implements Runnable {
 		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
 		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
 
-//		this.map      = new LocalMap2DArray(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
-		this.map      = new LocalMap2DRaycast(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+		if(control.isSimulation())
+			this.map      = new LocalMap2DArray(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+		else
+			this.map      = new LocalMap2DRaycast(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
 
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
 
@@ -153,9 +155,9 @@ public class Autopilot2D implements Runnable {
 			offboard.setStepMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.STEP_MODE));
 		});
 
-//		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_RTL, StatusManager.EDGE_RISING, (o,n) -> {
-//			offboard.stop();
-//		});
+		//		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_RTL, StatusManager.EDGE_RISING, (o,n) -> {
+		//			offboard.stop();
+		//		});
 
 		// Stop offboard updater as soon as landed
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (o,n) -> {
