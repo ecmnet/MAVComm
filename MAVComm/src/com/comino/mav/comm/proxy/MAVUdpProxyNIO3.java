@@ -219,6 +219,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 					}
 				}
 			}
+			close();
 		} catch(Exception e) {
 			close();
 			isConnected = false;

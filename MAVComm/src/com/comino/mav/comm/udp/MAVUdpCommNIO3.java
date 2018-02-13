@@ -112,7 +112,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 		try {
 			channel = DatagramChannel.open();
-		    channel.bind(bindPort);
+			channel.bind(bindPort);
 			channel.socket().setTrafficClass(0x10);
 			channel.socket().setBroadcast(true);
 			channel.socket().setReceiveBufferSize(512*1024);
@@ -132,12 +132,12 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 
 		} catch(Exception e) {
+			e.printStackTrace();
 			System.err.println("Open:"+e.getMessage());
 			try {
-				selector.close();
 				if(channel.isOpen()) {
-				channel.disconnect();
-				channel.close();
+					channel.disconnect();
+					channel.close();
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -159,7 +159,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			msg_heartbeat hb = new msg_heartbeat(255,1);
 			hb.isValid = true;
 			try {
-			write(hb);
+				write(hb);
 			} catch(Exception e) { }
 		} else
 			isConnected = false;
@@ -201,6 +201,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 				isConnected = false;
 			}
 		}
+		close();
 	}
 
 	@Override

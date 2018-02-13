@@ -156,11 +156,11 @@ public class MAVLinkReader2 {
 	}
 
 
-
+	private int c = 0;
 	public  boolean readMavLinkMessageFromBuffer(int v) {
 		try {
 
-			int c = (v & 0x00FF);
+			c = (v & 0x00FF);
 			//	System.out.println(state+":"+byteToHex(c));
 
 			switch(state) {
@@ -337,14 +337,14 @@ public class MAVLinkReader2 {
 	 * @return true if we don't lost messages
 	 */
 	protected boolean checkPacket(int sysId, int packet) {
-		boolean check = false;
+	//	boolean check = false;
 
 		if(sysId!=1)
 			return true;
 
 		if (lastPacket[sysId] == -1) {
 			// it is the first message read
-			check = true;
+	//		check = true;
 		}
 
 
@@ -355,13 +355,13 @@ public class MAVLinkReader2 {
 
 		if (lastPacket[sysId] < packet) {
 			if (packet - lastPacket[sysId] == 1) {
-				check = true;
+	//			check = true;
 			}
 		}
 		else
 			// We have reached the max number (255) and restart to 0
 			if (packet + 256 - lastPacket[sysId] == 1) {
-				check = true;
+	//			check = true;
 			}
 
 
