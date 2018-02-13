@@ -132,9 +132,13 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 
 		} catch(Exception e) {
-			System.err.println(e.getMessage());
+			System.err.println("Open:"+e.getMessage());
 			try {
+				selector.close();
+				if(channel.isOpen()) {
+				channel.disconnect();
 				channel.close();
+				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

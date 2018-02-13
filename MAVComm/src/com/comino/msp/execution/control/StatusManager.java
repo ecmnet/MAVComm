@@ -204,7 +204,7 @@ public class StatusManager implements Runnable {
 						break;
 					case TYPE_MSP_STATUS:
 
-						// TODO:
+						// TODO: Implement MSP_STATUS
 
 						break;
 					case TYPE_MSP_AUTOPILOT:
