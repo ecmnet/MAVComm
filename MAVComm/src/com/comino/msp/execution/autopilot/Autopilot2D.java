@@ -445,10 +445,10 @@ public class Autopilot2D implements Runnable {
 
 		float min_distance = getAvoidanceDistance(model.hud.s);
 
-		if(nearestTarget < min_distance) {
-			logger.writeLocalMsg("[msp] Autopilot: Too close to obstacle.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
-			return;
-		}
+//		if(nearestTarget < min_distance) {
+//			logger.writeLocalMsg("[msp] Autopilot: Too close to obstacle.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+//			return;
+//		}
 
 		isAvoiding = false;
 		autopilot.registerTargetListener((n)->{
