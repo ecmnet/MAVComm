@@ -131,6 +131,7 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
+		publishSLAM(0.1f,target,current);
 	}
 
 	public void setTarget(Vector3D_F32 t, float w) {
@@ -138,6 +139,7 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
+		publishSLAM(0.1f,target,current);
 	}
 
 	public void setTarget(Vector4D_F32 t) {
@@ -145,6 +147,7 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
+		publishSLAM(0.1f,target,current);
 	}
 
 	public Vector4D_F32 getCurrentTarget() {
@@ -424,7 +427,7 @@ public class OffboardManager implements Runnable {
 
 	private void publishSLAM(float speed, Vector4D_F32 target, Vector4D_F32 current) {
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-		if(speed>0.05 && model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD) {
+		if(speed>0.05 ) { //&& model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD) {
 			slam.px = target.getX();
 			slam.py = target.getY();
 			slam.pd = MSP3DUtils.getXYDirection(target, current);
