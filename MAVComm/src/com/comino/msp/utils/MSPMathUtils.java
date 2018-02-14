@@ -48,7 +48,7 @@ public class MSPMathUtils {
 		ref.lat_rad = lat0 * toRad;
 		ref.lon_rad = lon0 * toRad;
 		ref.sin_lat = Math.sin(ref.lat_rad);
-		ref.cos_lat = Math.sin(ref.lat_rad);
+		ref.cos_lat = Math.cos(ref.lat_rad);
 		ref.init    = true;
 	}
 
