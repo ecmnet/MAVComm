@@ -2,6 +2,8 @@ package com.comino.mav.mavlink.plugins;
 
 import org.mavlink.messages.lquac.msg_home_position;
 
+import com.comino.msp.utils.MSPMathUtils;
+
 public class PX4HomePositionPlugin extends MAVLinkPluginBase {
 
 	public PX4HomePositionPlugin() {
@@ -20,6 +22,8 @@ public class PX4HomePositionPlugin extends MAVLinkPluginBase {
 		model.home_state.g_lat = ref.latitude  / 1e7;
 		model.home_state.g_lon = ref.longitude / 1e7;
 		model.home_state.g_alt = (int) ((ref.altitude + 500) / 1000f);
+
+		MSPMathUtils.map_projection_init(model.home_state.g_lat, model.home_state.g_lon);
 
 
 	}
