@@ -393,8 +393,8 @@ public class Autopilot2D implements Runnable {
 				ctl[IOffboardExternalControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
 				ctl[IOffboardExternalControl.SPEED] = lvfh.getSelectedSpeed();
 
-				slam.px = projected.getY();
-				slam.py = projected.getX();
+				slam.px = projected.getX();
+				slam.py = projected.getY();
 				slam.md = nearestTarget;
 				slam.pd = target_dir;
 				slam.pv = speed*5;
