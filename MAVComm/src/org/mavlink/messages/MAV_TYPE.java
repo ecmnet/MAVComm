@@ -128,4 +128,8 @@ public interface MAV_TYPE {
      * Dodecarotor
      */
     public final static int MAV_TYPE_DODECAROTOR = 29;
+    /**
+     * Camera
+     */
+    public final static int MAV_TYPE_CAMERA = 30;
 }

@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_high_latency2
- * (DRAFT) Message appropriate for high latency connections like Iridium (version 2)
+ * WIP: Message appropriate for high latency connections like Iridium (version 2)
  **/
 public class msg_high_latency2 extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_HIGH_LATENCY2 = 235;
@@ -40,6 +40,10 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public long longitude;
   /**
+   * A bitfield for use for autopilot-specific flags (2 byte version).
+   */
+  public int custom_mode;
+  /**
    * Altitude above mean sea level
    */
   public int altitude;
@@ -56,7 +60,7 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public int wp_num;
   /**
-   * Indicates failures as defined in MAV_FAILURE_FLAG ENUM.
+   * Indicates failures as defined in HL_FAILURE_FLAG ENUM.
    */
   public int failure_flags;
   /**
@@ -67,10 +71,6 @@ public class msg_high_latency2 extends MAVLinkMessage {
    * Autopilot type / class. defined in MAV_AUTOPILOT ENUM
    */
   public int autopilot;
-  /**
-   * Flight Mode of the vehicle as defined in the FLIGHT_MODE ENUM
-   */
-  public int flight_mode;
   /**
    * Heading (degrees / 2)
    */
@@ -124,10 +124,6 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public int battery;
   /**
-   * Indicates if a failsafe mode is triggered, defined in MAV_FAILSAFE_FLAG ENUM
-   */
-  public int failsafe;
-  /**
    * Field for custom payload.
    */
   public int custom0;
@@ -146,6 +142,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   timestamp = (int)dis.readInt()&0x00FFFFFFFF;
   latitude = (int)dis.readInt();
   longitude = (int)dis.readInt();
+  custom_mode = (int)dis.readUnsignedShort()&0x00FFFF;
   altitude = (int)dis.readShort();
   target_altitude = (int)dis.readShort();
   target_distance = (int)dis.readUnsignedShort()&0x00FFFF;
@@ -153,7 +150,6 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   failure_flags = (int)dis.readUnsignedShort()&0x00FFFF;
   type = (int)dis.readUnsignedByte()&0x00FF;
   autopilot = (int)dis.readUnsignedByte()&0x00FF;
-  flight_mode = (int)dis.readUnsignedByte()&0x00FF;
   heading = (int)dis.readUnsignedByte()&0x00FF;
   target_heading = (int)dis.readUnsignedByte()&0x00FF;
   throttle = (int)dis.readUnsignedByte()&0x00FF;
@@ -167,7 +163,6 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   temperature_air = (int)dis.readByte();
   climb_rate = (int)dis.readByte();
   battery = (int)dis.readByte();
-  failsafe = (int)dis.readUnsignedByte()&0x00FF;
   custom0 = (int)dis.readByte();
   custom1 = (int)dis.readByte();
   custom2 = (int)dis.readByte();
@@ -191,6 +186,7 @@ public byte[] encode() throws IOException {
   dos.writeInt((int)(timestamp&0x00FFFFFFFF));
   dos.writeInt((int)(latitude&0x00FFFFFFFF));
   dos.writeInt((int)(longitude&0x00FFFFFFFF));
+  dos.writeShort(custom_mode&0x00FFFF);
   dos.writeShort(altitude&0x00FFFF);
   dos.writeShort(target_altitude&0x00FFFF);
   dos.writeShort(target_distance&0x00FFFF);
@@ -198,7 +194,6 @@ public byte[] encode() throws IOException {
   dos.writeShort(failure_flags&0x00FFFF);
   dos.writeByte(type&0x00FF);
   dos.writeByte(autopilot&0x00FF);
-  dos.writeByte(flight_mode&0x00FF);
   dos.writeByte(heading&0x00FF);
   dos.writeByte(target_heading&0x00FF);
   dos.writeByte(throttle&0x00FF);
@@ -212,7 +207,6 @@ public byte[] encode() throws IOException {
   dos.write(temperature_air&0x00FF);
   dos.write(climb_rate&0x00FF);
   dos.write(battery&0x00FF);
-  dos.writeByte(failsafe&0x00FF);
   dos.write(custom0&0x00FF);
   dos.write(custom1&0x00FF);
   dos.write(custom2&0x00FF);
@@ -229,5 +223,5 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HIGH_LATENCY2 : " +   "  timestamp="+timestamp+  "  latitude="+latitude+  "  longitude="+longitude+  "  altitude="+altitude+  "  target_altitude="+target_altitude+  "  target_distance="+target_distance+  "  wp_num="+wp_num+  "  failure_flags="+failure_flags+  "  type="+type+  "  autopilot="+autopilot+  "  flight_mode="+flight_mode+  "  heading="+heading+  "  target_heading="+target_heading+  "  throttle="+throttle+  "  airspeed="+airspeed+  "  airspeed_sp="+airspeed_sp+  "  groundspeed="+groundspeed+  "  windspeed="+windspeed+  "  wind_heading="+wind_heading+  "  eph="+eph+  "  epv="+epv+  "  temperature_air="+temperature_air+  "  climb_rate="+climb_rate+  "  battery="+battery+  "  failsafe="+failsafe+  "  custom0="+custom0+  "  custom1="+custom1+  "  custom2="+custom2;}
+return "MAVLINK_MSG_ID_HIGH_LATENCY2 : " +   "  timestamp="+timestamp+  "  latitude="+latitude+  "  longitude="+longitude+  "  custom_mode="+custom_mode+  "  altitude="+altitude+  "  target_altitude="+target_altitude+  "  target_distance="+target_distance+  "  wp_num="+wp_num+  "  failure_flags="+failure_flags+  "  type="+type+  "  autopilot="+autopilot+  "  heading="+heading+  "  target_heading="+target_heading+  "  throttle="+throttle+  "  airspeed="+airspeed+  "  airspeed_sp="+airspeed_sp+  "  groundspeed="+groundspeed+  "  windspeed="+windspeed+  "  wind_heading="+wind_heading+  "  eph="+eph+  "  epv="+epv+  "  temperature_air="+temperature_air+  "  climb_rate="+climb_rate+  "  battery="+battery+  "  custom0="+custom0+  "  custom1="+custom1+  "  custom2="+custom2;}
 }
