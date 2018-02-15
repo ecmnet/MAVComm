@@ -68,7 +68,7 @@ import georegression.struct.point.Vector4D_F32;
 public class Autopilot2D implements Runnable {
 
 	private static final int   CYCLE_MS					= 100;
-	private static final int   CYCLE_MS_MODEL_MAP		= 500;
+	private static final int   CYCLE_MS_MODEL_MAP		= 200;
 
 	private static final int   CERTAINITY_THRESHOLD      = 10;
 	private static final float ROBOT_RADIUS         		= 0.3f;
