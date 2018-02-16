@@ -225,7 +225,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean isSimulation() {
-		return true;
+		return !comm.isSerial();
 	}
 
 	@Override
