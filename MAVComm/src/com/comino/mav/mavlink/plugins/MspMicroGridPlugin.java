@@ -2,6 +2,8 @@ package com.comino.mav.mavlink.plugins;
 
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 
+import com.comino.msp.model.segment.Status;
+
 public class MspMicroGridPlugin extends MAVLinkPluginBase {
 
 	public MspMicroGridPlugin() {
@@ -18,6 +20,7 @@ public class MspMicroGridPlugin extends MAVLinkPluginBase {
 		model.grid.count = (int) grid.count;
 		model.grid.status = (byte)grid.status;
 		model.grid.tms = model.sys.getSynchronizedPX4Time_us();
+		model.sys.setSensor(Status.MSP_SLAM_AVAILABILITY, true);
 
 	}
 }
