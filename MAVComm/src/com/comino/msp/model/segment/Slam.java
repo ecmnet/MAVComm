@@ -47,7 +47,7 @@ public class Slam extends Segment {
 	public float    pd;		// planned direction XY
 	public float    pp;		// planned direction YZ
 	public float    pv;		// planned speed
-	public float    di;      // distance to nearest obstacle
+	public float    di;     	// distance to target
 
 	public Slam() {
 

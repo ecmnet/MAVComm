@@ -443,13 +443,6 @@ public class Autopilot2D implements Runnable {
 	public void moveto(float x, float y, float z, float yaw) {
 		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
 
-		float min_distance = getAvoidanceDistance(model.hud.s);
-
-//		if(nearestTarget < min_distance) {
-//			logger.writeLocalMsg("[msp] Autopilot: Too close to obstacle.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
-//			return;
-//		}
-
 		isAvoiding = false;
 		autopilot.registerTargetListener((n)->{
 			n.set(target);

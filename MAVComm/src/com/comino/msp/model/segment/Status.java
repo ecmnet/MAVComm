@@ -128,6 +128,7 @@ public class Status extends Segment {
 
 	public long     t_offset_ns =	 0;
 	public String   version    		= "";
+	public String   build    		= "";
 
 
 	public void set(Status s) {
@@ -249,7 +250,7 @@ public class Status extends Segment {
 		status        = 0;
 		autopilot     = 0;
 		wifi_quality  = 0;
-		msp_temp   		= 0;
+		msp_temp   	  = 0;
 	}
 
 

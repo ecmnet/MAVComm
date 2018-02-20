@@ -131,7 +131,6 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
-		publishSLAM(0.1f,target,current);
 	}
 
 	public void setTarget(Vector3D_F32 t, float w) {
@@ -139,7 +138,6 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
-		publishSLAM(0.1f,target,current);
 	}
 
 	public void setTarget(Vector4D_F32 t) {
@@ -147,7 +145,6 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
-		publishSLAM(0.1f,target,current);
 	}
 
 	public Vector4D_F32 getCurrentTarget() {
@@ -166,6 +163,7 @@ public class OffboardManager implements Runnable {
 		mode = MODE_POSITION;
 		this.action_listener      = null;
 		this.ext_control_listener = null;
+		publishSLAM(0,target,current);
 	}
 
 	public boolean isEnabled() {
@@ -196,7 +194,7 @@ public class OffboardManager implements Runnable {
 	public void run() {
 
 		float delta, delta_sec;  long tms, sleep_tms = 0; float[] ctl = new float[2];
-		long watch_tms = System.currentTimeMillis();
+		long watch_tms = System.currentTimeMillis(); long publish_tms = 0;
 
 		already_fired = false; valid_setpoint = false;
 
@@ -235,6 +233,7 @@ public class OffboardManager implements Runnable {
 				new_setpoint = false;
 				ctl[IOffboardExternalControl.ANGLE] = 0;
 				ctl[IOffboardExternalControl.SPEED] = 0;
+				publishSLAM(0,target,current);
 			}
 
 			switch(mode) {
@@ -255,6 +254,7 @@ public class OffboardManager implements Runnable {
 					fireAction(model, delta);
 					watch_tms = System.currentTimeMillis();
 					step_trigger = false;
+					continue;
 				}
 				break;
 
@@ -298,6 +298,7 @@ public class OffboardManager implements Runnable {
 					fireAction(model, delta);
 					step_trigger = false;
 					mode = MODE_POSITION;
+					continue;
 				}
 
 				if(ext_control_listener!=null) {
@@ -322,6 +323,11 @@ public class OffboardManager implements Runnable {
 
 				sendSpeedControlToVehice(current_speed,(float)(2*Math.PI)-ctl[IOffboardExternalControl.ANGLE]+(float)Math.PI/2f);
 
+				if((System.currentTimeMillis() - publish_tms) > 100) {
+					publishSLAM(current_speed.norm(),target,current);
+					publish_tms = System.currentTimeMillis();
+				}
+
 				break;
 			}
 
@@ -331,14 +337,12 @@ public class OffboardManager implements Runnable {
 
 			if(sleep_tms> 0 && enabled)
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
-
 			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
 
 		}
 		action_listener = null; ext_control_listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, false);
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
-		publishSLAM(0,target,current);
 		already_fired = false; valid_setpoint = false;
 		model.sys.autopilot = 0;
 	}
@@ -427,13 +431,14 @@ public class OffboardManager implements Runnable {
 
 	private void publishSLAM(float speed, Vector4D_F32 target, Vector4D_F32 current) {
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+		slam.pv = 0;
 		if(speed>0.05 ) { //&& model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD) {
 			slam.px = target.getX();
 			slam.py = target.getY();
 			slam.pd = MSP3DUtils.getXYDirection(target, current);
 			slam.pv = speed;
-
-			model.debug.x = slam.pd;
+			slam.md  = MSP3DUtils.distance2D(target,current);
+			slam.tms = model.sys.getSynchronizedPX4Time_us();
 		}
 		control.sendMAVLinkMessage(slam);
 	}
