@@ -393,13 +393,6 @@ public class Autopilot2D implements Runnable {
 				ctl[IOffboardExternalControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
 				ctl[IOffboardExternalControl.SPEED] = lvfh.getSelectedSpeed();
 
-				slam.px = projected.getX();
-				slam.py = projected.getY();
-				slam.md = nearestTarget;
-				slam.pd = target_dir;
-				slam.pv = speed*5;
-				control.sendMAVLinkMessage(slam);
-
 			} catch(Exception e) {
 				logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
 				offboard.setTarget(current);
