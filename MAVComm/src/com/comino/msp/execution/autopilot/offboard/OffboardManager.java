@@ -41,6 +41,7 @@ import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
+import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.control.StatusManager;
@@ -54,7 +55,7 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED						= 0.8f;
+	private static final float MAX_SPEED						= 1.0f;		// Default Max speed: 1 m/s
 	private static final int   RC_DEADBAND               		= 20;		// RC XY deadband for safety check
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
@@ -78,13 +79,15 @@ public class OffboardManager implements Runnable {
 	private Vector4D_F32				current					= null;
 	private Vector3D_F32				current_speed			= null;
 
-	private float		acceptance_radius_pos				= 0.2f;
-	private float		acceptance_radius_speed				= 0.05f;
-	private boolean     already_fired				    		= false;
-	private boolean     valid_setpoint                   		= false;
-	private boolean     new_setpoint                    	 	= false;
-	private boolean     step_mode                        		= false;
-	private boolean     step_trigger                     		= false;
+	private float	 	acceptance_radius_pos				= 0.2f;
+	private float	   	acceptance_radius_speed				= 0.05f;
+	private float       	max_speed							= MAX_SPEED;
+	private float		break_radius						    = MAX_SPEED;
+	private boolean    	already_fired				    		= false;
+	private boolean     	valid_setpoint                   	= false;
+	private boolean    	new_setpoint                    	 	= false;
+	private boolean     	step_mode                        	= false;
+	private boolean     	step_trigger                    		= false;
 
 
 	public OffboardManager(IMAVController control) {
@@ -95,6 +98,11 @@ public class OffboardManager implements Runnable {
 		this.current        = new Vector4D_F32();
 
 		this.current_speed  = new Vector3D_F32();
+
+		MSPConfig config		= MSPConfig.getInstance();
+
+		max_speed = config.getFloatProperty("AP2D_MAX_SPEED", String.valueOf(MAX_SPEED));
+		System.out.println("Offboard speed constraints: "+max_speed+" m/s");
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE,
 				Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
@@ -306,7 +314,8 @@ public class OffboardManager implements Runnable {
 				}
 				else {
 					ctl[IOffboardExternalControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
-					if(delta > 1.0) {
+					// speed control: reduce speed if nearer than 1s of max_speed
+					if(delta > break_radius) {
 						ctl[IOffboardExternalControl.SPEED] += 0.1*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
 					}
@@ -348,10 +357,12 @@ public class OffboardManager implements Runnable {
 	}
 
 	private void constraint_speed(Vector3D_F32 s) {
-		if(s.x >  MAX_SPEED )  s.x =  MAX_SPEED;
-		if(s.y >  MAX_SPEED )  s.y =  MAX_SPEED;
-		if(s.x < -MAX_SPEED )  s.x = -MAX_SPEED;
-		if(s.y < -MAX_SPEED )  s.y = -MAX_SPEED;
+		if(s.x >  max_speed )  s.x =  max_speed;
+		if(s.y >  max_speed )  s.y =  max_speed;
+		if(s.z >  max_speed )  s.z =  max_speed;
+		if(s.x < -max_speed )  s.x = -max_speed;
+		if(s.y < -max_speed )  s.y = -max_speed;
+		if(s.z < -max_speed )  s.z = -max_speed;
 	}
 
 	private void sendPositionControlToVehice(Vector4D_F32 target) {
