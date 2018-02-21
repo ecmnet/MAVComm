@@ -102,7 +102,9 @@ public class OffboardManager implements Runnable {
 		MSPConfig config		= MSPConfig.getInstance();
 
 		max_speed = config.getFloatProperty("AP2D_MAX_SPEED", String.valueOf(MAX_SPEED));
-		System.out.println("Offboard speed constraints: "+max_speed+" m/s");
+		System.out.println("Offboard: speed constraints: "+max_speed+" m/s ");
+		break_radius = max_speed*2;
+		System.out.println("Offboard: break-radius: "+break_radius+" m");
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE,
 				Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
