@@ -21,7 +21,7 @@ public class MspStatusPlugin extends MAVLinkPluginBase {
 		model.sys.wifi_quality = status.wifi_quality/100f;
 		model.sys.msp_temp = (byte)status.cpu_temp;
 		model.sys.setStatus(Status.MSP_READY, true);
-
+		model.sys.build = status.getVersion();
 
 	}
 }
