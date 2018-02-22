@@ -996,6 +996,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_AIRFRAME_CONFIGURATION = 2520;
     /**
+     * Request to start/stop transmitting over the high latency telemetry
+     * PARAM 1 : Control transmittion over high latency telemetry (0: stop, 1: start)
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_CONTROL_HIGH_LATENCY = 2600;
+    /**
      * Create a panorama at the current position
      * PARAM 1 : Viewing angle horizontal of the panorama (in degrees, +- 0.5 the total angle)
      * PARAM 2 : Viewing angle vertical of panorama (in degrees)

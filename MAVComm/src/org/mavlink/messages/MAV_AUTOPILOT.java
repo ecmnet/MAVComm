@@ -84,4 +84,8 @@ public interface MAV_AUTOPILOT {
      * SmartAP Autopilot - http://sky-drones.com
      */
     public final static int MAV_AUTOPILOT_SMARTAP = 18;
+    /**
+     * AirRails - http://uaventure.com
+     */
+    public final static int MAV_AUTOPILOT_AIRRAILS = 19;
 }

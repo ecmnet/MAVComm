@@ -56,7 +56,7 @@ public class msg_msp_micro_slam extends MAVLinkMessage {
    */
   public float pv;
   /**
-   * Distance to neearest obstacle
+   * Distance to target
    */
   public float md;
   /**
