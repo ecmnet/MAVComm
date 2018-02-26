@@ -52,4 +52,8 @@ public interface ESTIMATOR_STATUS_FLAGS {
      * True if the EKF has detected a GPS glitch
      */
     public final static int ESTIMATOR_GPS_GLITCH = 1024;
+    /**
+     * True if the EKF has detected bad accelerometer data
+     */
+    public final static int ESTIMATOR_ACCEL_ERROR = 2048;
 }

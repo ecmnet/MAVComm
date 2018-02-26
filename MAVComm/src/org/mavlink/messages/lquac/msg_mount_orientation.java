@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_mount_orientation
- * WIP: Orientation of a mount
+ * Orientation of a mount
  **/
 public class msg_mount_orientation extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_MOUNT_ORIENTATION = 265;
@@ -24,7 +24,7 @@ public class msg_mount_orientation extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MOUNT_ORIENTATION;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 16;
+    payload_length = 20;
 }
 
   /**
@@ -32,17 +32,21 @@ public class msg_mount_orientation extends MAVLinkMessage {
    */
   public long time_boot_ms;
   /**
-   * Roll in degrees
+   * Roll in global frame in degrees (set to NaN for invalid).
    */
   public float roll;
   /**
-   * Pitch in degrees
+   * Pitch in global frame in degrees (set to NaN for invalid).
    */
   public float pitch;
   /**
-   * Yaw in degrees
+   * Yaw relative to vehicle in degrees (set to NaN for invalid).
    */
   public float yaw;
+  /**
+   * Yaw in absolute frame in degrees, North is 0 (set to NaN for invalid).
+   */
+  public float yaw_absolute;
 /**
  * Decode message with raw data
  */
@@ -51,12 +55,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   roll = (float)dis.readFloat();
   pitch = (float)dis.readFloat();
   yaw = (float)dis.readFloat();
+  yaw_absolute = (float)dis.readFloat();
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+16];
+  byte[] buffer = new byte[12+20];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -72,18 +77,19 @@ public byte[] encode() throws IOException {
   dos.writeFloat(roll);
   dos.writeFloat(pitch);
   dos.writeFloat(yaw);
+  dos.writeFloat(yaw_absolute);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 16);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 20);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[26] = crcl;
-  buffer[27] = crch;
+  buffer[30] = crcl;
+  buffer[31] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MOUNT_ORIENTATION : " +   "  time_boot_ms="+time_boot_ms+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw;}
+return "MAVLINK_MSG_ID_MOUNT_ORIENTATION : " +   "  time_boot_ms="+time_boot_ms+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw+  "  yaw_absolute="+yaw_absolute;}
 }
