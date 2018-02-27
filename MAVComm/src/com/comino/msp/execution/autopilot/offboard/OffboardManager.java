@@ -63,6 +63,7 @@ public class OffboardManager implements Runnable {
 	private static final int UPDATE_RATE                 		= 50;
 	private static final int SETPOINT_TIMEOUT_MS         		= 15000;
 
+	public static final int MODE_LOITER	 		   			= 0;
 	public static final int MODE_POSITION	 		   		= 1;
 	public static final int MODE_SPEED	 		        		= 2;
 	public static final int MODE_SPEED_POSITION	 	    		= 3;
@@ -136,6 +137,7 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setTarget(Vector3D_F32 t) {
+		mode = MODE_LOITER;
 		target.set(t.x,t.y,t.z,0);
 		target.w = MSP3DUtils.getXYDirection(target, current);
 		valid_setpoint = true;
@@ -144,6 +146,7 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setTarget(Vector3D_F32 t, float w) {
+		mode = MODE_LOITER;
 		target.set(t.x,t.y,t.z,w);
 		valid_setpoint = true;
 		new_setpoint = true;
@@ -151,6 +154,7 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setTarget(Vector4D_F32 t) {
+		mode = MODE_LOITER;
 		target.set(t);
 		valid_setpoint = true;
 		new_setpoint = true;
@@ -162,6 +166,7 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setCurrentAsTarget() {
+		mode = MODE_LOITER;
 		target.set(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.y);
 		already_fired = false;
 		new_setpoint = true;
@@ -169,8 +174,8 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void finalize() {
+		mode = MODE_LOITER;
 		target.w = 0;
-		mode = MODE_POSITION;
 		this.action_listener      = null;
 		this.ext_control_listener = null;
 		publishSLAM(0,target,current);
@@ -247,6 +252,11 @@ public class OffboardManager implements Runnable {
 			}
 
 			switch(mode) {
+
+			case MODE_LOITER:
+				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
+				sendPositionControlToVehice(current);
+				break;
 
 			case MODE_POSITION:
 				if(!valid_setpoint) {
