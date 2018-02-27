@@ -67,8 +67,10 @@ public class MSPMathUtils {
 		 }
 
 		 return (float)Math.hypot(p2[0] - p1[0], p2[1] - p1[1]);
+	}
 
-
+	public static boolean is_projection_initialized() {
+		return ref.init;
 	}
 
 
