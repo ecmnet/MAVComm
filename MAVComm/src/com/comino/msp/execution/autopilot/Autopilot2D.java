@@ -69,7 +69,6 @@ import georegression.struct.point.Vector4D_F32;
 public class Autopilot2D implements Runnable {
 
 	private static final int   CYCLE_MS					= 100;
-	private static final int   CYCLE_MS_MODEL_MAP		= 200;
 
 	private static final int   CERTAINITY_THRESHOLD      = 10;
 	private static final float ROBOT_RADIUS         		= 0.3f;
@@ -99,8 +98,6 @@ public class Autopilot2D implements Runnable {
 	private boolean            	isAvoiding  		= false;
 	private boolean				mapForget   		= false;
 	private float             	nearestTarget 	= 0;
-
-	private long					model_update_tms = 0;
 
 
 	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
@@ -211,11 +208,6 @@ public class Autopilot2D implements Runnable {
 			}
 			if(mapForget)
 				map.forget();
-
-			if((System.currentTimeMillis() - model_update_tms) > CYCLE_MS_MODEL_MAP) {
-				model_update_tms = System.currentTimeMillis();
-				map.toDataModel(model, false);
-			}
 		}
 	}
 
