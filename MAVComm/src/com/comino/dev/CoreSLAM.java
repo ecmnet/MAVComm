@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.comino.msp.slam.map2D.ILocalMap;
-import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.utils.MSPArrayUtils;
 import com.comino.msp.utils.MSPMathUtils;
 
@@ -262,7 +261,7 @@ public class CoreSLAM {
 
 	public static void main(String[] args) {
 
-		LocalMap2DArray map    = new LocalMap2DArray(10f,0.01f,1f,1);
+		LocalMap2DArray_old map    = new LocalMap2DArray_old(10f,0.01f,1f,1);
 
 		CoreSLAM slam = new CoreSLAM(map);
 

@@ -62,13 +62,19 @@ public class LocalMap2DRaycast implements ILocalMap {
 	private float			local_y_mm;
 
 	private int 			    map_dimension;
-	private int             window_dimension;
-	private long            tms;
+	private int              window_dimension;
+	private long             tms;
 
 	private int				threshold = 0;
+	private DataModel		model = null;
 
 	public LocalMap2DRaycast() {
 		this(40.0f,0.05f,2.0f,2);
+	}
+
+	public LocalMap2DRaycast(DataModel model, float window, int certainity) {
+		this(model.grid.getExtension(),model.grid.getResolution(),window,certainity);
+		this.model = model;
 	}
 
 	public LocalMap2DRaycast(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
@@ -186,15 +192,15 @@ public class LocalMap2DRaycast implements ILocalMap {
 	}
 
 	public void toDataModel(DataModel model,  boolean debug) {
-		//TODO: Only transfer changes
-		for (int y = 0; y <map_dimension; y++) {
-			for (int x = 0; x < map_dimension; x++) {
-				if(map[x][y] > threshold)
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
-				else
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
-			}
-		}
+//		//TODO: Only transfer changes
+//		for (int y = 0; y <map_dimension; y++) {
+//			for (int x = 0; x < map_dimension; x++) {
+//				if(map[x][y] > threshold)
+//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
+//				else
+//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+//			}
+//		}
 		if(debug)
 			System.out.println(model.grid);
 	}
@@ -208,6 +214,8 @@ public class LocalMap2DRaycast implements ILocalMap {
 						continue;
 					map[i][j] -= CERTAINITY_INCR/4;
 					if(map[i][j]<0) map[i][j] = 0;
+					if(map[i][j] <= threshold)
+						model.grid.setBlock((i*cell_size_mm-center_x_mm)/1000f,(j*cell_size_mm-center_y_mm)/1000f, 0, false);
 				}
 		}
 	}
@@ -229,6 +237,12 @@ public class LocalMap2DRaycast implements ILocalMap {
 			Arrays.fill(row, (short)0);
 		for (short[] row : window)
 			Arrays.fill(row, (short)0);
+		if(model!=null) {
+			for (int y = 0; y <map_dimension; y++) {
+				for (int x = 0; x < map_dimension; x++)
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+			}
+		}
 	}
 
 	public short[][] get() {
@@ -314,6 +328,8 @@ public class LocalMap2DRaycast implements ILocalMap {
 		if(x >=0 && y>=0 && x < map.length && y < map.length) {
 			if(map[x][y]<MAX_CERTAINITY) {
 				map[x][y] +=dr;
+				if(map[x][y] > threshold)
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
 				return true;
 			}
 		}
@@ -323,6 +339,7 @@ public class LocalMap2DRaycast implements ILocalMap {
 	private boolean clear_map_point(int x,int y) {
 		if(x >=0 && y>=0 && x < map.length && y < map.length) {
 			map[x][y] = 0;
+			model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
 			return true;
 		}
 		return false;

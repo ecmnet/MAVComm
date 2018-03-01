@@ -3,8 +3,8 @@ package com.comino.msp.slam.map2D;
 import java.util.ArrayList;
 
 import com.comino.dev.CoreSLAM;
+import com.comino.dev.LocalMap2DArray_old;
 import com.comino.dev.LocalMap2DGrayU8;
-import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 
 import boofcv.abst.denoise.FactoryImageDenoise;
@@ -34,7 +34,7 @@ public class MapTest {
 	// Map enhancement tests
 
 	public static void main(String[] args) {
-		LocalMap2DArray map    = new LocalMap2DArray();
+		LocalMap2DArray_old map    = new LocalMap2DArray_old();
 		LocaMap2DStorage store = new LocaMap2DStorage(map,"test");
 
 

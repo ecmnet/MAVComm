@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.comino.msp.slam.map2D.ILocalMap;
-import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 
 import georegression.struct.point.Point3D_F64;
@@ -267,7 +266,7 @@ public class OriginalTinySLAM {
 
 	public static void main(String[] args) {
 
-		LocalMap2DArray map    = new LocalMap2DArray();
+		LocalMap2DArray_old map    = new LocalMap2DArray_old();
 
 		OriginalTinySLAM slam = new OriginalTinySLAM(map);
 

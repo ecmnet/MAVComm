@@ -70,6 +70,7 @@ public interface ILocalMap {
 
 	public void forget();
 
+	// might be obseolete if Raycast2 works properly
 	public void toDataModel(DataModel model, boolean b);
 
 }

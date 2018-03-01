@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.slam.map2D.impl;
+package com.comino.dev;
 
 import java.util.Arrays;
 
@@ -44,7 +44,7 @@ import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F64;
 
-public class LocalMap2DArray implements ILocalMap {
+public class LocalMap2DArray_old implements ILocalMap {
 
 	private static int        FILTER_SIZE_PX     = 2;
 
@@ -68,22 +68,15 @@ public class LocalMap2DArray implements ILocalMap {
 
 	private int				threshold = 0;
 
-	private DataModel		model = null;
-
-	public LocalMap2DArray() {
+	public LocalMap2DArray_old() {
 		this(40.0f,0.05f,2.0f,2);
 	}
 
-	public LocalMap2DArray(DataModel model, float window, int certainity) {
-		this(model.grid.getExtension(),model.grid.getResolution(),window,certainity);
-		this.model = model;
-	}
-
-	public LocalMap2DArray(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
+	public LocalMap2DArray_old(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
 		this(diameter_m, cell_size_m, window_diameter_m, diameter_m/2f, diameter_m/2f, threshold );
 	}
 
-	public LocalMap2DArray(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m,  int threshold) {
+	public LocalMap2DArray_old(float map_diameter_m, float cell_size_m, float window_diameter_m, float center_x_m, float center_y_m,  int threshold) {
 		cell_size_mm = (int)(cell_size_m * 1000f);
 		this.threshold = threshold;
 
@@ -128,7 +121,7 @@ public class LocalMap2DArray implements ILocalMap {
 		return set(lpos_x+point.x, lpos_y+point.y,CERTAINITY_INCR);
 	}
 
-	public boolean merge(LocalMap2DArray m, float weight) {
+	public boolean merge(LocalMap2DArray_old m, float weight) {
 		return true;
 	}
 
@@ -194,15 +187,15 @@ public class LocalMap2DArray implements ILocalMap {
 
 
 	public void toDataModel(DataModel model,  boolean debug) {
-		//		//TODO: Only transfer changes
-		//		for (int y = 0; y <map_dimension; y++) {
-		//			for (int x = 0; x < map_dimension; x++) {
-		//				if(map[x][y] > threshold)
-		//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
-		//				else
-		//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
-		//			}
-		//		}
+		//TODO: Only transfer changes
+		for (int y = 0; y <map_dimension; y++) {
+			for (int x = 0; x < map_dimension; x++) {
+				if(map[x][y] > threshold)
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
+				else
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+			}
+		}
 		if(debug)
 			System.out.println(model.grid);
 	}
@@ -216,8 +209,6 @@ public class LocalMap2DArray implements ILocalMap {
 						continue;
 					map[i][j] -= CERTAINITY_INCR/4;
 					if(map[i][j]<0) map[i][j] = 0;
-					if(map[i][j] <= threshold)
-						model.grid.setBlock((i*cell_size_mm-center_x_mm)/1000f,(j*cell_size_mm-center_y_mm)/1000f, 0, false);
 				}
 		}
 	}
@@ -239,12 +230,6 @@ public class LocalMap2DArray implements ILocalMap {
 			Arrays.fill(row, (short)0);
 		for (short[] row : window)
 			Arrays.fill(row, (short)0);
-		if(model!=null) {
-			for (int y = 0; y <map_dimension; y++) {
-				for (int x = 0; x < map_dimension; x++)
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
-			}
-		}
 	}
 
 	public short[][] get() {
@@ -272,14 +257,14 @@ public class LocalMap2DArray implements ILocalMap {
 		do {
 			for(i=x;i<=0;i++) {
 				if(y!=y_old) {
-					dr = ( value - sqrt(y*y+i*i) * value / radius );
-					dr = dr < 0 ? 0 : dr;
-					if(dr!=0) {
-						set_map_point(xm-i,ym+y,dr);
-						set_map_point(xm-y,ym-i,dr);
-						set_map_point(xm+i,ym-y,dr);
-						set_map_point(xm+y,ym+i,dr);
-					}
+						dr = ( value - sqrt(y*y+i*i) * value / radius );
+						dr = dr < 0 ? 0 : dr;
+						if(dr!=0) {
+							set_map_point(xm-i,ym+y,dr);
+							set_map_point(xm-y,ym-i,dr);
+							set_map_point(xm+i,ym-y,dr);
+							set_map_point(xm+y,ym+i,dr);
+						}
 				}
 			}
 			y_old = y;
@@ -304,8 +289,6 @@ public class LocalMap2DArray implements ILocalMap {
 		if(x >=0 && y>=0 && x < map.length && y < map.length) {
 			if(map[x][y]<MAX_CERTAINITY) {
 				map[x][y] +=dr;
-				if(map[x][y] > threshold)
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
 				return true;
 			}
 		}
@@ -348,7 +331,7 @@ public class LocalMap2DArray implements ILocalMap {
 	}
 
 	public static void main(String[] args) {
-		LocalMap2DArray map = new LocalMap2DArray(11,1,2, 1);
+		LocalMap2DArray_old map = new LocalMap2DArray_old(11,1,2, 1);
 		System.out.println(map);
 
 	}

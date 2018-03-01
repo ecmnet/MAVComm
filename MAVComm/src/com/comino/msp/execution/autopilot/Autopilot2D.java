@@ -43,6 +43,7 @@ import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
+import com.comino.dev.LocalMap2DRaycast_old;
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
@@ -126,9 +127,9 @@ public class Autopilot2D implements Runnable {
 		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
 
 		if(control.isSimulation())
-			this.map      = new LocalMap2DArray(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+			this.map      = new LocalMap2DArray(model,WINDOWSIZE,CERTAINITY_THRESHOLD);
 		else
-			this.map      = new LocalMap2DRaycast(model.grid.getExtension(),model.grid.getResolution(),WINDOWSIZE,CERTAINITY_THRESHOLD);
+			this.map      = new LocalMap2DRaycast(model,WINDOWSIZE,CERTAINITY_THRESHOLD);
 
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
 
