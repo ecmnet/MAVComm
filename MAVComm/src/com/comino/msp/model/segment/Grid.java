@@ -208,9 +208,9 @@ public class Grid extends Segment {
 
 		if(set) {
 			if(!data.containsKey(block)) {
-				Point3D_F32 p = new Point3D_F32((float)Math.round(xpos * blocks_per_m)/blocks_per_m,
-	                                            (float)Math.round(ypos * blocks_per_m)/blocks_per_m,
-	                                            (float)Math.round(zpos * blocks_per_m)/blocks_per_m);
+				Point3D_F32 p = new Point3D_F32((float)Math.round((float)xpos * blocks_per_m)/blocks_per_m,
+	                                            (float)Math.round((float)ypos * blocks_per_m)/blocks_per_m,
+	                                            (float)Math.round((float)zpos * blocks_per_m)/blocks_per_m);
 				data.put(block,p);
 				transfer.add(block);
 			}
