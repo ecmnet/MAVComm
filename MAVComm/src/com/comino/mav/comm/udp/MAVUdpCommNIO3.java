@@ -113,9 +113,10 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		try {
 			channel = DatagramChannel.open();
 			channel.bind(bindPort);
-			channel.socket().setTrafficClass(0x10);
-			channel.socket().setBroadcast(true);
-			channel.socket().setReceiveBufferSize(64*1024);
+		//	channel.socket().setTrafficClass(0x04);
+		//	channel.socket().setBroadcast(true);
+			channel.socket().setReceiveBufferSize(32*1024);
+			channel.socket().setSendBufferSize(32*1024);
 			channel.connect(peerPort);
 			channel.configureBlocking(false);
 			selector = Selector.open();

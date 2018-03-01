@@ -99,9 +99,10 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				try {
 					channel = DatagramChannel.open();
 					channel.socket().bind(bindPort);
-					channel.socket().setTrafficClass(0x10);
-					channel.socket().setBroadcast(true);
-					channel.socket().setSendBufferSize(256*1024);
+			//		channel.socket().setTrafficClass(0x10);
+			//		channel.socket().setBroadcast(true);
+					channel.socket().setSendBufferSize(32*1024);
+					channel.socket().setReceiveBufferSize(32*1024);
 					channel.configureBlocking(false);
 
 					Thread.sleep(100);
