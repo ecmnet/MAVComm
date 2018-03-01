@@ -187,7 +187,7 @@ public class LocalMap2DArray implements ILocalMap {
 
 
 	public void toDataModel(DataModel model,  boolean debug) {
-
+		//TODO: Only transfer changes
 		for (int y = 0; y <map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
 				if(map[x][y] > threshold)
