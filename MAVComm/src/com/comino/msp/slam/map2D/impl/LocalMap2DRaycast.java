@@ -48,7 +48,7 @@ public class LocalMap2DRaycast implements ILocalMap {
 
 
 	private static final long OBLIVISION_TIME_MS = 500;
-	private static final int  MAX_CERTAINITY     = 400;
+	private static final int  MAX_CERTAINITY     = 600;
 	private static final int  CERTAINITY_INCR    = 20;
 
 	private short[][] 		map;
