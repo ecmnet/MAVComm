@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_mission_request
- * Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM message. http://qgroundcontrol.org/mavlink/waypoint_protocol
+ * Request the information of the mission item with the sequence number seq. The response of the system to this message should be a MISSION_ITEM message. https://mavlink.io/en/protocol/mission.html
  **/
 public class msg_mission_request extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_MISSION_REQUEST = 40;

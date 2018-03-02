@@ -40,6 +40,7 @@ import java.util.Map;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
+import org.mavlink.messages.lquac.msg_gps_global_origin;
 import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
@@ -111,9 +112,6 @@ public class MAVProxyController implements IMAVMSPController {
 			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
 
-			//			proxy = new MAVUdpProxyNIO3("192.168.178.20",14550,"192.168.178.22",14555,comm);
-			//			peerAddress = "192.168.178.20";
-
 			System.out.println("Proxy Controller loaded: "+peerAddress);
 
 		}
@@ -129,6 +127,8 @@ public class MAVProxyController implements IMAVMSPController {
 				proxy.write(msg);
 			} else {
 				if(controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
+					if(msg instanceof msg_gps_global_origin)
+					   System.out.println(msg);
 					comm.write(msg);
 				} else {
 					System.out.println("Command rejected. No connection.");

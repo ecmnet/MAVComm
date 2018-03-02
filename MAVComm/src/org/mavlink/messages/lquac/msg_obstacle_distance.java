@@ -28,19 +28,19 @@ public class msg_obstacle_distance extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since system boot or since UNIX epoch)
+   * Timestamp (microseconds since system boot or since UNIX epoch).
    */
   public long time_usec;
   /**
-   * Distance of obstacles in front of the sensor starting on the left side. A value of 0 means that the obstacle is right in front of the sensor. A value of max_distance +1 means no obstace is present. A value of UINT16_MAX for unknown/not used. In a array element, each unit corresponds to 1cm.
+   * Distance of obstacles around the UAV with index 0 corresponding to local North. A value of 0 means that the obstacle is right in front of the sensor. A value of max_distance +1 means no obstacle is present. A value of UINT16_MAX for unknown/not used. In a array element, one unit corresponds to 1cm.
    */
   public int[] distances = new int[72];
   /**
-   * Minimum distance the sensor can measure in centimeters
+   * Minimum distance the sensor can measure in centimeters.
    */
   public int min_distance;
   /**
-   * Maximum distance the sensor can measure in centimeters
+   * Maximum distance the sensor can measure in centimeters.
    */
   public int max_distance;
   /**
