@@ -63,6 +63,8 @@ public class OffboardManager implements Runnable {
 	private static final int UPDATE_RATE                 		= 50;
 	private static final int SETPOINT_TIMEOUT_MS         		= 15000;
 
+	private static final float PI2							= 2f*(float)Math.PI;
+
 	public static final int MODE_LOITER	 		   			= 0;
 	public static final int MODE_POSITION	 		   		= 1;
 	public static final int MODE_SPEED	 		        		= 2;
@@ -384,6 +386,9 @@ public class OffboardManager implements Runnable {
 		cmd.target_system    = 1;
 		cmd.type_mask        = 0b000101111111000;
 
+		if(target.w >  Math.PI) target.w = target.w - PI2;
+		if(target.w < -Math.PI) target.w = target.w + PI2;
+
 		cmd.x   = target.x;
 		cmd.y   = target.y;
 		cmd.z   = target.z;
@@ -429,6 +434,9 @@ public class OffboardManager implements Runnable {
 		cmd.target_component = 1;
 		cmd.target_system    = 1;
 		cmd.type_mask        = 0b000101111000111;
+
+		if(yaw >  Math.PI) yaw = yaw - PI2;
+		if(yaw < -Math.PI) yaw = yaw + PI2;
 
 		cmd.vx       = target.x;
 		cmd.vy       = target.y;
