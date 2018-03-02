@@ -127,8 +127,6 @@ public class MAVProxyController implements IMAVMSPController {
 				proxy.write(msg);
 			} else {
 				if(controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
-					if(msg instanceof msg_gps_global_origin)
-					   System.out.println(msg);
 					comm.write(msg);
 				} else {
 					System.out.println("Command rejected. No connection.");

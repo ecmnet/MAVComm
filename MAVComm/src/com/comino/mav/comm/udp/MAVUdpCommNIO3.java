@@ -218,7 +218,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		return null;
 	}
 
-	public synchronized void write(MAVLinkMessage msg) throws IOException {
+	public void write(MAVLinkMessage msg) throws IOException {
 		if(!channel.isConnected())
 			throw new IOException("Not yet connected");
 		if(msg!=null && channel!=null && channel.isOpen())
