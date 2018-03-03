@@ -8,7 +8,9 @@ This Java based tool enables companions to be connected to PixHawk and serves as
 
 It also provides a MAVLink parser and a flat data model to https://github.com/ecmnet/MAVGCL and to the visual odometry https://github.com/ecmnet/MAVSlam.
 
-Additionally, it offers an experimental LVH+ based autopilot (integrates with MAVSLAM), which provides local path planning as 2D proof of concept. 
+Vehicle control is supported by a PX4 offboard manager.
+
+Additionally, it offers an experimental LVH+ based autopilot (integrates with MAVSLAM), which provides local mapping and path planning as 2D proof of concept. 
 
 **Supported companion platforms:**
 
