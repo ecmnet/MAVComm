@@ -218,13 +218,19 @@ public class OffboardManager implements Runnable {
 		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, true);
 
-		tms = model.sys.getSynchronizedPX4Time_us();
+		tms = System.currentTimeMillis();
 
 		//		// Check bottom clearance for minimal altitude above ground. Abort offboard if too low
 		//		if(model.hud.ar < MIN_REL_ALTITUDE)
 		//			enabled = false;
 
 		while(enabled) {
+
+			sleep_tms = UPDATE_RATE - (System.currentTimeMillis() - tms );
+			tms = System.currentTimeMillis();
+
+			if(sleep_tms> 0 && enabled && sleep_tms < UPDATE_RATE)
+				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 
 			if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				// Safety check: if RC attached, check XY sticks and fallback to POSHOLD if moved
@@ -354,12 +360,6 @@ public class OffboardManager implements Runnable {
 				break;
 			}
 
-
-			sleep_tms = UPDATE_RATE - (model.sys.getSynchronizedPX4Time_us() - tms ) / 1000;
-			tms = model.sys.getSynchronizedPX4Time_us();
-
-			if(sleep_tms> 0 && enabled)
-				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
 
 		}
