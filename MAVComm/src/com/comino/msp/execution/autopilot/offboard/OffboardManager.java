@@ -262,8 +262,10 @@ public class OffboardManager implements Runnable {
 			switch(mode) {
 
 			case MODE_LOITER:
-				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
+				if(!valid_setpoint)
+					setCurrentAsTarget();
 				sendPositionControlToVehice(current);
+				watch_tms = System.currentTimeMillis();
 				break;
 
 			case MODE_POSITION:
