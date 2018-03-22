@@ -132,4 +132,8 @@ public interface MAV_TYPE {
      * Camera
      */
     public final static int MAV_TYPE_CAMERA = 30;
+    /**
+     * Charging station
+     */
+    public final static int MAV_TYPE_CHARGING_STATION = 31;
 }

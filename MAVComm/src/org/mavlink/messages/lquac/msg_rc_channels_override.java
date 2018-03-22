@@ -24,7 +24,7 @@ public class msg_rc_channels_override extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 18;
+    payload_length = 38;
 }
 
   /**
@@ -67,6 +67,46 @@ public class msg_rc_channels_override extends MAVLinkMessage {
    * Component ID
    */
   public int target_component;
+  /**
+   * RC channel 9 value, in microseconds. A value of 0 means to ignore this field.
+   */
+  public int chan9_raw;
+  /**
+   * RC channel 10 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan10_raw;
+  /**
+   * RC channel 11 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan11_raw;
+  /**
+   * RC channel 12 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan12_raw;
+  /**
+   * RC channel 13 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan13_raw;
+  /**
+   * RC channel 14 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan14_raw;
+  /**
+   * RC channel 15 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan15_raw;
+  /**
+   * RC channel 16 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan16_raw;
+  /**
+   * RC channel 17 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan17_raw;
+  /**
+   * RC channel 18 value, in microseconds. A value of 0 or UINT16_MAX means to ignore this field.
+   */
+  public int chan18_raw;
 /**
  * Decode message with raw data
  */
@@ -81,12 +121,22 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   chan8_raw = (int)dis.readUnsignedShort()&0x00FFFF;
   target_system = (int)dis.readUnsignedByte()&0x00FF;
   target_component = (int)dis.readUnsignedByte()&0x00FF;
+  chan9_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan10_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan11_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan12_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan13_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan14_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan15_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan16_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan17_raw = (int)dis.readUnsignedShort()&0x00FFFF;
+  chan18_raw = (int)dis.readUnsignedShort()&0x00FFFF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+18];
+  byte[] buffer = new byte[12+38];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -108,18 +158,28 @@ public byte[] encode() throws IOException {
   dos.writeShort(chan8_raw&0x00FFFF);
   dos.writeByte(target_system&0x00FF);
   dos.writeByte(target_component&0x00FF);
+  dos.writeShort(chan9_raw&0x00FFFF);
+  dos.writeShort(chan10_raw&0x00FFFF);
+  dos.writeShort(chan11_raw&0x00FFFF);
+  dos.writeShort(chan12_raw&0x00FFFF);
+  dos.writeShort(chan13_raw&0x00FFFF);
+  dos.writeShort(chan14_raw&0x00FFFF);
+  dos.writeShort(chan15_raw&0x00FFFF);
+  dos.writeShort(chan16_raw&0x00FFFF);
+  dos.writeShort(chan17_raw&0x00FFFF);
+  dos.writeShort(chan18_raw&0x00FFFF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 18);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 38);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[28] = crcl;
-  buffer[29] = crch;
+  buffer[48] = crcl;
+  buffer[49] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE : " +   "  chan1_raw="+chan1_raw+  "  chan2_raw="+chan2_raw+  "  chan3_raw="+chan3_raw+  "  chan4_raw="+chan4_raw+  "  chan5_raw="+chan5_raw+  "  chan6_raw="+chan6_raw+  "  chan7_raw="+chan7_raw+  "  chan8_raw="+chan8_raw+  "  target_system="+target_system+  "  target_component="+target_component;}
+return "MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE : " +   "  chan1_raw="+chan1_raw+  "  chan2_raw="+chan2_raw+  "  chan3_raw="+chan3_raw+  "  chan4_raw="+chan4_raw+  "  chan5_raw="+chan5_raw+  "  chan6_raw="+chan6_raw+  "  chan7_raw="+chan7_raw+  "  chan8_raw="+chan8_raw+  "  target_system="+target_system+  "  target_component="+target_component+  "  chan9_raw="+chan9_raw+  "  chan10_raw="+chan10_raw+  "  chan11_raw="+chan11_raw+  "  chan12_raw="+chan12_raw+  "  chan13_raw="+chan13_raw+  "  chan14_raw="+chan14_raw+  "  chan15_raw="+chan15_raw+  "  chan16_raw="+chan16_raw+  "  chan17_raw="+chan17_raw+  "  chan18_raw="+chan18_raw;}
 }

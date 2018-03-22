@@ -9,11 +9,11 @@ package org.mavlink.messages;
  **/
 public interface MAV_FRAME {
     /**
-     * Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL)
+     * Global coordinate frame, WGS84 coordinate system. First value / x: latitude, second value / y: longitude, third value / z: positive altitude over mean sea level (MSL).
      */
     public final static int MAV_FRAME_GLOBAL = 0;
     /**
-     * Local coordinate frame, Z-up (x: north, y: east, z: down).
+     * Local coordinate frame, Z-down (x: north, y: east, z: down).
      */
     public final static int MAV_FRAME_LOCAL_NED = 1;
     /**
@@ -25,11 +25,11 @@ public interface MAV_FRAME {
      */
     public final static int MAV_FRAME_GLOBAL_RELATIVE_ALT = 3;
     /**
-     * Local coordinate frame, Z-down (x: east, y: north, z: up)
+     * Local coordinate frame, Z-up (x: east, y: north, z: up).
      */
     public final static int MAV_FRAME_LOCAL_ENU = 4;
     /**
-     * Global coordinate frame, WGS84 coordinate system. First value / x: latitude in degrees*1.0e-7, second value / y: longitude in degrees*1.0e-7, third value / z: positive altitude over mean sea level (MSL)
+     * Global coordinate frame, WGS84 coordinate system. First value / x: latitude in degrees*1.0e-7, second value / y: longitude in degrees*1.0e-7, third value / z: positive altitude over mean sea level (MSL).
      */
     public final static int MAV_FRAME_GLOBAL_INT = 5;
     /**

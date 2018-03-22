@@ -40,14 +40,14 @@ public class Servo extends Segment {
 
 	private static final long serialVersionUID = 6155451845240484694L;
 
-	public float servo1 = 0;
-	public float servo2 = 0;
-	public float servo3 = 0;
-	public float servo4 = 0;
-	public float servo5 = 0;
-	public float servo6 = 0;
-	public float servo7 = 0;
-	public float servo8 = 0;
+	public int servo1 = 0;
+	public int servo2 = 0;
+	public int servo3 = 0;
+	public int servo4 = 0;
+	public int servo5 = 0;
+	public int servo6 = 0;
+	public int servo7 = 0;
+	public int servo8 = 0;
 
 	public void set(Servo a) {
 		this.servo1 = a.servo1;
