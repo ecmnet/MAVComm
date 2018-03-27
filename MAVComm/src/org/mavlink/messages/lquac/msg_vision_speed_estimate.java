@@ -24,7 +24,7 @@ public class msg_vision_speed_estimate extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 20;
+    payload_length = 56;
 }
 
   /**
@@ -43,6 +43,10 @@ public class msg_vision_speed_estimate extends MAVLinkMessage {
    * Global Z speed
    */
   public float z;
+  /**
+   * Linear velocity covariance matrix (1st three entries - 1st row, etc.)
+   */
+  public float[] covariance = new float[9];
 /**
  * Decode message with raw data
  */
@@ -51,12 +55,15 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   x = (float)dis.readFloat();
   y = (float)dis.readFloat();
   z = (float)dis.readFloat();
+  for (int i=0; i<9; i++) {
+    covariance[i] = (float)dis.readFloat();
+  }
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+20];
+  byte[] buffer = new byte[12+56];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -72,18 +79,21 @@ public byte[] encode() throws IOException {
   dos.writeFloat(x);
   dos.writeFloat(y);
   dos.writeFloat(z);
+  for (int i=0; i<9; i++) {
+    dos.writeFloat(covariance[i]);
+  }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 20);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 56);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[30] = crcl;
-  buffer[31] = crch;
+  buffer[66] = crcl;
+  buffer[67] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE : " +   "  usec="+usec+  "  x="+x+  "  y="+y+  "  z="+z;}
+return "MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE : " +   "  usec="+usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  covariance="+covariance;}
 }

@@ -24,7 +24,7 @@ public class msg_att_pos_mocap extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_ATT_POS_MOCAP;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 36;
+    payload_length = 120;
 }
 
   /**
@@ -47,6 +47,10 @@ public class msg_att_pos_mocap extends MAVLinkMessage {
    * Z position in meters (NED)
    */
   public float z;
+  /**
+   * Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)
+   */
+  public float[] covariance = new float[21];
 /**
  * Decode message with raw data
  */
@@ -58,12 +62,15 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   x = (float)dis.readFloat();
   y = (float)dis.readFloat();
   z = (float)dis.readFloat();
+  for (int i=0; i<21; i++) {
+    covariance[i] = (float)dis.readFloat();
+  }
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+36];
+  byte[] buffer = new byte[12+120];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -82,18 +89,21 @@ public byte[] encode() throws IOException {
   dos.writeFloat(x);
   dos.writeFloat(y);
   dos.writeFloat(z);
+  for (int i=0; i<21; i++) {
+    dos.writeFloat(covariance[i]);
+  }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 36);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 120);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[46] = crcl;
-  buffer[47] = crch;
+  buffer[130] = crcl;
+  buffer[131] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ATT_POS_MOCAP : " +   "  time_usec="+time_usec+  "  q="+q+  "  x="+x+  "  y="+y+  "  z="+z;}
+return "MAVLINK_MSG_ID_ATT_POS_MOCAP : " +   "  time_usec="+time_usec+  "  q="+q+  "  x="+x+  "  y="+y+  "  z="+z+  "  covariance="+covariance;}
 }

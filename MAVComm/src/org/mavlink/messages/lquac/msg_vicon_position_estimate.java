@@ -24,7 +24,7 @@ public class msg_vicon_position_estimate extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 32;
+    payload_length = 116;
 }
 
   /**
@@ -55,6 +55,10 @@ public class msg_vicon_position_estimate extends MAVLinkMessage {
    * Yaw angle in rad
    */
   public float yaw;
+  /**
+   * Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)
+   */
+  public float[] covariance = new float[21];
 /**
  * Decode message with raw data
  */
@@ -66,12 +70,15 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   roll = (float)dis.readFloat();
   pitch = (float)dis.readFloat();
   yaw = (float)dis.readFloat();
+  for (int i=0; i<21; i++) {
+    covariance[i] = (float)dis.readFloat();
+  }
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+32];
+  byte[] buffer = new byte[12+116];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -90,18 +97,21 @@ public byte[] encode() throws IOException {
   dos.writeFloat(roll);
   dos.writeFloat(pitch);
   dos.writeFloat(yaw);
+  for (int i=0; i<21; i++) {
+    dos.writeFloat(covariance[i]);
+  }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 32);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 116);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[42] = crcl;
-  buffer[43] = crch;
+  buffer[126] = crcl;
+  buffer[127] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE : " +   "  usec="+usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw;}
+return "MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE : " +   "  usec="+usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw+  "  covariance="+covariance;}
 }

@@ -24,7 +24,7 @@ public class msg_battery_status extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_BATTERY_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 36;
+    payload_length = 41;
 }
 
   /**
@@ -63,6 +63,14 @@ public class msg_battery_status extends MAVLinkMessage {
    * Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery
    */
   public int battery_remaining;
+  /**
+   * Remaining battery time, in seconds (1 = 1s = 0% energy left), 0: autopilot does not provide remaining battery time estimate
+   */
+  public long time_remaining;
+  /**
+   * State for extent of discharge, provided by autopilot for warning or external reactions
+   */
+  public int charge_state;
 /**
  * Decode message with raw data
  */
@@ -78,12 +86,14 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   battery_function = (int)dis.readUnsignedByte()&0x00FF;
   type = (int)dis.readUnsignedByte()&0x00FF;
   battery_remaining = (int)dis.readByte();
+  time_remaining = (int)dis.readInt();
+  charge_state = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+36];
+  byte[] buffer = new byte[12+41];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -106,18 +116,20 @@ public byte[] encode() throws IOException {
   dos.writeByte(battery_function&0x00FF);
   dos.writeByte(type&0x00FF);
   dos.write(battery_remaining&0x00FF);
+  dos.writeInt((int)(time_remaining&0x00FFFFFFFF));
+  dos.writeByte(charge_state&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 36);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 41);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[46] = crcl;
-  buffer[47] = crch;
+  buffer[51] = crcl;
+  buffer[52] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_BATTERY_STATUS : " +   "  current_consumed="+current_consumed+  "  energy_consumed="+energy_consumed+  "  temperature="+temperature+  "  voltages="+voltages+  "  current_battery="+current_battery+  "  id="+id+  "  battery_function="+battery_function+  "  type="+type+  "  battery_remaining="+battery_remaining;}
+return "MAVLINK_MSG_ID_BATTERY_STATUS : " +   "  current_consumed="+current_consumed+  "  energy_consumed="+energy_consumed+  "  temperature="+temperature+  "  voltages="+voltages+  "  current_battery="+current_battery+  "  id="+id+  "  battery_function="+battery_function+  "  type="+type+  "  battery_remaining="+battery_remaining+  "  time_remaining="+time_remaining+  "  charge_state="+charge_state;}
 }

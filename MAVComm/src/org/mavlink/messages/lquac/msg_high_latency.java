@@ -68,7 +68,7 @@ public class msg_high_latency extends MAVLinkMessage {
    */
   public int wp_distance;
   /**
-   * System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h
+   * System mode bitfield, as defined by MAV_MODE_FLAG enum.
    */
   public int base_mode;
   /**

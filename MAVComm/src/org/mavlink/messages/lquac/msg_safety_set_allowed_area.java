@@ -60,7 +60,7 @@ public class msg_safety_set_allowed_area extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.
+   * Coordinate frame, as defined by MAV_FRAME enum. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.
    */
   public int frame;
 /**

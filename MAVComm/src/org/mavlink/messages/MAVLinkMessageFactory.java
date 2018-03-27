@@ -21,6 +21,7 @@ import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_control_system_state;
 import org.mavlink.messages.lquac.msg_timesync;
 import org.mavlink.messages.lquac.msg_mission_item_reached;
+import org.mavlink.messages.lquac.msg_estimator_state_std;
 import org.mavlink.messages.lquac.msg_v2_extension;
 import org.mavlink.messages.lquac.msg_debug_vect;
 import org.mavlink.messages.lquac.msg_battery_status;
@@ -88,6 +89,7 @@ import org.mavlink.messages.lquac.msg_change_operator_control_ack;
 import org.mavlink.messages.lquac.msg_terrain_request;
 import org.mavlink.messages.lquac.msg_terrain_check;
 import org.mavlink.messages.lquac.msg_adsb_vehicle;
+import org.mavlink.messages.lquac.msg_estimator_state;
 import org.mavlink.messages.lquac.msg_memory_vect;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
@@ -129,6 +131,7 @@ import org.mavlink.messages.lquac.msg_vision_speed_estimate;
 import org.mavlink.messages.lquac.msg_rc_channels_override;
 import org.mavlink.messages.lquac.msg_camera_capture_status;
 import org.mavlink.messages.lquac.msg_logging_ack;
+import org.mavlink.messages.lquac.msg_estimator_innov_std;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
@@ -138,6 +141,7 @@ import org.mavlink.messages.lquac.msg_set_home_position;
 import org.mavlink.messages.lquac.msg_gps2_raw;
 import org.mavlink.messages.lquac.msg_position_target_global_int;
 import org.mavlink.messages.lquac.msg_named_value_int;
+import org.mavlink.messages.lquac.msg_estimator_innov;
 import org.mavlink.messages.lquac.msg_camera_information;
 import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_terrain_report;
@@ -149,6 +153,7 @@ import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
 import org.mavlink.messages.lquac.msg_hil_actuator_controls;
 import org.mavlink.messages.lquac.msg_manual_control;
+import org.mavlink.messages.lquac.msg_estimator_innov_cov;
 import org.mavlink.messages.lquac.msg_message_interval;
 import org.mavlink.messages.lquac.msg_scaled_pressure;
 import org.mavlink.messages.lquac.msg_hil_state_quaternion;
@@ -166,6 +171,7 @@ import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
 import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
+import org.mavlink.messages.lquac.msg_odometry;
 import org.mavlink.messages.lquac.msg_video_stream_information;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
@@ -183,6 +189,7 @@ import org.mavlink.messages.lquac.msg_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_control_system_state;
 import org.mavlink.messages.lquac.msg_timesync;
 import org.mavlink.messages.lquac.msg_mission_item_reached;
+import org.mavlink.messages.lquac.msg_estimator_state_std;
 import org.mavlink.messages.lquac.msg_v2_extension;
 import org.mavlink.messages.lquac.msg_debug_vect;
 import org.mavlink.messages.lquac.msg_msp_status;
@@ -252,6 +259,7 @@ import org.mavlink.messages.lquac.msg_change_operator_control_ack;
 import org.mavlink.messages.lquac.msg_terrain_request;
 import org.mavlink.messages.lquac.msg_terrain_check;
 import org.mavlink.messages.lquac.msg_adsb_vehicle;
+import org.mavlink.messages.lquac.msg_estimator_state;
 import org.mavlink.messages.lquac.msg_memory_vect;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
@@ -294,6 +302,7 @@ import org.mavlink.messages.lquac.msg_vision_speed_estimate;
 import org.mavlink.messages.lquac.msg_rc_channels_override;
 import org.mavlink.messages.lquac.msg_camera_capture_status;
 import org.mavlink.messages.lquac.msg_logging_ack;
+import org.mavlink.messages.lquac.msg_estimator_innov_std;
 import org.mavlink.messages.lquac.msg_vfr_hud;
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
@@ -303,6 +312,7 @@ import org.mavlink.messages.lquac.msg_set_home_position;
 import org.mavlink.messages.lquac.msg_gps2_raw;
 import org.mavlink.messages.lquac.msg_position_target_global_int;
 import org.mavlink.messages.lquac.msg_named_value_int;
+import org.mavlink.messages.lquac.msg_estimator_innov;
 import org.mavlink.messages.lquac.msg_camera_information;
 import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_terrain_report;
@@ -314,6 +324,7 @@ import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
 import org.mavlink.messages.lquac.msg_hil_actuator_controls;
 import org.mavlink.messages.lquac.msg_manual_control;
+import org.mavlink.messages.lquac.msg_estimator_innov_cov;
 import org.mavlink.messages.lquac.msg_message_interval;
 import org.mavlink.messages.lquac.msg_scaled_pressure;
 import org.mavlink.messages.lquac.msg_hil_state_quaternion;
@@ -332,6 +343,7 @@ import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
 import org.mavlink.messages.lquac.msg_gps_inject_data;
 import org.mavlink.messages.lquac.msg_set_actuator_control_target;
+import org.mavlink.messages.lquac.msg_odometry;
 import org.mavlink.messages.lquac.msg_video_stream_information;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
@@ -396,6 +408,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_MISSION_ITEM_REACHED:
       msg = new msg_mission_item_reached(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_ESTIMATOR_STATE_STD:
+      msg = new msg_estimator_state_std(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_V2_EXTENSION:
@@ -674,6 +690,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_adsb_vehicle(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_ESTIMATOR_STATE:
+      msg = new msg_estimator_state(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_MEMORY_VECT:
       msg = new msg_memory_vect(sysId, componentId);
       msg.decode(dis);
@@ -842,6 +862,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_logging_ack(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_ESTIMATOR_INNOV_STD:
+      msg = new msg_estimator_innov_std(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_VFR_HUD:
       msg = new msg_vfr_hud(sysId, componentId);
       msg.decode(dis);
@@ -876,6 +900,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_NAMED_VALUE_INT:
       msg = new msg_named_value_int(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_ESTIMATOR_INNOV:
+      msg = new msg_estimator_innov(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_CAMERA_INFORMATION:
@@ -920,6 +948,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_MANUAL_CONTROL:
       msg = new msg_manual_control(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_ESTIMATOR_INNOV_COV:
+      msg = new msg_estimator_innov_cov(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_MESSAGE_INTERVAL:
@@ -992,6 +1024,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET:
       msg = new msg_set_actuator_control_target(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_ODOMETRY:
+      msg = new msg_odometry(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION:

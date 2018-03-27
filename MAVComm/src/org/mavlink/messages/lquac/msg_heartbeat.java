@@ -28,7 +28,7 @@ public class msg_heartbeat extends MAVLinkMessage {
 }
 
   /**
-   * A bitfield for use for autopilot-specific flags.
+   * A bitfield for use for autopilot-specific flags
    */
   public long custom_mode;
   /**
@@ -40,11 +40,11 @@ public class msg_heartbeat extends MAVLinkMessage {
    */
   public int autopilot;
   /**
-   * System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h
+   * System mode bitfield, as defined by MAV_MODE_FLAG enum
    */
   public int base_mode;
   /**
-   * System status flag, see MAV_STATE ENUM
+   * System status flag, as defined by MAV_STATE enum
    */
   public int system_status;
   /**

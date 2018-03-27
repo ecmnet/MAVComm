@@ -601,6 +601,30 @@
       <entry value="11" name="MAV_FRAME_GLOBAL_TERRAIN_ALT_INT">
         <description>Global coordinate frame with above terrain level altitude. WGS84 coordinate system, relative altitude over terrain with respect to the waypoint coordinate. First value / x: latitude in degrees*10e-7, second value / y: longitude in degrees*10e-7, third value / z: positive altitude in meters with 0 being at ground level in terrain model.</description>
       </entry>
+      <entry value="12" name="MAV_FRAME_BODY_FRD">
+        <description>Body fixed frame of reference, Z-down (x: forward, y: right, z: down).</description>
+      </entry>
+      <entry value="13" name="MAV_FRAME_BODY_FLU">
+        <description>Body fixed frame of reference, Z-up (x: forward, y: left, z: up).</description>
+      </entry>
+      <entry value="14" name="MAV_FRAME_MOCAP_NED">
+        <description>Odometry local coordinate frame of data given by a motion capture system, Z-down (x: north, y: east, z: down).</description>
+      </entry>
+      <entry value="15" name="MAV_FRAME_MOCAP_ENU">
+        <description>Odometry local coordinate frame of data given by a motion capture system, Z-up (x: east, y: north, z: up).</description>
+      </entry>
+      <entry value="16" name="MAV_FRAME_VISION_NED">
+        <description>Odometry local coordinate frame of data given by a vision estimation system, Z-down (x: north, y: east, z: down).</description>
+      </entry>
+      <entry value="17" name="MAV_FRAME_VISION_ENU">
+        <description>Odometry local coordinate frame of data given by a vision estimation system, Z-up (x: east, y: north, z: up).</description>
+      </entry>
+      <entry value="18" name="MAV_FRAME_ESTIM_NED">
+        <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-down (x: north, y: east, z: down).</description>
+      </entry>
+      <entry value="19" name="MAV_FRAME_ESTIM_ENU">
+        <description>Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: east, y: noth, z: up).</description>
+      </entry>
     </enum>
     <enum name="MAVLINK_DATA_STREAM_TYPE">
       <entry name="MAVLINK_DATA_STREAM_IMG_JPEG">
@@ -2474,6 +2498,30 @@
         <description>Payload battery</description>
       </entry>
     </enum>
+    <enum name="MAV_BATTERY_CHARGE_STATE">
+      <description>Enumeration for states of low battery extent</description>
+      <entry value="0" name="MAV_BATTERY_CHARGE_STATE_UNDEFINED">
+        <description>Low battery state is not provided</description>
+      </entry>
+      <entry value="1" name="MAV_BATTERY_CHARGE_STATE_OK">
+        <description>Battery is not nearly empty, normal operation</description>
+      </entry>
+      <entry value="2" name="MAV_BATTERY_CHARGE_STATE_LOW">
+        <description>Battery state is low, warn and monitor close</description>
+      </entry>
+      <entry value="3" name="MAV_BATTERY_CHARGE_STATE_CRITICAL">
+        <description>Battry state is critical, return / abort immediately</description>
+      </entry>
+      <entry value="4" name="MAV_BATTERY_CHARGE_STATE_EMERGENCY">
+        <description>Battry state is too low for ordinary abortion, fastest possible emergency stop preventing damage</description>
+      </entry>
+      <entry value="5" name="MAV_BATTERY_CHARGE_STATE_FAILED">
+        <description>Battry failed, damage unavoidable</description>
+      </entry>
+      <entry value="6" name="MAV_BATTERY_CHARGE_STATE_UNHEALTHY">
+        <description>Battry is diagnosed to be broken or an error occurred, usage is discouraged / prohibited</description>
+      </entry>
+    </enum>
     <enum name="MAV_VTOL_STATE">
       <description>Enumeration of VTOL states</description>
       <entry value="0" name="MAV_VTOL_STATE_UNDEFINED">
@@ -2837,15 +2885,245 @@
         <description>North, East, Down</description>
       </entry>
     </enum>
+    <enum name="MAV_FIELD">
+      <description>This describes the type of a field in an array, for example usage (see ESTIMATOR_STATE)</description>
+      <entry value="0" name="MAV_FIELD_UNUSED">
+        <description>Unused state.</description>
+      </entry>
+      <!--XY Position -->
+      <entry value="1" name="MAV_FIELD_POS_N">
+        <description>Position North, m</description>
+      </entry>
+      <entry value="2" name="MAV_FIELD_POS_E">
+        <description>Position East, m</description>
+      </entry>
+      <!--Altitude -->
+      <entry value="3" name="MAV_FIELD_POS_D">
+        <description>Position Down, m</description>
+      </entry>
+      <entry value="4" name="MAV_FIELD_ASL">
+        <description>Altitude above sea level, m</description>
+      </entry>
+      <entry value="5" name="MAV_FIELD_AGL">
+        <description>Altitude above ground level, m</description>
+      </entry>
+      <!--Velocity    -->
+      <entry value="6" name="MAV_FIELD_VEL_N">
+        <description>Velocity North, m/s</description>
+      </entry>
+      <entry value="7" name="MAV_FIELD_VEL_E">
+        <description>Velocity East, m/s</description>
+      </entry>
+      <entry value="8" name="MAV_FIELD_VEL_D">
+        <description>Velocity Down, m/s</description>
+      </entry>
+      <entry value="9" name="MAV_FIELD_VEL_X">
+        <description>Velocity body x (forward), m/s</description>
+      </entry>
+      <entry value="10" name="MAV_FIELD_VEL_Y">
+        <description>Velocity body y (right), m/s</description>
+      </entry>
+      <entry value="11" name="MAV_FIELD_VEL_Z">
+        <description>Velocity body z (down), m/s</description>
+      </entry>
+      <!--Acceleration    -->
+      <entry value="12" name="MAV_FIELD_ACC_N">
+        <description>Acceleration North, m/s</description>
+      </entry>
+      <entry value="13" name="MAV_FIELD_ACC_E">
+        <description>Acceleration East, m/s</description>
+      </entry>
+      <entry value="14" name="MAV_FIELD_ACC_D">
+        <description>Acceleration Down, m/s</description>
+      </entry>
+      <entry value="15" name="MAV_FIELD_ACC_X">
+        <description>Acceleration body x (forward), m/s</description>
+      </entry>
+      <entry value="16" name="MAV_FIELD_ACC_Y">
+        <description>Acceleration body y (right), m/s</description>
+      </entry>
+      <entry value="17" name="MAV_FIELD_ACC_Z">
+        <description>Acceleration body z (down), m/s</description>
+      </entry>
+      <!--Attitude -->
+      <entry value="18" name="MAV_FIELD_Q0">
+        <description>Quaternion from nav to body scalar component</description>
+      </entry>
+      <entry value="19" name="MAV_FIELD_Q1">
+        <description>Quaternion from nav to body vector[0] component</description>
+      </entry>
+      <entry value="20" name="MAV_FIELD_Q2">
+        <description>Quaternion from nav to body vector[1] component</description>
+      </entry>
+      <entry value="21" name="MAV_FIELD_Q3">
+        <description>Quaternion from nav to body vector[2] component</description>
+      </entry>
+      <entry value="22" name="MAV_FIELD_ROLL">
+        <description>Euler Body 3-2-1 (Tait-Bryan) roll angle, radians</description>
+      </entry>
+      <entry value="23" name="MAV_FIELD_PITCH">
+        <description>Euler Body 3-2-1 (Tait-Bryan) pitch angle, radians</description>
+      </entry>
+      <entry value="24" name="MAV_FIELD_YAW">
+        <description>Euler Body 3-2-1 (Tait-Bryan) yaw angle, radians</description>
+      </entry>
+      <!--Angular Velocity-->
+      <entry value="25" name="MAV_FIELD_ANGVEL_X">
+        <description>Euler Body x rate, radians/second</description>
+      </entry>
+      <entry value="26" name="MAV_FIELD_ANGVEL_Y">
+        <description>Euler Body y rate, radians/second</description>
+      </entry>
+      <entry value="27" name="MAV_FIELD_ANGVEL_Z">
+        <description>Euler Body z rate, radians/second</description>
+      </entry>
+      <entry value="28" name="MAV_FIELD_ROLLRATE">
+        <description>Euler Body 3-2-1 (Tait-Bryan) roll angle rate, radians/second</description>
+      </entry>
+      <entry value="29" name="MAV_FIELD_PITCHRATE">
+        <description>Euler Body 3-2-1 (Tait-Bryan) pitch angle rate, radians/second</description>
+      </entry>
+      <entry value="30" name="MAV_FIELD_YAWRATE">
+        <description>Euler Body 3-2-1 (Tait-Bryan) yaw angle rate, radians/second</description>
+      </entry>
+      <!--Geodetic Position -->
+      <entry value="31" name="MAV_FIELD_LAT">
+        <description>Latitude, radians</description>
+      </entry>
+      <entry value="32" name="MAV_FIELD_LON">
+        <description>Longitude, radians</description>
+      </entry>
+      <!-- Sensor Bias NAV Frame -->
+      <entry value="33" name="MAV_FIELD_BIAS_N">
+        <description>North bias (normalized)</description>
+      </entry>
+      <entry value="34" name="MAV_FIELD_BIAS_E">
+        <description>East  bias (normalized)</description>
+      </entry>
+      <entry value="35" name="MAV_FIELD_BIAS_D">
+        <description>Down z bias (normalized)</description>
+      </entry>
+      <!--Sensor Bias Body Frame -->
+      <entry value="36" name="MAV_FIELD_BIAS_X">
+        <description>Body x bias (normalized)</description>
+      </entry>
+      <entry value="37" name="MAV_FIELD_BIAS_Y">
+        <description>Body y bias (normalized)</description>
+      </entry>
+      <entry value="38" name="MAV_FIELD_BIAS_Z">
+        <description>Body z bias (normalized)</description>
+      </entry>
+      <!--Terrain -->
+      <entry value="39" name="MAV_FIELD_TERRAIN_ASL">
+        <description>Altitude of terrain above sea level, m</description>
+      </entry>
+      <!--Airspeed -->
+      <entry value="40" name="MAV_FIELD_AIRSPEED">
+        <description>Airspeed, m/s</description>
+      </entry>
+      <!--Optical Flow -->
+      <entry value="41" name="MAV_FIELD_FLOW_X">
+        <description>Optical flow in body x, radians</description>
+      </entry>
+      <entry value="42" name="MAV_FIELD_FLOW_Y">
+        <description>Optical flow in body y, radians</description>
+      </entry>
+      <!--Magnetic field -->
+      <entry value="43" name="MAV_FIELD_MAG_X">
+        <description>Magnetic field, body x, Gauss</description>
+      </entry>
+      <entry value="44" name="MAV_FIELD_MAG_Y">
+        <description>Magnetic field, body y, Gauss</description>
+      </entry>
+      <entry value="45" name="MAV_FIELD_MAG_Z">
+        <description>Magnetic field, body z, Gauss</description>
+      </entry>
+      <entry value="46" name="MAV_FIELD_MAG_HDG">
+        <description>Magnetic heading, radians</description>
+      </entry>
+      <!--Distance -->
+      <entry value="47" name="MAV_FIELD_DIST_BOTTOM">
+        <description>Distance bottom, m</description>
+      </entry>
+      <entry value="48" name="MAV_FIELD_DIST_TOP">
+        <description>Distance top, m</description>
+      </entry>
+      <entry value="49" name="MAV_FIELD_DIST_FRONT">
+        <description>Distance front, m</description>
+      </entry>
+      <entry value="50" name="MAV_FIELD_DIST_BACK">
+        <description>Distance back, m</description>
+      </entry>
+      <entry value="51" name="MAV_FIELD_DIST_LEFT">
+        <description>Distance left, m</description>
+      </entry>
+      <entry value="52" name="MAV_FIELD_DIST_RIGHT">
+        <description>Distance right, m</description>
+      </entry>
+    </enum>
+    <enum name="MAV_SENSOR_TYPE">
+      <description>Sensor type</description>
+      <entry value="0" name="MAV_SENSOR_TYPE_NONE">
+        <description>No associated sensor</description>
+      </entry>
+      <entry value="1" name="MAV_SENSOR_TYPE_GPS">
+        <description>GPS</description>
+      </entry>
+      <entry value="2" name="MAV_SENSOR_TYPE_SONAR">
+        <description>Sonar</description>
+      </entry>
+      <entry value="3" name="MAV_SENSOR_TYPE_LIDAR">
+        <description>Lidar</description>
+      </entry>
+      <entry value="4" name="MAV_SENSOR_TYPE_IR">
+        <description>Infrared ranger</description>
+      </entry>
+      <entry value="5" name="MAV_SENSOR_TYPE_GYRO">
+        <description>Gyroscope</description>
+      </entry>
+      <entry value="6" name="MAV_SENSOR_TYPE_ACCEL">
+        <description>Accelerometer</description>
+      </entry>
+      <entry value="7" name="MAV_SENSOR_TYPE_MAG">
+        <description>Magnetometer</description>
+      </entry>
+      <entry value="8" name="MAV_SENSOR_TYPE_BARO">
+        <description>Barometric altimeter</description>
+      </entry>
+      <entry value="9" name="MAV_SENSOR_TYPE_PITOT">
+        <description>Pitot tube</description>
+      </entry>
+      <entry value="10" name="MAV_SENSOR_TYPE_MOCAP">
+        <description>Motion capture</description>
+      </entry>
+      <entry value="11" name="MAV_SENSOR_TYPE_FLOW">
+        <description>Optical flow</description>
+      </entry>
+      <entry value="12" name="MAV_SENSOR_TYPE_RGB">
+        <description>RGB computer vision or camera</description>
+      </entry>
+      <entry value="13" name="MAV_SENSOR_TYPE_DEPTH">
+        <description>Depth computer vision or camera</description>
+      </entry>
+      <entry value="14" name="MAV_SENSOR_TYPE_THERMAL">
+        <description>Thermal imaging</description>
+      </entry>
+      <entry value="15" name="MAV_SENSOR_TYPE_TEMPER">
+        <description>Temperature</description>
+      </entry>
+      <entry value="16" name="MAV_SENSOR_TYPE_HUMID">
+        <description>Humidity</description>
+      </entry>
+    </enum>
   </enums>
   <messages>
     <message id="0" name="HEARTBEAT">
       <description>The heartbeat message shows that a system is present and responding. The type of the MAV and Autopilot hardware allow the receiving system to treat further messages from this system appropriate (e.g. by laying out the user interface based on the autopilot).</description>
       <field type="uint8_t" name="type" enum="MAV_TYPE">Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)</field>
       <field type="uint8_t" name="autopilot" enum="MAV_AUTOPILOT">Autopilot type / class. defined in MAV_AUTOPILOT ENUM</field>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
-      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags.</field>
-      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag, see MAV_STATE ENUM</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitfield, as defined by MAV_MODE_FLAG enum</field>
+      <field type="uint32_t" name="custom_mode">A bitfield for use for autopilot-specific flags</field>
+      <field type="uint8_t" name="system_status" enum="MAV_STATE">System status flag, as defined by MAV_STATE enum</field>
       <field type="uint8_t_mavlink_version" name="mavlink_version">MAVLink version, not writable by user, gets added by protocol because of magic data type: uint8_t_mavlink_version</field>
     </message>
     <message id="1" name="SYS_STATUS">
@@ -3117,8 +3395,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Sequence</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint, as defined by MAV_FRAME enum</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint, as defined by MAV_CMD enum</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
@@ -3224,7 +3502,7 @@
       <description>Set a safety zone (volume), which is defined by two corners of a cube. This message can be used to tell the MAV which setpoints/waypoints to accept and which to reject. Safety areas are often enforced by national or competition regulations.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame, as defined by MAV_FRAME enum. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
       <field type="float" name="p1x" units="m">x position 1 / Latitude 1</field>
       <field type="float" name="p1y" units="m">y position 1 / Longitude 1</field>
       <field type="float" name="p1z" units="m">z position 1 / Altitude 1</field>
@@ -3234,7 +3512,7 @@
     </message>
     <message id="55" name="SAFETY_ALLOWED_AREA">
       <description>Read out the safety zone the MAV currently assumes.</description>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame, as defined by MAV_FRAME enum in mavlink_types.h. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">Coordinate frame, as defined by MAV_FRAME enum. Can be either global, GPS, right-handed with Z axis up or local, right handed, Z axis down.</field>
       <field type="float" name="p1x" units="m">x position 1 / Latitude 1</field>
       <field type="float" name="p1y" units="m">y position 1 / Longitude 1</field>
       <field type="float" name="p1z" units="m">z position 1 / Altitude 1</field>
@@ -3367,8 +3645,8 @@
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
       <field type="uint16_t" name="seq">Waypoint ID (sequence number). Starts at zero. Increases monotonically for each waypoint, no gaps in the sequence (0,1,2,3,4).</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the waypoint, as defined by MAV_FRAME enum</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the waypoint, as defined by MAV_CMD enum</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
@@ -3394,8 +3672,8 @@
       <description>Message encoding a command with parameters as scaled integers. Scaling depends on the actual command value.</description>
       <field type="uint8_t" name="target_system">System ID</field>
       <field type="uint8_t" name="target_component">Component ID</field>
-      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND. see MAV_FRAME in mavlink_types.h</field>
-      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the mission item. see MAV_CMD in common.xml MAVLink specs</field>
+      <field type="uint8_t" name="frame" enum="MAV_FRAME">The coordinate system of the COMMAND, as defined by MAV_FRAME enum</field>
+      <field type="uint16_t" name="command" enum="MAV_CMD">The scheduled action for the mission item, as defined by MAV_CMD enum</field>
       <field type="uint8_t" name="current">false:0, true:1</field>
       <field type="uint8_t" name="autocontinue">autocontinue to next wp</field>
       <field type="float" name="param1">PARAM1, see MAV_CMD enum</field>
@@ -3623,6 +3901,8 @@
       <field type="float" name="roll" units="rad">Roll angle in rad</field>
       <field type="float" name="pitch" units="rad">Pitch angle in rad</field>
       <field type="float" name="yaw" units="rad">Yaw angle in rad</field>
+      <extensions/>
+      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
     <message id="102" name="VISION_POSITION_ESTIMATE">
       <field type="uint64_t" name="usec" units="us">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
@@ -3632,12 +3912,16 @@
       <field type="float" name="roll" units="rad">Roll angle in rad</field>
       <field type="float" name="pitch" units="rad">Pitch angle in rad</field>
       <field type="float" name="yaw" units="rad">Yaw angle in rad</field>
+      <extensions/>
+      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
     <message id="103" name="VISION_SPEED_ESTIMATE">
       <field type="uint64_t" name="usec" units="us">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
       <field type="float" name="x" units="m/s">Global X speed</field>
       <field type="float" name="y" units="m/s">Global Y speed</field>
       <field type="float" name="z" units="m/s">Global Z speed</field>
+      <extensions/>
+      <field type="float[9]" name="covariance">Linear velocity covariance matrix (1st three entries - 1st row, etc.)</field>
     </message>
     <message id="104" name="VICON_POSITION_ESTIMATE">
       <field type="uint64_t" name="usec" units="us">Timestamp (microseconds, synced to UNIX time or since system boot)</field>
@@ -3647,6 +3931,8 @@
       <field type="float" name="roll" units="rad">Roll angle in rad</field>
       <field type="float" name="pitch" units="rad">Pitch angle in rad</field>
       <field type="float" name="yaw" units="rad">Yaw angle in rad</field>
+      <extensions/>
+      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
     <message id="105" name="HIGHRES_IMU">
       <description>The IMU readings in SI units in NED body frame</description>
@@ -4003,6 +4289,8 @@
       <field type="float" name="x" units="m">X position in meters (NED)</field>
       <field type="float" name="y" units="m">Y position in meters (NED)</field>
       <field type="float" name="z" units="m">Z position in meters (NED)</field>
+      <extensions/>
+      <field type="float[21]" name="covariance">Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
     </message>
     <message id="139" name="SET_ACTUATOR_CONTROL_TARGET">
       <description>Set the vehicle attitude and body angular rates.</description>
@@ -4088,6 +4376,9 @@
       <field type="int32_t" name="current_consumed" units="mAh">Consumed charge, in milliampere hours (1 = 1 mAh), -1: autopilot does not provide mAh consumption estimate</field>
       <field type="int32_t" name="energy_consumed" units="hJ">Consumed energy, in HectoJoules (intergrated U*I*dt)  (1 = 100 Joule), -1: autopilot does not provide energy consumption estimate</field>
       <field type="int8_t" name="battery_remaining" units="%">Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot does not estimate the remaining battery</field>
+      <extensions/>
+      <field type="int32_t" name="time_remaining" units="s">Remaining battery time, in seconds (1 = 1s = 0% energy left), 0: autopilot does not provide remaining battery time estimate</field>
+      <field type="uint8_t" name="charge_state" enum="MAV_BATTERY_CHARGE_STATE">State for extent of discharge, provided by autopilot for warning or external reactions</field>
     </message>
     <message id="148" name="AUTOPILOT_VERSION">
       <description>Version and capability of autopilot software</description>
@@ -4177,7 +4468,7 @@
     </message>
     <message id="234" name="HIGH_LATENCY">
       <description>Message appropriate for high latency connections like Iridium</description>
-      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitfield, see MAV_MODE_FLAG ENUM in mavlink/include/mavlink_types.h</field>
+      <field type="uint8_t" name="base_mode" enum="MAV_MODE_FLAG" display="bitmask">System mode bitfield, as defined by MAV_MODE_FLAG enum.</field>
       <field type="uint32_t" name="custom_mode" display="bitmask">A bitfield for use for autopilot-specific flags.</field>
       <field type="uint8_t" name="landed_state" enum="MAV_LANDED_STATE">The landed state. Is set to MAV_LANDED_STATE_UNDEFINED if landed state is unknown.</field>
       <field type="int16_t" name="roll" units="cdeg">roll (centidegrees)</field>
@@ -4571,6 +4862,64 @@
       <field type="uint8_t" name="increment" units="deg">Angular width in degrees of each array element.</field>
       <field type="uint16_t" name="min_distance" units="cm">Minimum distance the sensor can measure in centimeters.</field>
       <field type="uint16_t" name="max_distance" units="cm">Maximum distance the sensor can measure in centimeters.</field>
+    </message>
+    <message id="331" name="ODOMETRY">
+      <description>Odometry message to communicate odometry information with an external interface. Fits ROS REP 147 standard for aerial vehicles (http://www.ros.org/reps/rep-0147.html).</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch).</field>
+      <field type="uint8_t" name="frame_id" enum="MAV_FRAME">Coordinate frame of reference for the pose data, as defined by MAV_FRAME enum.</field>
+      <field type="uint8_t" name="child_frame_id" enum="MAV_FRAME">Coordinate frame of reference for the velocity in free space (twist) data, as defined by MAV_FRAME enum.</field>
+      <field type="float" name="x" units="m">X Position</field>
+      <field type="float" name="y" units="m">Y Position</field>
+      <field type="float" name="z" units="m">Z Position</field>
+      <field type="float[4]" name="q">Quaternion components, w, x, y, z (1 0 0 0 is the null-rotation)</field>
+      <field type="float" name="vx" units="m/s">X linear speed</field>
+      <field type="float" name="vy" units="m/s">Y linear speed</field>
+      <field type="float" name="vz" units="m/s">Z linear speed</field>
+      <field type="float" name="rollspeed" units="rad/s">Roll angular speed</field>
+      <field type="float" name="pitchspeed" units="rad/s">Pitch angular speed</field>
+      <field type="float" name="yawspeed" units="rad/s">Yaw angular speed</field>
+      <field type="float[21]" name="pose_covariance">Pose (states: x, y, z, roll, pitch, yaw) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+      <field type="float[21]" name="twist_covariance">Twist (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)</field>
+    </message>
+    <message id="335" name="ESTIMATOR_STATE">
+      <description>An estimator agnostic state message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of states, max 30</field>
+      <field type="uint8_t[30]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[30]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[30]" name="state">The estimator state</field>
+    </message>
+    <message id="336" name="ESTIMATOR_STATE_STD">
+      <description>An estimator agnostic state standard deviation message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of states, max 30</field>
+      <field type="uint8_t[30]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[30]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[30]" name="std">The estimator state standard deviation sqrt(diag(P))</field>
+    </message>
+    <message id="337" name="ESTIMATOR_INNOV">
+      <description>An estimator agnostic innovation message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of innovations, max 30</field>
+      <field type="uint8_t[30]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[30]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[30]" name="innov">The estimator innovation</field>
+    </message>
+    <message id="338" name="ESTIMATOR_INNOV_STD">
+      <description>An estimator agnostic innovation standard deviation message</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of innovations, max 30</field>
+      <field type="uint8_t[30]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[30]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[30]" name="std">The estimator innovation standard deviation sqrt(diag(S))</field>
+    </message>
+    <message id="340" name="ESTIMATOR_INNOV_COV">
+      <description>An estimator agnostic innovation covariance message. Note: Very large, not meant for use over radio.</description>
+      <field type="uint64_t" name="time_usec" units="us">Timestamp (microseconds since system boot or since UNIX epoch)</field>
+      <field type="uint8_t" name="n">Number of innovations, max 21, limited by mavlink protocol</field>
+      <field type="uint8_t[21]" name="id" enum="MAV_FIELD">An array describing field type (see MAV_FIELD)</field>
+      <field type="uint8_t[21]" name="sensor" enum="MAV_SENSOR_TYPE">An array describing the sensor associated with the field (see MAV_SENSOR_TYPE)</field>
+      <field type="float[210]" name="cov">The estimator covariance matrix (upper triangle), horizontally stacked with lengths [n, n-1, n-2, ..., 1]</field>
     </message>
   </messages>
 </mavlink>
