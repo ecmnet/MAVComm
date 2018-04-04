@@ -141,7 +141,7 @@ public class StartUp implements Runnable {
 				}
 
 
-				msg.load = (int)(osBean.getSystemLoadAverage()*100);
+				msg.load = (int)(osBean.getSystemLoadAverage()*100f/osBean.getAvailableProcessors());
 				msg.autopilot_mode =control.getCurrentModel().sys.autopilot;
 				msg.memory = (int)(mxBean.getHeapMemoryUsage().getUsed() * 100 /mxBean.getHeapMemoryUsage().getMax());
 				msg.com_error = control.getErrorCount();
@@ -149,7 +149,9 @@ public class StartUp implements Runnable {
 				msg.status = control.getCurrentModel().sys.getStatus();
 				msg.setVersion(config.getVersion());
 				msg.setArch(osBean.getArch());
+				msg.cpu_temp = 27;
 				msg.unix_time_us = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
+				msg.wifi_quality = 100;
 				control.sendMAVLinkMessage(msg);
 
 
