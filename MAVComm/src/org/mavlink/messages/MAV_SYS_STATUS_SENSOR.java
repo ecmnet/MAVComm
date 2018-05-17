@@ -112,4 +112,8 @@ public interface MAV_SYS_STATUS_SENSOR {
      * 0x2000000 Battery
      */
     public final static int MAV_SYS_STATUS_SENSOR_BATTERY = 33554432;
+    /**
+     * 0x4000000 Proximity
+     */
+    public final static int MAV_SYS_STATUS_SENSOR_PROXIMITY = 67108864;
 }

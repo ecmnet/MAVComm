@@ -136,4 +136,8 @@ public interface MAV_TYPE {
      * Charging station
      */
     public final static int MAV_TYPE_CHARGING_STATION = 31;
+    /**
+     * Onboard FLARM collision avoidance system
+     */
+    public final static int MAV_TYPE_FLARM = 32;
 }

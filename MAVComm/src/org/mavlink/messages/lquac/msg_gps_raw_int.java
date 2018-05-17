@@ -13,7 +13,7 @@ import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_gps_raw_int
  * The global position, as returned by the Global Positioning System (GPS). This is
-                NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate. Coordinate frame is right-handed, Z-axis up (GPS frame).
+                NOT the global position estimate of the system, but rather a RAW sensor value. See message GLOBAL_POSITION for the global position estimate.
  **/
 public class msg_gps_raw_int extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_GPS_RAW_INT = 24;

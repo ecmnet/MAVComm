@@ -826,7 +826,7 @@ public interface MAV_CMD {
     /**
      * Starts receiver pairing
      * PARAM 1 : 0:Spektrum
-     * PARAM 2 : 0:Spektrum DSM2, 1:Spektrum DSMX
+     * PARAM 2 : RC type (see RC_TYPE enum)
      */
     public final static int MAV_CMD_START_RX_PAIR = 500;
     /**
@@ -908,7 +908,8 @@ public interface MAV_CMD {
      * PARAM 1 : Reserved (Set to 0)
      * PARAM 2 : Duration between two consecutive pictures (in seconds)
      * PARAM 3 : Number of images to capture total - 0 for unlimited capture
-     * PARAM 4 : Reserved (all remaining params)
+     * PARAM 4 : Capture sequence (ID to prevent double captures when a command is retransmitted, 0: unused, >= 1: used)
+     * PARAM 5 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_IMAGE_START_CAPTURE = 2000;
     /**

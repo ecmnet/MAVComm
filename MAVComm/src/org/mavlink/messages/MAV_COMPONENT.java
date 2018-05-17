@@ -123,6 +123,10 @@ public interface MAV_COMPONENT {
     /**
      * 
      */
+    public final static int MAV_COMP_ID_FLARM = 160;
+    /**
+     * 
+     */
     public final static int MAV_COMP_ID_MAPPER = 180;
     /**
      * 

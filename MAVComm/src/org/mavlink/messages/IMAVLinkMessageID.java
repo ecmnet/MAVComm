@@ -148,6 +148,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_MISSION_REQUEST_LIST = 43;
   public static int MAVLINK_MSG_ID_PLAY_TUNE = 258;
   public static int MAVLINK_MSG_ID_PARAM_SET = 23;
+  public static int MAVLINK_MSG_ID_TRAJECTORY = 332;
   public static int MAVLINK_MSG_ID_GPS_STATUS = 25;
   public static int MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT = 86;
   public static int MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS = 93;

@@ -55,42 +55,42 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED						= 1.0f;		// Default Max speed: 1 m/s
-	private static final int   RC_DEADBAND               		= 20;		// RC XY deadband for safety check
+	private static final float MAX_SPEED					= 1.0f;		// Default Max speed: 1 m/s
+	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
-	private static final int UPDATE_RATE                 		= 50;
-	private static final int SETPOINT_TIMEOUT_MS         		= 15000;
+	private static final int UPDATE_RATE                 	= 50;
+	private static final int SETPOINT_TIMEOUT_MS         	= 15000;
 
 	private static final float PI2							= 2f*(float)Math.PI;
 
 	public static final int MODE_LOITER	 		   			= 0;
 	public static final int MODE_POSITION	 		   		= 1;
-	public static final int MODE_SPEED	 		        		= 2;
-	public static final int MODE_SPEED_POSITION	 	    		= 3;
+	public static final int MODE_SPEED	 		        	= 2;
+	public static final int MODE_SPEED_POSITION	 	    	= 3;
 
 	private MSPLogger 				logger					= null;
 	private DataModel 				model					= null;
 	private IMAVController         	control      			= null;
-	private IOffboardTargetAction    action_listener     		= null;		// CB target reached
-	private IOffboardExternalControl ext_control_listener   	= null;		// CB external angle+speed control in MODE_SPEED_POSITION
+	private IOffboardTargetAction    action_listener     	= null;		// CB target reached
+	private IOffboardExternalControl ext_control_listener   = null;		// CB external angle+speed control in MODE_SPEED_POSITION
 
 	private boolean					enabled					= false;
-	private int						mode						= 0;
-	private Vector4D_F32				target					= null;
-	private Vector4D_F32				current					= null;
-	private Vector3D_F32				current_speed			= null;
+	private int						mode					= 0;
+	private Vector4D_F32			target					= null;
+	private Vector4D_F32			current					= null;
+	private Vector3D_F32			current_speed			= null;
 
 	private float	 	acceptance_radius_pos				= 0.2f;
 	private float	   	acceptance_radius_speed				= 0.05f;
-	private float       	max_speed							= MAX_SPEED;
-	private float		break_radius						    = MAX_SPEED;
-	private boolean    	already_fired				    		= false;
-	private boolean     	valid_setpoint                   	= false;
-	private boolean    	new_setpoint                    	 	= false;
-	private boolean     	step_mode                        	= false;
-	private boolean     	step_trigger                    		= false;
+	private float       max_speed							= MAX_SPEED;
+	private float		break_radius					    = MAX_SPEED;
+	private boolean    	already_fired			    		= false;
+	private boolean    	valid_setpoint                   	= false;
+	private boolean    	new_setpoint                   	 	= false;
+	private boolean     step_mode                        	= false;
+	private boolean    	step_trigger                    	= false;
 
 
 	public OffboardManager(IMAVController control) {

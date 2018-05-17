@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_gps2_raw
- * Second GPS data. Coordinate frame is right-handed, Z-axis up (GPS frame).
+ * Second GPS data.
  **/
 public class msg_gps2_raw extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_GPS2_RAW = 124;
