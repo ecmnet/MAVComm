@@ -35,6 +35,8 @@ package com.comino.main;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_highres_imu;
+import org.mavlink.messages.lquac.msg_ping;
+import org.mavlink.messages.lquac.msg_timesync;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.control.IMAVController;
@@ -80,6 +82,8 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void run() {
 
+		long seq = 0;
+
 //		msg_timesync sync_s = new msg_timesync(255,1);
 //		sync_s.tc1 = 0;
 //		sync_s.ts1 = control.getCurrentModel().sys.getSynchronizedPX4Time_us()*1000;
@@ -87,14 +91,29 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 
 		while(true) {
 			try {
-				Thread.sleep(100);
-                System.out.println(control.getCurrentModel().sys.getSynchronizedPX4Time_us());
 
+				 control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
 
-                msg_vision_position_estimate sms = new msg_vision_position_estimate(1,2);
-    			sms.usec = //control.getCurrentModel().sys.getSynchronizedPX4Time_us();
-    			sms.usec = System.currentTimeMillis()*1000;
-    			control.sendMAVLinkMessage(sms);
+//				msg_ping ping = new msg_ping(255,1);
+//				ping.seq = ++seq;
+//				ping.target_component = 1;
+//				ping.target_system = 1;
+//				ping.time_usec = System.currentTimeMillis() * 1000;
+//				control.sendMAVLinkMessage(ping);
+
+				Thread.sleep(1000);
+				msg_timesync sync_s = new msg_timesync(255,1);
+				sync_s.tc1 = 0;
+				sync_s.ts1 = control.getCurrentModel().sys.getSynchronizedPX4Time_us()*1000;
+				control.sendMAVLinkMessage(sync_s);
+
+//                System.out.println(control.getCurrentModel().sys.getSynchronizedPX4Time_us());
+//
+//
+//                msg_vision_position_estimate sms = new msg_vision_position_estimate(1,2);
+//    			sms.usec = //control.getCurrentModel().sys.getSynchronizedPX4Time_us();
+//    			sms.usec = System.currentTimeMillis()*1000;
+//    			control.sendMAVLinkMessage(sms);
 //				if(control.isConnected())
 //				  System.out.println(control.getCurrentModel().hud.ag);
 			} catch (InterruptedException e) {
@@ -109,15 +128,16 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 	@Override
 	public void received(Object o) {
 
-		if(o instanceof msg_vision_position_estimate) {
-			msg_vision_position_estimate stime = (msg_vision_position_estimate)o;
-			System.err.println(" -> "+stime.usec);
-		}
-
-		if(o instanceof msg_highres_imu) {
-			msg_highres_imu stime = (msg_highres_imu)o;
-			System.err.println(stime.time_usec);
-		}
+//		System.err.println(" -> "+o);
+//		if(o instanceof msg_vision_position_estimate) {
+//			msg_vision_position_estimate stime = (msg_vision_position_estimate)o;
+//			System.err.println(" -> "+stime.usec);
+//		}
+//
+//		if(o instanceof msg_highres_imu) {
+//			msg_highres_imu stime = (msg_highres_imu)o;
+//			System.err.println(stime.time_usec);
+//		}
 
 
 

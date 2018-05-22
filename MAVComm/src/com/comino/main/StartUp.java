@@ -43,6 +43,7 @@ import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
+import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVProxyController;
@@ -122,7 +123,7 @@ public class StartUp implements Runnable {
 
 		while(true) {
 			try {
-				Thread.sleep(50);
+				Thread.sleep(200);
 				if(!control.isConnected()) {
 					if(control.isConnected())
 						control.close();
@@ -153,6 +154,11 @@ public class StartUp implements Runnable {
 				msg.unix_time_us = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
 				msg.wifi_quality = 100;
 				control.sendMAVLinkMessage(msg);
+
+				msg_timesync sync_s = new msg_timesync(255,1);
+				sync_s.tc1 = 0;
+				sync_s.ts1 = control.getCurrentModel().sys.getSynchronizedPX4Time_us()*1000;
+				control.sendMAVLinkMessage(sync_s);
 
 
 			} catch (Exception e) {
