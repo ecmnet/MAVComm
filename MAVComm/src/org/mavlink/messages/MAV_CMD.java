@@ -835,7 +835,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_GET_MESSAGE_INTERVAL = 510;
     /**
-     * Request the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM
+     * Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM
      * PARAM 1 : The MAVLink message ID
      * PARAM 2 : The interval between two messages, in microseconds. Set to -1 to disable and 0 to request default rate.
      */
