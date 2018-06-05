@@ -218,7 +218,7 @@ public class MAVUdpCommNIO2 implements IMAVComm, Runnable {
 
 	@Override
 	public void addMAVMessageListener(IMAVMessageListener listener) {
-		parser.addMAVMessagekListener(listener);
+		parser.addMAVMessageListener(listener);
 
 	}
 

@@ -233,7 +233,7 @@ public class MAVSerialComm implements IMAVComm {
 
 	@Override
 	public void addMAVMessageListener(IMAVMessageListener listener) {
-		parser.addMAVMessagekListener(listener);
+		parser.addMAVMessageListener(listener);
 
 	}
 

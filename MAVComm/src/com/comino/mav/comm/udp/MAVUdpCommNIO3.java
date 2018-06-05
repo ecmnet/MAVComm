@@ -233,7 +233,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	@Override
 	public void addMAVMessageListener(IMAVMessageListener listener) {
-		parser.addMAVMessagekListener(listener);
+		parser.addMAVMessageListener(listener);
 
 	}
 
