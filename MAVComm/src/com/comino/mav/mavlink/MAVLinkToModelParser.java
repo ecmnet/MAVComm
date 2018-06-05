@@ -71,10 +71,9 @@ public class MAVLinkToModelParser {
 
 	private IMAVComm link = null;
 
-	private HashMap<Class<?>, List<IMAVLinkListener>> listeners = null;
-
-	private List<IMAVLinkListener> mavListener = null;
-	private List<IMAVMessageListener> msgListener = null;
+	private HashMap<Class<?>, List<IMAVLinkListener>> 	msglisteners 		= null;
+	private List<IMAVLinkListener> 	  					mavListener 		= null;
+	private List<IMAVMessageListener> 					messageListener 	= null;
 
 	private long time_offset_ns = 0;
 
@@ -84,6 +83,9 @@ public class MAVLinkToModelParser {
 
 	private IMAVCmdAcknowledge cmd_ack = null;
 
+	private MAVListenerThread mavListenerThread = null;
+	private MSGListenerThread msgListenerThread = null;
+
 	public MAVLinkToModelParser(DataModel model, IMAVComm link) {
 
 		this.model = model;
@@ -91,14 +93,18 @@ public class MAVLinkToModelParser {
 		this.mavList = new HashMap<Class<?>, MAVLinkMessage>();
 
 		this.mavListener = new ArrayList<IMAVLinkListener>();
-		this.msgListener = new ArrayList<IMAVMessageListener>();
+		this.messageListener = new ArrayList<IMAVMessageListener>();
+		this.msglisteners = new HashMap<Class<?>, List<IMAVLinkListener>>();
+
+		mavListenerThread = new MAVListenerThread(mavListener);
+		new Thread(mavListenerThread).start();
+
+		msgListenerThread = new MSGListenerThread(msglisteners);
+		new Thread(msgListenerThread).start();
 
 		model.sys.setStatus(Status.MSP_READY, true);
 
-		listeners = new HashMap<Class<?>, List<IMAVLinkListener>>();
-
 		registerPlugins();
-
 
 		registerListener(msg_command_ack.class, new IMAVLinkListener() {
 
@@ -189,7 +195,7 @@ public class MAVLinkToModelParser {
 			}
 		});
 
-		System.out.println("MAVMSP parser: " + listeners.size() + " MAVLink messagetypes registered");
+		System.out.println("MAVMSP parser: " + msglisteners.size() + " MAVLink messagetypes registered");
 
 		model.sys.tms = System.currentTimeMillis() * 1000;
 
@@ -216,8 +222,8 @@ public class MAVLinkToModelParser {
 		mavListener.add(listener);
 	}
 
-	public void addMAVMessagekListener(IMAVMessageListener listener) {
-		msgListener.add(listener);
+	public void addMAVMessageListener(IMAVMessageListener listener) {
+		messageListener.add(listener);
 	}
 
 	public Map<Class<?>, MAVLinkMessage> getMavLinkMessageMap() {
@@ -243,8 +249,8 @@ public class MAVLinkToModelParser {
 	public void writeMessage(LogMessage m) {
 		if (lastMessage == null || lastMessage.tms < m.tms) {
 			System.out.println(m.msg);
-			if (msgListener != null) {
-				for (IMAVMessageListener msglistener : msgListener)
+			if (messageListener != null) {
+				for (IMAVMessageListener msglistener : messageListener)
 					msglistener.messageReceived(m);
 			}
 		}
@@ -252,11 +258,11 @@ public class MAVLinkToModelParser {
 
 	private void registerListener(Class<?> clazz, IMAVLinkListener listener) {
 		List<IMAVLinkListener> listenerList = null;
-		if (!listeners.containsKey(clazz)) {
+		if (!msglisteners.containsKey(clazz)) {
 			listenerList = new ArrayList<IMAVLinkListener>();
-			listeners.put(clazz, listenerList);
+			msglisteners.put(clazz, listenerList);
 		} else
-			listenerList = listeners.get(clazz);
+			listenerList = msglisteners.get(clazz);
 		listenerList.add(listener);
 	}
 
@@ -267,21 +273,10 @@ public class MAVLinkToModelParser {
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 
 			try {
-				if (mavListener != null && mavListener.size() > 0) {
-					for (IMAVLinkListener mavlistener : mavListener)
-						mavlistener.received(msg);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+					mavListenerThread.put(msg);
+					msgListenerThread.put(msg);
+					mavList.put(msg.getClass(), msg);
 
-			try {
-				mavList.put(msg.getClass(), msg);
-				final List<IMAVLinkListener> listenerList = listeners.get(msg.getClass());
-				if (listenerList != null && listenerList.size() > 0) {
-					for (IMAVLinkListener listener : listenerList)
-						listener.received(msg);
-				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -300,4 +295,80 @@ public class MAVLinkToModelParser {
 		}
 
 	}
+
+	private class MAVListenerThread implements Runnable {
+
+		private List<IMAVLinkListener> mavListener = null;
+		private List<MAVLinkMessage> msgList = null;
+
+		public MAVListenerThread(List<IMAVLinkListener> mavListener) {
+			this.msgList = new ArrayList<MAVLinkMessage>();
+			this.mavListener = mavListener;
+		}
+
+		public void put(MAVLinkMessage msg) {
+			synchronized(this) {
+				this.msgList.add(msg);
+				notifyAll();
+			}
+		}
+
+		@Override
+		public void run() {
+			while(true) {
+				synchronized(this) {
+					try {
+						if(msgList.size() == 0)
+							wait();
+
+						for(MAVLinkMessage msg : msgList) {
+							if (mavListener != null && mavListener.size() > 0)
+								for (IMAVLinkListener mavlistener : mavListener)
+									mavlistener.received(msg);
+						}
+						msgList.clear();
+					} catch (InterruptedException e) { }
+				}
+			}
+		}
+	}
+
+	private class MSGListenerThread implements Runnable {
+
+		private Map<Class<?>, List<IMAVLinkListener>> msgListeners = null;
+		private MAVLinkMessage msg = null;
+
+		public MSGListenerThread(Map<Class<?>, List<IMAVLinkListener>> msgListeners) {
+			this.msgListeners = msgListeners;
+		}
+
+		public void put(MAVLinkMessage msg) {
+			synchronized(this) {
+				this.msg = msg;
+				notifyAll();
+			}
+		}
+
+		@Override
+		public void run() {
+			List<IMAVLinkListener> mavListener = null;
+			while(true) {
+				synchronized(this) {
+					try {
+						if(msg == null)
+							wait();
+						else {
+							mavListener = msgListeners.get(msg.getClass());
+							if (mavListener != null && mavListener.size() > 0)
+								for (IMAVLinkListener _listeners : mavListener)
+									_listeners.received(msg);
+							msg = null;
+						}
+					} catch (InterruptedException e) { e.printStackTrace(); }
+				}
+			}
+		}
+	}
+
+
 }
