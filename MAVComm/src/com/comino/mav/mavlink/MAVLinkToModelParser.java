@@ -41,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.mavlink.IMAVLinkMessage;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.lquac.msg_command_ack;
@@ -277,9 +278,9 @@ public class MAVLinkToModelParser {
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 
 			try {
-					mavListenerThread.put(msg);
-					msgListenerThread.put(msg);
-					mavList.put(msg.getClass(), msg);
+				mavListenerThread.put(msg);
+				msgListenerThread.put(msg);
+				mavList.put(msg.getClass(), msg);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -340,15 +341,17 @@ public class MAVLinkToModelParser {
 	private class MSGListenerThread implements Runnable {
 
 		private Map<Class<?>, List<IMAVLinkListener>> msgListeners = null;
-		private MAVLinkMessage msg = null;
+		private List<MAVLinkMessage> msgList = null;
+
 
 		public MSGListenerThread(Map<Class<?>, List<IMAVLinkListener>> msgListeners) {
 			this.msgListeners = msgListeners;
+			this.msgList = new ArrayList<MAVLinkMessage>();
 		}
 
 		public void put(MAVLinkMessage msg) {
 			synchronized(this) {
-				this.msg = msg;
+				this.msgList.add(msg);
 				notifyAll();
 			}
 		}
@@ -359,14 +362,16 @@ public class MAVLinkToModelParser {
 			while(true) {
 				synchronized(this) {
 					try {
-						if(msg == null)
+						if(msgList.isEmpty())
 							wait();
 						else {
-							mavListener = msgListeners.get(msg.getClass());
-							if (mavListener != null && mavListener.size() > 0)
-								for (IMAVLinkListener _listeners : mavListener)
-									_listeners.received(msg);
-							msg = null;
+							for(MAVLinkMessage msg : msgList) {
+								mavListener = msgListeners.get(msg.getClass());
+								if (mavListener != null && mavListener.size() > 0)
+									for (IMAVLinkListener _listeners : mavListener)
+										_listeners.received(msg);
+							}
+							msgList.clear();
 						}
 					} catch (InterruptedException e) { e.printStackTrace(); }
 				}
