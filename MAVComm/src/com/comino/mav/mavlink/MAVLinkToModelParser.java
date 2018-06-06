@@ -97,10 +97,14 @@ public class MAVLinkToModelParser {
 		this.msglisteners = new HashMap<Class<?>, List<IMAVLinkListener>>();
 
 		mavListenerThread = new MAVListenerThread(mavListener);
-		new Thread(mavListenerThread).start();
+		Thread mavTh = new Thread(mavListenerThread);
+		mavTh.setName("MAVListener");
+		mavTh.start();
 
 		msgListenerThread = new MSGListenerThread(msglisteners);
-		new Thread(msgListenerThread).start();
+		Thread msgTh = new Thread(msgListenerThread);
+		msgTh.setName("MSGListener");
+		msgTh.start();
 
 		model.sys.setStatus(Status.MSP_READY, true);
 
