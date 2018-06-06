@@ -133,11 +133,11 @@ public class Autopilot2D implements Runnable {
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		//
 		// TODO: Landing during takeoff switches to offboard mode here => should directly land instead
-		//       Update: works in SITL, but not on vehicle (timing?)
+		//       Update: 		works in SITL, but not on vehicle (timing?)
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
 			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
 				return;
-			offboard.setCurrentAsTarget();
+			offboard.setCurrentSetPointAsTarget();
 			offboard.start(OffboardManager.MODE_POSITION);
 			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);

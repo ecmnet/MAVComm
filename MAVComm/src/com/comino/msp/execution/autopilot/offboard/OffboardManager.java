@@ -33,6 +33,8 @@
 
 package com.comino.msp.execution.autopilot.offboard;
 
+import java.util.concurrent.TimeUnit;
+
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -48,6 +50,7 @@ import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -126,6 +129,13 @@ public class OffboardManager implements Runnable {
 		}
 	}
 
+	public void start(int m, int delay_ms) {
+				try {
+					Thread.sleep(delay_ms);
+				} catch (InterruptedException e) {	}
+				start(m);
+	}
+
 	public void stop() {
 		enabled = false;
 	}
@@ -175,6 +185,15 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 	}
 
+	public void setCurrentSetPointAsTarget() {
+		mode = MODE_LOITER;
+		target.set(model.target_state.l_x, model.target_state.l_y, model.target_state.l_z, model.attitude.y);
+		System.out.println(model.target_state.l_z);
+		already_fired = false;
+		new_setpoint = true;
+		valid_setpoint = true;
+	}
+
 	public void finalize() {
 		mode = MODE_LOITER;
 		target.w = 0;
@@ -213,7 +232,7 @@ public class OffboardManager implements Runnable {
 		float delta, delta_sec;  long tms, sleep_tms = 0; float[] ctl = new float[2];
 		long watch_tms = System.currentTimeMillis(); long publish_tms = 0;
 
-		already_fired = false; valid_setpoint = false;
+		already_fired = false; if(!new_setpoint) valid_setpoint = false;
 
 		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, true);
