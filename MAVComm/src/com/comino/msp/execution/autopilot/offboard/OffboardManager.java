@@ -187,8 +187,7 @@ public class OffboardManager implements Runnable {
 
 	public void setCurrentSetPointAsTarget() {
 		mode = MODE_LOITER;
-		target.set(model.target_state.l_x, model.target_state.l_y, model.target_state.l_z, model.attitude.y);
-		System.out.println(model.target_state.l_z);
+		target.set(model.target_state.l_x, model.target_state.l_y, model.target_state.l_z, model.attitude.sy);
 		already_fired = false;
 		new_setpoint = true;
 		valid_setpoint = true;
