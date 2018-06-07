@@ -44,7 +44,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAVLinkMessageFactory;
 
 
-public class MAVLinkReader2 {
+public class MAVLinkReader3  implements Runnable {
 
 
 	private static final byte MAVLINK_IFLAG_SIGNED = 0x01;
@@ -95,20 +95,23 @@ public class MAVLinkReader2 {
 	private volatile int lengthToRead = 0;
 	private volatile boolean noCRCCheck = false;
 
+	private MAVLinkToModelParser parser;
 
-	public MAVLinkReader2(int id) {
-		this(id,false);
+
+	public MAVLinkReader3(int id, MAVLinkToModelParser parser) {
+		this(id,false, parser);
 	}
 
-	public MAVLinkReader2(int id, boolean noCRCCheck) {
+	public MAVLinkReader3(int id, boolean noCRCCheck, MAVLinkToModelParser parser) {
 		this.noCRCCheck = noCRCCheck;
+		this.parser = parser;
 		for (int i = 0; i < lastPacket.length; i++) {
 			lastPacket[i] = -1;
 		}
 		if(noCRCCheck)
-			System.out.println("MAVLinkReader2 "+id+" started without CRC");
+			System.out.println("MAVLinkReader3 "+id+" started without CRC");
 		else
-		System.out.println("MAVLinkReader2 "+id+" started");
+			System.out.println("MAVLinkReader3 "+id+" started");
 	}
 
 	/**
@@ -129,10 +132,12 @@ public class MAVLinkReader2 {
 
 
 	public void put(byte buf[],int len) {
-		synchronized(this) {
-			for(int i=0;i<len;i++)
-				readMavLinkMessageFromBuffer(buf[i]);
-		}
+		for(int i=0;i<len;i++)
+			readMavLinkMessageFromBuffer(buf[i]);
+	}
+
+	public void put(int c) {
+			readMavLinkMessageFromBuffer(c);
 	}
 
 
@@ -157,7 +162,7 @@ public class MAVLinkReader2 {
 
 
 	private int c = 0;
-	public  boolean readMavLinkMessageFromBuffer(int v) {
+	public  synchronized boolean readMavLinkMessageFromBuffer(int v) {
 		try {
 
 			c = (v & 0x00FF);
@@ -254,8 +259,9 @@ public class MAVLinkReader2 {
 
 					// TODO: Fix this: CRC workaraounds
 					if(rxmsg.msgId == 36 || rxmsg.msgId == 140 || rxmsg.msgId == 74 || rxmsg.msgId == 83 || rxmsg.msgId == 30
-						|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 || rxmsg.msgId == 24
-						|| rxmsg.msgId == 242|| rxmsg.msgId ==77 || rxmsg.msgId ==148 || rxmsg.msgId ==147 || rxmsg.msgId ==102)
+							|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 || rxmsg.msgId == 24
+							|| rxmsg.msgId == 242|| rxmsg.msgId ==77 || rxmsg.msgId ==148 || rxmsg.msgId ==147 || rxmsg.msgId ==102
+							|| rxmsg.msgId == 70 )
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
 					else {
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
@@ -281,10 +287,11 @@ public class MAVLinkReader2 {
 						msg.isValid = true;
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
+						notifyAll();
 						//System.out.println("added: "+rxmsg.packet+":"+msg);
 					} else {
 						packet_lost++;
-					//	System.out.println(rxmsg);
+						//	System.out.println(rxmsg);
 					}
 				} else {
 					System.out.println(rxmsg);
@@ -304,7 +311,7 @@ public class MAVLinkReader2 {
 						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 							msg.packet = rxmsg.packet;
 							packets.addElement(msg);
-//							System.out.println("added: "+rxmsg.packet+":"+msg);
+							//							System.out.println("added: "+rxmsg.packet+":"+msg);
 						} else {
 							packet_lost++;
 						}
@@ -337,14 +344,14 @@ public class MAVLinkReader2 {
 	 * @return true if we don't lost messages
 	 */
 	protected boolean checkPacket(int sysId, int packet) {
-	//	boolean check = false;
+		//	boolean check = false;
 
 		if(sysId!=1)
 			return true;
 
 		if (lastPacket[sysId] == -1) {
 			// it is the first message read
-	//		check = true;
+			//		check = true;
 		}
 
 
@@ -355,13 +362,13 @@ public class MAVLinkReader2 {
 
 		if (lastPacket[sysId] < packet) {
 			if (packet - lastPacket[sysId] == 1) {
-	//			check = true;
+				//			check = true;
 			}
 		}
 		else
 			// We have reached the max number (255) and restart to 0
 			if (packet + 256 - lastPacket[sysId] == 1) {
-	//			check = true;
+				//			check = true;
 			}
 
 
@@ -386,6 +393,22 @@ public class MAVLinkReader2 {
 		hexChars[0] = hexArray[v >>> 4];
 		hexChars[1] = hexArray[v & 0x0F];
 		return new String(hexChars);
+	}
+
+	@Override
+	public void run() {
+		synchronized(this) {
+			while(true) {
+				try {
+					if(packets.isEmpty())
+						wait();
+					parser.parseMessage(getNextMessage());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	private class RxMsg {

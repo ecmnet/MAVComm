@@ -41,8 +41,9 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.comm.proxy.MAVLinkProxyReader;
 import com.comino.mav.control.IMAVCmdAcknowledge;
-import com.comino.mav.mavlink.MAVLinkReader2;
+import com.comino.mav.mavlink.MAVLinkReader3;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
@@ -67,7 +68,7 @@ public class MAVSerialComm implements IMAVComm {
 
 
 	private MAVLinkToModelParser parser = null;
-	private MAVLinkReader2 reader;
+	private MAVLinkReader3 reader;
 
 	private static IMAVComm com = null;
 
@@ -106,7 +107,8 @@ public class MAVSerialComm implements IMAVComm {
 		System.out.println(port+" found");
 
 		this.parser     = new MAVLinkToModelParser(model, this);
-		this.reader     = new MAVLinkReader2(3, false);
+		this.reader     = new MAVLinkReader3(3, parser);
+		new Thread(reader).start();
 
 	}
 
@@ -169,34 +171,21 @@ public class MAVSerialComm implements IMAVComm {
 		try {
 
 			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
-			serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 1000,1000);
-
-			serialPort.addDataListener(new SerialPortDataListener() {
-				@Override
-				public int getListeningEvents() {
-					return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
-				}
-
-				@Override
-				public void serialEvent(SerialPortEvent event)
-				{
-					if (event.getEventType() != SerialPort.LISTENING_EVENT_DATA_AVAILABLE)
-						return;
-
-					try {
-						int avail = serialPort.bytesAvailable();
-						serialPort.readBytes(buf, avail);
-						//System.out.println(MAVLinkReader2.bytesToHex(buf, avail));
-						reader.put(buf, avail);
-						while(reader.nbUnreadMessages()>0)
-						    parser.parseMessage(reader.getNextMessage());
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-			});
+			serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0,0);
 			serialPort.openPort();
 			model.sys.setStatus(Status.MSP_CONNECTED, true);
+
+			Thread serialTh = new Thread(()-> {
+				int avail=0;
+				while(true) {
+					avail = serialPort.readBytes(buf, buf.length);
+					reader.put(buf, avail);
+				}
+			});
+			serialTh.setName("Serial");
+			serialTh.setPriority(Thread.MIN_PRIORITY);
+			serialTh.start();
+
 		} catch (Exception e2) {
 			e2.printStackTrace();
 			serialPort.closePort();
