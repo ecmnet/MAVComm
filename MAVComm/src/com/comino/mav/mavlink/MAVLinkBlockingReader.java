@@ -404,7 +404,6 @@ public class MAVLinkBlockingReader  implements Runnable {
 						wait();
 					parser.parseMessage(getNextMessage());
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

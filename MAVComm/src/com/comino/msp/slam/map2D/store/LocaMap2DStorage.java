@@ -32,8 +32,7 @@ public class LocaMap2DStorage {
 
 	private String base_path;
 
-	/* TODO:
-	 * Search for map within MAP size and determine global center
+	/* TODO: Search for map within MAP size and determine global center
 	 * then move map according to position
 	 */
 
