@@ -44,7 +44,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAVLinkMessageFactory;
 
 
-public class MAVLinkReader3  implements Runnable {
+public class MAVLinkBlockingReader  implements Runnable {
 
 
 	private static final byte MAVLINK_IFLAG_SIGNED = 0x01;
@@ -98,11 +98,11 @@ public class MAVLinkReader3  implements Runnable {
 	private MAVLinkToModelParser parser;
 
 
-	public MAVLinkReader3(int id, MAVLinkToModelParser parser) {
+	public MAVLinkBlockingReader(int id, MAVLinkToModelParser parser) {
 		this(id,false, parser);
 	}
 
-	public MAVLinkReader3(int id, boolean noCRCCheck, MAVLinkToModelParser parser) {
+	public MAVLinkBlockingReader(int id, boolean noCRCCheck, MAVLinkToModelParser parser) {
 		this.noCRCCheck = noCRCCheck;
 		this.parser = parser;
 		for (int i = 0; i < lastPacket.length; i++) {
@@ -261,7 +261,7 @@ public class MAVLinkReader3  implements Runnable {
 					if(rxmsg.msgId == 36 || rxmsg.msgId == 140 || rxmsg.msgId == 74 || rxmsg.msgId == 83 || rxmsg.msgId == 30
 							|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 || rxmsg.msgId == 24
 							|| rxmsg.msgId == 242|| rxmsg.msgId ==77 || rxmsg.msgId ==148 || rxmsg.msgId ==147 || rxmsg.msgId ==102
-							|| rxmsg.msgId == 70 )
+							|| rxmsg.msgId == 70 || rxmsg.msgId == 266 )
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
 					else {
 						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;

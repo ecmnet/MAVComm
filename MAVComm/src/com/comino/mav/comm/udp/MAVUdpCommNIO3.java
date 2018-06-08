@@ -51,7 +51,7 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.comm.proxy.MAVLinkProxyReader;
 import com.comino.mav.control.IMAVCmdAcknowledge;
-import com.comino.mav.mavlink.MAVLinkReader3;
+import com.comino.mav.mavlink.MAVLinkBlockingReader;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
@@ -75,7 +75,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	private boolean					isConnected = false;
 
-	private MAVLinkReader3 reader;
+	private MAVLinkBlockingReader reader;
 
 
 	private Selector selector;
@@ -95,7 +95,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		this.parser = new MAVLinkToModelParser(model,this);
 		this.peerPort = new InetSocketAddress(peerAddress,pPort);
 		this.bindPort = new InetSocketAddress(bPort);
-		this.reader = new MAVLinkReader3(2, parser);
+		this.reader = new MAVLinkBlockingReader(2, parser);
 		new Thread(reader).start();
 
 		System.out.println("Vehicle (NIO3): BindPort="+bPort+" PeerPort="+pPort+ " BufferSize: "+rxBuffer.capacity());
