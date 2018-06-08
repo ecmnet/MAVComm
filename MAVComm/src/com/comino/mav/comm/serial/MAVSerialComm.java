@@ -173,6 +173,7 @@ public class MAVSerialComm implements IMAVComm {
 			serialPort.setComPortParameters(baudRate, dataBits, stopBits, parity);
 			serialPort.setComPortTimeouts(SerialPort.TIMEOUT_READ_SEMI_BLOCKING, 0,0);
 			serialPort.addDataListener(new SerialPortDataListener() {
+				int avail;
 				@Override
 				public int getListeningEvents() {
 					return SerialPort.LISTENING_EVENT_DATA_AVAILABLE;
@@ -185,7 +186,7 @@ public class MAVSerialComm implements IMAVComm {
 						return;
 
 					try {
-						int avail = serialPort.bytesAvailable();
+						avail = serialPort.bytesAvailable();
 						serialPort.readBytes(buf, avail);
 						//System.out.println(MAVLinkReader3.bytesToHex(buf, avail));
 						reader.put(buf, avail);

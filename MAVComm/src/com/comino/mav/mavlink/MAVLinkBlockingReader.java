@@ -90,7 +90,7 @@ public class MAVLinkBlockingReader  implements Runnable {
 	/**
 	 * MAVLink messages received
 	 */
-	private final Vector<MAVLinkMessage> packets = new Vector<MAVLinkMessage>();
+	private final Vector<MAVLinkMessage> packets = new Vector<MAVLinkMessage>(10);
 
 	private volatile int lengthToRead = 0;
 	private volatile boolean noCRCCheck = false;
@@ -258,16 +258,16 @@ public class MAVLinkBlockingReader  implements Runnable {
 				if ((state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != ((int)(rxmsg.crc >> 8) & 0x00FF)) && !noCRCCheck) {
 
 					// TODO: Fix this: CRC workaraounds
-					if(rxmsg.msgId == 36 || rxmsg.msgId == 140 || rxmsg.msgId == 74 || rxmsg.msgId == 83 || rxmsg.msgId == 30
-							|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 || rxmsg.msgId == 24
-							|| rxmsg.msgId == 242|| rxmsg.msgId ==77 || rxmsg.msgId ==148 || rxmsg.msgId ==147 || rxmsg.msgId ==102
-							|| rxmsg.msgId == 70 || rxmsg.msgId == 266 )
-						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
-					else {
-						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
-						//System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
-					}
-
+//					if(rxmsg.msgId == 36 || rxmsg.msgId == 140 || rxmsg.msgId == 74 || rxmsg.msgId == 83 || rxmsg.msgId == 30
+//							|| rxmsg.msgId == 32 || rxmsg.msgId == 31 || rxmsg.msgId == 106 || rxmsg.msgId == 85 || rxmsg.msgId == 24
+//							|| rxmsg.msgId == 242|| rxmsg.msgId ==77 || rxmsg.msgId ==148 || rxmsg.msgId ==147 || rxmsg.msgId ==102
+//							|| rxmsg.msgId == 70 || rxmsg.msgId == 266 )
+//						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
+//					else {
+//						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
+//						//System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
+//					}
+					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
 
 				}
 				else
