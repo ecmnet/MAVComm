@@ -204,7 +204,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean close() {
-		proxy.close();
+		proxy.close(); comm.close();
 		return true;
 	}
 
