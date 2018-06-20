@@ -136,15 +136,14 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 	public void close() {
 		isConnected = false;
-
 		try {
-			selector.close();
+			if(selector!=null)
+			   selector.close();
 			if (channel != null) {
-				channel.disconnect();
 				channel.close();
 			}
 		} catch(Exception e) {
-
+			e.printStackTrace();
 		}
 	}
 
@@ -181,7 +180,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				return;
 			}
 
-			
+
 			while(isConnected) {
 
 				if(selector.select(1000)==0)

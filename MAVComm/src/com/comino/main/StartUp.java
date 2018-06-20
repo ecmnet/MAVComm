@@ -125,8 +125,7 @@ public class StartUp implements Runnable {
 			try {
 				Thread.sleep(200);
 				if(!control.isConnected()) {
-					if(control.isConnected())
-						control.close();
+					control.close();
 					control.connect();
 				}
 
