@@ -240,7 +240,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 	}
 
 	public boolean isConnected() {
-		return parser.isConnected();
+		return isConnected;
 	}
 
 	public DataModel getModel() {
@@ -248,6 +248,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 	}
 
 	public void close() {
+		isConnected = false;
 		try {
 			if(selector!=null )
 				selector.close();
