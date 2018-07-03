@@ -163,6 +163,17 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_FOLLOW_REPOSITION = 33;
     /**
+     * WIP: Start orbiting on the circumference of a circle defined by the parameters. Setting any value NaN results in using defaults.
+     * PARAM 1 : Radius of the circle in meters. positive: Orbit clockwise. negative: Orbit counter-clockwise. 
+     * PARAM 2 : Velocity tangential in m/s. NaN: Vehicle configuration default.
+     * PARAM 3 : Yaw behaviour of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.
+     * PARAM 4 : Reserved (e.g. for dynamic center beacon options)
+     * PARAM 5 : Center point latitude / X coordinate. NaN: Use current vehicle position or current center if already orbiting.
+     * PARAM 6 : Center point longitude / Y coordinate.
+     * PARAM 7 : Center point altitude / Z coordinate.
+     */
+    public final static int MAV_CMD_DO_ORBIT = 34;
+    /**
      * THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
@@ -724,6 +735,18 @@ public interface MAV_CMD {
      * PARAM 7 : Empty
      */
     public final static int MAV_CMD_DO_ENGINE_CONTROL = 223;
+    /**
+     * Set the mission item with sequence number seq as current item. This means that the MAV will continue to this mission item on the shortest path (not following the mission items in-between).
+     * PARAM 1 : Mission sequence value to set
+     * PARAM 2 : Empty
+     * PARAM 3 : Empty
+     * PARAM 4 : Empty
+     * PARAM 5 : Empty
+     * PARAM 5 : Empty
+     * PARAM 6 : Empty
+     * PARAM 7 : Empty
+     */
+    public final static int MAV_CMD_DO_SET_MISSION_CURRENT = 224;
     /**
      * NOP - This command is only used to mark the upper limit of the DO commands in the enumeration
      * PARAM 1 : Empty

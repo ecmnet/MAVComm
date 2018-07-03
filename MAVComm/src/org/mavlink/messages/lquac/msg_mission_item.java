@@ -45,15 +45,15 @@ public class msg_mission_item extends MAVLinkMessage {
    */
   public float param4;
   /**
-   * PARAM5 / local: x position, global: latitude
+   * PARAM5 / local: X coordinate, global: latitude
    */
   public float x;
   /**
-   * PARAM6 / y position: global: longitude
+   * PARAM6 / local: Y coordinate, global: longitude
    */
   public float y;
   /**
-   * PARAM7 / z position: global: altitude (relative or absolute, depending on frame.
+   * PARAM7 / local: Z coordinate, global: altitude (relative or absolute, depending on frame).
    */
   public float z;
   /**

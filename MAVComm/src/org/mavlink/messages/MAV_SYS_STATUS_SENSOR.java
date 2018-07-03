@@ -116,4 +116,8 @@ public interface MAV_SYS_STATUS_SENSOR {
      * 0x4000000 Proximity
      */
     public final static int MAV_SYS_STATUS_SENSOR_PROXIMITY = 67108864;
+    /**
+     * 0x8000000 Satellite Communication
+     */
+    public final static int MAV_SYS_STATUS_SENSOR_SATCOM = 134217728;
 }
