@@ -32,7 +32,7 @@
  ****************************************************************************/
 
 
-package com.comino.mav.comm.proxy;
+package com.comino.mav.mavlink;
 
 import java.util.Arrays;
 import java.util.Vector;
@@ -44,7 +44,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAVLinkMessageFactory;
 
 
-public class MAVLinkProxyReader {
+public class MAVLinkReader {
 
 
 	private static final byte MAVLINK_IFLAG_SIGNED = 0x01;
@@ -90,17 +90,17 @@ public class MAVLinkProxyReader {
 	/**
 	 * MAVLink messages received
 	 */
-	private final Vector<MAVLinkMessage> packets = new Vector<MAVLinkMessage>();
+	protected final Vector<MAVLinkMessage> packets = new Vector<MAVLinkMessage>(10);
 
 	private volatile int lengthToRead = 0;
 	private volatile boolean noCRCCheck = false;
 
 
-	public MAVLinkProxyReader(int id) {
+	public MAVLinkReader(int id) {
 		this(id,false);
 	}
 
-	public MAVLinkProxyReader(int id, boolean noCRCCheck) {
+	public MAVLinkReader(int id, boolean noCRCCheck) {
 		this.noCRCCheck = noCRCCheck;
 		for (int i = 0; i < lastPacket.length; i++) {
 			lastPacket[i] = -1;
@@ -160,7 +160,7 @@ public class MAVLinkProxyReader {
 
 
 	private int c = 0;
-	private  boolean readMavLinkMessageFromBuffer(int v) {
+	private synchronized boolean readMavLinkMessageFromBuffer(int v) {
 		try {
 
 			c = (v & 0x00FF);
@@ -274,7 +274,8 @@ public class MAVLinkProxyReader {
 						msg.isValid = true;
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
-						//System.out.println("added: "+rxmsg.packet+":"+msg);
+						notify();
+					//	System.out.println("added: "+rxmsg.packet+":"+msg);
 					} else {
 						packet_lost++;
 					//	System.out.println(rxmsg);
@@ -297,6 +298,7 @@ public class MAVLinkProxyReader {
 						if(msg!=null && checkPacket(rxmsg.sysId,rxmsg.packet)) {
 							msg.packet = rxmsg.packet;
 							packets.addElement(msg);
+							notify();
 //							System.out.println("added: "+rxmsg.packet+":"+msg);
 						} else {
 							packet_lost++;
@@ -319,8 +321,6 @@ public class MAVLinkProxyReader {
 	public int getLostPackages() {
 		return packet_lost;
 	}
-
-
 
 	/**
 	 * Check if we don't lost messages...

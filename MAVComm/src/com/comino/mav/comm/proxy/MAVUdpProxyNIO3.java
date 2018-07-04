@@ -50,6 +50,8 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
+import com.comino.mav.mavlink.MAVLinkBlockingReader;
+import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 
 
@@ -61,7 +63,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 	private HashMap<Class<?>,List<IMAVLinkListener>> listeners = null;
 
-	private MAVLinkProxyReader 			reader;
+	private MAVLinkReader 			reader;
 	private Selector 				selector;
 	private IMAVComm 				comm;
 
@@ -74,7 +76,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 
 		peerPort = new InetSocketAddress(peerAddress, pPort);
 		bindPort = new InetSocketAddress(bindAddress, bPort);
-		reader = new MAVLinkProxyReader(1);
+		reader = new MAVLinkReader(1);
 
 		this.comm = comm;
 
