@@ -11,6 +11,9 @@ public class MAVLinkBlockingReader extends MAVLinkReader implements Runnable {
 	public MAVLinkBlockingReader(int id, boolean noCRCCheck, MAVLinkToModelParser parser) {
 		super(id,noCRCCheck);
 		this.parser = parser;
+		Thread t = new Thread(this);
+		t.setName("MAVLinkBlockingReader");
+		t.start();
 	}
 
 	@Override
