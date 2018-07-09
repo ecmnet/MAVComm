@@ -265,7 +265,7 @@ public class MAVLinkToModelParser {
 		List<IMAVLinkListener> msgListener = null;
 
 		if (msg != null) {
-			model.sys.setStatus(Status.MSP_CONNECTED, true);
+
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 
 			try {

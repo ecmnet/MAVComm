@@ -81,9 +81,10 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 
 	@Override
 	public boolean isConnected() {
-		if(comm == null)
-			return false;
-		return comm.isConnected();
+//		if(comm == null)
+//			return false;
+//		return comm.isConnected();
+		return model.sys.isStatus(Status.MSP_CONNECTED);
 	}
 
 	@Override

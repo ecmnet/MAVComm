@@ -264,7 +264,6 @@ public class MAVController implements IMAVController, Runnable {
 	}
 
 
-
 	@Override
 	public void addStatusChangeListener(IMSPStatusChangedListener listener) {
 		status_manager.addListener(listener);

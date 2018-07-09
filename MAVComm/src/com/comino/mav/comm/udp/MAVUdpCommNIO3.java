@@ -130,7 +130,6 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			t.setName("MAVLink parser");
 			t.setDaemon(true);
 			t.start();
-			isConnected = true;
 
 
 		} catch(Exception e) {
@@ -142,7 +141,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 					channel.close();
 				}
 			} catch (IOException e1) {
-				e1.printStackTrace();
+
 			}
 			model.sys.setStatus(Status.MSP_CONNECTED,false);
 			isConnected = false;
@@ -158,6 +157,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		Iterator<?> selectedKeys = null; MAVLinkMessage msg = null;
 
 		if(channel.isConnected()) {
+			isConnected = true;
 			msg_heartbeat hb = new msg_heartbeat(255,1);
 			hb.isValid = true;
 			try {

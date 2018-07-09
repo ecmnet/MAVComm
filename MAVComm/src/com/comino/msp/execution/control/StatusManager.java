@@ -44,7 +44,7 @@ public class StatusManager implements Runnable {
 
 	private static final long TIMEOUT_IMU         = 5000000;
 	private static final long TIMEOUT_VISION      = 2000000;
-	private static final long TIMEOUT_CONNECTED   = 5000000;
+	private static final long TIMEOUT_CONNECTED   = 500000;
 	private static final long TIMEOUT_RC_ATTACHED = 5000000;
 	private static final long TIMEOUT_GPOS        = 2000000;
 	private static final long TIMEOUT_LPOS        = 2000000;
@@ -121,6 +121,12 @@ public class StatusManager implements Runnable {
 
 	public void removeAll() {
 		list.clear();
+	}
+
+	public void reset() {
+		model.clear();
+		status_current.clear();
+		status_old.clear();
 	}
 
 	@Override
