@@ -46,6 +46,7 @@ import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVMSPController;
+import com.comino.mav.control.impl.MAVController;
 import com.comino.mav.control.impl.MAVProxyController;
 import com.comino.msp.execution.autopilot.Autopilot2D;
 import com.comino.msp.execution.commander.MSPCommander;
@@ -71,9 +72,9 @@ public class StartUp implements Runnable {
 		System.out.println("MSPService version "+config.getVersion()+" ("+config.getBasePath()+")");
 
 		if(args.length>0)
-			control = new MAVProxyController(true);
+			control = new MAVProxyController(MAVController.MODE_SITL);
 		else
-			control = new MAVProxyController(false);
+			control = new MAVProxyController(MAVController.MODE_USB);
 
 		model = control.getCurrentModel();
 
@@ -156,7 +157,7 @@ public class StartUp implements Runnable {
 
 				msg_timesync sync_s = new msg_timesync(255,1);
 				sync_s.tc1 = 0;
-				sync_s.ts1 = control.getCurrentModel().sys.getSynchronizedPX4Time_us()*1000;
+				sync_s.ts1 = System.currentTimeMillis()*1000000L;
 				control.sendMAVLinkMessage(sync_s);
 
 

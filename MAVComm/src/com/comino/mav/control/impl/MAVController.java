@@ -64,6 +64,10 @@ import com.comino.msp.utils.ExecutorService;
 
 public class MAVController implements IMAVController, Runnable {
 
+	public static final int MODE_NORMAL	 = 0;
+	public static final int MODE_SITL    = 1;
+	public static final int MODE_USB     = 2;
+
 	protected String peerAddress = null;
 	protected int    peerPort = 0;
 	protected int    bindPort = 0;

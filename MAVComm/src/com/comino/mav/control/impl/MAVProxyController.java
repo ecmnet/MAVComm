@@ -81,40 +81,42 @@ public class MAVProxyController implements IMAVMSPController {
 	}
 
 
-	public MAVProxyController(boolean sitl) {
+	public MAVProxyController(int mode) {
 		controller = this;
 		model = new DataModel();
 		status_manager = new StatusManager(model);
 
 		model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
-		model.sys.setStatus(Status.MSP_SITL, sitl);
+		model.sys.setStatus(Status.MSP_SITL, mode == MAVController.MODE_NORMAL);
 		model.sys.setStatus(Status.MSP_PROXY, true);
 
-		if(sitl) {
+		switch(mode) {
+		case MAVController.MODE_NORMAL:
+			comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
+			comm.open();
+			try { Thread.sleep(500); } catch (InterruptedException e) { }
+
+			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
+			peerAddress = "172.168.178.2";
+			System.out.println("Proxy Controller loaded: "+peerAddress);
+			break;
+
+		case MAVController.MODE_SITL:
 			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14556, 14550);
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
-			System.out.println("Proxy Controller loaded (SITL) ");
-		}
-		else {
+			System.out.println("Proxy Controller (SITL mode) loaded");
 
-			if(java.lang.management.ManagementFactory.getOperatingSystemMXBean().getArch().contains("64"))
-				comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
-			else
-				comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
+		case MAVController.MODE_USB:
+			comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			comm.open();
-			//		comm = MAVHighSpeedSerialComm2.getInstance(model, BAUDRATE, false);
-			try {
-				Thread.sleep(500);
-			} catch (InterruptedException e) {
-
-			}
-			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
-			peerAddress = "172.168.178.2";
-
-			System.out.println("Proxy Controller loaded: "+peerAddress);
+			try { Thread.sleep(500); } catch (InterruptedException e) { }
+			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
+			peerAddress = "127.0.0.1";
+			System.out.println("Proxy Controller (serial mode) loaded: "+peerAddress);
 
 		}
+
 		comm.addMAVLinkListener(proxy);
 
 	}
