@@ -254,8 +254,16 @@ public class MAVLinkReader {
 			case MAVLINK_PARSE_STATE_GOT_BAD_CRC1:
 			case MAVLINK_PARSE_STATE_GOT_CRC1:
 				if ((state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != ((int)(rxmsg.crc >> 8) & 0x00FF)) && !noCRCCheck) {
-						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
+
+					 switch(rxmsg.msgId) {
+					 case 332: // ignore CRC of Trajectory
+						 rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
+						 break;
+					    default:
+					    rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
 						System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
+						break;
+					 }
 				}
 				else
 					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
