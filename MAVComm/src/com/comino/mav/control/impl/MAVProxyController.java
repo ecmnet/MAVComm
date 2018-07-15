@@ -106,7 +106,7 @@ public class MAVProxyController implements IMAVMSPController {
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (SITL mode) loaded");
-
+            break;
 		case MAVController.MODE_USB:
 			comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			comm.open();
@@ -114,7 +114,7 @@ public class MAVProxyController implements IMAVMSPController {
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (serial mode) loaded: "+peerAddress);
-
+             break;
 		}
 
 		comm.addMAVLinkListener(proxy);
