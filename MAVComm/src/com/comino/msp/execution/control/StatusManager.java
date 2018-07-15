@@ -134,6 +134,10 @@ public class StatusManager implements Runnable {
 
 		while(true) {
 
+			if(!status_current.isStatus(Status.MSP_CONNECTED)) {
+				reset();
+			}
+
 			try { Thread.sleep(100); } catch(Exception e) { }
 
 			checkTimeouts();
