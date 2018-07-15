@@ -52,7 +52,7 @@ public class msg_command_int extends MAVLinkMessage {
    */
   public long y;
   /**
-   * PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame.
+   * PARAM7 / z position: global: altitude in meters (relative or absolute, depending on frame).
    */
   public float z;
   /**

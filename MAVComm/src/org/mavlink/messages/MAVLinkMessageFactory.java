@@ -89,6 +89,7 @@ import org.mavlink.messages.lquac.msg_terrain_request;
 import org.mavlink.messages.lquac.msg_terrain_check;
 import org.mavlink.messages.lquac.msg_adsb_vehicle;
 import org.mavlink.messages.lquac.msg_memory_vect;
+import org.mavlink.messages.lquac.msg_trajectory_representation_bezier;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
@@ -112,6 +113,7 @@ import org.mavlink.messages.lquac.msg_set_attitude_target;
 import org.mavlink.messages.lquac.msg_safety_allowed_area;
 import org.mavlink.messages.lquac.msg_gps_global_origin;
 import org.mavlink.messages.lquac.msg_log_request_end;
+import org.mavlink.messages.lquac.msg_trajectory_representation_waypoints;
 import org.mavlink.messages.lquac.msg_radio_status;
 import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
@@ -145,7 +147,6 @@ import org.mavlink.messages.lquac.msg_mission_ack;
 import org.mavlink.messages.lquac.msg_mission_request_list;
 import org.mavlink.messages.lquac.msg_play_tune;
 import org.mavlink.messages.lquac.msg_param_set;
-import org.mavlink.messages.lquac.msg_trajectory;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
 import org.mavlink.messages.lquac.msg_hil_actuator_controls;
@@ -255,6 +256,7 @@ import org.mavlink.messages.lquac.msg_terrain_request;
 import org.mavlink.messages.lquac.msg_terrain_check;
 import org.mavlink.messages.lquac.msg_adsb_vehicle;
 import org.mavlink.messages.lquac.msg_memory_vect;
+import org.mavlink.messages.lquac.msg_trajectory_representation_bezier;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
@@ -278,6 +280,7 @@ import org.mavlink.messages.lquac.msg_set_attitude_target;
 import org.mavlink.messages.lquac.msg_safety_allowed_area;
 import org.mavlink.messages.lquac.msg_gps_global_origin;
 import org.mavlink.messages.lquac.msg_log_request_end;
+import org.mavlink.messages.lquac.msg_trajectory_representation_waypoints;
 import org.mavlink.messages.lquac.msg_radio_status;
 import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
@@ -312,7 +315,6 @@ import org.mavlink.messages.lquac.msg_mission_ack;
 import org.mavlink.messages.lquac.msg_mission_request_list;
 import org.mavlink.messages.lquac.msg_play_tune;
 import org.mavlink.messages.lquac.msg_param_set;
-import org.mavlink.messages.lquac.msg_trajectory;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
 import org.mavlink.messages.lquac.msg_hil_actuator_controls;
@@ -682,6 +684,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_memory_vect(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_TRAJECTORY_REPRESENTATION_BEZIER:
+      msg = new msg_trajectory_representation_bezier(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW:
       msg = new msg_hil_rc_inputs_raw(sysId, componentId);
       msg.decode(dis);
@@ -772,6 +778,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_LOG_REQUEST_END:
       msg = new msg_log_request_end(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_TRAJECTORY_REPRESENTATION_WAYPOINTS:
+      msg = new msg_trajectory_representation_waypoints(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_RADIO_STATUS:
@@ -908,10 +918,6 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_PARAM_SET:
       msg = new msg_param_set(sysId, componentId);
-      msg.decode(dis);
-      break;
-  case MAVLINK_MSG_ID_TRAJECTORY:
-      msg = new msg_trajectory(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_GPS_STATUS:

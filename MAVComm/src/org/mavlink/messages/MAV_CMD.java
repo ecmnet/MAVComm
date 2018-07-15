@@ -168,9 +168,9 @@ public interface MAV_CMD {
      * PARAM 2 : Velocity tangential in m/s. NaN: Vehicle configuration default.
      * PARAM 3 : Yaw behaviour of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.
      * PARAM 4 : Reserved (e.g. for dynamic center beacon options)
-     * PARAM 5 : Center point latitude / X coordinate. NaN: Use current vehicle position or current center if already orbiting.
-     * PARAM 6 : Center point longitude / Y coordinate.
-     * PARAM 7 : Center point altitude / Z coordinate.
+     * PARAM 5 : Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
+     * PARAM 6 : Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
+     * PARAM 7 : Center point altitude AMSL (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
      */
     public final static int MAV_CMD_DO_ORBIT = 34;
     /**
@@ -597,9 +597,9 @@ public interface MAV_CMD {
      * PARAM 2 : stabilize roll? (1 = yes, 0 = no)
      * PARAM 3 : stabilize pitch? (1 = yes, 0 = no)
      * PARAM 4 : stabilize yaw? (1 = yes, 0 = no)
-     * PARAM 5 : roll input (0 = angle, 1 = angular rate)
-     * PARAM 6 : pitch input (0 = angle, 1 = angular rate)
-     * PARAM 7 : yaw input (0 = angle, 1 = angular rate)
+     * PARAM 5 : roll input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)
+     * PARAM 6 : pitch input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)
+     * PARAM 7 : yaw input (0 = angle body frame, 1 = angular rate, 2 = angle absolute frame)
      */
     public final static int MAV_CMD_DO_MOUNT_CONFIGURE = 204;
     /**
