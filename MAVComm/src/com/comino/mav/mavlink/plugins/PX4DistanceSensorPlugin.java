@@ -16,7 +16,13 @@ public class PX4DistanceSensorPlugin extends MAVLinkPluginBase {
 		msg_distance_sensor lidar = (msg_distance_sensor) o;
 		model.raw.di = lidar.current_distance / 100f;
 		model.raw.dicov = lidar.covariance / 100f;
-		model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, true);
+		switch(lidar.type) {
+		case 1:
+			model.sys.setSensor(Status.MSP_SONAR_AVAILABILITY, true);
+			break;
+		default:
+			model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, true);
+		}
 
 	}
 }
