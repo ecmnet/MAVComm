@@ -134,13 +134,13 @@ public class StatusManager implements Runnable {
 
 		while(true) {
 
-			if(!status_current.isStatus(Status.MSP_CONNECTED)) {
-				reset();
-			}
-
 			try { Thread.sleep(100); } catch(Exception e) { }
 
 			checkTimeouts();
+
+			if(!status_current.isStatus(Status.MSP_CONNECTED)) {
+				status_old.clear();;
+			}
 
 			status_current.set(model.sys);
 
