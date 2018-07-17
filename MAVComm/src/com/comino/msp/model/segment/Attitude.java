@@ -43,7 +43,6 @@ public class Attitude extends Segment {
 	public float r        	 = Float.NaN;	// roll in rad
 	public float p           = Float.NaN;	// pitch in rad
 	public float y           = Float.NaN;	// yaw in rad
-	public float t           = Float.NaN;
 
 	public float q1        	 = Float.NaN;	// Quaternion Q1
 	public float q2        	 = Float.NaN;	// Quaternion Q2
@@ -69,7 +68,6 @@ public class Attitude extends Segment {
 		r 	= a.r;
 		p   = a.p;
 		y   = a.y;
-		t   = a.t;
 		q1  = a.q1;
 		q2  = a.q2;
 		q3  = a.q3;
@@ -96,7 +94,6 @@ public class Attitude extends Segment {
 		r 	= 0;
 		p   = 0;
 		y   = 0;
-		t   = 0;
 		q1  = 0;
 		q2  = 0;
 		q3  = 0;

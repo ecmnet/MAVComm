@@ -2,6 +2,7 @@ package com.comino.mav.mavlink.plugins;
 
 import org.mavlink.messages.lquac.msg_vfr_hud;
 
+
 public class PX4VfrHUDPlugin extends MAVLinkPluginBase {
 
 	public PX4VfrHUDPlugin() {
@@ -16,7 +17,6 @@ public class PX4VfrHUDPlugin extends MAVLinkPluginBase {
 		model.hud.vs = hud.climb;
 		model.hud.h  = hud.heading;
 		model.hud.as = hud.airspeed;
-		model.attitude.t = hud.throttle / 100f;
 
 	}
 }

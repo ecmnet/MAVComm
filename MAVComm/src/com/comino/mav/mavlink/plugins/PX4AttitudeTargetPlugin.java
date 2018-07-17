@@ -27,8 +27,5 @@ public class PX4AttitudeTargetPlugin extends MAVLinkPluginBase {
 		model.attitude.srr = att.body_roll_rate;
 		model.attitude.spr = att.body_pitch_rate;
 		model.attitude.syr = att.body_yaw_rate;
-
-
-
 	}
 }
