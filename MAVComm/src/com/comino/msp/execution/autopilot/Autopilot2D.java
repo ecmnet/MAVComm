@@ -43,7 +43,6 @@ import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
-import com.comino.dev.LocalMap2DRaycast_old;
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
@@ -68,19 +67,19 @@ import georegression.struct.point.Vector4D_F32;
 
 public class Autopilot2D implements Runnable {
 
-	private static final int   CYCLE_MS					= 100;
+	private static final int   CYCLE_MS						= 100;
 
-	private static final int   CERTAINITY_THRESHOLD      = 10;
-	private static final float ROBOT_RADIUS         		= 0.3f;
+	private static final int   CERTAINITY_THRESHOLD      	= 10;
+	private static final float ROBOT_RADIUS         	 	= 0.3f;
 	private static final float WINDOWSIZE       			= 2.0f;
 
-	private static final float MIN_DISTANCE_HYSTERESIS   = 0.2f;
+	private static final float MIN_DISTANCE_HYSTERESIS   	= 0.2f;
 
 
-	private static final float OBSTACLE_MINDISTANCE_0MS  = 0.5f;
-	private static final float OBSTACLE_MINDISTANCE_1MS  = 1.5f;
+	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
+	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
 
-	private static final float OBSTACLE_FAILDISTANCE     = ROBOT_RADIUS / 2;
+	private static final float OBSTACLE_FAILDISTANCE     	= ROBOT_RADIUS / 2;
 
 	private static Autopilot2D      autopilot = null;
 
