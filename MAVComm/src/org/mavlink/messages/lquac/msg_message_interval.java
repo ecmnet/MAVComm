@@ -28,7 +28,7 @@ public class msg_message_interval extends MAVLinkMessage {
 }
 
   /**
-   * The interval between two messages, in microseconds. A value of -1 indicates this stream is disabled, 0 indicates it is not available, > 0 indicates the interval at which it is sent.
+   * The interval between two messages. A value of -1 indicates this stream is disabled, 0 indicates it is not available, > 0 indicates the interval at which it is sent.
    */
   public long interval_us;
   /**

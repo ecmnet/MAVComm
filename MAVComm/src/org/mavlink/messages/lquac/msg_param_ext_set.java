@@ -76,7 +76,7 @@ public class msg_param_ext_set extends MAVLinkMessage {
     return result;
   }
   /**
-   * Parameter type: see the MAV_PARAM_EXT_TYPE enum for supported data types.
+   * Parameter type.
    */
   public int param_type;
 /**

@@ -28,7 +28,7 @@ public class msg_autopilot_version extends MAVLinkMessage {
 }
 
   /**
-   * bitmask of capabilities (see MAV_PROTOCOL_CAPABILITY enum)
+   * Bitmap of capabilities
    */
   public long capabilities;
   /**

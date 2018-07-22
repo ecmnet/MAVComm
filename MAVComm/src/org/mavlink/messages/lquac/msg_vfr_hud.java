@@ -28,19 +28,19 @@ public class msg_vfr_hud extends MAVLinkMessage {
 }
 
   /**
-   * Current airspeed in m/s
+   * Current airspeed
    */
   public float airspeed;
   /**
-   * Current ground speed in m/s
+   * Current ground speed
    */
   public float groundspeed;
   /**
-   * Current altitude (MSL), in meters
+   * Current altitude (MSL)
    */
   public float alt;
   /**
-   * Current climb rate in meters/second
+   * Current climb rate
    */
   public float climb;
   /**

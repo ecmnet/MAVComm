@@ -29,7 +29,7 @@ public interface MAV_SEVERITY {
      */
     public final static int MAV_SEVERITY_WARNING = 4;
     /**
-     * An unusual event has occured, though not an error condition. This should be investigated for the root cause.
+     * An unusual event has occurred, though not an error condition. This should be investigated for the root cause.
      */
     public final static int MAV_SEVERITY_NOTICE = 5;
     /**

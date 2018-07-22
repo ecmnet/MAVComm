@@ -28,43 +28,43 @@ public class msg_scaled_imu2 extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * X acceleration (mg)
+   * X acceleration
    */
   public int xacc;
   /**
-   * Y acceleration (mg)
+   * Y acceleration
    */
   public int yacc;
   /**
-   * Z acceleration (mg)
+   * Z acceleration
    */
   public int zacc;
   /**
-   * Angular speed around X axis (millirad /sec)
+   * Angular speed around X axis
    */
   public int xgyro;
   /**
-   * Angular speed around Y axis (millirad /sec)
+   * Angular speed around Y axis
    */
   public int ygyro;
   /**
-   * Angular speed around Z axis (millirad /sec)
+   * Angular speed around Z axis
    */
   public int zgyro;
   /**
-   * X Magnetic field (milli tesla)
+   * X Magnetic field
    */
   public int xmag;
   /**
-   * Y Magnetic field (milli tesla)
+   * Y Magnetic field
    */
   public int ymag;
   /**
-   * Z Magnetic field (milli tesla)
+   * Z Magnetic field
    */
   public int zmag;
 /**

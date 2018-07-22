@@ -44,7 +44,7 @@ public class msg_mission_write_partial_list extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * Mission type, see MAV_MISSION_TYPE
+   * Mission type.
    */
   public int mission_type;
 /**

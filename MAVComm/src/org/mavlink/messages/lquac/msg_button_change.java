@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_button_change
- * Report button state change
+ * Report button state change.
  **/
 public class msg_button_change extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_BUTTON_CHANGE = 257;
@@ -28,15 +28,15 @@ public class msg_button_change extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * Time of last change of button state
+   * Time of last change of button state.
    */
   public long last_change_ms;
   /**
-   * Bitmap state of buttons
+   * Bitmap for state of buttons.
    */
   public int state;
 /**

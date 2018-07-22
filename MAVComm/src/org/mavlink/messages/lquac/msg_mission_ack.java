@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_mission_ack
- * Ack message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).
+ * Acknowledgment message during waypoint handling. The type field states if this message is a positive ack (type=0) or if an error happened (type=non-zero).
  **/
 public class msg_mission_ack extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_MISSION_ACK = 47;
@@ -36,11 +36,11 @@ public class msg_mission_ack extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * See MAV_MISSION_RESULT enum
+   * Mission result.
    */
   public int type;
   /**
-   * Mission type, see MAV_MISSION_TYPE
+   * Mission type.
    */
   public int mission_type;
 /**

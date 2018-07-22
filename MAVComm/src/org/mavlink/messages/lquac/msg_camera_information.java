@@ -28,7 +28,7 @@ public class msg_camera_information extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
@@ -36,27 +36,27 @@ public class msg_camera_information extends MAVLinkMessage {
    */
   public long firmware_version;
   /**
-   * Focal length in mm
+   * Focal length
    */
   public float focal_length;
   /**
-   * Image sensor size horizontal in mm
+   * Image sensor size horizontal
    */
   public float sensor_size_h;
   /**
-   * Image sensor size vertical in mm
+   * Image sensor size vertical
    */
   public float sensor_size_v;
   /**
-   * CAMERA_CAP_FLAGS enum flags (bitmap) describing camera capabilities.
+   * Bitmap of camera capability flags.
    */
   public long flags;
   /**
-   * Image resolution in pixels horizontal
+   * Horizontal image resolution
    */
   public int resolution_h;
   /**
-   * Image resolution in pixels vertical
+   * Vertical image resolution
    */
   public int resolution_v;
   /**

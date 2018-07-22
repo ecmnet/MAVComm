@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_gps_input
- * GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the sytem.
+ * GPS sensor input message.  This is a raw sensor value sent by the GPS. This is NOT the global position estimate of the system.
  **/
 public class msg_gps_input extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_GPS_INPUT = 232;
@@ -28,59 +28,59 @@ public class msg_gps_input extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (micros since boot or Unix epoch)
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
   /**
-   * GPS time (milliseconds from start of GPS week)
+   * GPS time (from start of GPS week)
    */
   public long time_week_ms;
   /**
-   * Latitude (WGS84), in degrees * 1E7
+   * Latitude (WGS84)
    */
   public long lat;
   /**
-   * Longitude (WGS84), in degrees * 1E7
+   * Longitude (WGS84)
    */
   public long lon;
   /**
-   * Altitude (AMSL, not WGS84), in m (positive for up)
+   * Altitude (AMSL). Positive for up.
    */
   public float alt;
   /**
-   * GPS HDOP horizontal dilution of position in m
+   * GPS HDOP horizontal dilution of position
    */
   public float hdop;
   /**
-   * GPS VDOP vertical dilution of position in m
+   * GPS VDOP vertical dilution of position
    */
   public float vdop;
   /**
-   * GPS velocity in m/s in NORTH direction in earth-fixed NED frame
+   * GPS velocity in NORTH direction in earth-fixed NED frame
    */
   public float vn;
   /**
-   * GPS velocity in m/s in EAST direction in earth-fixed NED frame
+   * GPS velocity in EAST direction in earth-fixed NED frame
    */
   public float ve;
   /**
-   * GPS velocity in m/s in DOWN direction in earth-fixed NED frame
+   * GPS velocity in DOWN direction in earth-fixed NED frame
    */
   public float vd;
   /**
-   * GPS speed accuracy in m/s
+   * GPS speed accuracy
    */
   public float speed_accuracy;
   /**
-   * GPS horizontal accuracy in m
+   * GPS horizontal accuracy
    */
   public float horiz_accuracy;
   /**
-   * GPS vertical accuracy in m
+   * GPS vertical accuracy
    */
   public float vert_accuracy;
   /**
-   * Flags indicating which fields to ignore (see GPS_INPUT_IGNORE_FLAGS enum).  All other fields must be provided.
+   * Bitmap indicating which GPS input flags fields to ignore.  All other fields must be provided.
    */
   public int ignore_flags;
   /**

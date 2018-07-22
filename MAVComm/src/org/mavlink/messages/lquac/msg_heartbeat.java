@@ -32,19 +32,19 @@ public class msg_heartbeat extends MAVLinkMessage {
    */
   public long custom_mode;
   /**
-   * Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
+   * Type of the MAV (quadrotor, helicopter, etc.)
    */
   public int type;
   /**
-   * Autopilot type / class. defined in MAV_AUTOPILOT ENUM
+   * Autopilot type / class.
    */
   public int autopilot;
   /**
-   * System mode bitfield, as defined by MAV_MODE_FLAG enum
+   * System mode bitmap.
    */
   public int base_mode;
   /**
-   * System status flag, as defined by MAV_STATE enum
+   * System status flag.
    */
   public int system_status;
   /**

@@ -28,7 +28,7 @@ public class msg_vision_speed_estimate extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds, synced to UNIX time or since system boot)
+   * Timestamp (UNIX time or time since system boot)
    */
   public long usec;
   /**

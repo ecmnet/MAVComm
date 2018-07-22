@@ -56,7 +56,7 @@ public class msg_command_int extends MAVLinkMessage {
    */
   public float z;
   /**
-   * The scheduled action for the mission item, as defined by MAV_CMD enum
+   * The scheduled action for the mission item.
    */
   public int command;
   /**
@@ -68,7 +68,7 @@ public class msg_command_int extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * The coordinate system of the COMMAND, as defined by MAV_FRAME enum
+   * The coordinate system of the COMMAND.
    */
   public int frame;
   /**

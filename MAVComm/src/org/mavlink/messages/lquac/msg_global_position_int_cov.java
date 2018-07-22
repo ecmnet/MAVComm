@@ -28,35 +28,35 @@ public class msg_global_position_int_cov extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since system boot or since UNIX epoch)
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
   /**
-   * Latitude, expressed as degrees * 1E7
+   * Latitude
    */
   public long lat;
   /**
-   * Longitude, expressed as degrees * 1E7
+   * Longitude
    */
   public long lon;
   /**
-   * Altitude in meters, expressed as * 1000 (millimeters), above MSL
+   * Altitude in meters above MSL
    */
   public long alt;
   /**
-   * Altitude above ground in meters, expressed as * 1000 (millimeters)
+   * Altitude above ground
    */
   public long relative_alt;
   /**
-   * Ground X Speed (Latitude), expressed as m/s
+   * Ground X Speed (Latitude)
    */
   public float vx;
   /**
-   * Ground Y Speed (Longitude), expressed as m/s
+   * Ground Y Speed (Longitude)
    */
   public float vy;
   /**
-   * Ground Z Speed (Altitude), expressed as m/s
+   * Ground Z Speed (Altitude)
    */
   public float vz;
   /**

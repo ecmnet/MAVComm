@@ -28,19 +28,19 @@ public class msg_terrain_data extends MAVLinkMessage {
 }
 
   /**
-   * Latitude of SW corner of first grid (degrees *10^7)
+   * Latitude of SW corner of first grid
    */
   public long lat;
   /**
-   * Longitude of SW corner of first grid (in degrees *10^7)
+   * Longitude of SW corner of first grid
    */
   public long lon;
   /**
-   * Grid spacing in meters
+   * Grid spacing
    */
   public int grid_spacing;
   /**
-   * Terrain data in meters AMSL
+   * Terrain data AMSL
    */
   public int[] data = new int[16];
   /**

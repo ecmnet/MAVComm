@@ -28,19 +28,19 @@ public class msg_gps_global_origin extends MAVLinkMessage {
 }
 
   /**
-   * Latitude (WGS84), in degrees * 1E7
+   * Latitude (WGS84)
    */
   public long latitude;
   /**
-   * Longitude (WGS84), in degrees * 1E7
+   * Longitude (WGS84)
    */
   public long longitude;
   /**
-   * Altitude (AMSL), in meters * 1000 (positive for up)
+   * Altitude (AMSL). Positive for up.
    */
   public long altitude;
   /**
-   * Timestamp (microseconds since UNIX epoch or microseconds since system boot)
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
 /**

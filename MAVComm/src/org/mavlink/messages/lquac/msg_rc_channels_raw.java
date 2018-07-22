@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_rc_channels_raw
- * The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. Individual receivers/transmitters might violate this specification.
+ * The RAW values of the RC channels received. The standard PPM modulation is as follows: 1000 microseconds: 0%, 2000 microseconds: 100%. A value of UINT16_MAX implies the channel is unused. Individual receivers/transmitters might violate this specification.
  **/
 public class msg_rc_channels_raw extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_RC_CHANNELS_RAW = 35;
@@ -28,39 +28,39 @@ public class msg_rc_channels_raw extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * RC channel 1 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 1 value.
    */
   public int chan1_raw;
   /**
-   * RC channel 2 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 2 value.
    */
   public int chan2_raw;
   /**
-   * RC channel 3 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 3 value.
    */
   public int chan3_raw;
   /**
-   * RC channel 4 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 4 value.
    */
   public int chan4_raw;
   /**
-   * RC channel 5 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 5 value.
    */
   public int chan5_raw;
   /**
-   * RC channel 6 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 6 value.
    */
   public int chan6_raw;
   /**
-   * RC channel 7 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 7 value.
    */
   public int chan7_raw;
   /**
-   * RC channel 8 value, in microseconds. A value of UINT16_MAX implies the channel is unused.
+   * RC channel 8 value.
    */
   public int chan8_raw;
   /**
@@ -68,7 +68,7 @@ public class msg_rc_channels_raw extends MAVLinkMessage {
    */
   public int port;
   /**
-   * Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown.
+   * Receive signal strength indicator. Values: [0-100], 255: invalid/unknown.
    */
   public int rssi;
 /**

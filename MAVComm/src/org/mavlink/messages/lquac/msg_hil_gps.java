@@ -29,47 +29,47 @@ public class msg_hil_gps extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since UNIX epoch or microseconds since system boot)
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
   /**
-   * Latitude (WGS84), in degrees * 1E7
+   * Latitude (WGS84)
    */
   public long lat;
   /**
-   * Longitude (WGS84), in degrees * 1E7
+   * Longitude (WGS84)
    */
   public long lon;
   /**
-   * Altitude (AMSL, not WGS84), in meters * 1000 (positive for up)
+   * Altitude (AMSL). Positive for up.
    */
   public long alt;
   /**
-   * GPS HDOP horizontal dilution of position in cm (m*100). If unknown, set to: 65535
+   * GPS HDOP horizontal dilution of position. If unknown, set to: 65535
    */
   public int eph;
   /**
-   * GPS VDOP vertical dilution of position in cm (m*100). If unknown, set to: 65535
+   * GPS VDOP vertical dilution of position. If unknown, set to: 65535
    */
   public int epv;
   /**
-   * GPS ground speed in cm/s. If unknown, set to: 65535
+   * GPS ground speed. If unknown, set to: 65535
    */
   public int vel;
   /**
-   * GPS velocity in cm/s in NORTH direction in earth-fixed NED frame
+   * GPS velocity in NORTH direction in earth-fixed NED frame
    */
   public int vn;
   /**
-   * GPS velocity in cm/s in EAST direction in earth-fixed NED frame
+   * GPS velocity in EAST direction in earth-fixed NED frame
    */
   public int ve;
   /**
-   * GPS velocity in cm/s in DOWN direction in earth-fixed NED frame
+   * GPS velocity in DOWN direction in earth-fixed NED frame
    */
   public int vd;
   /**
-   * Course over ground (NOT heading, but direction of movement) in degrees * 100, 0.0..359.99 degrees. If unknown, set to: 65535
+   * Course over ground (NOT heading, but direction of movement), 0.0..359.99 degrees. If unknown, set to: 65535
    */
   public int cog;
   /**

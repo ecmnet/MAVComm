@@ -36,7 +36,7 @@ public class msg_set_mode extends MAVLinkMessage {
    */
   public int target_system;
   /**
-   * The new base mode
+   * The new base mode.
    */
   public int base_mode;
 /**

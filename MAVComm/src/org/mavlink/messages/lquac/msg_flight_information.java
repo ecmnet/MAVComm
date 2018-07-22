@@ -28,19 +28,19 @@ public class msg_flight_information extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp at arming (microseconds since UNIX epoch) in UTC, 0 for unknown
+   * Timestamp at arming (time since UNIX epoch) in UTC, 0 for unknown
    */
   public long arming_time_utc;
   /**
-   * Timestamp at takeoff (microseconds since UNIX epoch) in UTC, 0 for unknown
+   * Timestamp at takeoff (time since UNIX epoch) in UTC, 0 for unknown
    */
   public long takeoff_time_utc;
   /**
-   * Universally unique identifier (UUID) of flight, should correspond to name of logfiles
+   * Universally unique identifier (UUID) of flight, should correspond to name of log files
    */
   public long flight_uuid;
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
 /**

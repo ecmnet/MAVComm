@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_sys_status
- * The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows whether the system is currently active or not and if an emergency occured. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occured it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.
+ * The general system state. If the system is following the MAVLink standard, the system state is mainly defined by three orthogonal states/modes: The system mode, which is either LOCKED (motors shut down and locked), MANUAL (system under RC control), GUIDED (system with autonomous position control, position setpoint controlled manually) or AUTO (system guided by path/waypoint planner). The NAV_MODE defined the current flight state: LIFTOFF (often an open-loop maneuver), LANDING, WAYPOINTS or VECTOR. This represents the internal navigation state machine. The system status shows whether the system is currently active or not and if an emergency occurred. During the CRITICAL and EMERGENCY states the MAV is still considered to be active, but should start emergency procedures autonomously. After a failure occurred it should first move from active to critical to allow manual intervention and then move to emergency after a certain timeout.
  **/
 public class msg_sys_status extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_SYS_STATUS = 1;
@@ -28,31 +28,31 @@ public class msg_sys_status extends MAVLinkMessage {
 }
 
   /**
-   * Bitmask showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present. Indices defined by ENUM MAV_SYS_STATUS_SENSOR
+   * Bitmap showing which onboard controllers and sensors are present. Value of 0: not present. Value of 1: present.
    */
   public long onboard_control_sensors_present;
   /**
-   * Bitmask showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR
+   * Bitmap showing which onboard controllers and sensors are enabled:  Value of 0: not enabled. Value of 1: enabled.
    */
   public long onboard_control_sensors_enabled;
   /**
-   * Bitmask showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled. Indices defined by ENUM MAV_SYS_STATUS_SENSOR
+   * Bitmap showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled.
    */
   public long onboard_control_sensors_health;
   /**
-   * Maximum usage in percent of the mainloop time, (0%: 0, 100%: 1000) should be always below 1000
+   * Maximum usage in percent of the mainloop time. Values: [0-1000] - should always be below 1000
    */
   public int load;
   /**
-   * Battery voltage, in millivolts (1 = 1 millivolt)
+   * Battery voltage
    */
   public int voltage_battery;
   /**
-   * Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current
+   * Battery current, -1: autopilot does not measure the current
    */
   public int current_battery;
   /**
-   * Communication drops in percent, (0%: 0, 100%: 10'000), (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)
+   * Communication drop rate, (UART, I2C, SPI, CAN), dropped packets on all links (packets that were corrupted on reception on the MAV)
    */
   public int drop_rate_comm;
   /**
@@ -76,7 +76,7 @@ public class msg_sys_status extends MAVLinkMessage {
    */
   public int errors_count4;
   /**
-   * Remaining battery energy: (0%: 0, 100%: 100), -1: autopilot estimate the remaining battery
+   * Remaining battery energy, -1: autopilot estimate the remaining battery
    */
   public int battery_remaining;
 /**

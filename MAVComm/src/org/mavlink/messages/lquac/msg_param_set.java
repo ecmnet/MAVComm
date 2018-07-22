@@ -60,7 +60,7 @@ public class msg_param_set extends MAVLinkMessage {
     return result;
   }
   /**
-   * Onboard parameter type: see the MAV_PARAM_TYPE enum for supported data types.
+   * Onboard parameter type.
    */
   public int param_type;
 /**

@@ -28,27 +28,27 @@ public class msg_storage_information extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * Total capacity in MiB
+   * Total capacity
    */
   public float total_capacity;
   /**
-   * Used capacity in MiB
+   * Used capacity
    */
   public float used_capacity;
   /**
-   * Available capacity in MiB
+   * Available capacity
    */
   public float available_capacity;
   /**
-   * Read speed in MiB/s
+   * Read speed
    */
   public float read_speed;
   /**
-   * Write speed in MiB/s
+   * Write speed
    */
   public float write_speed;
   /**

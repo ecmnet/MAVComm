@@ -28,7 +28,7 @@ public class msg_follow_target extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp in milliseconds since system boot
+   * Timestamp (time since system boot).
    */
   public long timestamp;
   /**
@@ -36,15 +36,15 @@ public class msg_follow_target extends MAVLinkMessage {
    */
   public long custom_state;
   /**
-   * Latitude (WGS84), in degrees * 1E7
+   * Latitude (WGS84)
    */
   public long lat;
   /**
-   * Longitude (WGS84), in degrees * 1E7
+   * Longitude (WGS84)
    */
   public long lon;
   /**
-   * AMSL, in meters
+   * Altitude (AMSL)
    */
   public float alt;
   /**

@@ -28,7 +28,7 @@ public class msg_vision_position_estimate extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds, synced to UNIX time or since system boot)
+   * Timestamp (UNIX time or time since system boot)
    */
   public long usec;
   /**
@@ -44,15 +44,15 @@ public class msg_vision_position_estimate extends MAVLinkMessage {
    */
   public float z;
   /**
-   * Roll angle in rad
+   * Roll angle
    */
   public float roll;
   /**
-   * Pitch angle in rad
+   * Pitch angle
    */
   public float pitch;
   /**
-   * Yaw angle in rad
+   * Yaw angle
    */
   public float yaw;
   /**

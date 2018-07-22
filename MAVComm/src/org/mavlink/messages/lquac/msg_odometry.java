@@ -28,7 +28,7 @@ public class msg_odometry extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since system boot or since UNIX epoch).
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
   /**
@@ -80,11 +80,11 @@ public class msg_odometry extends MAVLinkMessage {
    */
   public float[] twist_covariance = new float[21];
   /**
-   * Coordinate frame of reference for the pose data, as defined by MAV_FRAME enum.
+   * Coordinate frame of reference for the pose data.
    */
   public int frame_id;
   /**
-   * Coordinate frame of reference for the velocity in free space (twist) data, as defined by MAV_FRAME enum.
+   * Coordinate frame of reference for the velocity in free space (twist) data.
    */
   public int child_frame_id;
 /**

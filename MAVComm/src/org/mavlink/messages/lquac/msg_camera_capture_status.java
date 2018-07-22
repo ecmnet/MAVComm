@@ -28,19 +28,19 @@ public class msg_camera_capture_status extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * Image capture interval in seconds
+   * Image capture interval
    */
   public float image_interval;
   /**
-   * Time in milliseconds since recording started
+   * Time since recording started
    */
   public long recording_time_ms;
   /**
-   * Available storage capacity in MiB
+   * Available storage capacity
    */
   public float available_capacity;
   /**

@@ -28,11 +28,11 @@ public class msg_camera_settings extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * Camera mode (CAMERA_MODE)
+   * Camera mode
    */
   public int mode_id;
 /**

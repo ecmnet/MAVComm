@@ -28,7 +28,7 @@ public class msg_trajectory_representation_bezier extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (since system boot or since UNIX epoch).
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
   /**

@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_rc_channels_scaled
- * The scaled values of the RC channels received. (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to UINT16_MAX.
+ * The scaled values of the RC channels received: (-100%) -10000, (0%) 0, (100%) 10000. Channels that are inactive should be set to UINT16_MAX.
  **/
 public class msg_rc_channels_scaled extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_RC_CHANNELS_SCALED = 34;
@@ -28,39 +28,39 @@ public class msg_rc_channels_scaled extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (milliseconds since system boot)
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * RC channel 1 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 1 value scaled.
    */
   public int chan1_scaled;
   /**
-   * RC channel 2 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 2 value scaled.
    */
   public int chan2_scaled;
   /**
-   * RC channel 3 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 3 value scaled.
    */
   public int chan3_scaled;
   /**
-   * RC channel 4 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 4 value scaled.
    */
   public int chan4_scaled;
   /**
-   * RC channel 5 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 5 value scaled.
    */
   public int chan5_scaled;
   /**
-   * RC channel 6 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 6 value scaled.
    */
   public int chan6_scaled;
   /**
-   * RC channel 7 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 7 value scaled.
    */
   public int chan7_scaled;
   /**
-   * RC channel 8 value scaled, (-100%) -10000, (0%) 0, (100%) 10000, (invalid) INT16_MAX.
+   * RC channel 8 value scaled.
    */
   public int chan8_scaled;
   /**
@@ -68,7 +68,7 @@ public class msg_rc_channels_scaled extends MAVLinkMessage {
    */
   public int port;
   /**
-   * Receive signal strength indicator, 0: 0%, 100: 100%, 255: invalid/unknown.
+   * Receive signal strength indicator. Values: [0-100], 255: invalid/unknown.
    */
   public int rssi;
 /**

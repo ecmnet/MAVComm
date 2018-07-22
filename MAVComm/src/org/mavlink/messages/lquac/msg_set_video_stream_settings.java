@@ -28,19 +28,19 @@ public class msg_set_video_stream_settings extends MAVLinkMessage {
 }
 
   /**
-   * Frames per second (set to -1 for highest framerate possible)
+   * Frame rate (set to -1 for highest framerate possible)
    */
   public float framerate;
   /**
-   * Bit rate in bits per second (set to -1 for auto)
+   * Bit rate (set to -1 for auto)
    */
   public long bitrate;
   /**
-   * Resolution horizontal in pixels (set to -1 for highest resolution possible)
+   * Horizontal resolution (set to -1 for highest resolution possible)
    */
   public int resolution_h;
   /**
-   * Resolution vertical in pixels (set to -1 for highest resolution possible)
+   * Vertical resolution (set to -1 for highest resolution possible)
    */
   public int resolution_v;
   /**

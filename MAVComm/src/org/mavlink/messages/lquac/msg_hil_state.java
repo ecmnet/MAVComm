@@ -28,67 +28,67 @@ public class msg_hil_state extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since UNIX epoch or microseconds since system boot)
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
   /**
-   * Roll angle (rad)
+   * Roll angle
    */
   public float roll;
   /**
-   * Pitch angle (rad)
+   * Pitch angle
    */
   public float pitch;
   /**
-   * Yaw angle (rad)
+   * Yaw angle
    */
   public float yaw;
   /**
-   * Body frame roll / phi angular speed (rad/s)
+   * Body frame roll / phi angular speed
    */
   public float rollspeed;
   /**
-   * Body frame pitch / theta angular speed (rad/s)
+   * Body frame pitch / theta angular speed
    */
   public float pitchspeed;
   /**
-   * Body frame yaw / psi angular speed (rad/s)
+   * Body frame yaw / psi angular speed
    */
   public float yawspeed;
   /**
-   * Latitude, expressed as degrees * 1E7
+   * Latitude
    */
   public long lat;
   /**
-   * Longitude, expressed as degrees * 1E7
+   * Longitude
    */
   public long lon;
   /**
-   * Altitude in meters, expressed as * 1000 (millimeters)
+   * Altitude
    */
   public long alt;
   /**
-   * Ground X Speed (Latitude), expressed as m/s * 100
+   * Ground X Speed (Latitude)
    */
   public int vx;
   /**
-   * Ground Y Speed (Longitude), expressed as m/s * 100
+   * Ground Y Speed (Longitude)
    */
   public int vy;
   /**
-   * Ground Z Speed (Altitude), expressed as m/s * 100
+   * Ground Z Speed (Altitude)
    */
   public int vz;
   /**
-   * X acceleration (mg)
+   * X acceleration
    */
   public int xacc;
   /**
-   * Y acceleration (mg)
+   * Y acceleration
    */
   public int yacc;
   /**
-   * Z acceleration (mg)
+   * Z acceleration
    */
   public int zacc;
 /**

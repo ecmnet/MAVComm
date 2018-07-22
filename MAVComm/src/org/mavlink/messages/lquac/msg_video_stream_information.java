@@ -28,7 +28,7 @@ public class msg_video_stream_information extends MAVLinkMessage {
 }
 
   /**
-   * Frames per second
+   * Frame rate
    */
   public float framerate;
   /**
@@ -36,11 +36,11 @@ public class msg_video_stream_information extends MAVLinkMessage {
    */
   public long bitrate;
   /**
-   * Resolution horizontal in pixels
+   * Horizontal resolution
    */
   public int resolution_h;
   /**
-   * Resolution vertical in pixels
+   * Vertical resolution
    */
   public int resolution_v;
   /**

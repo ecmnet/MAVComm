@@ -170,12 +170,12 @@ public interface MAV_CMD {
      * PARAM 4 : Reserved (e.g. for dynamic center beacon options)
      * PARAM 5 : Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
      * PARAM 6 : Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
-     * PARAM 7 : Center point altitude AMSL (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
+     * PARAM 7 : Center point altitude (AMSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
      */
     public final static int MAV_CMD_DO_ORBIT = 34;
     /**
      * THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
-     * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
+     * PARAM 1 : Region of interest mode. (see MAV_ROI enum)
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
      * PARAM 4 : Empty
@@ -394,7 +394,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_SET_RELAY = 181;
     /**
-     * Cycle a relay on and off for a desired number of cyles with a desired period.
+     * Cycle a relay on and off for a desired number of cycles with a desired period.
      * PARAM 1 : Relay number
      * PARAM 2 : Cycle count
      * PARAM 3 : Cycle time (seconds, decimal)
@@ -471,7 +471,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_RALLY_LAND = 190;
     /**
-     * Mission command to safely abort an autonmous landing.
+     * Mission command to safely abort an autonomous landing.
      * PARAM 1 : Altitude (meters)
      * PARAM 2 : Empty
      * PARAM 3 : Empty
@@ -560,7 +560,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_CONTROL_VIDEO = 200;
     /**
      * THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
-     * PARAM 1 : Region of intereset mode. (see MAV_ROI enum)
+     * PARAM 1 : Region of interest mode. (see MAV_ROI enum)
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
      * PARAM 4 : Empty
@@ -614,7 +614,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_MOUNT_CONTROL = 205;
     /**
-     * Mission command to set camera trigger distance for this flight. The camera is trigerred each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.
+     * Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.
      * PARAM 1 : Camera trigger distance (meters). 0 to stop triggering.
      * PARAM 2 : Camera shutter integration time (milliseconds). -1 or 0 to ignore
      * PARAM 3 : Trigger camera once immediately. (0 = no trigger, 1 = trigger)
@@ -715,9 +715,9 @@ public interface MAV_CMD {
     /**
      * set limits for external control
      * PARAM 1 : timeout - maximum time (in seconds) that external controller will be allowed to control vehicle. 0 means no timeout
-     * PARAM 2 : absolute altitude min (in meters, AMSL) - if vehicle moves below this alt, the command will be aborted and the mission will continue.  0 means no lower altitude limit
-     * PARAM 3 : absolute altitude max (in meters)- if vehicle moves above this alt, the command will be aborted and the mission will continue.  0 means no upper altitude limit
-     * PARAM 4 : horizontal move limit (in meters, AMSL) - if vehicle moves more than this distance from it's location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal altitude limit
+     * PARAM 2 : Absolute altitude (AMSL) min, in meters - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit
+     * PARAM 3 : Absolute altitude (AMSL) max, in meters - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit
+     * PARAM 4 : Horizontal move limit (AMSL), in meters - if vehicle moves more than this distance from its location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal altitude limit
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
@@ -1021,7 +1021,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_AIRFRAME_CONFIGURATION = 2520;
     /**
      * Request to start/stop transmitting over the high latency telemetry
-     * PARAM 1 : Control transmittion over high latency telemetry (0: stop, 1: start)
+     * PARAM 1 : Control transmission over high latency telemetry (0: stop, 1: start)
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -1069,7 +1069,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_CONDITION_GATE = 4501;
     /**
-     * Request authorization to arm the vehicle to a external entity, the arm authorizer is resposible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+     * Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
      * PARAM 1 : Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle
      */
     public final static int MAV_CMD_ARM_AUTHORIZATION_REQUEST = 3001;
@@ -1154,16 +1154,16 @@ public interface MAV_CMD {
      * Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.
      * PARAM 1 : Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.
      * PARAM 2 : Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.
-     * PARAM 3 : Desired ground speed at release time. This can be overriden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.
+     * PARAM 3 : Desired ground speed at release time. This can be overridden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.
      * PARAM 4 : Minimum altitude clearance to the release position in meters. A negative value indicates the system can define the clearance at will.
      * PARAM 5 : Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
      * PARAM 6 : Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_PAYLOAD_PREPARE_DEPLOY = 30001;
     /**
      * Control the payload deployment.
-     * PARAM 1 : Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deploment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.
+     * PARAM 1 : Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deployment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.
      * PARAM 2 : Reserved
      * PARAM 3 : Reserved
      * PARAM 4 : Reserved
@@ -1180,7 +1180,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_1 = 31000;
     /**
@@ -1191,7 +1191,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_2 = 31001;
     /**
@@ -1202,7 +1202,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_3 = 31002;
     /**
@@ -1213,7 +1213,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_4 = 31003;
     /**
@@ -1224,7 +1224,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_5 = 31004;
     /**
@@ -1235,7 +1235,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_1 = 31005;
     /**
@@ -1246,7 +1246,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_2 = 31006;
     /**
@@ -1257,7 +1257,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_3 = 31007;
     /**
@@ -1268,7 +1268,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_4 = 31008;
     /**
@@ -1279,7 +1279,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude, in meters AMSL
+     * PARAM 7 : Altitude (AMSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_5 = 31009;
     /**

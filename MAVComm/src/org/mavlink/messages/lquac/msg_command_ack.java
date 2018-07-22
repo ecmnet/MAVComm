@@ -28,11 +28,11 @@ public class msg_command_ack extends MAVLinkMessage {
 }
 
   /**
-   * Command ID, as defined by MAV_CMD enum.
+   * Command ID (of acknowledged command).
    */
   public int command;
   /**
-   * See MAV_RESULT enum
+   * Result of command.
    */
   public int result;
   /**

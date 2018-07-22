@@ -28,15 +28,15 @@ public class msg_distance_sensor extends MAVLinkMessage {
 }
 
   /**
-   * Time since system boot
+   * Timestamp (time since system boot).
    */
   public long time_boot_ms;
   /**
-   * Minimum distance the sensor can measure in centimeters
+   * Minimum distance the sensor can measure
    */
   public int min_distance;
   /**
-   * Maximum distance the sensor can measure in centimeters
+   * Maximum distance the sensor can measure
    */
   public int max_distance;
   /**
@@ -44,7 +44,7 @@ public class msg_distance_sensor extends MAVLinkMessage {
    */
   public int current_distance;
   /**
-   * Type from MAV_DISTANCE_SENSOR enum.
+   * Type of distance sensor.
    */
   public int type;
   /**
@@ -52,11 +52,11 @@ public class msg_distance_sensor extends MAVLinkMessage {
    */
   public int id;
   /**
-   * Direction the sensor faces from MAV_SENSOR_ORIENTATION enum. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270
+   * Direction the sensor faces. downward-facing: ROTATION_PITCH_270, upward-facing: ROTATION_PITCH_90, backward-facing: ROTATION_PITCH_180, forward-facing: ROTATION_NONE, left-facing: ROTATION_YAW_90, right-facing: ROTATION_YAW_270
    */
   public int orientation;
   /**
-   * Measurement covariance in centimeters, 0 for unknown / invalid readings
+   * Measurement covariance, 0 for unknown / invalid readings
    */
   public int covariance;
 /**

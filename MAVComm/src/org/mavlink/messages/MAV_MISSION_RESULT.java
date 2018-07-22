@@ -5,7 +5,7 @@
 package org.mavlink.messages;
 /**
  * Interface MAV_MISSION_RESULT
- * result in a mavlink mission ack
+ * result in a MAVLink mission ack
  **/
 public interface MAV_MISSION_RESULT {
     /**

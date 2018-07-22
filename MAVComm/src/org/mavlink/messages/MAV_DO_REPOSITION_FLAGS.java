@@ -5,7 +5,7 @@
 package org.mavlink.messages;
 /**
  * Interface MAV_DO_REPOSITION_FLAGS
- * Bitmask of options for the MAV_CMD_DO_REPOSITION
+ * Bitmap of options for the MAV_CMD_DO_REPOSITION
  **/
 public interface MAV_DO_REPOSITION_FLAGS {
     /**

@@ -32,11 +32,11 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public long timestamp;
   /**
-   * Latitude, expressed as degrees * 1E7
+   * Latitude
    */
   public long latitude;
   /**
-   * Longitude, expressed as degrees * 1E7
+   * Longitude
    */
   public long longitude;
   /**
@@ -52,7 +52,7 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public int target_altitude;
   /**
-   * Distance to target waypoint or position (meters / 10)
+   * Distance to target waypoint or position
    */
   public int target_distance;
   /**
@@ -60,63 +60,63 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public int wp_num;
   /**
-   * Indicates failures as defined in HL_FAILURE_FLAG ENUM.
+   * Bitmap of failure flags.
    */
   public int failure_flags;
   /**
-   * Type of the MAV (quadrotor, helicopter, etc., up to 15 types, defined in MAV_TYPE ENUM)
+   * Type of the MAV (quadrotor, helicopter, etc.)
    */
   public int type;
   /**
-   * Autopilot type / class. defined in MAV_AUTOPILOT ENUM
+   * Autopilot type / class.
    */
   public int autopilot;
   /**
-   * Heading (degrees / 2)
+   * Heading
    */
   public int heading;
   /**
-   * Heading setpoint (degrees / 2)
+   * Heading setpoint
    */
   public int target_heading;
   /**
-   * Throttle (percentage)
+   * Throttle
    */
   public int throttle;
   /**
-   * Airspeed (m/s * 5)
+   * Airspeed
    */
   public int airspeed;
   /**
-   * Airspeed setpoint (m/s * 5)
+   * Airspeed setpoint
    */
   public int airspeed_sp;
   /**
-   * Groundspeed (m/s * 5)
+   * Groundspeed
    */
   public int groundspeed;
   /**
-   * Windspeed (m/s * 5)
+   * Windspeed
    */
   public int windspeed;
   /**
-   * Wind heading (deg / 2)
+   * Wind heading
    */
   public int wind_heading;
   /**
-   * Maximum error horizontal position since last message (m * 10)
+   * Maximum error horizontal position since last message
    */
   public int eph;
   /**
-   * Maximum error vertical position since last message (m * 10)
+   * Maximum error vertical position since last message
    */
   public int epv;
   /**
-   * Air temperature (degrees C) from airspeed sensor
+   * Air temperature from airspeed sensor
    */
   public int temperature_air;
   /**
-   * Maximum climb rate magnitude since last message (m/s * 10)
+   * Maximum climb rate magnitude since last message
    */
   public int climb_rate;
   /**

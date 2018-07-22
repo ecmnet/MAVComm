@@ -28,7 +28,7 @@ public class msg_obstacle_distance extends MAVLinkMessage {
 }
 
   /**
-   * Timestamp (microseconds since system boot or since UNIX epoch).
+   * Timestamp (UNIX Epoch time or time since system boot). The receiving end can infer timestamp format (since 1.1.1970 or since system boot) by checking for the magnitude the number.
    */
   public long time_usec;
   /**
@@ -36,11 +36,11 @@ public class msg_obstacle_distance extends MAVLinkMessage {
    */
   public int[] distances = new int[72];
   /**
-   * Minimum distance the sensor can measure in centimeters.
+   * Minimum distance the sensor can measure.
    */
   public int min_distance;
   /**
-   * Maximum distance the sensor can measure in centimeters.
+   * Maximum distance the sensor can measure.
    */
   public int max_distance;
   /**

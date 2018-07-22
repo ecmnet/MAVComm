@@ -32,43 +32,43 @@ public class msg_high_latency extends MAVLinkMessage {
    */
   public long custom_mode;
   /**
-   * Latitude, expressed as degrees * 1E7
+   * Latitude
    */
   public long latitude;
   /**
-   * Longitude, expressed as degrees * 1E7
+   * Longitude
    */
   public long longitude;
   /**
-   * roll (centidegrees)
+   * roll
    */
   public int roll;
   /**
-   * pitch (centidegrees)
+   * pitch
    */
   public int pitch;
   /**
-   * heading (centidegrees)
+   * heading
    */
   public int heading;
   /**
-   * heading setpoint (centidegrees)
+   * heading setpoint
    */
   public int heading_sp;
   /**
-   * Altitude above mean sea level (meters)
+   * Altitude above mean sea level
    */
   public int altitude_amsl;
   /**
-   * Altitude setpoint relative to the home position (meters)
+   * Altitude setpoint relative to the home position
    */
   public int altitude_sp;
   /**
-   * distance to target (meters)
+   * distance to target
    */
   public int wp_distance;
   /**
-   * System mode bitfield, as defined by MAV_MODE_FLAG enum.
+   * Bitmap of enabled system modes.
    */
   public int base_mode;
   /**
@@ -80,19 +80,19 @@ public class msg_high_latency extends MAVLinkMessage {
    */
   public int throttle;
   /**
-   * airspeed (m/s)
+   * airspeed
    */
   public int airspeed;
   /**
-   * airspeed setpoint (m/s)
+   * airspeed setpoint
    */
   public int airspeed_sp;
   /**
-   * groundspeed (m/s)
+   * groundspeed
    */
   public int groundspeed;
   /**
-   * climb rate (m/s)
+   * climb rate
    */
   public int climb_rate;
   /**
@@ -100,7 +100,7 @@ public class msg_high_latency extends MAVLinkMessage {
    */
   public int gps_nsat;
   /**
-   * See the GPS_FIX_TYPE enum.
+   * GPS Fix type.
    */
   public int gps_fix_type;
   /**

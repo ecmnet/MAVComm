@@ -36,7 +36,7 @@ public class msg_mission_clear_all extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * Mission type, see MAV_MISSION_TYPE
+   * Mission type.
    */
   public int mission_type;
 /**

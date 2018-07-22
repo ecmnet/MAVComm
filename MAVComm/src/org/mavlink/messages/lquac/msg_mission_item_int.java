@@ -61,7 +61,7 @@ public class msg_mission_item_int extends MAVLinkMessage {
    */
   public int seq;
   /**
-   * The scheduled action for the waypoint, as defined by MAV_CMD enum
+   * The scheduled action for the waypoint.
    */
   public int command;
   /**
@@ -73,7 +73,7 @@ public class msg_mission_item_int extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * The coordinate system of the waypoint, as defined by MAV_FRAME enum
+   * The coordinate system of the waypoint.
    */
   public int frame;
   /**
@@ -81,11 +81,11 @@ public class msg_mission_item_int extends MAVLinkMessage {
    */
   public int current;
   /**
-   * autocontinue to next wp
+   * Autocontinue to next waypoint
    */
   public int autocontinue;
   /**
-   * Mission type, see MAV_MISSION_TYPE
+   * Mission type.
    */
   public int mission_type;
 /**

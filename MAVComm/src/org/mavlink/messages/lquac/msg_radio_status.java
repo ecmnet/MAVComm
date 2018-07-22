@@ -44,7 +44,7 @@ public class msg_radio_status extends MAVLinkMessage {
    */
   public int remrssi;
   /**
-   * Remaining free buffer space in percent.
+   * Remaining free buffer space.
    */
   public int txbuf;
   /**

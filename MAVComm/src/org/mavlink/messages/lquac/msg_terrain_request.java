@@ -32,15 +32,15 @@ public class msg_terrain_request extends MAVLinkMessage {
    */
   public long mask;
   /**
-   * Latitude of SW corner of first grid (degrees *10^7)
+   * Latitude of SW corner of first grid
    */
   public long lat;
   /**
-   * Longitude of SW corner of first grid (in degrees *10^7)
+   * Longitude of SW corner of first grid
    */
   public long lon;
   /**
-   * Grid spacing in meters
+   * Grid spacing
    */
   public int grid_spacing;
 /**

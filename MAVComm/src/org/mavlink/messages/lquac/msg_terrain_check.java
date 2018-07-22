@@ -28,11 +28,11 @@ public class msg_terrain_check extends MAVLinkMessage {
 }
 
   /**
-   * Latitude (degrees *10^7)
+   * Latitude
    */
   public long lat;
   /**
-   * Longitude (degrees *10^7)
+   * Longitude
    */
   public long lon;
 /**

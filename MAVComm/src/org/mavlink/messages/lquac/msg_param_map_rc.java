@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_param_map_rc
- * Bind a RC channel to a parameter. The parameter should change accoding to the RC channel value.
+ * Bind a RC channel to a parameter. The parameter should change according to the RC channel value.
  **/
 public class msg_param_map_rc extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_PARAM_MAP_RC = 50;
@@ -76,7 +76,7 @@ public class msg_param_map_rc extends MAVLinkMessage {
     return result;
   }
   /**
-   * Index of parameter RC channel. Not equal to the RC channel id. Typically correpsonds to a potentiometer-knob on the RC.
+   * Index of parameter RC channel. Not equal to the RC channel id. Typically corresponds to a potentiometer-knob on the RC.
    */
   public int parameter_rc_channel_index;
 /**
