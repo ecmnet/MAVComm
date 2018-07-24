@@ -137,7 +137,7 @@ public class Autopilot2D implements Runnable {
 			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
 				return;
 			offboard.setCurrentSetPointAsTarget();
-			offboard.start(OffboardManager.MODE_POSITION);
+			offboard.start(OffboardManager.MODE_LOITER);
 			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,

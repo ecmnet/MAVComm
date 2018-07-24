@@ -282,7 +282,7 @@ public class OffboardManager implements Runnable {
 			case MODE_LOITER:
 				if(!valid_setpoint)
 					setCurrentAsTarget();
-				sendPositionControlToVehice(current);
+				sendPositionControlToVehice(target);
 				watch_tms = System.currentTimeMillis();
 				break;
 
