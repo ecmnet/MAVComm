@@ -108,7 +108,7 @@ public class MAVLinkReader {
 		if(noCRCCheck)
 			System.out.println("MAVLinkReader2 "+id+" started without CRC");
 		else
-		System.out.println("MAVLinkReader2 "+id+" started");
+			System.out.println("MAVLinkReader2 "+id+" started");
 	}
 
 	/**
@@ -129,8 +129,8 @@ public class MAVLinkReader {
 
 
 	public void put(byte buf[],int len) {
-			for(int i=0;i<len;i++)
-				readMavLinkMessageFromBuffer(buf[i]);
+		for(int i=0;i<len;i++)
+			readMavLinkMessageFromBuffer(buf[i]);
 	}
 
 	public void put(int c) {
@@ -255,15 +255,15 @@ public class MAVLinkReader {
 			case MAVLINK_PARSE_STATE_GOT_CRC1:
 				if ((state == t_parser_state.MAVLINK_PARSE_STATE_GOT_BAD_CRC1 || c != ((int)(rxmsg.crc >> 8) & 0x00FF)) && !noCRCCheck) {
 
-					 switch(rxmsg.msgId) {
-					 case 332: // ignore CRC of Trajectory
-						 rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
-						 break;
-					    default:
-					    rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
-						System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
+					switch(rxmsg.msgId) {
+					case 332: // ignore CRC of Trajectory
+						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
 						break;
-					 }
+					default:
+						rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_BAD_CRC;
+						//System.out.println("BadCRC: "+rxmsg.msgId+":"+rxmsg.len);
+						break;
+					}
 				}
 				else
 					rxmsg.msg_received = mavlink_framing_t.MAVLINK_FRAMING_OK;
@@ -283,13 +283,13 @@ public class MAVLinkReader {
 						msg.packet = rxmsg.packet;
 						packets.addElement(msg);
 						notify();
-					//	System.out.println("added: "+rxmsg.packet+":"+msg);
+						//	System.out.println("added: "+rxmsg.packet+":"+msg);
 					} else {
 						packet_lost++;
-					//	System.out.println(rxmsg);
+						//System.out.println("Packet check failed: "+rxmsg);
 					}
 				} else {
-					System.out.println(rxmsg);
+					//System.out.println("Framing not ok: "+rxmsg);
 					packet_lost++;
 				}
 				break;
@@ -307,7 +307,7 @@ public class MAVLinkReader {
 							msg.packet = rxmsg.packet;
 							packets.addElement(msg);
 							notify();
-//							System.out.println("added: "+rxmsg.packet+":"+msg);
+							//							System.out.println("added: "+rxmsg.packet+":"+msg);
 						} else {
 							packet_lost++;
 						}
@@ -338,14 +338,14 @@ public class MAVLinkReader {
 	 * @return true if we don't lost messages
 	 */
 	protected boolean checkPacket(int sysId, int packet) {
-	//	boolean check = false;
+		//	boolean check = false;
 
 		if(sysId!=1)
 			return true;
 
 		if (lastPacket[sysId] == -1) {
 			// it is the first message read
-	//		check = true;
+			//		check = true;
 		}
 
 
@@ -356,13 +356,13 @@ public class MAVLinkReader {
 
 		if (lastPacket[sysId] < packet) {
 			if (packet - lastPacket[sysId] == 1) {
-	//			check = true;
+				//			check = true;
 			}
 		}
 		else
 			// We have reached the max number (255) and restart to 0
 			if (packet + 256 - lastPacket[sysId] == 1) {
-	//			check = true;
+				//			check = true;
 			}
 
 
