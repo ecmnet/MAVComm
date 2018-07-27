@@ -55,6 +55,8 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.model.segment.Status;
+
 import georegression.struct.point.Point3D_F64;
 
 public class StartUp implements Runnable {
@@ -154,7 +156,6 @@ public class StartUp implements Runnable {
 				msg.cpu_temp = 27;
 				msg.unix_time_us = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
 				msg.wifi_quality = 100;
-				msg.msp_status = MSP_SYSTEM_STATUS.SIMULATION_MODE;
 				control.sendMAVLinkMessage(msg);
 
 				msg_timesync sync_s = new msg_timesync(255,1);

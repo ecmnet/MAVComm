@@ -14,6 +14,7 @@ public class MspStatusPlugin extends MAVLinkPluginBase {
 	public void received(Object o) {
 
 		msg_msp_status status = (msg_msp_status) o;
+		model.sys.status = (int)status.status;
 		model.sys.load_m = status.load;
 		model.sys.autopilot = (int)status.autopilot_mode;
 		model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
@@ -22,7 +23,6 @@ public class MspStatusPlugin extends MAVLinkPluginBase {
 		model.sys.msp_temp = (byte)status.cpu_temp;
 		model.sys.setStatus(Status.MSP_READY, true);
 		model.sys.build = status.getVersion();
-		model.sys.msp_sys_status = (byte)status.msp_status;
-
+		//model.sys.setStatus(Status.MSP_SITL, (status.status & Status.MSP_SITL) ==  Status.MSP_SITL );
 	}
 }

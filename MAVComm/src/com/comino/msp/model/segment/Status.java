@@ -120,7 +120,6 @@ public class Status extends Segment {
 	public float   	drops_p       	= Float.NaN;
 	public byte   	imu_temp	    = 0;
 	public byte    	msp_temp    	= 0;
-	public byte     msp_sys_status  = 0;
 
 	public float	    load_m	     	= Float.NaN;	  	//MSP
 	public float    t_armed_ms    	= Float.NaN;
@@ -149,7 +148,6 @@ public class Status extends Segment {
 		wifi_quality  = s. wifi_quality;
 
 		msp_temp = s.msp_temp;
-		msp_sys_status = s.msp_sys_status;
 
 		t_offset_ns = s.t_offset_ns;
 	}
