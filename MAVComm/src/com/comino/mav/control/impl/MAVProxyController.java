@@ -76,12 +76,15 @@ public class MAVProxyController implements IMAVMSPController {
 
 	private StatusManager status_manager = null;
 
+	private int mode;
+
 	public static IMAVController getInstance() {
 		return controller;
 	}
 
 
 	public MAVProxyController(int mode) {
+		this.mode = mode;
 		controller = this;
 		model = new DataModel();
 		status_manager = new StatusManager(model);
@@ -225,7 +228,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean isSimulation() {
-		return !comm.isSerial();
+		return mode == MAVController.MODE_SITL;
 	}
 
 	@Override
