@@ -115,6 +115,11 @@
                   <description>Grid has a 3D map stored</description>
               </entry>
             </enum>
+             <enum name="MSP_SYSTEM_STATUS">
+              <entry value="1" name="SIMULATION_MODE">
+                  <description>MSP runs in simulation mode</description>
+              </entry>
+            </enum>
       </enums>
 
 
@@ -133,6 +138,7 @@
                <field type="char[16]"      name="version">MSP software build</field>
                <field type="char[10]"      name="arch">Companion architecture</field>
                <field type="uint64_t"      name="unix_time_us">Unix time us</field>
+               <field type="uint8_t"       name="msp_status">Status flags</field>
            </message>
 
            <message id="181" name="MSP_COMMAND">

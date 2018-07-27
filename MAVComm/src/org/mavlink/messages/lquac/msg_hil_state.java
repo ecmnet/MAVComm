@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_hil_state
- * DEPRECATED PACKET! Suffers from missing airspeed fields and singularities due to Euler angles. Please use HIL_STATE_QUATERNION instead. Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.
+ * Sent from simulation to autopilot. This packet is useful for high throughput applications such as hardware in the loop simulations.
  **/
 public class msg_hil_state extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_HIL_STATE = 90;

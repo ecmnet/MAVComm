@@ -110,16 +110,17 @@ public class Status extends Segment {
 
 	public  int     autopilot    	= 0;
 	public  int     px4_status   	= 0;
-	public  int     nav_state        = 0;
+	public  int     nav_state       = 0;
 
 	private int     sensors      	= 0;
 	public  int     status       	= 0;
 
-	public int      error1      		= 0;
+	public int      error1      	= 0;
 	public float    load_p       	= Float.NaN;
-	public float   drops_p       	= Float.NaN;
-	public byte    imu_temp	     	= 0;
-	public byte      msp_temp    	= 0;
+	public float   	drops_p       	= Float.NaN;
+	public byte   	imu_temp	    = 0;
+	public byte    	msp_temp    	= 0;
+	public byte     msp_sys_status  = 0;
 
 	public float	    load_m	     	= Float.NaN;	  	//MSP
 	public float    t_armed_ms    	= Float.NaN;
@@ -148,6 +149,7 @@ public class Status extends Segment {
 		wifi_quality  = s. wifi_quality;
 
 		msp_temp = s.msp_temp;
+		msp_sys_status = s.msp_sys_status;
 
 		t_offset_ns = s.t_offset_ns;
 	}
@@ -195,6 +197,13 @@ public class Status extends Segment {
 	public boolean isStatus(int ...box) {
 		for(int b : box)
 			if((status & (1<<b))==0)
+				return false;
+		return true;
+	}
+
+	public boolean isMSPSysStatus(int ...box) {
+		for(int b : box)
+			if((msp_sys_status & (1<<b))==0)
 				return false;
 		return true;
 	}

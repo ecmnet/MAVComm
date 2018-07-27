@@ -24,7 +24,7 @@ public class msg_msp_status extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 59;
+    payload_length = 60;
 }
 
   /**
@@ -107,6 +107,10 @@ public class msg_msp_status extends MAVLinkMessage {
     }
     return result;
   }
+  /**
+   * Status flags
+   */
+  public int msp_status;
 /**
  * Decode message with raw data
  */
@@ -127,12 +131,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   for (int i=0; i<10; i++) {
     arch[i] = (char)dis.readByte();
   }
+  msp_status = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+59];
+  byte[] buffer = new byte[12+60];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -160,18 +165,19 @@ public byte[] encode() throws IOException {
   for (int i=0; i<10; i++) {
     dos.writeByte(arch[i]);
   }
+  dos.writeByte(msp_status&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 59);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 60);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[69] = crcl;
-  buffer[70] = crch;
+  buffer[70] = crcl;
+  buffer[71] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms+  "  unix_time_us="+unix_time_us+  "  com_error="+com_error+  "  status="+status+  "  autopilot_mode="+autopilot_mode+  "  load="+load+  "  memory="+memory+  "  threads="+threads+  "  wifi_quality="+wifi_quality+  "  cpu_temp="+cpu_temp+  "  version="+getVersion()+  "  arch="+getArch();}
+return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms+  "  unix_time_us="+unix_time_us+  "  com_error="+com_error+  "  status="+status+  "  autopilot_mode="+autopilot_mode+  "  load="+load+  "  memory="+memory+  "  threads="+threads+  "  wifi_quality="+wifi_quality+  "  cpu_temp="+cpu_temp+  "  version="+getVersion()+  "  arch="+getArch()+  "  msp_status="+msp_status;}
 }

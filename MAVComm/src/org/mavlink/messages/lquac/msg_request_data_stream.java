@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_request_data_stream
- * THIS INTERFACE IS DEPRECATED. USE SET_MESSAGE_INTERVAL INSTEAD.
+ * 
  **/
 public class msg_request_data_stream extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_REQUEST_DATA_STREAM = 66;

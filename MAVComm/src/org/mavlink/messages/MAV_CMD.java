@@ -174,7 +174,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_ORBIT = 34;
     /**
-     * THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
+     * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of interest mode. (see MAV_ROI enum)
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
@@ -559,7 +559,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_CONTROL_VIDEO = 200;
     /**
-     * THIS INTERFACE IS DEPRECATED AS OF JANUARY 2018. Please use MAV_CMD_DO_SET_ROI_* messages instead. Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
+     * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
      * PARAM 1 : Region of interest mode. (see MAV_ROI enum)
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)

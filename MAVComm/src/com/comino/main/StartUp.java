@@ -40,6 +40,7 @@ import java.lang.management.OperatingSystemMXBean;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
+import org.mavlink.messages.MSP_SYSTEM_STATUS;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
@@ -153,6 +154,7 @@ public class StartUp implements Runnable {
 				msg.cpu_temp = 27;
 				msg.unix_time_us = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
 				msg.wifi_quality = 100;
+				msg.msp_status = MSP_SYSTEM_STATUS.SIMULATION_MODE;
 				control.sendMAVLinkMessage(msg);
 
 				msg_timesync sync_s = new msg_timesync(255,1);
