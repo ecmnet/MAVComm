@@ -248,7 +248,7 @@ public class MAVController implements IMAVController, Runnable {
 
 	@Override
 	public boolean isSimulation() {
-		return model.sys.isMSPSysStatus(MSP_SYSTEM_STATUS.SIMULATION_MODE);
+		return (model.sys.msp_sys_status & MSP_SYSTEM_STATUS.SIMULATION_MODE) == MSP_SYSTEM_STATUS.SIMULATION_MODE;
 	}
 
 

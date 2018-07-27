@@ -125,7 +125,7 @@ public class StartUp implements Runnable {
 
 		while(true) {
 			try {
-				Thread.sleep(200);
+
 				if(!control.isConnected()) {
 					control.close();
 					control.connect();
@@ -162,6 +162,7 @@ public class StartUp implements Runnable {
 				sync_s.ts1 = System.currentTimeMillis()*1000000L;
 				control.sendMAVLinkMessage(sync_s);
 
+				Thread.sleep(200);
 
 			} catch (Exception e) {
 				e.printStackTrace();
