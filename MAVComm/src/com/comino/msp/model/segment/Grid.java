@@ -104,7 +104,7 @@ public class Grid extends Segment {
 	// Transfer via block only. positive values => set block; negative => remove block
 
 	public boolean toArray(long[] array) {
-		if(transfer==null || array == null)
+		if(transfer==null || array == null || data == null)
 			return false;
 		count = data.size();
 		Arrays.fill(array, 0);
