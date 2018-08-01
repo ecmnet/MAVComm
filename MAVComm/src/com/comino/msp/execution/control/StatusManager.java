@@ -50,6 +50,7 @@ public class StatusManager implements Runnable {
 	private static final long TIMEOUT_LPOS        = 2000000;
 	private static final long TIMEOUT_GPS         = 2000000;
 	private static final long TIMEOUT_SLAM        = 5000000;
+	private static final long TIMEOUT_FLOW        = 5000000;
 
 	public static final byte  TYPE_ALL             = 0;
 	public static final byte  TYPE_PX4_STATUS      = 1;
@@ -246,6 +247,10 @@ public class StatusManager implements Runnable {
 
 		if (checkTimeOut(model.state.gpos_tms, TIMEOUT_GPOS)) {
 			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
+		}
+
+		if (checkTimeOut(model.state.gpos_tms, TIMEOUT_FLOW)) {
+			model.sys.setStatus(Status.MSP_PIX4FLOW_AVAILABILITY, false);
 		}
 
 

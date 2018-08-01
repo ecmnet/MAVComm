@@ -2,6 +2,8 @@ package com.comino.mav.mavlink.plugins;
 
 import org.mavlink.messages.lquac.msg_optical_flow_rad;
 
+import com.comino.msp.model.segment.Status;
+
 public class PX4OptFlowRadPlugin extends MAVLinkPluginBase {
 
 	public PX4OptFlowRadPlugin() {
@@ -20,6 +22,7 @@ public class PX4OptFlowRadPlugin extends MAVLinkPluginBase {
 		model.raw.fgZ = flow.integrated_zgyro;
 		model.raw.fd = flow.distance;
 
+		model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, true);
 		model.raw.tms = flow.time_usec;
 
 	}
