@@ -110,11 +110,9 @@ public class Grid extends Segment {
 		Arrays.fill(array, 0);
 		if(transfer.isEmpty() || array == null || count == 0)
 			return false;
-		synchronized(this) {
 			for(int i=0; i< array.length && transfer.size() > 0;i++) {
 				array[i] = transfer.remove(0);
 			}
-		}
 		return true;
 	}
 
