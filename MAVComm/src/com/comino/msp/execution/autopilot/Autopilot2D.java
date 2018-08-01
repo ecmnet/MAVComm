@@ -96,7 +96,8 @@ public class Autopilot2D implements Runnable {
 
 	private boolean            	isAvoiding  		= false;
 	private boolean				mapForget   		= false;
-	private float             	nearestTarget 	= 0;
+	private boolean             flowCheck           = false;
+	private float             	nearestTarget 	    = 0;
 
 
 	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
@@ -121,6 +122,8 @@ public class Autopilot2D implements Runnable {
 
 		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
 		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
+		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true");
+		System.out.println("Autopilot2D: FlowCheck enabled: "+flowCheck);
 
 		if(control.isSimulation())
 			this.map      = new LocalMap2DArray(model,WINDOWSIZE,CERTAINITY_THRESHOLD);
@@ -427,6 +430,11 @@ public class Autopilot2D implements Runnable {
 
 	public void moveto(float x, float y, float z, float yaw) {
 		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
+
+		if(flowCheck && !model.sys.isSensorAvailable(Status.MSP_PIX4FLOW_AVAILABILITY)) {
+			logger.writeLocalMsg("[msp] Autopilot: Aborting. No Flow available.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			return;
+		}
 
 		isAvoiding = false;
 		autopilot.registerTargetListener((n)->{
