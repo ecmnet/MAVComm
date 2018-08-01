@@ -1,9 +1,6 @@
 package com.comino.mav.mavlink.plugins;
 
-import org.mavlink.messages.MAV_SYS_STATUS_SENSOR;
 import org.mavlink.messages.lquac.msg_sys_status;
-
-import com.comino.msp.model.segment.Status;
 
 public class PX4SystemStatusPlugin extends MAVLinkPluginBase {
 
@@ -24,10 +21,6 @@ public class PX4SystemStatusPlugin extends MAVLinkPluginBase {
 		model.sys.load_p = sys.load / 10;
 		model.sys.drops_p = sys.drop_rate_comm / 10000f;
 
-		// Sensor availability
-
-		model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, (sys.onboard_control_sensors_enabled
-				& MAV_SYS_STATUS_SENSOR.MAV_SYS_STATUS_SENSOR_OPTICAL_FLOW) > 0);
 
 	}
 }

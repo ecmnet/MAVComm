@@ -249,10 +249,9 @@ public class StatusManager implements Runnable {
 			model.sys.setStatus(Status.MSP_GPOS_VALID, false);
 		}
 
-		if (checkTimeOut(model.state.gpos_tms, TIMEOUT_FLOW)) {
-			model.sys.setStatus(Status.MSP_PIX4FLOW_AVAILABILITY, false);
+		if (checkTimeOut(model.raw.tms, TIMEOUT_FLOW)) {
+			model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, false);
 		}
-
 
 		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
