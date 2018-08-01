@@ -61,7 +61,9 @@ public class LogMessage extends Segment {
 	}
 
 	public LogMessage clone() {
-		return new LogMessage(this.msg,this.severity, this.tms);
+		LogMessage m = new LogMessage(this.msg,this.severity, this.tms);
+		this.msg = null;
+		return m;
 	}
 
 	public void set(LogMessage m) {
