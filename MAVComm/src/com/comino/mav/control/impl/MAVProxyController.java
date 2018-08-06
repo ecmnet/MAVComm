@@ -137,7 +137,7 @@ public class MAVProxyController implements IMAVMSPController {
 				if(controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
 					comm.write(msg);
 				} else {
-					System.out.println("Command rejected. No connection.");
+					//System.out.println("Command rejected. No connection.");
 					return false;
 				}
 
