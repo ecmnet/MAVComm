@@ -122,7 +122,7 @@ public class Autopilot2D implements Runnable {
 
 		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
 		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
-		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true");
+		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true") && !model.sys.isStatus(Status.MSP_SITL);
 		System.out.println("Autopilot2D: FlowCheck enabled: "+flowCheck);
 
 		if(control.isSimulation())
