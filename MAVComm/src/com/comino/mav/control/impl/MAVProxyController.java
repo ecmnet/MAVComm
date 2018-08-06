@@ -111,7 +111,7 @@ public class MAVProxyController implements IMAVMSPController {
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (SITL mode) loaded");
 			model.sys.setStatus(Status.MSP_SITL,true);
-            break;
+			break;
 		case MAVController.MODE_USB:
 			comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
 			comm.open();
@@ -120,7 +120,7 @@ public class MAVProxyController implements IMAVMSPController {
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (serial mode) loaded: "+peerAddress);
 			model.sys.setStatus(Status.MSP_SITL,false);
-             break;
+			break;
 		}
 
 		comm.addMAVLinkListener(proxy);
@@ -197,14 +197,16 @@ public class MAVProxyController implements IMAVMSPController {
 	public boolean isConnected() {
 		if(comm.isConnected())
 			model.sys.setStatus(Status.MSP_ACTIVE, true);
-		return proxy.isConnected() && comm.isConnected();
+		if(mode == MAVController.MODE_NORMAL)
+			return proxy.isConnected() && comm.isConnected();
+		return proxy.isConnected();
 	}
 
 	@Override
 	public boolean connect() {
 		comm.open(); proxy.open();
 		if(comm.isConnected()) {
-			System.out.println("Connected with "+peerAddress);
+			System.out.println("Connection established");
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
 		}
 		return true;
