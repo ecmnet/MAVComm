@@ -37,6 +37,7 @@ import java.util.Arrays;
 
 import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map2D.ILocalMap;
+import com.comino.msp.slam.map2D.ILocalMapFilter;
 import com.comino.msp.utils.MSPArrayUtils;
 
 import boofcv.struct.image.GrayU8;
@@ -237,7 +238,7 @@ public class LocalMap2DRaycast_old implements ILocalMap {
 
 	@Override
 	public GrayU8 getMap() {
-		return MSPArrayUtils.convertToGrayU8(map);
+		return MSPArrayUtils.convertToGrayU8(map,null);
 	}
 
 	private void drawBresenhamLine( int x1, int y1, int x2, int y2, int value)
@@ -361,6 +362,12 @@ public class LocalMap2DRaycast_old implements ILocalMap {
 		}
 		b.append("\n");
 		return b.toString();
+	}
+
+	@Override
+	public void applyMapFilter(ILocalMapFilter filter) {
+		filter.apply(map);
+
 	}
 
 	public static void main(String[] args) {

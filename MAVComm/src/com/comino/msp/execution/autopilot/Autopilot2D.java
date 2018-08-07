@@ -55,8 +55,10 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
+import com.comino.msp.slam.map2D.ILocalMapFilter;
 import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.impl.LocalMap2DRaycast;
+import com.comino.msp.slam.map2D.impl.MedianMapFilter;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.ExecutorService;
@@ -69,7 +71,7 @@ public class Autopilot2D implements Runnable {
 
 	private static final int   CYCLE_MS						= 100;
 
-	private static final int   CERTAINITY_THRESHOLD      	= 10;
+	private static final int   CERTAINITY_THRESHOLD      	= 1;
 	private static final float ROBOT_RADIUS         	 	= 0.3f;
 	private static final float WINDOWSIZE       			= 2.0f;
 
@@ -99,6 +101,8 @@ public class Autopilot2D implements Runnable {
 	private boolean             flowCheck           = false;
 	private float             	nearestTarget 	    = 0;
 
+	private ILocalMapFilter filter = null;
+
 
 	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
 		if(autopilot == null)
@@ -114,15 +118,17 @@ public class Autopilot2D implements Runnable {
 
 		System.out.println("Autopilot2D instantiated");
 
+		filter = new MedianMapFilter(3,1000,control.getCurrentModel());
+
 		this.offboard = new OffboardManager(control);
 		this.tracker  = new WayPointTracker(control);
 		this.control  = control;
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
 
-		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
+		this.mapForget = config.getBoolProperty("autopilot_forget_map", "true");
 		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
-		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true") && !model.sys.isStatus(Status.MSP_SITL);
+		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true") & !model.sys.isStatus(Status.MSP_SITL);
 		System.out.println("Autopilot2D: FlowCheck enabled: "+flowCheck);
 
 		if(control.isSimulation())
@@ -209,7 +215,8 @@ public class Autopilot2D implements Runnable {
 					isAvoiding = false;
 			}
 			if(mapForget)
-				map.forget();
+				//	map.forget();
+				map.applyMapFilter(filter);
 		}
 	}
 

@@ -53,26 +53,31 @@ public class MSPArrayUtils {
 		}
 	}
 
-	public static GrayU8 convertToGrayU8(short[][] map) {
-		GrayU8 m = new GrayU8(map[0].length, map[0].length);
+	public static GrayU8 convertToGrayU8(short[][] map, GrayU8 m ) {
+		if(m==null)
+		  m = new GrayU8(map[0].length, map[0].length);
+
 		for(int y = 0;y < map[0].length; y++)
 			for(int x = 0;x < map[0].length; x++)
-				m.data[x +  map[0].length * y ] = (byte)(map[x][y]);
+//				if(map[x][y]>0)
+//					m.data[x +  map[0].length * y ] = (byte)255;
+				m.data[x +  map[0].length * y ] = (byte)(map[x][y]*10);
 		return m;
 	}
 
-	public static GrayU8 convertToGrayU8(int[][] map) {
-		GrayU8 m = new GrayU8(map[0].length, map[0].length);
+	public static GrayU8 convertToGrayU8(int[][] map,  GrayU8 m ) {
+		if(m==null)
+			  m = new GrayU8(map[0].length, map[0].length);
 		for(int y = 0;y < map[0].length; y++)
 			for(int x = 0;x < map[0].length; x++)
-				m.data[x +  map[0].length * y ] = (byte)((map[x][y]) >> 16);
+				m.data[x +  map[0].length * y ] = (byte)((map[x][y]) >> 16 * 10);
 		return m;
 	}
 
 
 	public static void displayMap(int[][] map) {
 		ListDisplayPanel panel = new ListDisplayPanel();
-		GrayU8 display =convertToGrayU8(map);
+		GrayU8 display =convertToGrayU8(map, null);
 		panel.addImage(ConvertBufferedImage.convertTo(display, null, true),"Map");
 		ShowImages.showWindow(panel,"Image Blur Examples",true);
 	}

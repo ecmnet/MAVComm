@@ -37,6 +37,7 @@ import java.util.Arrays;
 
 import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map2D.ILocalMap;
+import com.comino.msp.slam.map2D.ILocalMapFilter;
 import com.comino.msp.utils.MSPArrayUtils;
 
 import boofcv.struct.image.GrayU8;
@@ -69,6 +70,7 @@ public class LocalMap2DArray implements ILocalMap {
 	private int				threshold = 0;
 
 	private DataModel		model = null;
+	private GrayU8          mapU8 = null;
 
 	public LocalMap2DArray() {
 		this(40.0f,0.05f,2.0f,2);
@@ -89,6 +91,8 @@ public class LocalMap2DArray implements ILocalMap {
 
 		map_dimension  = (int)Math.floor(map_diameter_m / cell_size_m );
 		map = new short[map_dimension][map_dimension];
+
+		mapU8 = new GrayU8(map_dimension,map_dimension);
 
 		window_dimension = (int)Math.floor(window_diameter_m / cell_size_m );
 		window = new short[window_dimension][window_dimension];
@@ -253,7 +257,7 @@ public class LocalMap2DArray implements ILocalMap {
 
 	@Override
 	public GrayU8 getMap() {
-		return MSPArrayUtils.convertToGrayU8(map);
+		return MSPArrayUtils.convertToGrayU8(map, mapU8);
 	}
 
 
@@ -350,6 +354,20 @@ public class LocalMap2DArray implements ILocalMap {
 	public static void main(String[] args) {
 		LocalMap2DArray map = new LocalMap2DArray(11,1,2, 1);
 		System.out.println(map);
+
+	}
+
+	@Override
+	public void applyMapFilter(ILocalMapFilter filter) {
+		filter.apply(map);
+		for (int y = 0; y <map_dimension; y++) {
+			for (int x = 0; x < map_dimension; x++) {
+				if(map[x][y] > threshold)
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
+				else
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+			}
+		}
 
 	}
 }
