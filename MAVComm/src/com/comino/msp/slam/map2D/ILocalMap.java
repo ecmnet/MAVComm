@@ -71,6 +71,5 @@ public interface ILocalMap {
 
 	public void reset();
 
-	public void forget();
 
 }

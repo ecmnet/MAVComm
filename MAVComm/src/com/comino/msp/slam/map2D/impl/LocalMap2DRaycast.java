@@ -47,8 +47,6 @@ import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DRaycast implements ILocalMap {
 
-
-	private static final long OBLIVISION_TIME_MS = 500;
 	private static final int  MAX_CERTAINITY     = 600;
 	private static final int  CERTAINITY_INCR    = 20;
 
@@ -64,7 +62,6 @@ public class LocalMap2DRaycast implements ILocalMap {
 
 	private int 			    map_dimension;
 	private int              window_dimension;
-	private long             tms;
 
 	private int				threshold = 0;
 	private DataModel		model = null;
@@ -204,21 +201,6 @@ public class LocalMap2DRaycast implements ILocalMap {
 //		}
 		if(debug)
 			System.out.println(model.grid);
-	}
-
-	public void forget() {
-		if((System.currentTimeMillis()-tms)>OBLIVISION_TIME_MS) {
-			tms = System.currentTimeMillis();
-			for (int i = 0; i < map_dimension; ++i)
-				for (int j = 0; j < map_dimension; ++j) {
-					if(map[i][j] == 0)
-						continue;
-					map[i][j] -= CERTAINITY_INCR/4;
-					if(map[i][j]<0) map[i][j] = 0;
-					if(map[i][j] <= threshold)
-						model.grid.setBlock((i*cell_size_mm-center_x_mm)/1000f,(j*cell_size_mm-center_y_mm)/1000f, 0, false);
-				}
-		}
 	}
 
 	public int getWindowDimension() {
