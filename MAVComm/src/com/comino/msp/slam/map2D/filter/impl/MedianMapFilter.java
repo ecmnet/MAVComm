@@ -1,6 +1,5 @@
 package com.comino.msp.slam.map2D.filter.impl;
 
-import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 
 public class MedianMapFilter implements ILocalMapFilter {
@@ -16,9 +15,6 @@ public class MedianMapFilter implements ILocalMapFilter {
 
 	private long last_tms = 0;
 	private int  stride;
-
-
-
 
 
 	public MedianMapFilter(int radius, int cycle_ms) {
