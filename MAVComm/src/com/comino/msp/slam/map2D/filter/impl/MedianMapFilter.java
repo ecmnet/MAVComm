@@ -1,8 +1,7 @@
-package com.comino.msp.slam.map2D.impl;
+package com.comino.msp.slam.map2D.filter.impl;
 
 import com.comino.msp.model.DataModel;
-import com.comino.msp.slam.map2D.ILocalMapFilter;
-import com.sun.javafx.collections.MappingChange.Map;
+import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 
 public class MedianMapFilter implements ILocalMapFilter {
 
@@ -10,8 +9,6 @@ public class MedianMapFilter implements ILocalMapFilter {
 	private final int 	cycle_ms;
 	private final int   threshold;
 	private final int   boxWidth;
-
-	private final DataModel model;
 
 	private final int[] histogram;
 	private final int[] offset;
@@ -24,7 +21,7 @@ public class MedianMapFilter implements ILocalMapFilter {
 
 
 
-	public MedianMapFilter(int radius, int cycle_ms, DataModel model) {
+	public MedianMapFilter(int radius, int cycle_ms) {
 		this.radius = radius;
 		this.cycle_ms = cycle_ms;
 		this.histogram = new int[ 256 ];
@@ -34,7 +31,6 @@ public class MedianMapFilter implements ILocalMapFilter {
 		this.threshold = (w*w)/2+1;
 		this.boxWidth = radius*2+1;
 
-		this.model = model;
 	}
 
 	@Override

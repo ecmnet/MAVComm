@@ -1,4 +1,4 @@
-package com.comino.msp.slam.map2D;
+package com.comino.msp.slam.map2D.filter;
 
 public interface ILocalMapFilter {
 

@@ -37,7 +37,7 @@ import java.util.Arrays;
 
 import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map2D.ILocalMap;
-import com.comino.msp.slam.map2D.ILocalMapFilter;
+import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 import com.comino.msp.utils.MSPArrayUtils;
 
 import boofcv.struct.image.GrayU8;

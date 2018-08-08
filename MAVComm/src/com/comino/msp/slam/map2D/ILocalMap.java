@@ -34,6 +34,7 @@
 package com.comino.msp.slam.map2D;
 
 import com.comino.msp.model.DataModel;
+import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 
 import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
