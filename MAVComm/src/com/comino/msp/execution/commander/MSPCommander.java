@@ -125,9 +125,11 @@ public class MSPCommander {
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
 				setXObstacleForSITL();
+				autopilot.applyMapFilter();
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
 				setYObstacleForSITL();
+				autopilot.applyMapFilter();
 			break;
 		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
 			autopilot.offboardPosHold(enable);
@@ -178,19 +180,19 @@ public class MSPCommander {
 		pos.x = 0.5f + model.state.l_x;
 		pos.y = 0.4f + model.state.l_y;
 		pos.z = 1.0f + model.state.l_z;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.y = 0.45f + model.state.l_y;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.y = 0.50f + model.state.l_y;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.y = 0.55f + model.state.l_y;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.y = 0.60f + model.state.l_y;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.y = 0.65f + model.state.l_y;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.y = 0.70f + model.state.l_y;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 	}
 
 	private void setXObstacleForSITL() {
@@ -204,25 +206,25 @@ public class MSPCommander {
 		pos.z =  model.state.l_z;
 		for(int i = 0; i < 40;i++) {
 			pos.x = -1.25f + i *0.05f + model.state.l_x;
-			map.update(pos);
+			map.update(pos); map.update(pos); map.update(pos);
 		}
 
 		pos.y = 1.75f + model.state.l_y;
 		pos.z =  model.state.l_z;
 		for(int i = 0; i < 30;i++) {
 			pos.x = -1.25f + i *0.05f + model.state.l_x;
-			map.update(pos);
+			map.update(pos); map.update(pos); map.update(pos);
 		}
 
 		for(int i = 0; i < 30;i++) {
 			pos.x = 1.25f + i *0.05f + model.state.l_x;
-			map.update(pos);
+			map.update(pos); map.update(pos); map.update(pos);
 		}
 
 		pos.x = 2.0f + model.state.l_x;
 		for(int i = 0; i < 25;i++) {
 			pos.y = -1 + i *0.05f + model.state.l_y;
-			map.update(pos);
+			map.update(pos); map.update(pos); map.update(pos);
 		}
 
 
@@ -240,19 +242,19 @@ public class MSPCommander {
 
 		pos.y = 2f + model.state.l_y;
 		pos.x = -0.15f + model.state.l_x;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.x = -0.10f + model.state.l_x;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.x = -0.05f + model.state.l_x;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.x =  0.00f + model.state.l_x;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.x = 0.05f + model.state.l_x;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.x = 0.10f + model.state.l_x;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 		pos.x = 0.15f + model.state.l_x;
-		map.update(pos);
+		map.update(pos); map.update(pos); map.update(pos);
 
 		float dotx, doty ; float[] r = new float[2];
 
@@ -270,11 +272,10 @@ public class MSPCommander {
 
 				pos.x = x;
 				pos.y = y ;
-				map.update(pos);
+				map.update(pos); map.update(pos); map.update(pos);
 
 			}
 		}
-
 
 	}
 

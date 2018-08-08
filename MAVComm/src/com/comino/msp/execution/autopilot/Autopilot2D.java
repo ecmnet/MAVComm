@@ -71,7 +71,7 @@ public class Autopilot2D implements Runnable {
 
 	private static final int   CYCLE_MS						= 100;
 
-	private static final int   CERTAINITY_THRESHOLD      	= 1;
+	private static final int   CERTAINITY_THRESHOLD      	= 10;
 	private static final float ROBOT_RADIUS         	 	= 0.3f;
 	private static final float WINDOWSIZE       			= 2.0f;
 
@@ -126,7 +126,7 @@ public class Autopilot2D implements Runnable {
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
 
-		this.mapForget = config.getBoolProperty("autopilot_forget_map", "true");
+		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
 		System.out.println("Autopilot2D: Map forget enabled: "+mapForget);
 		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true") & !model.sys.isStatus(Status.MSP_SITL);
 		System.out.println("Autopilot2D: FlowCheck enabled: "+flowCheck);
@@ -544,6 +544,10 @@ public class Autopilot2D implements Runnable {
 				logger.writeLocalMsg("[msp] DebugMod2 stopped",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			});
 		}
+	}
+
+	public void applyMapFilter() {
+		map.applyMapFilter(filter);
 	}
 
 }
