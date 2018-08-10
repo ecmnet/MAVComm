@@ -107,7 +107,7 @@ public class MAVController implements IMAVController, Runnable {
 		this.file_log_enabled = enable;
 		if(enable) {
 			if(directory_name==null)
-			  directory_name = System.getProperty("user.home")+"/MSPLog";
+				directory_name = System.getProperty("user.home")+"/MSPLog";
 			File file = new File(directory_name);
 			if(!file.exists() || !file.isDirectory()){
 				boolean wasDirectoryMade = file.mkdirs();
@@ -190,7 +190,7 @@ public class MAVController implements IMAVController, Runnable {
 
 	@Override
 	public boolean sendMAVLinkCmd(int command, IMAVCmdAcknowledge ack, float...params) {
-		 comm.setCmdAcknowledgeListener(ack);
+		comm.setCmdAcknowledgeListener(ack);
 		return sendMAVLinkCmd(command, params);
 	}
 
@@ -297,10 +297,10 @@ public class MAVController implements IMAVController, Runnable {
 
 	@Override
 	public void writeLogMessage(LogMessage m) {
-		if(comm!=null)
+		if(comm!=null) {
 			comm.writeMessage(m);
-		else
-	     model.msg.set(m);
+		}
+		model.msg.set(m);
 	}
 
 
