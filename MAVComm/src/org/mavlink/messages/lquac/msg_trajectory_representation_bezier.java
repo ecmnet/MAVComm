@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_trajectory_representation_bezier
- * WORK IN PROGRESS! DO NOT DEPLOY! Describe a trajectory using an array of up-to 5 bezier points in the local frame.
+ * Describe a trajectory using an array of up-to 5 bezier points in the local frame.
  **/
 public class msg_trajectory_representation_bezier extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_TRAJECTORY_REPRESENTATION_BEZIER = 333;

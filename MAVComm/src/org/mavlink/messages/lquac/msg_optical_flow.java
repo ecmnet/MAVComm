@@ -44,11 +44,11 @@ public class msg_optical_flow extends MAVLinkMessage {
    */
   public float ground_distance;
   /**
-   * Flow in pixels in x-sensor direction
+   * Flow in x-sensor direction
    */
   public int flow_x;
   /**
-   * Flow in pixels in y-sensor direction
+   * Flow in y-sensor direction
    */
   public int flow_y;
   /**

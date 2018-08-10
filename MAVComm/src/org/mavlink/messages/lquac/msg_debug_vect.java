@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_debug_vect
- * 
+ * To debug something using a named 3D vector.
  **/
 public class msg_debug_vect extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_DEBUG_VECT = 250;

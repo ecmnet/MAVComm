@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_set_video_stream_settings
- * WIP: Message that sets video stream settings
+ * Message that sets video stream settings
  **/
 public class msg_set_video_stream_settings extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS = 270;

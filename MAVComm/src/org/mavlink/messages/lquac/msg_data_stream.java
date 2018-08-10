@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_data_stream
- * 
+ * Data stream status information.
  **/
 public class msg_data_stream extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_DATA_STREAM = 67;

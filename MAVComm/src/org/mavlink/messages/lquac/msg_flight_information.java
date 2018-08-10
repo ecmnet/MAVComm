@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_flight_information
- * WIP: Information about flight since last arming
+ * Information about flight since last arming.
  **/
 public class msg_flight_information extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_FLIGHT_INFORMATION = 264;

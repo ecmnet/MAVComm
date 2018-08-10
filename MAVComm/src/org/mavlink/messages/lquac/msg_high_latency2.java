@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_high_latency2
- * WIP: Message appropriate for high latency connections like Iridium (version 2)
+ * Message appropriate for high latency connections like Iridium (version 2)
  **/
 public class msg_high_latency2 extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_HIGH_LATENCY2 = 235;

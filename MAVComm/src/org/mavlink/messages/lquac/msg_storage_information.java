@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_storage_information
- * WIP: Information about a storage medium.
+ * Information about a storage medium.
  **/
 public class msg_storage_information extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_STORAGE_INFORMATION = 261;
@@ -32,23 +32,23 @@ public class msg_storage_information extends MAVLinkMessage {
    */
   public long time_boot_ms;
   /**
-   * Total capacity
+   * Total capacity.
    */
   public float total_capacity;
   /**
-   * Used capacity
+   * Used capacity.
    */
   public float used_capacity;
   /**
-   * Available capacity
+   * Available storage capacity.
    */
   public float available_capacity;
   /**
-   * Read speed
+   * Read speed.
    */
   public float read_speed;
   /**
-   * Write speed
+   * Write speed.
    */
   public float write_speed;
   /**

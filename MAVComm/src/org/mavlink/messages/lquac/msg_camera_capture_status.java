@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_camera_capture_status
- * Information about the status of a capture
+ * Information about the status of a capture.
  **/
 public class msg_camera_capture_status extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS = 262;
@@ -40,7 +40,7 @@ public class msg_camera_capture_status extends MAVLinkMessage {
    */
   public long recording_time_ms;
   /**
-   * Available storage capacity
+   * Available storage capacity.
    */
   public float available_capacity;
   /**

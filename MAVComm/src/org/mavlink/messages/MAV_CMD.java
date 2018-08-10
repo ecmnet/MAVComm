@@ -163,10 +163,10 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_FOLLOW_REPOSITION = 33;
     /**
-     * WIP: Start orbiting on the circumference of a circle defined by the parameters. Setting any value NaN results in using defaults.
+     * Start orbiting on the circumference of a circle defined by the parameters. Setting any value NaN results in using defaults.
      * PARAM 1 : Radius of the circle in meters. positive: Orbit clockwise. negative: Orbit counter-clockwise. 
      * PARAM 2 : Velocity tangential in m/s. NaN: Vehicle configuration default.
-     * PARAM 3 : Yaw behaviour of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.
+     * PARAM 3 : Yaw behavior of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.
      * PARAM 4 : Reserved (e.g. for dynamic center beacon options)
      * PARAM 5 : Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
      * PARAM 6 : Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
@@ -888,14 +888,14 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_CAMERA_SETTINGS = 522;
     /**
-     * WIP: Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.
+     * Request storage information (STORAGE_INFORMATION). Use the command's target_component to target a specific component's storage.
      * PARAM 1 : Storage ID (0 for all, 1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No Action 1: Request storage information
      * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_STORAGE_INFORMATION = 525;
     /**
-     * WIP: Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.
+     * Format a storage medium. Once format is complete, a STORAGE_INFORMATION message is sent. Use the command's target_component to target a specific component's storage.
      * PARAM 1 : Storage ID (1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No action 1: Format storage
      * PARAM 3 : Reserved (all remaining params)
@@ -908,7 +908,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS = 527;
     /**
-     * WIP: Request flight information (FLIGHT_INFORMATION)
+     * Request flight information (FLIGHT_INFORMATION)
      * PARAM 1 : 1: Request flight information
      * PARAM 2 : Reserved (all remaining params)
      */
@@ -942,7 +942,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_IMAGE_STOP_CAPTURE = 2001;
     /**
-     * WIP: Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.
+     * Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.
      * PARAM 1 : Sequence number for missing CAMERA_IMAGE_CAPTURE packet
      * PARAM 2 : Reserved (all remaining params)
      */
@@ -968,19 +968,19 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_VIDEO_STOP_CAPTURE = 2501;
     /**
-     * WIP: Start video streaming
+     * Start video streaming
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_START_STREAMING = 2502;
     /**
-     * WIP: Stop the current video streaming
+     * Stop the current video streaming
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_STOP_STREAMING = 2503;
     /**
-     * WIP: Request video stream information (VIDEO_STREAM_INFORMATION)
+     * Request video stream information (VIDEO_STREAM_INFORMATION)
      * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No Action 1: Request video stream information
      * PARAM 3 : Reserved (all remaining params)
@@ -1044,7 +1044,12 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_VTOL_TRANSITION = 3000;
     /**
-     * This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocites along all three axes.
+     * Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
+     * PARAM 1 : Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle
+     */
+    public final static int MAV_CMD_ARM_AUTHORIZATION_REQUEST = 3001;
+    /**
+     * This command sets the submode to standard guided when vehicle is in guided mode. The vehicle holds position and altitude and the user can input the desired velocities along all three axes.
      */
     public final static int MAV_CMD_SET_GUIDED_SUBMODE_STANDARD = 4000;
     /**
@@ -1058,7 +1063,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_SET_GUIDED_SUBMODE_CIRCLE = 4001;
     /**
-     * WIP: Delay mission state machine until gate has been reached.
+     * Delay mission state machine until gate has been reached.
      * PARAM 1 : Geometry: 0: orthogonal to path between previous and next waypoint.
      * PARAM 2 : Altitude: 0: ignore altitude
      * PARAM 3 : Empty
@@ -1068,11 +1073,6 @@ public interface MAV_CMD {
      * PARAM 7 : Altitude
      */
     public final static int MAV_CMD_CONDITION_GATE = 4501;
-    /**
-     * Request authorization to arm the vehicle to a external entity, the arm authorizer is responsible to request all data that is needs from the vehicle before authorize or deny the request. If approved the progress of command_ack message should be set with period of time that this authorization is valid in seconds or in case it was denied it should be set with one of the reasons in ARM_AUTH_DENIED_REASON.
-     * PARAM 1 : Vehicle system id, this way ground station can request arm authorization on behalf of any vehicle
-     */
-    public final static int MAV_CMD_ARM_AUTHORIZATION_REQUEST = 3001;
     /**
      * Fence return point. There can only be one fence return point.
      * PARAM 1 : Reserved
