@@ -92,8 +92,8 @@ public class OffboardManager implements Runnable {
 	private boolean    	already_fired			    		= false;
 	private boolean    	valid_setpoint                   	= false;
 	private boolean    	new_setpoint                   	 	= false;
-	private boolean     step_mode                        	= false;
-	private boolean    	step_trigger                    	= false;
+//	private boolean     step_mode                        	= false;
+//	private boolean    	step_trigger                    	= false;
 
 
 	public OffboardManager(IMAVController control) {
@@ -138,14 +138,6 @@ public class OffboardManager implements Runnable {
 
 	public void stop() {
 		enabled = false;
-	}
-
-	public void setStepMode(boolean step_mode) {
-		this.step_mode = step_mode;
-	}
-
-	public void triggerStep() {
-		this.step_trigger = true;
 	}
 
 	public void setTarget(Vector3D_F32 t) {
@@ -263,7 +255,7 @@ public class OffboardManager implements Runnable {
 
 			delta_sec = UPDATE_RATE / 1000.0f;
 
-			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS  && !step_mode) {
+			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS ) {
 				valid_setpoint = false; mode = MODE_POSITION;
 
 				if(model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD)
@@ -294,14 +286,11 @@ public class OffboardManager implements Runnable {
 				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 				sendPositionControlToVehice(target);
 
-				if(step_mode && !step_trigger)
-					continue;
 
 				delta = MSP3DUtils.distance3D(target,current);
 				if(delta < acceptance_radius_pos && valid_setpoint) {
 					fireAction(model, delta);
 					watch_tms = System.currentTimeMillis();
-					step_trigger = false;
 					continue;
 				}
 				break;
@@ -314,14 +303,10 @@ public class OffboardManager implements Runnable {
 				current.set(model.state.l_vx, model.state.l_vy, model.state.l_vz,model.attitude.yr);
 				sendSpeedControlToVehice(target);
 
-				if(step_mode && !step_trigger)
-					continue;
-
 				delta = MSP3DUtils.distance3D(target,current);
 				if(delta < acceptance_radius_speed && valid_setpoint) {
 					fireAction(model, delta);
 					watch_tms = System.currentTimeMillis();
-					step_trigger = false;
 				}
 				break;
 
@@ -344,7 +329,6 @@ public class OffboardManager implements Runnable {
 					ctl[IOffboardExternalControl.SPEED] = 0;
 
 					fireAction(model, delta);
-					step_trigger = false;
 					mode = MODE_POSITION;
 					continue;
 				}

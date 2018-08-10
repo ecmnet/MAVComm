@@ -157,10 +157,6 @@ public class Autopilot2D implements Runnable {
 			//	loadMap2D();
 		});
 
-		control.getStatusManager().addListener(StatusManager.TYPE_MSP_AUTOPILOT, MSP_AUTOCONTROL_MODE.STEP_MODE,(o,n) -> {
-			offboard.setStepMode(n.isAutopilotMode(MSP_AUTOCONTROL_MODE.STEP_MODE));
-		});
-
 		//		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_RTL, StatusManager.EDGE_RISING, (o,n) -> {
 		//			offboard.stop();
 		//		});
@@ -266,10 +262,6 @@ public class Autopilot2D implements Runnable {
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
 		offboard.removeActionListener();
 		control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
-	}
-
-	public void executeStep() {
-		offboard.triggerStep();
 	}
 
 	public void offboardPosHold(boolean enable) {
