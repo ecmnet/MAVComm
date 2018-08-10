@@ -125,17 +125,17 @@ public class MSPCommander {
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
 				setXObstacleForSITL();
-				autopilot.applyMapFilter();
+			//	autopilot.applyMapFilter();
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
 				setYObstacleForSITL();
-				autopilot.applyMapFilter();
+			//	autopilot.applyMapFilter();
 			break;
 		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
 			autopilot.offboardPosHold(enable);
 			break;
-		case MSP_AUTOCONTROL_ACTION.STEP:
-			autopilot.executeStep();
+		case MSP_AUTOCONTROL_ACTION.APPLY_MAP_FILTER:
+			autopilot.applyMapFilter();
 			break;
 		}
 	}

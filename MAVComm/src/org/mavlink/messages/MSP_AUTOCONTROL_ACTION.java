@@ -33,9 +33,9 @@ public interface MSP_AUTOCONTROL_ACTION {
      */
     public final static int SAVE_MAP2D = 21;
     /**
-     * Execute a single step in the current sequence for testing
+     * Applies a map filter to the current map
      */
-    public final static int STEP = 30;
+    public final static int APPLY_MAP_FILTER = 30;
     /**
      * Controls offboard updater
      */

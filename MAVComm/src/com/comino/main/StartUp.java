@@ -144,6 +144,13 @@ public class StartUp implements Runnable {
 					control.sendMAVLinkMessage(grid);
 				}
 
+				Thread.sleep(10);
+
+				if((System.currentTimeMillis()-tms) < 500)
+					continue;
+
+				tms = System.currentTimeMillis();
+
 
 				msg.load = (int)(osBean.getSystemLoadAverage()*100f/osBean.getAvailableProcessors());
 				msg.autopilot_mode =control.getCurrentModel().sys.autopilot;
@@ -163,7 +170,7 @@ public class StartUp implements Runnable {
 				sync_s.ts1 = System.currentTimeMillis()*1000000L;
 				control.sendMAVLinkMessage(sync_s);
 
-				Thread.sleep(200);
+
 
 			} catch (Exception e) {
 				e.printStackTrace();
