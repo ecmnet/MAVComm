@@ -141,6 +141,7 @@ public class DataModel extends Segment implements Serializable {
 		this.vision         = m.vision.clone();
 		this.est            = m.est.clone();
 		this.slam           = m.slam.clone();
+		this.grid           = m.grid.clone();
 	}
 
 
@@ -166,6 +167,7 @@ public class DataModel extends Segment implements Serializable {
 		this.vision.set(m.vision);
 		this.est.set(m.est);
 		this.slam.set(m.slam);
+		this.grid.set(m.grid);
 	}
 
 	public DataModel clone() {
@@ -193,6 +195,7 @@ public class DataModel extends Segment implements Serializable {
 		this.vision.clear();
 		this.est.clear();
 		this.slam.clear();
+		this.grid.clear();
 	}
 
 	public float getValue(String classkey) {

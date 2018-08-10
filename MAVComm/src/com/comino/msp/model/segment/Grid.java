@@ -52,14 +52,14 @@ public class Grid extends Segment {
 
 	// TODO: add blockcount => is 0 then refresh on MAVGCL side
 
-	private int      dimension 		= 0;
-	private int      resolution_cm 	= 0;
+	private int      dimension 		 = 0;
+	private int      resolution_cm 	 = 0;
 	private int      extension_cm    = 0;
-	private int      max_length;
+	private int      max_length      = 0;
 	private int      blocks_per_m    = 0;
 
-	private static List<Integer>  transfer  = new ArrayList<Integer>();
-	private static Map<Integer,Point3D_F32>   data  = new ConcurrentHashMap<Integer, Point3D_F32>(0);
+	private final List<Integer>          transfer;
+	private final Map<Integer,Point3D_F32>   data;
 
 	//	private  Map<Integer,BlockPoint2D> data = null;
 
@@ -86,15 +86,39 @@ public class Grid extends Segment {
 		this.cy = dimension / 2;
 		this.cz = dimension / 2;
 		this.max_length = dimension * dimension * dimension;
+
+		transfer  = new ArrayList<Integer>();
+		data     = new ConcurrentHashMap<Integer, Point3D_F32>(0);
+
 	}
 
 	public void set(Grid a) {
 
+		dimension 		 = a.dimension;
+		resolution_cm 	 = a.resolution_cm;
+		extension_cm     = a.extension_cm;
+		max_length       = a.max_length;
+		blocks_per_m     = a.blocks_per_m;
+
+		cx               = a.cx;
+		cy               = a.cy;
+		cz               = a.cz;
+
+		vx               = a.vx;
+		vy               = a.vy;
+		vz               = a.vz;
+
+		transfer.clear();
+		transfer.addAll(a.transfer);
+
+		data.clear();
+		data.putAll(a.data);
 	}
 
 	public Grid clone() {
-
-		return this;
+		Grid a = new Grid();
+		a.set(this);
+		return a;
 	}
 
 	public void clear() {
