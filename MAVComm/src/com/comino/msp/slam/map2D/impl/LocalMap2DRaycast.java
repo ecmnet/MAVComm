@@ -66,6 +66,8 @@ public class LocalMap2DRaycast implements ILocalMap {
 	private int				threshold = 0;
 	private DataModel		model = null;
 
+	private boolean is_loaded = false;
+
 	public LocalMap2DRaycast() {
 		this(40.0f,0.05f,2.0f,2);
 	}
@@ -73,6 +75,7 @@ public class LocalMap2DRaycast implements ILocalMap {
 	public LocalMap2DRaycast(DataModel model, float window, int certainity) {
 		this(model.grid.getExtension(),model.grid.getResolution(),window,certainity);
 		this.model = model;
+
 	}
 
 	public LocalMap2DRaycast(float diameter_m, float cell_size_m, float window_diameter_m, int threshold) {
@@ -95,6 +98,10 @@ public class LocalMap2DRaycast implements ILocalMap {
 		this.center_y_mm = center_y_m * 1000f;
 
 		System.out.println("LocalMap2DRayCast initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
+	}
+
+	public void setDataModel(DataModel model) {
+		this.model = model;
 	}
 
 	public void 	setLocalPosition(Vector3D_F32 point) {
@@ -189,16 +196,16 @@ public class LocalMap2DRaycast implements ILocalMap {
 		return true;
 	}
 
-	public void toDataModel(DataModel model,  boolean debug) {
+	public void toDataModel(boolean debug) {
 //		//TODO: Only transfer changes
-//		for (int y = 0; y <map_dimension; y++) {
-//			for (int x = 0; x < map_dimension; x++) {
-//				if(map[x][y] > threshold)
-//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
-//				else
-//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
-//			}
-//		}
+		for (int y = 0; y <map_dimension; y++) {
+			for (int x = 0; x < map_dimension; x++) {
+				if(map[x][y] > threshold)
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
+				else
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+			}
+		}
 		if(debug)
 			System.out.println(model.grid);
 	}
@@ -216,16 +223,20 @@ public class LocalMap2DRaycast implements ILocalMap {
 	}
 
 	public void reset() {
-		for (short[] row : map)
-			Arrays.fill(row, (short)0);
-		for (short[] row : window)
-			Arrays.fill(row, (short)0);
-		if(model!=null) {
-			for (int y = 0; y <map_dimension; y++) {
-				for (int x = 0; x < map_dimension; x++)
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+		for (int y = 0; y <map_dimension; y++) {
+			for (int x = 0; x < map_dimension; x++) {
+				map[x][y] = 0;
 			}
 		}
+		is_loaded = false;
+	}
+
+	public void setIsLoaded(boolean loaded) {
+		is_loaded = loaded;
+	}
+
+	public boolean isLoaded() {
+		return is_loaded;
 	}
 
 	public short[][] get() {

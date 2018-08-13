@@ -71,7 +71,7 @@ public class Autopilot2D implements Runnable {
 
 	private static final int   CYCLE_MS						= 100;
 
-	private static final int   CERTAINITY_THRESHOLD      	= 10;
+	private static final int   CERTAINITY_THRESHOLD      	= 3;
 	private static final float ROBOT_RADIUS         	 	= 0.3f;
 	private static final float WINDOWSIZE       			= 2.0f;
 
@@ -229,8 +229,10 @@ public class Autopilot2D implements Runnable {
 
 	public void loadMap2D() {
 		LocaMap2DStorage store = new LocaMap2DStorage(map, model.state.g_lat, model.state.g_lon);
-		if(store.locateAndRead())
+		if(store.locateAndRead()) {
 			logger.writeLocalMsg("[msp] Map for this home position loaded.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			map.setDataModel(control.getCurrentModel()); map.toDataModel(false); map.setIsLoaded(true);
+		}
 		else
 			logger.writeLocalMsg("[msp] No Map for this home position found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 	}
@@ -245,8 +247,10 @@ public class Autopilot2D implements Runnable {
 
 	public void reset(boolean grid) {
 		clearAutopilotActions(); lvfh.reset();
-		if(grid)
+		if(grid) {
 			map.reset();
+			map.toDataModel(false);
+		}
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {

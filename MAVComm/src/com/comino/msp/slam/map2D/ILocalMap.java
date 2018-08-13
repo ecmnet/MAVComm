@@ -71,5 +71,13 @@ public interface ILocalMap {
 
 	public void reset();
 
+	public void setDataModel(DataModel model);
+
+	public void toDataModel(boolean debug);
+
+	public void setIsLoaded( boolean loaded);
+
+	public boolean isLoaded();
+
 
 }

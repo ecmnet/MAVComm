@@ -70,6 +70,8 @@ public class LocalMap2DArray implements ILocalMap {
 	private DataModel		model = null;
 	private GrayU8          mapU8 = null;
 
+	private boolean        is_loaded = false;
+
 	public LocalMap2DArray() {
 		this(40.0f,0.05f,2.0f,2);
 	}
@@ -102,6 +104,10 @@ public class LocalMap2DArray implements ILocalMap {
 
 		System.out.println("LocalMap2DArray initialized with "+map_dimension+"x"+map_dimension+" map and "+window.length+"x"+window.length+" window cells. ");
 		System.out.println(" and filter radius  "+FILTER_SIZE_PX*cell_size_mm+"mm");
+	}
+
+	public void setDataModel(DataModel model) {
+		this.model = model;
 	}
 
 	public void 	setLocalPosition(Vector3D_F32 point) {
@@ -195,16 +201,16 @@ public class LocalMap2DArray implements ILocalMap {
 	}
 
 
-	public void toDataModel(DataModel model,  boolean debug) {
+	public void toDataModel( boolean debug) {
 		//		//TODO: Only transfer changes
-		//		for (int y = 0; y <map_dimension; y++) {
-		//			for (int x = 0; x < map_dimension; x++) {
-		//				if(map[x][y] > threshold)
-		//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
-		//				else
-		//					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
-		//			}
-		//		}
+		for (int y = 0; y <map_dimension; y++) {
+			for (int x = 0; x < map_dimension; x++) {
+				if(map[x][y] > threshold)
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
+				else
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+			}
+		}
 		if(debug)
 			System.out.println(model.grid);
 	}
@@ -222,20 +228,24 @@ public class LocalMap2DArray implements ILocalMap {
 	}
 
 	public void reset() {
-		for (short[] row : map)
-			Arrays.fill(row, (short)0);
-		for (short[] row : window)
-			Arrays.fill(row, (short)0);
-		if(model!=null) {
-			for (int y = 0; y <map_dimension; y++) {
-				for (int x = 0; x < map_dimension; x++)
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+		for (int y = 0; y <map_dimension; y++) {
+			for (int x = 0; x < map_dimension; x++) {
+				map[x][y] = 0;
 			}
 		}
+		is_loaded = false;
 	}
 
 	public short[][] get() {
 		return map;
+	}
+
+	public void setIsLoaded(boolean loaded) {
+		is_loaded = loaded;
+	}
+
+	public boolean isLoaded() {
+		return is_loaded;
 	}
 
 	@Override

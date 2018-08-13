@@ -342,4 +342,28 @@ public class LocalMap2DArray_old implements ILocalMap {
 		System.out.println(map);
 
 	}
+
+	@Override
+	public void setDataModel(DataModel model) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void toDataModel(boolean debug) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void setIsLoaded(boolean loaded) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean isLoaded() {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

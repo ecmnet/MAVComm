@@ -54,7 +54,7 @@ public class LocaMap2DStorage {
 			public ILocalMap createInstance(Type type) { return map; }
 		};
 
-		this.gson = new GsonBuilder().registerTypeAdapter(map.getClass(), creator).create();
+		this.gson = new GsonBuilder().registerTypeAdapter(map.getClass(), creator).serializeSpecialFloatingPointValues().create();
 	}
 
 	public LocaMap2DStorage(ILocalMap map, String filename) {
@@ -70,7 +70,7 @@ public class LocaMap2DStorage {
 			public ILocalMap createInstance(Type type) { return map; }
 		};
 
-		this.gson = new GsonBuilder().registerTypeAdapter(map.getClass(), creator).create();
+		this.gson = new GsonBuilder().registerTypeAdapter(map.getClass(), creator).serializeSpecialFloatingPointValues().create();
 
 	}
 
@@ -104,10 +104,13 @@ public class LocaMap2DStorage {
 		found = null;
 		for( String f : getMapFileNames()) {
 
-			if(f.contains("test")) {
+			if(f.contains("test") || f.contains("7fc000007fc00000")) {
 				found = f;
 				break;
 			}
+
+			System.out.println("Search map "+f);
+
 			origin = getOriginFromFileName(f);
 			distance_origin = MSPMathUtils.map_projection_distance(lat, lon, origin[0], origin[1], req_translation);
 			if(distance_origin<distance && distance_origin < map.getMapDimension()*map.getCellSize_mm()/2000f) {
@@ -126,7 +129,7 @@ public class LocaMap2DStorage {
 	}
 
 	public String generateFileName() {
-		return Integer.toHexString(Float.floatToIntBits(lat)) + Integer.toHexString(Float.floatToIntBits(lon));
+		  return Integer.toHexString(Float.floatToIntBits(lat)) + Integer.toHexString(Float.floatToIntBits(lon));
 	}
 
 	private float[] getOriginFromFileName(String filename) {

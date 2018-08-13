@@ -120,6 +120,9 @@ public class MSPCommander {
 		case MSP_AUTOCONTROL_ACTION.SAVE_MAP2D:
 			autopilot.saveMap2D();
 			break;
+		case MSP_AUTOCONTROL_ACTION.LOAD_MAP2D:
+			autopilot.loadMap2D();
+			break;
 		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
 
 			break;

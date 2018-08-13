@@ -33,6 +33,10 @@ public interface MSP_AUTOCONTROL_ACTION {
      */
     public final static int SAVE_MAP2D = 21;
     /**
+     * Load a map corresponding to the global position
+     */
+    public final static int LOAD_MAP2D = 22;
+    /**
      * Applies a map filter to the current map
      */
     public final static int APPLY_MAP_FILTER = 30;
