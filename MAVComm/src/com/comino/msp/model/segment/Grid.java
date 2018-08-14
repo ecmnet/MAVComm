@@ -35,6 +35,8 @@ package com.comino.msp.model.segment;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,8 +60,8 @@ public class Grid extends Segment {
 	private int      max_length      = 0;
 	private int      blocks_per_m    = 0;
 
-	private final List<Integer>          transfer;
-	private final Map<Integer,Point3D_F32>   data;
+	private static  LinkedList<Integer>        transfer;
+	private static  Map<Integer,Point3D_F32>   data;
 
 	//	private  Map<Integer,BlockPoint2D> data = null;
 
@@ -87,8 +89,8 @@ public class Grid extends Segment {
 		this.cz = dimension / 2;
 		this.max_length = dimension * dimension * dimension;
 
-		transfer  = new ArrayList<Integer>();
-		data     = new ConcurrentHashMap<Integer, Point3D_F32>(0);
+		transfer = new LinkedList<Integer>();
+		data     = new ConcurrentHashMap<Integer, Point3D_F32>(1);
 
 	}
 
@@ -108,11 +110,14 @@ public class Grid extends Segment {
 		vy               = a.vy;
 		vz               = a.vz;
 
-		transfer.clear();
-		transfer.addAll(a.transfer);
+//		transfer         = a.transfer;
+//		data             = a.data;
 
-		data.clear();
-		data.putAll(a.data);
+		//		transfer.clear();
+		//		transfer.addAll(a.transfer);
+		//
+		//		data.clear();
+		//		data.putAll(a.data);
 	}
 
 	public Grid clone() {
@@ -129,19 +134,18 @@ public class Grid extends Segment {
 
 	public boolean toArray(long[] array) {
 		try {
-		if(!hasTransfers())
-			return false;
-		count = data.size();
-		Arrays.fill(array, 0);
-		if(transfer.isEmpty() || array == null || count == 0)
-			return false;
+			if(!hasTransfers())
+				return false;
+			Arrays.fill(array, 0);
+			if(transfer.isEmpty() || array == null )
+				return false;
 			for(int i=0; i< array.length && transfer.size() > 0;i++) {
-				array[i] = transfer.remove(0);
+				array[i] = transfer.poll();
 			}
-		return true;
+			return true;
 		}
 		catch(Exception e) {
-			//System.out.println("Array-Transfer: "+e.getMessage()+"A="+array+" T="+transfer);
+		//	System.out.println("Array-Transfer: "+e.getMessage()+"A="+array+" T="+transfer);
 			return false;
 		}
 	}
@@ -237,8 +241,8 @@ public class Grid extends Segment {
 		if(set) {
 			if(!data.containsKey(block)) {
 				Point3D_F32 p = new Point3D_F32((float)Math.round((float)xpos * blocks_per_m)/blocks_per_m,
-	                                            (float)Math.round((float)ypos * blocks_per_m)/blocks_per_m,
-	                                            (float)Math.round((float)zpos * blocks_per_m)/blocks_per_m);
+						(float)Math.round((float)ypos * blocks_per_m)/blocks_per_m,
+						(float)Math.round((float)zpos * blocks_per_m)/blocks_per_m);
 				data.put(block,p);
 				transfer.add(block);
 			}

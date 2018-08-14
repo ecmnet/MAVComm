@@ -3,6 +3,8 @@ package com.comino.msp.utils;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
+import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.GrayU16;
 import boofcv.struct.image.GrayU8;
 
 public class MSPArrayUtils {
@@ -72,6 +74,36 @@ public class MSPArrayUtils {
 			for(int x = 0;x < map[0].length; x++)
 				m.data[x +  map[0].length * y ] = (byte)((map[x][y]) >> 16 * 10);
 		return m;
+	}
+
+	public static GrayU16 convertToGrayU16(short[][] map,  GrayU16 m ) {
+		if(m==null)
+			  m = new GrayU16(map[0].length, map[0].length);
+		for(int y = 0;y < map[0].length; y++)
+			for(int x = 0;x < map[0].length; x++)
+				m.data[x +  map[0].length * y ] = (short)((map[x][y]));
+		return m;
+	}
+
+	public static void convertFromGrayU16(short[][] map,  GrayU16 m ) {
+		for(int y = 0;y < map[0].length; y++)
+			for(int x = 0;x < map[0].length; x++)
+				(map[x][y]) = m.data[x +  map[0].length * y ];
+	}
+
+	public static GrayF32 convertToGrayF32(short[][] map,  GrayF32 m ) {
+		if(m==null)
+			  m = new GrayF32(map[0].length, map[0].length);
+		for(int y = 0;y < map[0].length; y++)
+			for(int x = 0;x < map[0].length; x++)
+				m.data[x +  map[0].length * y ] = (short)((map[x][y]));
+		return m;
+	}
+
+	public static void convertFromGrayF32(short[][] map,  GrayF32 m ) {
+		for(int y = 0;y < map[0].length; y++)
+			for(int x = 0;x < map[0].length; x++)
+				(map[x][y]) = (short)m.data[x +  map[0].length * y ];
 	}
 
 

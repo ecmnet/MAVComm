@@ -14,6 +14,7 @@ import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayF32;
+import boofcv.struct.image.GrayU16;
 import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
@@ -24,8 +25,8 @@ public class MapTest {
 
 	static ListDisplayPanel panel = new ListDisplayPanel();
 
-	private static void addMap(GrayU8 map, String name) {
-		GrayU8 display = map.clone();
+	private static void addMap(GrayU16 map, String name) {
+		GrayU16 display = map.clone();
 		 for(int i=0; i<display.data.length;i++)
 			 display.data[i] = (byte)(display.data[i]*64);
 		 panel.addImage(ConvertBufferedImage.convertTo(display, null, true),name);
@@ -65,8 +66,8 @@ public class MapTest {
 		System.out.println("Test: "+(System.currentTimeMillis() - tms));
 
 
-		GrayU8 a = map.getMap().createSameShape();
-		GrayU8 b = map.getMap().createSameShape();
+		GrayU16 a = map.getMap().createSameShape();
+		GrayU16 b = map.getMap().createSameShape();
 
 
 		GBlurImageOps.gaussian(map.getMap(), a, 20, 2, null);

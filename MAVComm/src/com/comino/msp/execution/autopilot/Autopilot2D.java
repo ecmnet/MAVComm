@@ -56,6 +56,7 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
+import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
 import com.comino.msp.slam.map2D.filter.impl.MedianMapFilter;
 import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.impl.LocalMap2DRaycast;
@@ -118,7 +119,8 @@ public class Autopilot2D implements Runnable {
 
 		System.out.println("Autopilot2D instantiated");
 
-		filter = new MedianMapFilter(3,1000);
+		filter = new DenoiseMapFilter(800,800);
+
 
 		this.offboard = new OffboardManager(control);
 		this.tracker  = new WayPointTracker(control);
@@ -154,7 +156,7 @@ public class Autopilot2D implements Runnable {
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 				control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 			}
-			//	loadMap2D();
+
 		});
 
 		//		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_RTL, StatusManager.EDGE_RISING, (o,n) -> {
@@ -246,7 +248,6 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void reset(boolean grid) {
-		clearAutopilotActions(); lvfh.reset();
 		if(grid) {
 			map.reset();
 			map.toDataModel(false);

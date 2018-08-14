@@ -5,7 +5,7 @@ import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 public class MedianMapFilter implements ILocalMapFilter {
 
 	private final int 	radius;
-	private final int 	cycle_ms;
+
 	private final int   threshold;
 	private final int   boxWidth;
 
@@ -13,13 +13,12 @@ public class MedianMapFilter implements ILocalMapFilter {
 	private final int[] offset;
 
 
-	private long last_tms = 0;
+
 	private int  stride;
 
 
-	public MedianMapFilter(int radius, int cycle_ms) {
+	public MedianMapFilter(int radius) {
 		this.radius = radius;
-		this.cycle_ms = cycle_ms;
 		this.histogram = new int[ 256 ];
 
 		int w = 2*radius+1;
@@ -32,10 +31,8 @@ public class MedianMapFilter implements ILocalMapFilter {
 	@Override
 	public void apply(short[][] map) {
 
-		if((System.currentTimeMillis() - last_tms) < cycle_ms)
-			return;
+		System.out.print("Try to apply filter...");
 
-		this.last_tms = System.currentTimeMillis();
 		this.stride = map[0].length;
 
 		int index = 0;
@@ -100,10 +97,12 @@ public class MedianMapFilter implements ILocalMapFilter {
 
 			}
 		}
+
+		System.out.println("applied");
 	}
 
 	private short getVal(short[][] map, int pos) {
-		return (short)(map[pos % stride][pos / stride] / 4 );
+		return (short)(map[pos % stride][pos / stride] / 8 );
 	}
 
 	private void setVal(short[][] map, int pos, short val) {

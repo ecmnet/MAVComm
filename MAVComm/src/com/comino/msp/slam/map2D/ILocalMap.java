@@ -36,6 +36,7 @@ package com.comino.msp.slam.map2D;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 
+import boofcv.struct.image.GrayU16;
 import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
@@ -63,7 +64,7 @@ public interface ILocalMap {
 
 	public int getCellSize_mm();
 
-	public GrayU8 getMap();
+	public GrayU16 getMap();
 
 	public void applyMapFilter(ILocalMapFilter filter);
 
