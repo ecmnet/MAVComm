@@ -72,7 +72,8 @@ public class MAVProxyController implements IMAVMSPController {
 	protected   DataModel model = null;
 	protected   MAVUdpProxyNIO3 proxy = null;
 
-	private static final int BAUDRATE  = 921600;
+	private static final int BAUDRATE_9   = 921600;
+	private static final int BAUDRATE_15  = 1500000;
 
 	private StatusManager status_manager = null;
 
@@ -95,7 +96,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 		switch(mode) {
 		case MAVController.MODE_NORMAL:
-			comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
+			comm = MAVSerialComm.getInstance(model, BAUDRATE_9, false);
 			comm.open();
 			try { Thread.sleep(500); } catch (InterruptedException e) { }
 
@@ -113,7 +114,7 @@ public class MAVProxyController implements IMAVMSPController {
 			model.sys.setStatus(Status.MSP_SITL,true);
 			break;
 		case MAVController.MODE_USB:
-			comm = MAVSerialComm.getInstance(model, BAUDRATE, false);
+			comm = MAVSerialComm.getInstance(model, BAUDRATE_9, false);
 			comm.open();
 			try { Thread.sleep(500); } catch (InterruptedException e) { }
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
