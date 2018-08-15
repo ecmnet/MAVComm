@@ -34,6 +34,7 @@
 package com.comino.msp.execution.control;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
@@ -133,6 +134,8 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
+	//	Iterator<StatusListenerEntry> iterator = null;
+
 		while(true) {
 
 			try { Thread.sleep(100); } catch(Exception e) { }
@@ -156,6 +159,7 @@ public class StatusManager implements Runnable {
 
 
 			try {
+
 				for (StatusListenerEntry entry : list) {
 
 					switch(entry.type) {
