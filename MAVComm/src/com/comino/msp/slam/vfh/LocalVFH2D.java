@@ -54,12 +54,12 @@ public class LocalVFH2D {
 
 	private static final int     SMAX        		= 60;
 
-	private static final int		ALPHA				= 2;
-	private static final float  	HIST_THRESHOLD	    = 1f;
+	private static final int	ALPHA				= 2;
+	private static final float  HIST_THRESHOLD	    = 1f;
 
-	private static final int MAX_ACCELERATION		= 100;
+	private static final int  MAX_ACCELERATION		= 100;
 
-	private static final int MAX_SPEED   	    		= 800;
+	private static final int MAX_SPEED   	    	= 800;
 	private static final int MAX_SPEED_WIDE			= 500;
 	private static final int MAX_SPEED_NARROW    	= 300;
 
@@ -82,8 +82,8 @@ public class LocalVFH2D {
 	private float 			last_selected_tdir  	= 0;
 
 	private float			locks				= 0;
-	private float            minDistance_mm   	= 0;
-	private long             deadlock_tms    	= 0;
+	private float           minDistance_mm   	= 0;
+	private long            deadlock_tms    	= 0;
 
 	private float			selected_speed	  	= 0;
 	private float         	last_selected_speed 	= 0;

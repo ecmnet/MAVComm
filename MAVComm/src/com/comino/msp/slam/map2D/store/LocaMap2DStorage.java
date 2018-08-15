@@ -39,7 +39,7 @@ public class LocaMap2DStorage {
 	public LocaMap2DStorage(ILocalMap map, double lat, double lon) {
 
 		try {
-		this.base_path = MSPConfig.getInstance().getBasePath()+"/";
+		   this.base_path = MSPConfig.getInstance().getBasePath()+"/";
 		} catch(Exception e) {
 			this.base_path = System.getProperty("user.home")+"/";
 		}
@@ -101,6 +101,7 @@ public class LocaMap2DStorage {
 
 		MSPMathUtils.map_projection_init(this.lat, this.lon);
 
+
 		found = null;
 		for( String f : getMapFileNames()) {
 
@@ -108,8 +109,6 @@ public class LocaMap2DStorage {
 				found = f;
 				break;
 			}
-
-			System.out.println("Search map "+f);
 
 			origin = getOriginFromFileName(f);
 			distance_origin = MSPMathUtils.map_projection_distance(lat, lon, origin[0], origin[1], req_translation);
@@ -120,6 +119,7 @@ public class LocaMap2DStorage {
 
 		if(found==null)
 			return false;
+
 
 		return read(found);
 	}

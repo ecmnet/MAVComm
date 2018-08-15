@@ -73,7 +73,7 @@ public class Autopilot2D implements Runnable {
 	private static final int   CYCLE_MS						= 100;
 
 	private static final int   CERTAINITY_THRESHOLD      	= 3;
-	private static final float ROBOT_RADIUS         	 	= 0.3f;
+	private static final float ROBOT_RADIUS         	 	= 0.25f;
 	private static final float WINDOWSIZE       			= 2.0f;
 
 	private static final float MIN_DISTANCE_HYSTERESIS   	= 0.2f;
