@@ -335,25 +335,27 @@ public class Autopilot2D implements Runnable {
 
 		final Vector4D_F32 current = MSP3DUtils.getCurrentVector4D(model);
 
-		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-		offboard.start(OffboardManager.MODE_POSITION);
-		if(!model.sys.isStatus(Status.MSP_LANDED)) {
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-		}
-		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+		logger.writeLocalMsg("[msp] JumpBack not available",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 
-		offboard.registerActionListener((m,d) -> {
-			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
-				offboard.setTarget(e.getValue());
-			else {
-				abort();
-				isAvoiding = false;
-				tracker.unfreeze();
-			}
-		});
+//		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+//		offboard.start(OffboardManager.MODE_POSITION);
+//		if(!model.sys.isStatus(Status.MSP_LANDED)) {
+//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+//					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+//					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+//		}
+//		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+//
+//		offboard.registerActionListener((m,d) -> {
+//			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
+//			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
+//				offboard.setTarget(e.getValue());
+//			else {
+//				abort();
+//				isAvoiding = false;
+//				tracker.unfreeze();
+//			}
+//		});
 	}
 
 	public void obstacleAvoidance() {
