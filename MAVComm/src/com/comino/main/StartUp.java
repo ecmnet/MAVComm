@@ -41,9 +41,11 @@ import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
 import org.mavlink.messages.MSP_SYSTEM_STATUS;
+import org.mavlink.messages.lquac.msg_heartbeat;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
+import org.mavlink.messages.lquac.msg_play_tune;
 import org.mavlink.messages.lquac.msg_timesync;
 
 import com.comino.mav.control.IMAVMSPController;
@@ -131,6 +133,13 @@ public class StartUp implements Runnable {
 				if(!control.isConnected()) {
 					control.close();
 					control.connect();
+
+					Thread.sleep(200);
+
+
+
+					continue;
+
 				}
 
 
@@ -146,8 +155,15 @@ public class StartUp implements Runnable {
 
 				Thread.sleep(10);
 
-				if((System.currentTimeMillis()-tms) < 500)
+				if((System.currentTimeMillis()-tms) < 2000)
 					continue;
+
+				msg_play_tune tune = new msg_play_tune(1,2);
+				tune.target_system=1;
+				tune.target_component=1;
+				tune.setTune("MFT100a8");
+				control.sendMAVLinkMessage(tune);
+
 
 				tms = System.currentTimeMillis();
 
