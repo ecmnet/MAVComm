@@ -40,7 +40,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.comino.msp.slam.map2D.ILocalMap;
-import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;

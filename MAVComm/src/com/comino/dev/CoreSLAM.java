@@ -5,13 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.comino.msp.slam.map2D.ILocalMap;
-import com.comino.msp.utils.MSPArrayUtils;
 import com.comino.msp.utils.MSPMathUtils;
 
-import boofcv.gui.ListDisplayPanel;
-import boofcv.gui.image.ShowImages;
-import boofcv.io.image.ConvertBufferedImage;
-import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector4D_F64;
 

@@ -57,7 +57,6 @@ import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
-import com.comino.msp.slam.map2D.filter.impl.MedianMapFilter;
 import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.impl.LocalMap2DRaycast;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;

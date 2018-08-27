@@ -4,21 +4,14 @@ import java.util.ArrayList;
 
 import com.comino.dev.CoreSLAM;
 import com.comino.dev.LocalMap2DArray_old;
-import com.comino.dev.LocalMap2DGrayU8;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 
-import boofcv.abst.denoise.FactoryImageDenoise;
-import boofcv.abst.denoise.WaveletDenoiseFilter;
 import boofcv.alg.filter.blur.GBlurImageOps;
 import boofcv.gui.ListDisplayPanel;
 import boofcv.gui.image.ShowImages;
 import boofcv.io.image.ConvertBufferedImage;
-import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU16;
-import boofcv.struct.image.GrayU8;
 import georegression.struct.point.Point3D_F64;
-import georegression.struct.point.Vector3D_F32;
-import georegression.struct.point.Vector3D_F64;
 import georegression.struct.point.Vector4D_F64;
 
 public class MapTest {

@@ -33,8 +33,6 @@
 
 package com.comino.msp.execution.autopilot.offboard;
 
-import java.util.concurrent.TimeUnit;
-
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -50,7 +48,6 @@ import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSP3DUtils;
 
 import georegression.struct.point.Vector3D_F32;

@@ -45,7 +45,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.MSP_SYSTEM_STATUS;
 import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_msp_command;
 

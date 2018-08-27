@@ -34,10 +34,7 @@
 package com.comino.main;
 
 import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.lquac.msg_highres_imu;
-import org.mavlink.messages.lquac.msg_ping;
 import org.mavlink.messages.lquac.msg_timesync;
-import org.mavlink.messages.lquac.msg_vision_position_estimate;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;

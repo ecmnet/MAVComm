@@ -35,9 +35,6 @@ package com.comino.main;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.MAV_TYPE;
-import org.mavlink.messages.lquac.msg_autopilot_version;
-import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;

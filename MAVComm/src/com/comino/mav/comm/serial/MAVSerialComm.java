@@ -43,7 +43,6 @@ import org.mavlink.messages.lquac.msg_timesync;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.mav.mavlink.MAVLinkBlockingReader;
-import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;

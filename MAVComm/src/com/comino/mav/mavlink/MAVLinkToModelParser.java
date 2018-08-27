@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.mavlink.IMAVLinkMessage;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.lquac.msg_command_ack;

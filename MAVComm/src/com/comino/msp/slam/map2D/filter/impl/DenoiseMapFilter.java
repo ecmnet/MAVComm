@@ -5,10 +5,7 @@ import com.comino.msp.utils.MSPArrayUtils;
 
 import boofcv.abst.denoise.FactoryImageDenoise;
 import boofcv.abst.denoise.WaveletDenoiseFilter;
-import boofcv.abst.filter.blur.BlurFilter;
-import boofcv.factory.filter.blur.FactoryBlurFilter;
 import boofcv.struct.image.GrayF32;
-import boofcv.struct.image.GrayU16;
 
 public class DenoiseMapFilter implements ILocalMapFilter {
 

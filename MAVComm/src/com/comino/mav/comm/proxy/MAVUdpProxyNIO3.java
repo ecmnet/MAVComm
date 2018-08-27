@@ -50,7 +50,6 @@ import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.mavlink.MAVLinkBlockingReader;
 import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 
