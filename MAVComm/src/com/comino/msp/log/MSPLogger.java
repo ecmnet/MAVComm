@@ -73,14 +73,14 @@ public class MSPLogger {
 
 	public void writeLocalMsg(String msg, int severity) {
 		LogMessage m = new LogMessage();
-		m.msg = msg; m.severity = severity;
+		m.text = msg; m.severity = severity;
 		control.writeLogMessage(m);
 	}
 
 	public void writeLocalDebugMsg(String msg) {
 		if(debug_msg_enabled) {
 			LogMessage m = new LogMessage();
-			m.msg = msg; m.severity = MAV_SEVERITY.MAV_SEVERITY_DEBUG;
+			m.text = msg; m.severity = MAV_SEVERITY.MAV_SEVERITY_DEBUG;
 			control.writeLogMessage(m);
 		}
 	}

@@ -137,7 +137,7 @@ public class MAVLinkToModelParser {
 			public void received(Object o) {
 				msg_statustext msg = (msg_statustext) o;
 				LogMessage m = new LogMessage();
-				m.msg = (new String(msg.text)).trim();
+				m.text = (new String(msg.text)).trim();
 				m.tms = model.sys.getSynchronizedPX4Time_us();
 				m.severity = msg.severity;
 				model.msg.set(m);
@@ -242,7 +242,7 @@ public class MAVLinkToModelParser {
 
 	public void writeMessage(LogMessage m) {
 		if (lastMessage == null || lastMessage.tms < m.tms) {
-			System.out.println(m.msg);
+			System.out.println(m.text);
 			if (messageListener != null) {
 				for (IMAVMessageListener msglistener : messageListener)
 					msglistener.messageReceived(m);

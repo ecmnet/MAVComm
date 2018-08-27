@@ -35,6 +35,8 @@
 package com.comino.mav.control.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.mavlink.messages.MAVLinkMessage;
@@ -75,7 +77,8 @@ public class MAVProxyController implements IMAVMSPController {
 	private static final int BAUDRATE_9   = 921600;
 	private static final int BAUDRATE_15  = 1500000;
 
-	private StatusManager status_manager = null;
+	private StatusManager 				status_manager 	= null;
+	private List<IMAVMessageListener> 	messageListener = null;
 
 	private int mode;
 
@@ -89,6 +92,7 @@ public class MAVProxyController implements IMAVMSPController {
 		controller = this;
 		model = new DataModel();
 		status_manager = new StatusManager(model);
+		messageListener = new ArrayList<IMAVMessageListener>();
 
 		model.sys.setSensor(Status.MSP_MSP_AVAILABILITY, true);
 		model.sys.setStatus(Status.MSP_SITL, mode == MAVController.MODE_NORMAL);
@@ -250,7 +254,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public void addMAVMessageListener(IMAVMessageListener listener) {
-
+		messageListener.add(listener);
 	}
 
 
@@ -263,10 +267,14 @@ public class MAVProxyController implements IMAVMSPController {
 	@Override
 	public void writeLogMessage(LogMessage m) {
 		msg_statustext msg = new msg_statustext();
-		msg.setText(m.msg);
+		msg.setText(m.text);
 		msg.componentId = 1;
 		msg.severity =m.severity;
 		proxy.write(msg);
+		if (messageListener != null) {
+			for (IMAVMessageListener msglistener : messageListener)
+				msglistener.messageReceived(m);
+		}
 	}
 
 

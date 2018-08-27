@@ -41,50 +41,54 @@ public class LogMessage extends Segment {
 	private static final long serialVersionUID = 3345013931542810501L;
 
 
-	public String     msg = null;
+	public String    text = null;
 	public int   severity = 0;
 
 	public LogMessage() {
 		this.tms = System.currentTimeMillis();
 	}
 
-	public LogMessage(String msg, int severity) {
-		this.msg = msg;
+	public LogMessage(String text, int severity) {
+		this.text = text;
 		this.severity = severity;
 		this.tms = System.currentTimeMillis();
 	}
 
-	public LogMessage(String msg, int severity, long tms) {
-		this.msg = msg;
+	public LogMessage(String text, int severity, long tms) {
+		this.text = text;
 		this.severity = severity;
 		this.tms = tms;
 	}
 
 	public LogMessage clone() {
-		LogMessage m = new LogMessage(this.msg,this.severity, this.tms);
-		this.msg = null;
+		LogMessage m = new LogMessage(this.text,this.severity, this.tms);
+		this.text = null;
 		return m;
 	}
 
 	public void set(LogMessage m) {
-		this.msg = m.msg;
+		this.text = m.text;
 		this.severity = m.severity;
 		this.tms = m.tms;
 	}
 
 	public boolean isEqual(LogMessage m) {
-		if(m.msg==null)
+		if(m.text==null)
 			return false;
-		return m.msg.contains(this.msg) || (m.tms - this.tms) > 500 ;
+		return m.filter(this.text) || (m.tms - this.tms) > 500 ;
+	}
+
+	public boolean filter(String filter) {
+		return this.text.contains(filter);
 	}
 
 	public void clear() {
-		this.msg = null;
+		this.text = null;
 		this.severity = 0;
 	}
 
 	public String toString() {
-		return "["+severity+"] "+msg;
+		return "["+severity+"] "+text;
 	}
 
 }
