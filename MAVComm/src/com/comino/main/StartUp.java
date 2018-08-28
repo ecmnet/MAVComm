@@ -37,8 +37,11 @@ package com.comino.main;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.OperatingSystemMXBean;
 
+import org.mavlink.messages.IMAVLinkMessageID;
+import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_CMD;
+import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_msp_status;
@@ -54,6 +57,7 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.utils.linux.LinuxUtils;
 
 public class StartUp implements Runnable {
 
@@ -153,7 +157,8 @@ public class StartUp implements Runnable {
 					control.sendMAVLinkMessage(grid);
 				}
 
-				Thread.sleep(10);
+
+				Thread.sleep(20);
 
 				if((System.currentTimeMillis()-tms) < 2000)
 					continue;
@@ -168,7 +173,7 @@ public class StartUp implements Runnable {
 				tms = System.currentTimeMillis();
 
 
-				msg.load = (int)(osBean.getSystemLoadAverage()*100f/osBean.getAvailableProcessors());
+				msg.load = LinuxUtils.getProcessCpuLoad();
 				msg.autopilot_mode =control.getCurrentModel().sys.autopilot;
 				msg.memory = (int)(mxBean.getHeapMemoryUsage().getUsed() * 100 /mxBean.getHeapMemoryUsage().getMax());
 				msg.com_error = control.getErrorCount();
