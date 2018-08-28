@@ -133,7 +133,6 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
-	//	Iterator<StatusListenerEntry> iterator = null;
 
 		while(true) {
 
