@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.mavlink.messages.IMAVLinkMessageID;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.lquac.msg_command_long;
@@ -109,7 +110,7 @@ public class MAVProxyController implements IMAVMSPController {
 			break;
 
 		case MAVController.MODE_SITL:
-			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14556, 14550);
+			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14557, 14540);
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (SITL mode) loaded");
@@ -135,19 +136,16 @@ public class MAVProxyController implements IMAVMSPController {
 
 		try {
 			if(msg.sysId==2) {
-				proxy.write(msg);
-			} else {
-				if(controller.getCurrentModel().sys.isStatus(Status.MSP_CONNECTED)) {
+				if(proxy.isConnected())
+					proxy.write(msg);
+			}
+			else {
+				if(comm.isConnected())
 					comm.write(msg);
-				} else {
-					//System.out.println("Command rejected. No connection.");
-					return false;
-				}
-
 			}
 			return true;
 		} catch (Exception e1) {
-			MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getClass().getSimpleName()+":"+e1.getMessage());
+			//MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getClass().getSimpleName()+":"+e1.getMessage());
 			return false;
 		}
 
@@ -304,6 +302,13 @@ public class MAVProxyController implements IMAVMSPController {
 		while(!isConnected()) {
 			connect();
 			try { Thread.sleep(100); } catch(Exception e) { }
+		}
+
+		if(isSimulation()) {
+			System.out.println("Setup MAVLink streams for simulation mode");
+			sendMAVLinkCmd(MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL, IMAVLinkMessageID.MAVLINK_MSG_ID_HIGHRES_IMU,50000);
+			sendMAVLinkCmd(MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL, IMAVLinkMessageID.MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE,50000);
+			sendMAVLinkCmd(MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL, IMAVLinkMessageID.MAVLINK_MSG_ID_ATTITUDE_TARGET,20000);
 		}
 		return true;
 	}
