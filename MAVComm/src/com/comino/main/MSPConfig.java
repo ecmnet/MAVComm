@@ -50,6 +50,7 @@ public class MSPConfig {
 	private static MSPConfig config = null;
 	private String fileName = null;
 	private String version = "tmp";
+	private String version_date = "";
 
 	private Properties prop = null;
 	private String path;
@@ -72,6 +73,7 @@ public class MSPConfig {
 		System.out.println("Initializing ("+filename+", Java "+System.getProperty("java.version")+")...");
 		refreshProperties();
 		this.version = prop.getProperty("build","tmp");
+		this.version_date = prop.getProperty("build_date","NA");
 	}
 
 	public String getBasePath() {
@@ -106,6 +108,10 @@ public class MSPConfig {
 
 	public String getVersion() {
 		return version;
+	}
+
+	public String getVersionTimestamp() {
+		return version_date;
 	}
 
 	public Enumeration<String> getPropertyNames() {
