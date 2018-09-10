@@ -96,11 +96,11 @@ public class StartUp implements Runnable {
 		Thread worker = new Thread(this);
 		worker.start();
 
-		control.addMAVMessageListener((msg) -> {
-			if(msg.filter("msp"))
-				System.out.println("MSP Message: "+msg.text);
-
-		});
+//		control.addMAVMessageListener((msg) -> {
+//			if(msg.filter("msp"))
+//				System.out.println("MSP Message: "+msg.text);
+//
+//		});
 
 		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
 			@Override
