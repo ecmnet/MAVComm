@@ -110,7 +110,7 @@ public class MSPConfig {
 		return version;
 	}
 
-	public String getVersionTimestamp() {
+	public String getVersionDate() {
 		return version_date;
 	}
 
