@@ -145,7 +145,7 @@ public class MAVProxyController implements IMAVMSPController {
 			}
 			return true;
 		} catch (Exception e1) {
-			//MSPLogger.getInstance().writeLocalMsg("Command rejected. "+e1.getClass().getSimpleName()+":"+e1.getMessage());
+		       MSPLogger.getInstance().writeLocalMsg("Command rejected: "+msg);
 			return false;
 		}
 
@@ -196,11 +196,10 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	public boolean isConnected() {
-		if(comm.isConnected())
-			model.sys.setStatus(Status.MSP_ACTIVE, true);
-		if(mode == MAVController.MODE_NORMAL)
+			model.sys.setStatus(Status.MSP_ACTIVE, comm.isConnected());
+	//	if(mode == MAVController.MODE_NORMAL)
 			return proxy.isConnected() && comm.isConnected();
-		return proxy.isConnected();
+	//	return proxy.isConnected();
 	}
 
 	@Override
