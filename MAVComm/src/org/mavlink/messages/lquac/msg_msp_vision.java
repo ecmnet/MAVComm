@@ -24,7 +24,7 @@ public class msg_msp_vision extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_VISION;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 93;
+    payload_length = 201;
 }
 
   /**
@@ -68,41 +68,9 @@ public class msg_msp_vision extends MAVLinkMessage {
    */
   public float r;
   /**
-   * Var.Pos.X
+   * 6x6 Covariance matrix
    */
-  public float cov_px;
-  /**
-   * Var.Pos.Y
-   */
-  public float cov_py;
-  /**
-   * Var.Pos.Z
-   */
-  public float cov_pz;
-  /**
-   * Var.Vel.X
-   */
-  public float cov_vx;
-  /**
-   * Var.Vel.Y
-   */
-  public float cov_vy;
-  /**
-   * Var.Vel.Z
-   */
-  public float cov_vz;
-  /**
-   * Var.Yaw
-   */
-  public float cov_h;
-  /**
-   * Var.Pitch
-   */
-  public float cov_p;
-  /**
-   * Var.Roll
-   */
-  public float cov_r;
+  public float[] covariance = new float[36];
   /**
    * FPS of mocap system
    */
@@ -133,15 +101,9 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   h = (float)dis.readFloat();
   p = (float)dis.readFloat();
   r = (float)dis.readFloat();
-  cov_px = (float)dis.readFloat();
-  cov_py = (float)dis.readFloat();
-  cov_pz = (float)dis.readFloat();
-  cov_vx = (float)dis.readFloat();
-  cov_vy = (float)dis.readFloat();
-  cov_vz = (float)dis.readFloat();
-  cov_h = (float)dis.readFloat();
-  cov_p = (float)dis.readFloat();
-  cov_r = (float)dis.readFloat();
+  for (int i=0; i<36; i++) {
+    covariance[i] = (float)dis.readFloat();
+  }
   fps = (float)dis.readFloat();
   flags = (int)dis.readInt()&0x00FFFFFFFF;
   errors = (int)dis.readInt()&0x00FFFFFFFF;
@@ -151,7 +113,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+93];
+  byte[] buffer = new byte[12+201];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -173,15 +135,9 @@ public byte[] encode() throws IOException {
   dos.writeFloat(h);
   dos.writeFloat(p);
   dos.writeFloat(r);
-  dos.writeFloat(cov_px);
-  dos.writeFloat(cov_py);
-  dos.writeFloat(cov_pz);
-  dos.writeFloat(cov_vx);
-  dos.writeFloat(cov_vy);
-  dos.writeFloat(cov_vz);
-  dos.writeFloat(cov_h);
-  dos.writeFloat(cov_p);
-  dos.writeFloat(cov_r);
+  for (int i=0; i<36; i++) {
+    dos.writeFloat(covariance[i]);
+  }
   dos.writeFloat(fps);
   dos.writeInt((int)(flags&0x00FFFFFFFF));
   dos.writeInt((int)(errors&0x00FFFFFFFF));
@@ -189,15 +145,15 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 93);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 201);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[103] = crcl;
-  buffer[104] = crch;
+  buffer[211] = crcl;
+  buffer[212] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h="+h+  "  p="+p+  "  r="+r+  "  cov_px="+cov_px+  "  cov_py="+cov_py+  "  cov_pz="+cov_pz+  "  cov_vx="+cov_vx+  "  cov_vy="+cov_vy+  "  cov_vz="+cov_vz+  "  cov_h="+cov_h+  "  cov_p="+cov_p+  "  cov_r="+cov_r+  "  fps="+fps+  "  flags="+flags+  "  errors="+errors+  "  quality="+quality;}
+return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h="+h+  "  p="+p+  "  r="+r+  "  covariance="+covariance+  "  fps="+fps+  "  flags="+flags+  "  errors="+errors+  "  quality="+quality;}
 }

@@ -2,6 +2,7 @@ package com.comino.mav.mavlink.plugins;
 
 import org.mavlink.messages.lquac.msg_msp_vision;
 
+import com.comino.mav.mavlink.MAV_COV;
 import com.comino.msp.model.segment.Status;
 
 public class MSPVisionPlugin extends MAVLinkPluginBase {
@@ -18,13 +19,13 @@ public class MSPVisionPlugin extends MAVLinkPluginBase {
 		model.vision.vy = mocap.vy;
 		model.vision.vz = mocap.vz;
 
-		model.vision.cov_px = mocap.cov_px;
-		model.vision.cov_py = mocap.cov_py;
-		model.vision.cov_pz = mocap.cov_pz;
+		model.vision.cov_px = mocap.covariance[MAV_COV.VIS_COV_X];
+		model.vision.cov_py = mocap.covariance[MAV_COV.VIS_COV_Y];
+		model.vision.cov_pz = mocap.covariance[MAV_COV.VIS_COV_Z];
 
-		model.vision.cov_vx = mocap.cov_vx;
-		model.vision.cov_vy = mocap.cov_vy;
-		model.vision.cov_vz = mocap.cov_vz;
+		model.vision.cov_vx = mocap.covariance[MAV_COV.VIS_COV_VX];
+		model.vision.cov_vy = mocap.covariance[MAV_COV.VIS_COV_VY];
+		model.vision.cov_vz = mocap.covariance[MAV_COV.VIS_COV_VZ];
 
 		// model.vision.x = mocap.x;
 		// model.vision.y = mocap.y;
