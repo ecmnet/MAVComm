@@ -68,7 +68,7 @@ public class msg_rc_channels_override extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * RC channel 9 value. A value of 0 means to ignore this field.
+   * RC channel 9 value. A value of 0 or UINT16_MAX means to ignore this field.
    */
   public int chan9_raw;
   /**
