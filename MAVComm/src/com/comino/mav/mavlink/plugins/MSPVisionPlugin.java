@@ -18,6 +18,14 @@ public class MSPVisionPlugin extends MAVLinkPluginBase {
 		model.vision.vy = mocap.vy;
 		model.vision.vz = mocap.vz;
 
+		model.vision.cov_px = mocap.cov_px;
+		model.vision.cov_py = mocap.cov_py;
+		model.vision.cov_pz = mocap.cov_pz;
+
+		model.vision.cov_vx = mocap.cov_vx;
+		model.vision.cov_vy = mocap.cov_vy;
+		model.vision.cov_vz = mocap.cov_vz;
+
 		// model.vision.x = mocap.x;
 		// model.vision.y = mocap.y;
 		// model.vision.z = mocap.z;

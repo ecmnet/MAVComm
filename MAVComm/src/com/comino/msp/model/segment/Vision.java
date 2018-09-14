@@ -46,9 +46,17 @@ public class Vision extends Segment {
 	public float y = Float.NaN;
 	public float z = Float.NaN;
 
+	public float cov_px = Float.NaN;
+	public float cov_py = Float.NaN;
+	public float cov_pz = Float.NaN;
+
 	public float vx = Float.NaN;
 	public float vy = Float.NaN;
 	public float vz = Float.NaN;
+
+	public float cov_vx = Float.NaN;
+	public float cov_vy = Float.NaN;
+	public float cov_vz = Float.NaN;
 
 	public float h    = Float.NaN;
 	public float p    = Float.NaN;
@@ -66,9 +74,18 @@ public class Vision extends Segment {
 		y  = a.y;
 		z  = a.z;
 
+		cov_px  = a.cov_px;
+		cov_py  = a.cov_py;
+		cov_pz  = a.cov_pz;
+
 		vx = a.vx;
 		vy = a.vy;
 		vz = a.vz;
+
+		cov_vx  = a.cov_vx;
+		cov_vy  = a.cov_vy;
+		cov_vz  = a.cov_vz;
+
 		errors = a.errors;
 
 		h = a.h;
@@ -87,9 +104,17 @@ public class Vision extends Segment {
 		a.y  = y;
 		a.z  = z;
 
+		a.cov_px  = cov_px;
+		a.cov_py  = cov_py;
+		a.cov_pz  = cov_pz;
+
 		a.vx = vx;
 		a.vy = vy;
 		a.vz = vz;
+
+		a.cov_vx  = cov_vx;
+		a.cov_vy  = cov_vy;
+		a.cov_vz  = cov_vz;
 
 		a.errors = errors;
 
@@ -109,9 +134,17 @@ public class Vision extends Segment {
 		y  = 0;
 		z  = 0;
 
+		cov_px  = 0;
+		cov_py  = 0;
+		cov_pz  = 0;
+
 		vx = 0;
 		vy = 0;
 		vz = 0;
+
+		cov_vx  = 0;
+		cov_vy  = 0;
+		cov_vz  = 0;
 
 		h = 0;
 		p = 0;
