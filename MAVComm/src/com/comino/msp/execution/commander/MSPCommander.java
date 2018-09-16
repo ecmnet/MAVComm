@@ -117,6 +117,12 @@ public class MSPCommander {
 		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
 			autopilot.return_along_path(enable);
 			break;
+		case MSP_AUTOCONTROL_ACTION.LAND_LOCAL:
+			 autopilot.landLocal();
+			break;
+		case MSP_AUTOCONTROL_ACTION.TAKEOFF_LOCAL:
+
+			break;
 		case MSP_AUTOCONTROL_ACTION.SAVE_MAP2D:
 			autopilot.saveMap2D();
 			break;
@@ -124,15 +130,14 @@ public class MSPCommander {
 			autopilot.loadMap2D();
 			break;
 		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
-
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
 				setXObstacleForSITL();
 			//	autopilot.applyMapFilter();
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
-				setYObstacleForSITL();
-			//	autopilot.applyMapFilter();
+			    setYObstacleForSITL();
+			//  autopilot.landLocal();
 			break;
 		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
 			autopilot.offboardPosHold(enable);

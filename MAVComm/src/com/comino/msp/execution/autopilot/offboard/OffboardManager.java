@@ -69,6 +69,8 @@ public class OffboardManager implements Runnable {
 	public static final int MODE_POSITION	 		   		= 1;
 	public static final int MODE_SPEED	 		        	= 2;
 	public static final int MODE_SPEED_POSITION	 	    	= 3;
+	public static final int MODE_LAND_LOCAL		 	    	= 4;
+	public static final int MODE_START_LOCAL 	    		= 5;
 
 	private MSPLogger 				logger					= null;
 	private DataModel 				model					= null;
@@ -359,6 +361,27 @@ public class OffboardManager implements Runnable {
 				}
 
 				break;
+
+			case MODE_LAND_LOCAL:
+
+				watch_tms = System.currentTimeMillis();
+
+				current_speed.set(0,0, model.hud.ar/4.0f+0.2f);
+
+				if(model.sys.isStatus(Status.MSP_LANDED)) {
+					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM,0 );
+					fireAction(model, 0);
+				}
+
+				constraint_speed(current_speed);
+				sendSpeedControlToVehice(current_speed,0);
+
+				break;
+
+			case MODE_START_LOCAL:
+
+				break;
+
 			}
 
 			try { Thread.sleep(10); 	} catch (InterruptedException e) { }

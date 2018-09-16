@@ -164,9 +164,9 @@ public class StartUp implements Runnable {
 					continue;
 
 				msg_play_tune tune = new msg_play_tune(1,2);
-				tune.target_system=1;
-				tune.target_component=1;
-				tune.setTune("MFT100a8");
+				tune.target_system=0;
+				tune.target_component=0;
+				tune.setTune("1");
 				control.sendMAVLinkMessage(tune);
 
 
