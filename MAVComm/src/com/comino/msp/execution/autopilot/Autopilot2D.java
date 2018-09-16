@@ -457,21 +457,6 @@ public class Autopilot2D implements Runnable {
 
 	}
 
-
-	public void landLocal() {
-
-		offboard.registerActionListener((m,d) -> {
-			offboard.finalize();
-			logger.writeLocalMsg("[msp] Autopilot: Landed & Disarmed.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
-		});
-
-		offboard.setCurrentAsTarget();
-		offboard.start(OffboardManager.MODE_LAND_LOCAL);
-
-	}
-
-
 	private float getAvoidanceDistance( float speed ) {
 		float val = OBSTACLE_MINDISTANCE_0MS + (speed*( OBSTACLE_MINDISTANCE_1MS-OBSTACLE_MINDISTANCE_0MS ));
 		if ( val < 0 )

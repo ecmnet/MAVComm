@@ -91,8 +91,8 @@ public class OffboardManager implements Runnable {
 	private boolean    	already_fired			    		= false;
 	private boolean    	valid_setpoint                   	= false;
 	private boolean    	new_setpoint                   	 	= false;
-//	private boolean     step_mode                        	= false;
-//	private boolean    	step_trigger                    	= false;
+	//	private boolean     step_mode                        	= false;
+	//	private boolean    	step_trigger                    	= false;
 
 
 	public OffboardManager(IMAVController control) {
@@ -129,10 +129,10 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void start(int m, int delay_ms) {
-				try {
-					Thread.sleep(delay_ms);
-				} catch (InterruptedException e) {	}
-				start(m);
+		try {
+			Thread.sleep(delay_ms);
+		} catch (InterruptedException e) {	}
+		start(m);
 	}
 
 	public void stop() {
@@ -359,26 +359,6 @@ public class OffboardManager implements Runnable {
 					publishSLAM(current_speed.norm(),target,current);
 					publish_tms = System.currentTimeMillis();
 				}
-
-				break;
-
-			case MODE_LAND_LOCAL:
-
-				watch_tms = System.currentTimeMillis();
-
-				current_speed.set(0,0, model.hud.ar/4.0f+0.2f);
-
-				if(model.sys.isStatus(Status.MSP_LANDED)) {
-					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_COMPONENT_ARM_DISARM,0 );
-					fireAction(model, 0);
-				}
-
-				constraint_speed(current_speed);
-				sendSpeedControlToVehice(current_speed,0);
-
-				break;
-
-			case MODE_START_LOCAL:
 
 				break;
 

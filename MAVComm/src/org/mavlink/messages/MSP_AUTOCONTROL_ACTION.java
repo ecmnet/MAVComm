@@ -21,13 +21,13 @@ public interface MSP_AUTOCONTROL_ACTION {
      */
     public final static int AUTO_MISSION = 18;
     /**
-     * Execute a MSP mission (param3)
+     * Execute a DEBUG1 sequence for testing
      */
-    public final static int LAND_LOCAL = 19;
+    public final static int DEBUG_MODE1 = 19;
     /**
-     * Execute a MSP mission (param3)
+     * Execute a DEBUG2 sequence for testing
      */
-    public final static int TAKEOFF_LOCAL = 20;
+    public final static int DEBUG_MODE2 = 20;
     /**
      * Saves a map corresponding to the global position
      */
@@ -36,14 +36,6 @@ public interface MSP_AUTOCONTROL_ACTION {
      * Load a map corresponding to the global position
      */
     public final static int LOAD_MAP2D = 22;
-    /**
-     * Execute a DEBUG1 sequence for testing
-     */
-    public final static int DEBUG_MODE1 = 28;
-    /**
-     * Execute a DEBUG2 sequence for testing
-     */
-    public final static int DEBUG_MODE2 = 29;
     /**
      * Applies a map filter to the current map
      */

@@ -117,12 +117,6 @@ public class MSPCommander {
 		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
 			autopilot.return_along_path(enable);
 			break;
-		case MSP_AUTOCONTROL_ACTION.LAND_LOCAL:
-			 autopilot.landLocal();
-			break;
-		case MSP_AUTOCONTROL_ACTION.TAKEOFF_LOCAL:
-
-			break;
 		case MSP_AUTOCONTROL_ACTION.SAVE_MAP2D:
 			autopilot.saveMap2D();
 			break;

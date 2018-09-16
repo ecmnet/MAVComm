@@ -88,23 +88,17 @@
                <entry value="18" name="AUTO_MISSION">
                   <description>Execute a MSP mission (param3)</description>
               </entry>
-               <entry value="19" name="LAND_LOCAL">
-                  <description>Execute a MSP mission (param3)</description>
+               <entry value="19" name="DEBUG_MODE1">
+                  <description>Execute a DEBUG1 sequence for testing </description>
               </entry>
-               <entry value="20" name="TAKEOFF_LOCAL">
-                  <description>Execute a MSP mission (param3)</description>
+               <entry value="20" name="DEBUG_MODE2">
+                  <description>Execute a DEBUG2 sequence for testing </description>
               </entry>
               <entry value="21" name="SAVE_MAP2D">
                   <description>Saves a map corresponding to the global position</description>
               </entry>
               <entry value="22" name="LOAD_MAP2D">
                   <description>Load a map corresponding to the global position</description>
-              </entry>
-               <entry value="28" name="DEBUG_MODE1">
-                  <description>Execute a DEBUG1 sequence for testing </description>
-              </entry>
-               <entry value="29" name="DEBUG_MODE2">
-                  <description>Execute a DEBUG2 sequence for testing </description>
               </entry>
               <entry value="30" name="APPLY_MAP_FILTER">
                   <description>Applies a map filter to the current map </description>
