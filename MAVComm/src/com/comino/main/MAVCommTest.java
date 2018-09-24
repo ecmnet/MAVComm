@@ -58,7 +58,7 @@ public class MAVCommTest implements IMAVLinkListener, Runnable {
 //		if(args.length>0)
 //			control = new MAVUdpController("172.168.178.1",14555,14550, false);
 //		control = new MAVUdpController("192.168.178.42",14555,14550, false);
-		control = new MAVUdpController("127.0.0.1",14556,14550, true);
+		control = new MAVUdpController("127.0.0.1",14580,14540, true);
 //		else
 //		  System.exit(-1);
 

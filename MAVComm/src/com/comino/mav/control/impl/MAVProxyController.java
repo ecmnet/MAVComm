@@ -110,7 +110,7 @@ public class MAVProxyController implements IMAVMSPController {
 			break;
 
 		case MAVController.MODE_SITL:
-			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14557, 14540);
+			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14580, 14540);
 			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (SITL mode) loaded");
