@@ -94,6 +94,7 @@ import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
 import org.mavlink.messages.lquac.msg_camera_settings;
+import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
 import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
@@ -261,6 +262,7 @@ import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
 import org.mavlink.messages.lquac.msg_camera_settings;
+import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
 import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
@@ -702,6 +704,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_CAMERA_SETTINGS:
       msg = new msg_camera_settings(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_DEBUG_FLOAT_ARRAY:
+      msg = new msg_debug_float_array(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_WIND_COV:
