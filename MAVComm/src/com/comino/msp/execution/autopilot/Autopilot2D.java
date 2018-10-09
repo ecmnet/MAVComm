@@ -317,10 +317,6 @@ public class Autopilot2D implements Runnable {
 			offboard.finalize();
 			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
-//			ExecutorService.get().schedule(()-> {
-//				model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.RTL, false);
-//				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
-//			}, delay_ms, TimeUnit.MILLISECONDS);
 			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 		});
 
