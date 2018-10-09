@@ -53,6 +53,10 @@ public class MSP3DUtils {
 		return (float)Math.atan2(t.y-c.y, t.x-c.x);
 	}
 
+	public static float angleXY(Vector4D_F32 t, Vector4D_F32 c) {
+		return (float)Math.atan2(t.y-c.y, t.x-c.x);
+	}
+
 	public static Vector4D_F32 getCurrentVector4D(DataModel model) {
 		return new Vector4D_F32(model.state.l_x,model.state.l_y, model.state.l_z, model.attitude.y);
 	}

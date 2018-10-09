@@ -49,6 +49,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
+import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
@@ -86,6 +87,7 @@ public class OffboardManager implements Runnable {
 
 	private float	 	acceptance_radius_pos				= 0.2f;
 	private float	   	acceptance_radius_speed				= 0.05f;
+	private float       acceptance_yaw                      = 0.02f;
 	private float       max_speed							= MAX_SPEED;
 	private float		break_radius					    = MAX_SPEED;
 	private boolean    	already_fired			    		= false;
@@ -141,7 +143,7 @@ public class OffboardManager implements Runnable {
 
 	public void setTarget(Vector3D_F32 t) {
 		mode = MODE_LOITER;
-		target.set(t.x,t.y,t.z,0);
+		target.set(t.x,t.y,t.z,Float.NaN);
 		target.w = MSP3DUtils.getXYDirection(target, current);
 		valid_setpoint = true;
 		new_setpoint = true;
@@ -186,7 +188,6 @@ public class OffboardManager implements Runnable {
 
 	public void finalize() {
 		mode = MODE_LOITER;
-		target.w = 0;
 		this.action_listener      = null;
 		this.ext_control_listener = null;
 		publishSLAM(0,target,current);
@@ -219,7 +220,7 @@ public class OffboardManager implements Runnable {
 	@Override
 	public void run() {
 
-		float delta, delta_sec;  long tms, sleep_tms = 0; float[] ctl = new float[2];
+		float delta, delta_sec, delta_w;  long tms, sleep_tms = 0; float[] ctl = new float[2];
 		long watch_tms = System.currentTimeMillis(); long publish_tms = 0;
 
 		already_fired = false; if(!new_setpoint) valid_setpoint = false;
@@ -283,11 +284,14 @@ public class OffboardManager implements Runnable {
 					setCurrentAsTarget();
 				}
 				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
+
 				sendPositionControlToVehice(target);
 
 
-				delta = MSP3DUtils.distance3D(target,current);
-				if(delta < acceptance_radius_pos && valid_setpoint) {
+				delta = MSP3DUtils.distance2D(target,current);
+				delta_w = Float.isNaN(target.w) ? 0 : Math.abs(target.w - current.w);
+
+				if(delta < acceptance_radius_pos && valid_setpoint && delta_w < acceptance_yaw) {
 					fireAction(model, delta);
 					watch_tms = System.currentTimeMillis();
 					continue;
@@ -321,13 +325,13 @@ public class OffboardManager implements Runnable {
 
 				delta = MSP3DUtils.distance2D(target,current);
 
-				if(delta < acceptance_radius_pos && valid_setpoint) {
+
+				if(delta < acceptance_radius_pos && valid_setpoint ) {
 					watch_tms = System.currentTimeMillis();
 
 					ctl[IOffboardExternalControl.ANGLE] = 0;
 					ctl[IOffboardExternalControl.SPEED] = 0;
 
-					fireAction(model, delta);
 					mode = MODE_POSITION;
 					continue;
 				}
@@ -352,8 +356,8 @@ public class OffboardManager implements Runnable {
 				current_speed.scale(ctl[IOffboardExternalControl.SPEED]);
 
 				constraint_speed(current_speed);
-
 				sendSpeedControlToVehice(current_speed,(float)(2*Math.PI)-ctl[IOffboardExternalControl.ANGLE]+(float)Math.PI/2f);
+
 
 				if((System.currentTimeMillis() - publish_tms) > 100) {
 					publishSLAM(current_speed.norm(),target,current);
@@ -396,7 +400,7 @@ public class OffboardManager implements Runnable {
 		cmd.x   = target.x;
 		cmd.y   = target.y;
 		cmd.z   = target.z;
-		cmd.yaw = target.w;
+		cmd.yaw = Float.isNaN(target.w)? model.attitude.y : target.w;
 
 		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000001;
 		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000010;

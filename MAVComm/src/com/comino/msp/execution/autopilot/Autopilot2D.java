@@ -304,7 +304,7 @@ public class Autopilot2D implements Runnable {
 
 	public void returnToLand(int delay_ms) {
 
-		final Vector3D_F32 target = new Vector3D_F32(0,0,model.state.l_z);
+		final Vector4D_F32 target = new Vector4D_F32(0,0,model.state.l_z,0);
 		logger.writeLocalMsg("[msp] Autopilot: Return to land.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
@@ -316,10 +316,11 @@ public class Autopilot2D implements Runnable {
 		offboard.registerActionListener((m,d) -> {
 			offboard.finalize();
 			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-			ExecutorService.get().schedule(()-> {
-				model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.RTL, false);
-				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
-			}, delay_ms, TimeUnit.MILLISECONDS);
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
+//			ExecutorService.get().schedule(()-> {
+//				model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.RTL, false);
+//				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
+//			}, delay_ms, TimeUnit.MILLISECONDS);
 			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 		});
 
@@ -360,14 +361,14 @@ public class Autopilot2D implements Runnable {
 	public void obstacleAvoidance() {
 
 
-		final Vector3D_F32 current    = new Vector3D_F32();
-		final Vector3D_F32 projected  = new Vector3D_F32();
+		final Vector4D_F32 current    = new Vector4D_F32();
+		final Vector4D_F32 projected  = new Vector4D_F32();
 
 		float[] ctl = new float[2];
 
 		final msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 
-		current.set(model.state.l_x,model.state.l_y,model.state.l_z);
+		current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
 
 		lvfh.init(model.hud.s);
 
@@ -382,7 +383,7 @@ public class Autopilot2D implements Runnable {
 		// determine velocity setpoint via callback
 		offboard.registerExternalControlListener((speed, target_dir, distance) -> {
 
-			current.set(model.state.l_x,model.state.l_y,model.state.l_z);
+			current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
 
 			if(!model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
 				offboard.setTarget(current);
@@ -434,7 +435,7 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void moveto(float x, float y, float z, float yaw) {
-		final Vector3D_F32 target     = new Vector3D_F32(x,y,model.state.l_z);
+		final Vector4D_F32 target     = new Vector4D_F32(x,y,model.state.l_z,Float.NaN);
 
 		if(flowCheck && !model.sys.isSensorAvailable(Status.MSP_PIX4FLOW_AVAILABILITY)) {
 			logger.writeLocalMsg("[msp] Autopilot: Aborting. No Flow available.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
