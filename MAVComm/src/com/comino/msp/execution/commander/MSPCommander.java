@@ -130,6 +130,7 @@ public class MSPCommander {
 			//	autopilot.applyMapFilter();
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
+			//    autopilot.square(3);
 			    setYObstacleForSITL();
 			//  autopilot.landLocal();
 			break;

@@ -47,6 +47,7 @@ import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.autopilot.offboard.IOffboardExternalControl;
+import com.comino.msp.execution.autopilot.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
 import com.comino.msp.execution.autopilot.tracker.WayPointTracker;
 import com.comino.msp.execution.control.StatusManager;
@@ -239,6 +240,7 @@ public class Autopilot2D implements Runnable {
 	}
 
 	public void registerTargetListener(IAutoPilotGetTarget cb) {
+		isAvoiding = false;
 		this.targetListener = cb;
 	}
 
@@ -255,7 +257,7 @@ public class Autopilot2D implements Runnable {
 
 	public void setTarget(float x, float y, float z, float yaw) {
 		isAvoiding = false;
-		Vector3D_F32 target = new Vector3D_F32(x,y,z);
+		Vector4D_F32 target = new Vector4D_F32(x,y,z,yaw);
 		offboard.setTarget(target);
 		offboard.start(OffboardManager.MODE_POSITION);
 	}
@@ -438,20 +440,11 @@ public class Autopilot2D implements Runnable {
 			return;
 		}
 
-		isAvoiding = false;
-		autopilot.registerTargetListener((n)->{
-			n.set(target);
-		});
-
-		offboard.registerActionListener((m,d) -> {
+		execute(target, (m,d) -> {
 			offboard.finalize();
 			logger.writeLocalMsg("[msp] Autopilot: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
 		});
-
-		offboard.setTarget(target);
-		offboard.start(OffboardManager.MODE_SPEED_POSITION);
-
 	}
 
 	private float getAvoidanceDistance( float speed ) {
@@ -461,8 +454,35 @@ public class Autopilot2D implements Runnable {
 		return val;
 	}
 
+	public void execute(Vector4D_F32 target,IOffboardTargetAction action) {
+		this.registerTargetListener((n)->{ n.set(target); });
+		offboard.registerActionListener(action);
+		offboard.setTarget(target);
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
+	}
+
 
 	///************ Experimental modes
+
+	public void square(float distance) {
+		final Vector4D_F32 target  = new Vector4D_F32(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
+		target.x += distance;
+		autopilot.execute(target, (m,d) -> {
+			target.y += distance;
+			autopilot.execute(target, (m1,d1) -> {
+				target.x -= distance;
+				autopilot.execute(target, (m2,d2) -> {
+					target.y -= distance;
+					autopilot.execute(target, (m3,d3) -> {
+						offboard.finalize();
+						target.y -= distance;
+						logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+						control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
+					});
+				});
+			});
+		});
+	}
 
 	// Circle mode
 	private Vector3D_F32 circleCenter = new Vector3D_F32();
