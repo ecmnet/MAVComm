@@ -19,10 +19,11 @@ public class PX4RawGPSPlugin extends MAVLinkPluginBase {
 		if(gps.satellites_visible<99) {  // spike fix
 
 			model.gps.numsat = (byte) gps.satellites_visible;
-			model.gps.setFlag(GPS.GPS_SAT_FIX, gps.fix_type > 0);
-			model.gps.setFlag(GPS.GPS_SAT_RTK, gps.fix_type > 3);
 
-			model.gps.setFlag(GPS.GPS_SAT_RTKFIX, gps.fix_type > 4);
+			model.gps.setFlag(GPS.GPS_SAT_FIX, (gps.fix_type & 0xF) > 0);
+			model.gps.setFlag(GPS.GPS_SAT_RTK, (gps.fix_type & 0xF) > 4);
+
+			model.gps.setFlag(GPS.GPS_SAT_RTKFIX, (gps.fix_type & 0xF) > 5);
 			model.gps.setFlag(GPS.GPS_SAT_VALID, true);
 
 			model.gps.eph = gps.h_acc < 90000 && gps.h_acc > 0 ? gps.h_acc/1000f : Float.NaN;
@@ -37,7 +38,7 @@ public class PX4RawGPSPlugin extends MAVLinkPluginBase {
 			model.gps.tms = model.sys.getSynchronizedPX4Time_us();
 
 			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, true);
-			model.sys.setSensor(Status.MSP_RTK_AVAILABILITY, gps.fix_type > 3);
+			model.sys.setSensor(Status.MSP_RTK_AVAILABILITY, (gps.fix_type & 0xF) > 4);
 		}
 
 
