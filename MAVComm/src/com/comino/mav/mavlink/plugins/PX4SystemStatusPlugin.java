@@ -18,7 +18,8 @@ public class PX4SystemStatusPlugin extends MAVLinkPluginBase {
 		model.battery.tms = System.currentTimeMillis() * 1000;
 
 		model.sys.error1 = sys.errors_count1;
-		model.sys.load_p = sys.load / 10;
+		if(sys.load > 0)
+		  model.sys.load_p = sys.load / 10;
 		model.sys.drops_p = sys.drop_rate_comm / 10000f;
 
 
