@@ -133,16 +133,14 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
+		try { Thread.sleep(200); } catch(Exception e) { }
+
 
 		while(true) {
 
 			try { Thread.sleep(100); } catch(Exception e) { }
 
 			checkTimeouts();
-
-			if(!status_current.isStatus(Status.MSP_CONNECTED)) {
-				status_old.clear();;
-			}
 
 			status_current.set(model.sys);
 

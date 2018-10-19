@@ -98,11 +98,11 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		System.out.println("UDP connection Thread started");
 		while(connect) {
 			try {
-				model.sys.setStatus(Status.MSP_SITL, isSITL);
 				//System.out.println(comm.isConnected());
 				if(!comm.isConnected()) {
 					comm.open();
 				}
+				model.sys.setStatus(Status.MSP_SITL, isSITL);
 				msg_heartbeat beat = new msg_heartbeat(255,1);
 				beat.type = MAV_TYPE.MAV_TYPE_GCS;
 				comm.write(beat);
