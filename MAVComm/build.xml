@@ -54,7 +54,7 @@
 				<attribute name="Built-By" value="${user.name}" />
 
 				<attribute name="Class-Path" value="jna-4.1.0.jar
-					                                jSerialComm-2.0.2.jar
+					                                jSerialComm-2.3.0.jar
 					                                gson-2.8.5.jar
 					                                georegression-0.10.jar
 												    core-0.29.jar
