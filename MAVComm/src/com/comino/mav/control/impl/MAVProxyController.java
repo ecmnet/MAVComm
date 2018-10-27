@@ -302,6 +302,8 @@ public class MAVProxyController implements IMAVMSPController {
 			try { Thread.sleep(100); } catch(Exception e) { }
 		}
 
+		status_manager.start();
+
 		if(isSimulation()) {
 			System.out.println("Setup MAVLink streams for simulation mode");
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL, IMAVLinkMessageID.MAVLINK_MSG_ID_HIGHRES_IMU,50000);

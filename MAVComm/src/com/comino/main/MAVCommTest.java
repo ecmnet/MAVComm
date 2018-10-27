@@ -35,11 +35,13 @@ package com.comino.main;
 
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.lquac.msg_serial_control;
 
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.impl.MAVUdpController;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
+import com.comino.msp.utils.px4.DefaultTunes;
 
 public class MAVCommTest implements IMAVLinkListener, Runnable {
 
@@ -55,12 +57,12 @@ public class MAVCommTest implements IMAVLinkListener, Runnable {
 		}
 
 
-//		if(args.length>0)
-//			control = new MAVUdpController("172.168.178.1",14555,14550, false);
-//		control = new MAVUdpController("192.168.178.42",14555,14550, false);
+		//		if(args.length>0)
+		//			control = new MAVUdpController("172.168.178.1",14555,14550, false);
+		//		control = new MAVUdpController("192.168.178.42",14555,14550, false);
 		control = new MAVUdpController("127.0.0.1",14580,14540, true);
-//		else
-//		  System.exit(-1);
+		//		else
+		//		  System.exit(-1);
 
 		while(!control.isConnected()) {
 			try {
@@ -86,24 +88,33 @@ public class MAVCommTest implements IMAVLinkListener, Runnable {
 	}
 
 	public void run() {
-      while(true) {
- //   	  control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
-    	  try {
-				Thread.sleep(200);
+		while(true) {
+			try {
+				if(!control.isConnected()) {
+					Thread.sleep(2000);
+					control.connect();
+					System.out.println();
+					continue;
+				}
+				//   	  control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+				DefaultTunes.play(control,DefaultTunes.NOTIFY_POSITIVE);
+
+				Thread.sleep(1000);
 			} catch (InterruptedException e) {
 
 			}
 
-      }
+		}
 	}
 
 
 	@Override
 	public void received(Object o) {
 		MAVLinkMessage m = (MAVLinkMessage)o;
-		System.out.println(m);
-//		if(o instanceof msg_autopilot_version)
-//	    System.out.println(m.messageType+"-"+m.componentId+" "+control.getErrorCount()+":"+o);
+//		if(m instanceof msg_serial_control)
+			System.out.println(m);
+		//		if(o instanceof msg_autopilot_version)
+		//	    System.out.println(m.messageType+"-"+m.componentId+" "+control.getErrorCount()+":"+o);
 
 	}
 

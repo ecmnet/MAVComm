@@ -35,10 +35,12 @@ package com.comino.msp.execution.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.ExecutorService;
 
 public class StatusManager implements Runnable {
 
@@ -71,6 +73,8 @@ public class StatusManager implements Runnable {
 	private Status status_old 				 = null;
 	private List<StatusListenerEntry>  list  = null;
 
+	private boolean isRunning                = false;
+
 	private long t_armed_start			     = 0;
 
 
@@ -79,11 +83,22 @@ public class StatusManager implements Runnable {
 		this.status_current = new Status();
 		this.status_old     = new Status();
 		this.list  = new ArrayList<StatusListenerEntry>();
+
+	}
+
+	public void start() {
+		if(isRunning)
+			return;
+		isRunning = true;
 		Thread worker = new Thread(this);
 		worker.setName("StatusManager");
 		worker.setPriority(Thread.NORM_PRIORITY);
 		worker.start();
 		System.out.println("StatusManager started");
+	}
+
+	public void stop() {
+		isRunning = false;
 	}
 
 
@@ -125,9 +140,7 @@ public class StatusManager implements Runnable {
 	}
 
 	public void reset() {
-		model.clear();
-		status_current.clear();
-		status_old.clear();
+    	status_old.status &= 0x1;
 	}
 
 	@Override
@@ -136,9 +149,7 @@ public class StatusManager implements Runnable {
 		try { Thread.sleep(200); } catch(Exception e) { }
 
 
-		while(true) {
-
-			try { Thread.sleep(100); } catch(Exception e) { }
+		while(isRunning) {
 
 			checkTimeouts();
 
@@ -231,8 +242,12 @@ public class StatusManager implements Runnable {
 				e.printStackTrace();
 			}
 			status_old.set(status_current);
+			try { Thread.sleep(50); } catch(Exception e) { }
 
 		}
+
+		System.out.println("Status manager stopped");
+
 	}
 
 	private void checkTimeouts() {

@@ -50,15 +50,15 @@ public class Status extends Segment {
 	public static final int MSP_READY							= 1;
 	public static final int MSP_ACTIVE							= 2;
 	public static final int MSP_RC_ATTACHED						= 3;
-	public static final int MSP_JOY_ATTACHED			        		= 4;
-	public static final int MSP_OFFBOARD_UPDATER_STARTED     		= 5;
-	public static final int MSP_SITL                         		= 6;
-	public static final int MSP_PROXY                        		= 7;
+	public static final int MSP_JOY_ATTACHED			        = 4;
+	public static final int MSP_OFFBOARD_UPDATER_STARTED     	= 5;
+	public static final int MSP_SITL                         	= 6;
+	public static final int MSP_PROXY                        	= 7;
 	public static final int MSP_ARMED							= 8;
 	public static final int MSP_LANDED							= 9;
 	public static final int MSP_INAIR							= 10;
-	public static final int MSP_GPOS_VALID		            		= 11;
-	public static final int MSP_LPOS_VALID         		    		= 12;
+	public static final int MSP_GPOS_VALID		            	= 11;
+	public static final int MSP_LPOS_VALID         		    	= 12;
 
 
 	// Low level sensors
