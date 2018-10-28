@@ -21,7 +21,7 @@ public interface MAV_AUTOPILOT {
      */
     public final static int MAV_AUTOPILOT_SLUGS = 2;
     /**
-     * ArduPilotMega / ArduCopter, http://diydrones.com
+     * ArduPilot - Plane/Copter/Rover/Sub/Tracker, http://ardupilot.org
      */
     public final static int MAV_AUTOPILOT_ARDUPILOTMEGA = 3;
     /**
@@ -57,7 +57,7 @@ public interface MAV_AUTOPILOT {
      */
     public final static int MAV_AUTOPILOT_FP = 11;
     /**
-     * PX4 Autopilot - http://pixhawk.ethz.ch/px4/
+     * PX4 Autopilot - http://px4.io/
      */
     public final static int MAV_AUTOPILOT_PX4 = 12;
     /**

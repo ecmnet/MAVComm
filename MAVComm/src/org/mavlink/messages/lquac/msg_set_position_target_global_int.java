@@ -76,7 +76,7 @@ public class msg_set_position_target_global_int extends MAVLinkMessage {
    */
   public float yaw_rate;
   /**
-   * Bitmap to indicate which dimensions should be ignored by the vehicle: a value of 0b0000000000000000 or 0b0000001000000000 indicates that none of the setpoint dimensions should be ignored. If bit 10 is set the floats afx afy afz should be interpreted as force instead of acceleration. Mapping: bit 1: x, bit 2: y, bit 3: z, bit 4: vx, bit 5: vy, bit 6: vz, bit 7: ax, bit 8: ay, bit 9: az, bit 10: is force setpoint, bit 11: yaw, bit 12: yaw rate
+   * Bitmap to indicate which dimensions should be ignored by the vehicle.
    */
   public int type_mask;
   /**

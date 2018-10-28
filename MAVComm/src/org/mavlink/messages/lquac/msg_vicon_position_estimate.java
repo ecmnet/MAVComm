@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_vicon_position_estimate
- * 
+ * Global position estimate from a Vicon motion system source.
  **/
 public class msg_vicon_position_estimate extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_VICON_POSITION_ESTIMATE = 104;

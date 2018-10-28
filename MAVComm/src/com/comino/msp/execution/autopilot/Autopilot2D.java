@@ -82,7 +82,7 @@ public class Autopilot2D implements Runnable {
 	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
 	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
 
-	private static final float OBSTACLE_FAILDISTANCE     	= ROBOT_RADIUS / 2;
+	private static final float OBSTACLE_FAILDISTANCE     	= ROBOT_RADIUS * 2.5f;
 
 	private static Autopilot2D      autopilot = null;
 

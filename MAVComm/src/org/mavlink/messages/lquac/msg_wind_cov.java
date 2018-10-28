@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_wind_cov
- * 
+ * Wind covariance estimate from vehicle.
  **/
 public class msg_wind_cov extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_WIND_COV = 231;

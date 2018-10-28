@@ -120,7 +120,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_FOLLOW = 25;
     /**
      * Continue on the current course and climb/descend to specified altitude.  When the altitude is reached continue to the next command (i.e., don't proceed to the next command until the desired altitude is reached.
-     * PARAM 1 : Climb or Descend (0 = Neutral, command completes when within 5m of this command's altitude, 1 = Climbing, command completes when at or above this command's altitude, 2 = Descending, command completes when at or below this command's altitude. 
+     * PARAM 1 : Climb or Descend (0 = Neutral, command completes when within 5m of this command's altitude, 1 = Climbing, command completes when at or above this command's altitude, 2 = Descending, command completes when at or below this command's altitude.
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -164,7 +164,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_FOLLOW_REPOSITION = 33;
     /**
      * Start orbiting on the circumference of a circle defined by the parameters. Setting any value NaN results in using defaults.
-     * PARAM 1 : Radius of the circle in meters. positive: Orbit clockwise. negative: Orbit counter-clockwise. 
+     * PARAM 1 : Radius of the circle in meters. positive: Orbit clockwise. negative: Orbit counter-clockwise.
      * PARAM 2 : Velocity tangential in m/s. NaN: Vehicle configuration default.
      * PARAM 3 : Yaw behavior of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.
      * PARAM 4 : Reserved (e.g. for dynamic center beacon options)
@@ -351,7 +351,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_JUMP = 177;
     /**
      * Change speed and/or throttle set points.
-     * PARAM 1 : Speed type (0=Airspeed, 1=Ground Speed)
+     * PARAM 1 : Speed type (0=Airspeed, 1=Ground Speed, 2=Climb Speed, 3=Descent Speed)
      * PARAM 2 : Speed  (m/s, -1 indicates no change)
      * PARAM 3 : Throttle  ( Percent, -1 indicates no change)
      * PARAM 4 : absolute or relative [0,1]

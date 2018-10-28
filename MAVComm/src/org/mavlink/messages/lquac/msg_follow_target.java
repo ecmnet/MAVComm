@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_follow_target
- * current motion information from a designated system
+ * Current motion information from a designated system
  **/
 public class msg_follow_target extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_FOLLOW_TARGET = 144;

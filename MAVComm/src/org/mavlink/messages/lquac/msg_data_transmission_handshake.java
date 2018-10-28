@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_data_transmission_handshake
- * 
+ * Handshake message to initiate, control and stop image streaming when using the Image Transmission Protocol: https://mavlink.io/en/protocol/image_transmission.html.
  **/
 public class msg_data_transmission_handshake extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE = 130;

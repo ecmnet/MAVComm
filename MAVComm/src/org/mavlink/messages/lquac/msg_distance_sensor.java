@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_distance_sensor
- * 
+ * Distance sensor information for an onboard rangefinder.
  **/
 public class msg_distance_sensor extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_DISTANCE_SENSOR = 132;

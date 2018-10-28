@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_gps_inject_data
- * data for injecting into the onboard GPS (used for DGPS)
+ * Data for injecting into the onboard GPS (used for DGPS)
  **/
 public class msg_gps_inject_data extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_GPS_INJECT_DATA = 123;
@@ -36,11 +36,11 @@ public class msg_gps_inject_data extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * data length
+   * Data length
    */
   public int len;
   /**
-   * raw data (110 is enough for 12 satellites of RTCMv2)
+   * Raw data (110 is enough for 12 satellites of RTCMv2)
    */
   public int[] data = new int[110];
 /**

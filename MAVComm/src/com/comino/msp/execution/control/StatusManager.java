@@ -151,6 +151,8 @@ public class StatusManager implements Runnable {
 
 		while(isRunning) {
 
+			try { Thread.sleep(100); } catch(Exception e) { }
+
 			checkTimeouts();
 
 			status_current.set(model.sys);
@@ -196,7 +198,7 @@ public class StatusManager implements Runnable {
 					case TYPE_PX4_NAVSTATE:
 
 					    if(status_current.nav_state != status_old.nav_state) {
-					     //  	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
+					  //     	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
 							switch(entry.state) {
 							case EDGE_BOTH:
 								if((status_current.nav_state != entry.mask && status_old.nav_state == entry.mask ) ||
@@ -232,6 +234,7 @@ public class StatusManager implements Runnable {
 						break;
 					case TYPE_MSP_AUTOPILOT:
 						if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
+
 							entry.listener.update(status_old, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
@@ -242,7 +245,6 @@ public class StatusManager implements Runnable {
 				e.printStackTrace();
 			}
 			status_old.set(status_current);
-			try { Thread.sleep(50); } catch(Exception e) { }
 
 		}
 

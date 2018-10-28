@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_vision_position_estimate
- * 
+ * Global position/attitude estimate from a vision source.
  **/
 public class msg_vision_position_estimate extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE = 102;

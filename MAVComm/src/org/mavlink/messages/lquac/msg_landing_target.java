@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_landing_target
- * The location of a landing area captured from a downward facing camera
+ * The location of a landing target. See: https://mavlink.io/en/protocol/landing_target.html
  **/
 public class msg_landing_target extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_LANDING_TARGET = 149;
@@ -60,15 +60,15 @@ public class msg_landing_target extends MAVLinkMessage {
    */
   public int frame;
   /**
-   * X Position of the landing target on MAV_FRAME
+   * X Position of the landing target in MAV_FRAME
    */
   public float x;
   /**
-   * Y Position of the landing target on MAV_FRAME
+   * Y Position of the landing target in MAV_FRAME
    */
   public float y;
   /**
-   * Z Position of the landing target on MAV_FRAME
+   * Z Position of the landing target in MAV_FRAME
    */
   public float z;
   /**
@@ -80,7 +80,7 @@ public class msg_landing_target extends MAVLinkMessage {
    */
   public int type;
   /**
-   * Boolean indicating known position (1) or default unknown position (0), for validation of positioning of the landing target
+   * Boolean indicating whether the position fields (x, y, z, q, type) contain valid target position information (valid: 1, invalid: 0). Default is 0 (invalid).
    */
   public int position_valid;
 /**

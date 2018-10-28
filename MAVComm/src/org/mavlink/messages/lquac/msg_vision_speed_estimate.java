@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_vision_speed_estimate
- * 
+ * Speed estimate from a vision source.
  **/
 public class msg_vision_speed_estimate extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE = 103;
