@@ -188,7 +188,7 @@ public class LocalMap2DArray_old implements ILocalMap {
 
 
 	public void toDataModel(DataModel model,  boolean debug) {
-		//TODO: Only transfer changes
+
 		for (int y = 0; y <map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
 				if(map[x][y] > threshold)
@@ -345,25 +345,25 @@ public class LocalMap2DArray_old implements ILocalMap {
 
 	@Override
 	public void setDataModel(DataModel model) {
-		// TODO Auto-generated method stub
+
 
 	}
 
 	@Override
 	public void toDataModel(boolean debug) {
-		// TODO Auto-generated method stub
+
 
 	}
 
 	@Override
 	public void setIsLoaded(boolean loaded) {
-		// TODO Auto-generated method stub
+
 
 	}
 
 	@Override
 	public boolean isLoaded() {
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 }

@@ -468,6 +468,8 @@ public class OffboardManager implements Runnable {
 		}
 	}
 
+	// TODO: Move slam publishing outside the manager, put data instead into model
+
 	private void publishSLAM(float speed, Vector4D_F32 target, Vector4D_F32 current) {
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 		slam.pv = 0;

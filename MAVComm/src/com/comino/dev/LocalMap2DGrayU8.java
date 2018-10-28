@@ -283,25 +283,25 @@ public class LocalMap2DGrayU8 implements ILocalMap {
 
 	@Override
 	public void setDataModel(DataModel model) {
-		// TODO Auto-generated method stub
+
 
 	}
 
 	@Override
 	public void toDataModel(boolean debug) {
-		// TODO Auto-generated method stub
+
 
 	}
 
 	@Override
 	public void setIsLoaded(boolean loaded) {
-		// TODO Auto-generated method stub
+
 
 	}
 
 	@Override
 	public boolean isLoaded() {
-		// TODO Auto-generated method stub
+
 		return false;
 	}
 }

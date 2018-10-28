@@ -15,7 +15,7 @@ public class DefaultTunes {
 	public static final String NOTIFY_NEGATIVE = "MFT200e8c8e8c8e8c8";
 
 	public static void play(IMAVController control, String tune_string) {
-		// TODO: Does not work with PX4 1.8
+		// Does not work with PX4 1.8
 //		msg_play_tune tune = new msg_play_tune(1,2);
 //		tune.target_system=0;
 //		tune.target_component=0;
