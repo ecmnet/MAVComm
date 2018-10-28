@@ -116,7 +116,7 @@ public class OriginalTinySLAM {
 			x2   = (int)Math.floor(((p.x - current_pos.x) * (1 + add) + current_pos.x ) * 1000f / cell_size_mm);
 			y2   = (int)Math.floor(((p.y - current_pos.y) * (1 + add) + current_pos.y ) * 1000f / cell_size_mm);
 
-			//TODO: Problem: We do only know obstacles, not no obstacles as with laser
+			// Problem: We do only know obstacles, not no obstacles as with laser
 
 			map2map(x1, y1, x2, y2, xp, yp, TS_OBSTACLE, quality);
 
