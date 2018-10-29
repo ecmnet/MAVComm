@@ -41,7 +41,7 @@ public class msg_hil_gps extends MAVLinkMessage {
    */
   public long lon;
   /**
-   * Altitude (AMSL). Positive for up.
+   * Altitude (MSL). Positive for up.
    */
   public long alt;
   /**

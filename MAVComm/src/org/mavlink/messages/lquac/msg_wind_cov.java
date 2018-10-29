@@ -52,7 +52,7 @@ public class msg_wind_cov extends MAVLinkMessage {
    */
   public float var_vert;
   /**
-   * Altitude (AMSL) that this measurement was taken at
+   * Altitude (MSL) that this measurement was taken at
    */
   public float wind_alt;
   /**

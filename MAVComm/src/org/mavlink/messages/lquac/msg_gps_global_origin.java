@@ -36,7 +36,7 @@ public class msg_gps_global_origin extends MAVLinkMessage {
    */
   public long longitude;
   /**
-   * Altitude (AMSL). Positive for up.
+   * Altitude (MSL). Positive for up.
    */
   public long altitude;
   /**

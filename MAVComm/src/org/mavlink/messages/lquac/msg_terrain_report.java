@@ -36,7 +36,7 @@ public class msg_terrain_report extends MAVLinkMessage {
    */
   public long lon;
   /**
-   * Terrain height AMSL
+   * Terrain height MSL
    */
   public float terrain_height;
   /**

@@ -41,7 +41,7 @@ public class msg_global_position_int extends MAVLinkMessage {
    */
   public long lon;
   /**
-   * Altitude (AMSL). Note that virtually all GPS modules provide both WGS84 and AMSL.
+   * Altitude (MSL). Note that virtually all GPS modules provide both WGS84 and MSL.
    */
   public long alt;
   /**

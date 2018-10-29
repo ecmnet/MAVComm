@@ -36,7 +36,7 @@ public class msg_home_position extends MAVLinkMessage {
    */
   public long longitude;
   /**
-   * Altitude (AMSL). Positive for up.
+   * Altitude (MSL). Positive for up.
    */
   public long altitude;
   /**

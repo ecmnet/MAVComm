@@ -44,7 +44,7 @@ public class msg_follow_target extends MAVLinkMessage {
    */
   public long lon;
   /**
-   * Altitude (AMSL)
+   * Altitude (MSL)
    */
   public float alt;
   /**

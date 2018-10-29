@@ -44,7 +44,7 @@ public class msg_camera_image_captured extends MAVLinkMessage {
    */
   public long lon;
   /**
-   * Altitude (AMSL) where image was taken
+   * Altitude (MSL) where image was taken
    */
   public long alt;
   /**

@@ -170,7 +170,7 @@ public interface MAV_CMD {
      * PARAM 4 : Reserved (e.g. for dynamic center beacon options)
      * PARAM 5 : Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
      * PARAM 6 : Center point longitude (if no MAV_FRAME specified) / Y coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
-     * PARAM 7 : Center point altitude (AMSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
+     * PARAM 7 : Center point altitude (MSL) (if no MAV_FRAME specified) / Z coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
      */
     public final static int MAV_CMD_DO_ORBIT = 34;
     /**
@@ -713,11 +713,11 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_GUIDED_MASTER = 221;
     /**
-     * set limits for external control
-     * PARAM 1 : timeout - maximum time (in seconds) that external controller will be allowed to control vehicle. 0 means no timeout
-     * PARAM 2 : Absolute altitude (AMSL) min, in meters - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit
-     * PARAM 3 : Absolute altitude (AMSL) max, in meters - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit
-     * PARAM 4 : Horizontal move limit (AMSL), in meters - if vehicle moves more than this distance from its location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal altitude limit
+     * Set limits for external control
+     * PARAM 1 : Timeout - maximum time (in seconds) that external controller will be allowed to control vehicle. 0 means no timeout.
+     * PARAM 2 : Altitude (MSL) min, in meters - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit.
+     * PARAM 3 : Altitude (MSL) max, in meters - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit.
+     * PARAM 4 : Horizontal move limit, in meters - if vehicle moves more than this distance from its location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal move limit.
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
@@ -1158,7 +1158,7 @@ public interface MAV_CMD {
      * PARAM 4 : Minimum altitude clearance to the release position in meters. A negative value indicates the system can define the clearance at will.
      * PARAM 5 : Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
      * PARAM 6 : Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_PAYLOAD_PREPARE_DEPLOY = 30001;
     /**
@@ -1180,7 +1180,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_1 = 31000;
     /**
@@ -1191,7 +1191,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_2 = 31001;
     /**
@@ -1202,7 +1202,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_3 = 31002;
     /**
@@ -1213,7 +1213,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_4 = 31003;
     /**
@@ -1224,7 +1224,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_WAYPOINT_USER_5 = 31004;
     /**
@@ -1235,7 +1235,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_1 = 31005;
     /**
@@ -1246,7 +1246,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_2 = 31006;
     /**
@@ -1257,7 +1257,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_3 = 31007;
     /**
@@ -1268,7 +1268,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_4 = 31008;
     /**
@@ -1279,7 +1279,7 @@ public interface MAV_CMD {
      * PARAM 4 : User defined
      * PARAM 5 : Latitude unscaled
      * PARAM 6 : Longitude unscaled
-     * PARAM 7 : Altitude (AMSL), in meters
+     * PARAM 7 : Altitude (MSL), in meters
      */
     public final static int MAV_CMD_SPATIAL_USER_5 = 31009;
     /**

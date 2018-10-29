@@ -40,7 +40,7 @@ public class msg_terrain_data extends MAVLinkMessage {
    */
   public int grid_spacing;
   /**
-   * Terrain data AMSL
+   * Terrain data MSL
    */
   public int[] data = new int[16];
   /**

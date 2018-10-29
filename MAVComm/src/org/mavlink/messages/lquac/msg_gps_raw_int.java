@@ -41,7 +41,7 @@ public class msg_gps_raw_int extends MAVLinkMessage {
    */
   public long lon;
   /**
-   * Altitude (AMSL). Positive for up. Note that virtually all GPS modules provide the AMSL altitude in addition to the WGS84 altitude.
+   * Altitude (MSL). Positive for up. Note that virtually all GPS modules provide the MSL altitude in addition to the WGS84 altitude.
    */
   public long alt;
   /**

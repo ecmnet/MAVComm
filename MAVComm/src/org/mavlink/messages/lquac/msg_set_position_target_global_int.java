@@ -40,7 +40,7 @@ public class msg_set_position_target_global_int extends MAVLinkMessage {
    */
   public long lon_int;
   /**
-   * Altitude (AMSL) if absolute or relative, above terrain if GLOBAL_TERRAIN_ALT_INT
+   * Altitude (MSL, Relative to home, or AGL - depending on frame)
    */
   public float alt;
   /**
