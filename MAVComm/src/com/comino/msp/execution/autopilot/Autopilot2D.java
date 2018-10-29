@@ -76,8 +76,6 @@ public class Autopilot2D implements Runnable {
 	private static final float ROBOT_RADIUS         	 	= 0.25f;
 	private static final float WINDOWSIZE       			= 2.0f;
 
-	private static final float MIN_DISTANCE_HYSTERESIS   	= 0.2f;
-
 
 	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
 	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
@@ -195,7 +193,7 @@ public class Autopilot2D implements Runnable {
 				tooClose = true;
 			}
 
-			if(nearestTarget > OBSTACLE_FAILDISTANCE+MIN_DISTANCE_HYSTERESIS)
+			if(nearestTarget > OBSTACLE_FAILDISTANCE+ROBOT_RADIUS)
 				tooClose = false;
 
 			min_distance = getAvoidanceDistance(model.hud.s);
@@ -208,7 +206,7 @@ public class Autopilot2D implements Runnable {
 					jumpback(0.3f);
 			}
 
-			if(nearestTarget > (min_distance + MIN_DISTANCE_HYSTERESIS) && isAvoiding) {
+			if(nearestTarget > (min_distance + ROBOT_RADIUS) && isAvoiding) {
 				offboard.removeExternalControlListener();
 				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
 					isAvoiding = false;
@@ -225,9 +223,18 @@ public class Autopilot2D implements Runnable {
 			slam.pd = model.slam.pd;
 			slam.pv = model.slam.pv;
 			slam.md = model.slam.di;
-			slam.ox = (float)map.getNearestObstaclePosition().x;
-			slam.oy = (float)map.getNearestObstaclePosition().y;
-			slam.oz = (float)map.getNearestObstaclePosition().z;
+
+			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
+
+				slam.ox = (float)map.getNearestObstaclePosition().x;
+				slam.oy = (float)map.getNearestObstaclePosition().y;
+				slam.oz = (float)map.getNearestObstaclePosition().z;
+
+			} else {
+
+				slam.ox = 0; slam.oy = 0; slam.oz = 0;
+			}
+
 			slam.tms = model.sys.getSynchronizedPX4Time_us();
 			control.sendMAVLinkMessage(slam);
 		}
