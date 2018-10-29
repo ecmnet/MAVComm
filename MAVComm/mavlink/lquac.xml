@@ -66,13 +66,13 @@
                <entry value="0" name="ABORT">
                   <description>Abort request: Terminates any autopilot action and returns to POSHOLD</description>
               </entry>
-              <entry value="1" name="JUMPBACK">
+              <entry value="1" name="OBSTACLE_STOP">
                   <description>JumpBack mode</description>
               </entry>
               <entry value="2" name="OBSTACLE_AVOIDANCE">
                   <description>JumpBack mode</description>
               </entry>
-              <entry value="3" name="INTERACTIVE">
+              <entry value="9" name="INTERACTIVE">
                   <description>Interactive mode (by mouse)</description>
               </entry>
            </enum>

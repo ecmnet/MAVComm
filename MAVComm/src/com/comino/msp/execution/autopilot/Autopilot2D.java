@@ -80,7 +80,7 @@ public class Autopilot2D implements Runnable {
 	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
 	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
 
-	private static final float OBSTACLE_FAILDISTANCE     	= ROBOT_RADIUS * 2.5f;
+	private static final float OBSTACLE_FAILDISTANCE     	= OBSTACLE_MINDISTANCE_1MS;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -202,8 +202,8 @@ public class Autopilot2D implements Runnable {
 				isAvoiding = true;
 				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
 					obstacleAvoidance();
-				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.JUMPBACK))
-					jumpback(0.3f);
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP))
+					stop_at_position();
 			}
 
 			if(nearestTarget > (min_distance + ROBOT_RADIUS) && isAvoiding) {
@@ -348,35 +348,11 @@ public class Autopilot2D implements Runnable {
 		offboard.start(OffboardManager.MODE_SPEED_POSITION);
 	}
 
-	public void jumpback(float distance) {
-
-		if(!tracker.freeze())
-			return;
-
-		final Vector4D_F32 current = MSP3DUtils.getCurrentVector4D(model);
-
-		logger.writeLocalMsg("[msp] JumpBack not available",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-
-		//		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-		//		offboard.start(OffboardManager.MODE_POSITION);
-		//		if(!model.sys.isStatus(Status.MSP_LANDED)) {
-		//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-		//					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-		//					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-		//		}
-		//		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
-		//
-		//		offboard.registerActionListener((m,d) -> {
-		//			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-		//			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
-		//				offboard.setTarget(e.getValue());
-		//			else {
-		//				abort();
-		//				isAvoiding = false;
-		//				tracker.unfreeze();
-		//			}
-		//		});
+	public void stop_at_position() {
+		offboard.setCurrentAsTarget();
+		offboard.start(OffboardManager.MODE_POSITION);
 	}
+
 
 	public void obstacleAvoidance() {
 
