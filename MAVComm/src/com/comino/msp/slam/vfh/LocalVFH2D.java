@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.comino.dev.LocalMap2DGrayU8;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.utils.MSPMathUtils;
 
@@ -436,26 +435,5 @@ public class LocalVFH2D {
 		}
 	}
 
-	public static void main(String[] args) {
 
-		LocalMap2DGrayU8 map = new LocalMap2DGrayU8(20f,0.05f,1.5f,1);
-
-		LocalVFH2D poh = new LocalVFH2D(map, 0.3f, 1);
-
-		for(int i=40;i<120;i++)
-			poh.hist[i/ALPHA]  = 10f;
-		for(int i=140;i<160;i++)
-			poh.hist[i/ALPHA]  = 10f;
-		for(int i=250;i<270;i++)
-			poh.hist[i/ALPHA]  = 10f;
-
-		System.out.println();
-
-
-		poh.select(MSPMathUtils.toRad(180),0.5f,1);
-		System.out.println(poh.toString());
-
-		System.out.println("Result: "+ (int)MSPMathUtils.fromRad(poh.getSelectedDirection())+"° Speed: "+poh.getSelectedSpeed());
-
-	}
 }

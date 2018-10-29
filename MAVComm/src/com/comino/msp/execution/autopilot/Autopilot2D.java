@@ -189,7 +189,7 @@ public class Autopilot2D implements Runnable {
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
 			lvfh.update_histogram(current, model.hud.s);
 
-			nearestTarget = map.nearestDistance(model.state.l_y, model.state.l_x);
+			nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y);
 			if(nearestTarget < OBSTACLE_FAILDISTANCE && !tooClose ) {
 				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
 				tooClose = true;
@@ -214,8 +214,9 @@ public class Autopilot2D implements Runnable {
 					isAvoiding = false;
 			}
 			if(mapForget)
-				//	map.forget();
 				map.applyMapFilter(filter);
+
+
 
 			// Publish SLAM data to GC
 			slam.px = model.slam.px;
@@ -224,6 +225,9 @@ public class Autopilot2D implements Runnable {
 			slam.pd = model.slam.pd;
 			slam.pv = model.slam.pv;
 			slam.md = model.slam.di;
+			slam.ox = (float)map.getNearestObstaclePosition().x;
+			slam.oy = (float)map.getNearestObstaclePosition().y;
+			slam.oz = (float)map.getNearestObstaclePosition().z;
 			slam.tms = model.sys.getSynchronizedPX4Time_us();
 			control.sendMAVLinkMessage(slam);
 		}

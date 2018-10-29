@@ -9,7 +9,6 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.comino.dev.LocalMap2DArray_old;
 import com.comino.main.MSPConfig;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.utils.MSPMathUtils;
@@ -172,21 +171,4 @@ public class LocaMap2DStorage {
 		return false;
 	}
 
-	public static void main(String[] args) {
-
-		LocalMap2DArray_old map = new LocalMap2DArray_old(20f,0.05f,1.5f,1);
-		LocaMap2DStorage store = new LocaMap2DStorage(map, 40.563734f,11.2363635f);
-
-		store.write();
-
-		String fn = store.generateFileName();
-		System.out.println(fn);
-		System.out.println(store);
-
-		if(store.locateAndRead())
-			System.out.println(store);
-		else
-			System.err.println("ER");
-
-	}
 }

@@ -66,6 +66,8 @@ public class LocalMap2DRaycast implements ILocalMap {
 
 	private boolean is_loaded = false;
 
+	private Point3D_F64 nearestObstaclePoition = new Point3D_F64();
+
 	public LocalMap2DRaycast() {
 		this(40.0f,0.05f,2.0f,2);
 	}
@@ -170,11 +172,17 @@ public class LocalMap2DRaycast implements ILocalMap {
 				if(window[x][y] <= threshold)
 					continue;
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
-				if(d < distance)
+				if(d < distance) {
 					distance = d;
+					nearestObstaclePoition.set((x*cell_size_mm-center_x_mm)/1000f , (y*cell_size_mm-center_y_mm)/1000f, 0);
+				}
 			}
 		}
 		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
+	}
+
+	public Point3D_F64 getNearestObstaclePosition() {
+         return nearestObstaclePoition;
 	}
 
 	public short get(float xpos, float ypos) {

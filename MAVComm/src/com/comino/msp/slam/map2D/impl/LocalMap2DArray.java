@@ -71,6 +71,8 @@ public class LocalMap2DArray implements ILocalMap {
 
 	private boolean        is_loaded = false;
 
+	private Point3D_F64 nearestObstaclePoition = new Point3D_F64();
+
 	public LocalMap2DArray() {
 		this(40.0f,0.05f,2.0f,2);
 	}
@@ -171,17 +173,24 @@ public class LocalMap2DArray implements ILocalMap {
 
 		float distance = Float.MAX_VALUE, d;
 		int center = window_dimension/2;
-
+		nearestObstaclePoition.set(0, 0, 0);
 		for (int y = 0; y < window_dimension; y++) {
 			for (int x = 0; x < window_dimension; x++) {
 				if(window[x][y] <= threshold)
 					continue;
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
-				if(d < distance)
+				if(d < distance) {
 					distance = d;
+					nearestObstaclePoition.set(((x-center)*cell_size_mm )/1000f+lpos_x,
+							                   ((y-center)*cell_size_mm )/1000f+lpos_y, 0);
+				}
 			}
 		}
 		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
+	}
+
+	public Point3D_F64 getNearestObstaclePosition() {
+		 return nearestObstaclePoition;
 	}
 
 	public short get(float xpos, float ypos) {
