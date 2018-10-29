@@ -174,7 +174,8 @@ public class LocalMap2DRaycast implements ILocalMap {
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
 				if(d < distance) {
 					distance = d;
-					nearestObstaclePoition.set((x*cell_size_mm-center_x_mm)/1000f , (y*cell_size_mm-center_y_mm)/1000f, 0);
+					nearestObstaclePoition.set(((x-center)*cell_size_mm )/1000f+lpos_x,
+							                   ((y-center)*cell_size_mm )/1000f+lpos_y, 0);
 				}
 			}
 		}
