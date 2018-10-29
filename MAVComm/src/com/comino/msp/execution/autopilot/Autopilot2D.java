@@ -179,6 +179,7 @@ public class Autopilot2D implements Runnable {
 	public void run() {
 
 		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false; float min_distance;
+		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 
 		while(true) {
 			try { Thread.sleep(CYCLE_MS); } catch(Exception s) { }
@@ -215,6 +216,16 @@ public class Autopilot2D implements Runnable {
 			if(mapForget)
 				//	map.forget();
 				map.applyMapFilter(filter);
+
+			// Publish SLAM data to GC
+			slam.px = model.slam.px;
+			slam.py = model.slam.py;
+			slam.pz = model.slam.pz;
+			slam.pd = model.slam.pd;
+			slam.pv = model.slam.pv;
+			slam.md = model.slam.di;
+			slam.tms = model.sys.getSynchronizedPX4Time_us();
+			control.sendMAVLinkMessage(slam);
 		}
 	}
 
@@ -335,25 +346,25 @@ public class Autopilot2D implements Runnable {
 
 		logger.writeLocalMsg("[msp] JumpBack not available",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 
-//		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-//		offboard.start(OffboardManager.MODE_POSITION);
-//		if(!model.sys.isStatus(Status.MSP_LANDED)) {
-//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-//					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-//					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-//		}
-//		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
-//
-//		offboard.registerActionListener((m,d) -> {
-//			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
-//			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
-//				offboard.setTarget(e.getValue());
-//			else {
-//				abort();
-//				isAvoiding = false;
-//				tracker.unfreeze();
-//			}
-//		});
+		//		logger.writeLocalMsg("[msp] JumpBack executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+		//		offboard.start(OffboardManager.MODE_POSITION);
+		//		if(!model.sys.isStatus(Status.MSP_LANDED)) {
+		//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+		//					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+		//					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+		//		}
+		//		offboard.setTarget(tracker.pollLastFreezedWaypoint().getValue());
+		//
+		//		offboard.registerActionListener((m,d) -> {
+		//			Entry<Long, Vector4D_F32> e = tracker.pollLastFreezedWaypoint();
+		//			if(e!=null && MSP3DUtils.distance3D(e.getValue(), current) < distance)
+		//				offboard.setTarget(e.getValue());
+		//			else {
+		//				abort();
+		//				isAvoiding = false;
+		//				tracker.unfreeze();
+		//			}
+		//		});
 	}
 
 	public void obstacleAvoidance() {

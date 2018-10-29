@@ -190,7 +190,7 @@ public class OffboardManager implements Runnable {
 		mode = MODE_LOITER;
 		this.action_listener      = null;
 		this.ext_control_listener = null;
-		publishSLAM(0,target,current);
+		toModel(0,target,current);
 	}
 
 	public boolean isEnabled() {
@@ -221,7 +221,7 @@ public class OffboardManager implements Runnable {
 	public void run() {
 
 		float delta, delta_sec, delta_w;  long tms, sleep_tms = 0; float[] ctl = new float[2];
-		long watch_tms = System.currentTimeMillis(); long publish_tms = 0;
+		long watch_tms = System.currentTimeMillis();
 
 		already_fired = false; if(!new_setpoint) valid_setpoint = false;
 
@@ -266,7 +266,7 @@ public class OffboardManager implements Runnable {
 				new_setpoint = false;
 				ctl[IOffboardExternalControl.ANGLE] = 0;
 				ctl[IOffboardExternalControl.SPEED] = 0;
-				publishSLAM(0,target,current);
+				toModel(0,target,current);
 			}
 
 			switch(mode) {
@@ -358,11 +358,7 @@ public class OffboardManager implements Runnable {
 				constraint_speed(current_speed);
 				sendSpeedControlToVehice(current_speed,(float)(2*Math.PI)-ctl[IOffboardExternalControl.ANGLE]+(float)Math.PI/2f);
 
-
-				if((System.currentTimeMillis() - publish_tms) > 100) {
-					publishSLAM(current_speed.norm(),target,current);
-					publish_tms = System.currentTimeMillis();
-				}
+				toModel(current_speed.norm(),target,current);
 
 				break;
 
@@ -468,19 +464,17 @@ public class OffboardManager implements Runnable {
 		}
 	}
 
-	// TODO: Move slam publishing outside the manager, put data instead into model
+	private void toModel(float speed, Vector4D_F32 target, Vector4D_F32 current) {
 
-	private void publishSLAM(float speed, Vector4D_F32 target, Vector4D_F32 current) {
-		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-		slam.pv = 0;
-		if(speed>0.05 ) { //&& model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD) {
-			slam.px = target.getX();
-			slam.py = target.getY();
-			slam.pd = MSP3DUtils.getXYDirection(target, current);
-			slam.pv = speed;
-			slam.md  = MSP3DUtils.distance2D(target,current);
-			slam.tms = model.sys.getSynchronizedPX4Time_us();
-		}
-		control.sendMAVLinkMessage(slam);
+		if(speed > 0.05) {
+			model.slam.px = target.getX();
+			model.slam.py = target.getY();
+			model.slam.pz = target.getZ();
+			model.slam.pd = MSP3DUtils.getXYDirection(target, current);
+			model.slam.pv = speed;
+			model.slam.di = MSP3DUtils.distance2D(target,current);
+		} else
+			model.slam.clear();
+
 	}
 }
