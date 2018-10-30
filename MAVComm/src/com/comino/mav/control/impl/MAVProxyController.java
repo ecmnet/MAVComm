@@ -196,7 +196,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	public boolean isConnected() {
-			model.sys.setStatus(Status.MSP_ACTIVE, comm.isConnected());
+		model.sys.setStatus(Status.MSP_ACTIVE, comm.isConnected());
 		if(mode == MAVController.MODE_NORMAL)
 			return proxy.isConnected() && comm.isConnected();
 		return proxy.isConnected();
@@ -297,10 +297,6 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean start() {
-//		while(!isConnected()) {
-//			connect();
-//			try { Thread.sleep(100); } catch(Exception e) { }
-//		}
 
 		status_manager.start();
 
