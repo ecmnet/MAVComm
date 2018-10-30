@@ -69,15 +69,22 @@ public class StartUp implements Runnable {
 	private MemoryMXBean  mxBean = null;
 	private DataModel      model = null;
 
+	private boolean is_simulation = false;
+
 	public StartUp(String[] args) {
 
-		config  = MSPConfig.getInstance(System.getProperty("user.home"),"msp.properties");
-		System.out.println("MSPService version "+config.getVersion()+" ("+config.getBasePath()+")");
+		if(args.length != 0) {
+			is_simulation = true;
+		}
 
-		if(args.length>0)
+		if(is_simulation) {
+			config  = MSPConfig.getInstance(System.getProperty("user.home")+"/","msp.properties");
 			control = new MAVProxyController(MAVController.MODE_SITL);
-		else
-			control = new MAVProxyController(MAVController.MODE_USB);
+		}
+		else {
+			config  = MSPConfig.getInstance("/home/up","msp.properties");
+			control = new MAVProxyController(MAVController.MODE_NORMAL);
+		}
 
 		model = control.getCurrentModel();
 
@@ -92,15 +99,10 @@ public class StartUp implements Runnable {
 
 
 		control.start();
+
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
 		Thread worker = new Thread(this);
 		worker.start();
-
-//		control.addMAVMessageListener((msg) -> {
-//			if(msg.filter("msp"))
-//				System.out.println("MSP Message: "+msg.text);
-//
-//		});
 
 		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
 			@Override
@@ -122,7 +124,7 @@ public class StartUp implements Runnable {
 		new StartUp(args);
 	}
 
-    boolean isAvoiding = true;
+	boolean isAvoiding = true;
 
 	@Override
 	public void run() {
@@ -135,40 +137,28 @@ public class StartUp implements Runnable {
 			try {
 
 				if(!control.isConnected()) {
-					control.close();
-					control.connect();
-
 					Thread.sleep(200);
-
-
-
+					control.connect();
 					continue;
+				}
 
+				while(model.grid.hasTransfers()) {
+					grid.resolution = 0;
+					grid.extension  = 0;
+					grid.cx  = model.grid.getIndicatorX();
+					grid.cy  = model.grid.getIndicatorY();
+					grid.tms  = model.sys.getSynchronizedPX4Time_us();
+					grid.count = model.grid.count;
+					if(model.grid.toArray(grid.data)) {
+						control.sendMAVLinkMessage(grid);
+					}
 				}
 
 
-				grid.resolution = 0;
-				grid.extension  = 0;
-				grid.cx  = model.grid.getIndicatorX();
-				grid.cy  = model.grid.getIndicatorY();
-				grid.tms  = model.sys.getSynchronizedPX4Time_us();
-				grid.count = model.grid.count;
-				if(model.grid.toArray(grid.data)) {
-					control.sendMAVLinkMessage(grid);
-				}
+				Thread.sleep(50);
 
-
-				Thread.sleep(20);
-
-				if((System.currentTimeMillis()-tms) < 2000)
+				if((System.currentTimeMillis()-tms) < 500)
 					continue;
-
-				msg_play_tune tune = new msg_play_tune(1,2);
-				tune.target_system=0;
-				tune.target_component=0;
-				tune.setTune("1");
-				control.sendMAVLinkMessage(tune);
-
 
 				tms = System.currentTimeMillis();
 
@@ -185,12 +175,6 @@ public class StartUp implements Runnable {
 				msg.unix_time_us = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
 				msg.wifi_quality = 100;
 				control.sendMAVLinkMessage(msg);
-
-				msg_timesync sync_s = new msg_timesync(255,1);
-				sync_s.tc1 = 0;
-				sync_s.ts1 = System.currentTimeMillis()*1000000L;
-				control.sendMAVLinkMessage(sync_s);
-
 
 
 			} catch (Exception e) {
