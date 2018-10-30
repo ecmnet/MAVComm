@@ -91,23 +91,23 @@ public class Attitude extends Segment {
 	}
 
 	public void clear() {
-		r 	= 0;
-		p   = 0;
-		y   = 0;
-		q1  = 0;
-		q2  = 0;
-		q3  = 0;
-		q4  = 0;
-		rr 	= 0;
-		pr  = 0;
-		yr  = 0;
-		sr 	= 0;
-		sp  = 0;
-		sy  = 0;
-		st  = 0;
-		srr = 0;
-		spr = 0;
-		syr = 0;
+		r 	= Float.NaN;
+		p   = Float.NaN;
+		y   = Float.NaN;
+		q1  = Float.NaN;
+		q2  = Float.NaN;
+		q3  = Float.NaN;
+		q4  = Float.NaN;
+		rr 	= Float.NaN;
+		pr  = Float.NaN;
+		yr  = Float.NaN;
+		sr 	= Float.NaN;
+		sp  = Float.NaN;
+		sy  = Float.NaN;
+		st  = Float.NaN;
+		srr = Float.NaN;
+		spr = Float.NaN;
+		syr = Float.NaN;
 	}
 
 }

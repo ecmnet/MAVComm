@@ -130,30 +130,30 @@ public class Vision extends Segment {
 
 
 	public void clear() {
-		x  = 0;
-		y  = 0;
-		z  = 0;
+		x  = Float.NaN;
+		y  = Float.NaN;
+		z  = Float.NaN;
 
-		cov_px  = 0;
-		cov_py  = 0;
-		cov_pz  = 0;
+		cov_px  = Float.NaN;
+		cov_py  = Float.NaN;
+		cov_pz  = Float.NaN;
 
-		vx = 0;
-		vy = 0;
-		vz = 0;
+		vx = Float.NaN;
+		vy = Float.NaN;
+		vz = Float.NaN;
 
-		cov_vx  = 0;
-		cov_vy  = 0;
-		cov_vz  = 0;
+		cov_vx  = Float.NaN;
+		cov_vy  = Float.NaN;
+		cov_vz  = Float.NaN;
 
-		h = 0;
-		p = 0;
-		r = 0;
+		h = Float.NaN;
+		p = Float.NaN;
+		r = Float.NaN;
 
-		qual=0;
+		qual=Float.NaN;
 
 		flags = 0;
-		fps = 0;
+		fps = Float.NaN;
 	}
 
 	public void  setStatus(int box, boolean val) {

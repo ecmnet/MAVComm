@@ -70,11 +70,11 @@ public class Rc extends Segment {
 
 
 	public void clear() {
-		s0 = 0;
-		s1 = 0;
-		s2 = 0;
-		s3 = 0;
-		rssi = 0;
+		s0   = Float.NaN;
+		s1   = Float.NaN;
+		s2   = Float.NaN;
+		s3   = Float.NaN;
+		rssi = Float.NaN;
 
 	}
 

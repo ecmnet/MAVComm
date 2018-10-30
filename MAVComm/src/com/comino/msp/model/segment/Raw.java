@@ -84,15 +84,15 @@ public class Raw extends Segment {
 
 
 	public void clear() {
-		fX    	= 0;
-		fY    	= 0;
-		di   	= 0;
-		fq      = 0;
-		fd      = 0;
-		fgX     = 0;
-		fgY     = 0;
-		fgZ     = 0;
-		dicov   = 0;
+		fX    	= Float.NaN;
+		fY    	= Float.NaN;
+		di   	= Float.NaN;
+		fq      = Float.NaN;
+		fd      = Float.NaN;
+		fgX     = Float.NaN;
+		fgY     = Float.NaN;
+		fgZ     = Float.NaN;
+		dicov   = Float.NaN;
 	}
 
 }
