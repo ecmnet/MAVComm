@@ -27,8 +27,6 @@ public class PX4HeartBeatPlugin extends MAVLinkPluginBase {
 		model.sys.setStatus(Status.MSP_READY, (hb.system_status & MAV_STATE.MAV_STATE_STANDBY) > 0);
 		model.sys.setStatus(Status.MSP_ARMED, (hb.base_mode & MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED) != 0);
 
-		model.sys.setStatus(Status.MSP_CONNECTED, true);
-
 		if(MAV_CUST_MODE.is(hb.custom_mode,MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_AUTO, MAV_CUST_MODE.PX4_CUSTOM_SUB_MODE_AUTO_LOITER))
 			model.sys.nav_state = Status.NAVIGATION_STATE_AUTO_LOITER;
 

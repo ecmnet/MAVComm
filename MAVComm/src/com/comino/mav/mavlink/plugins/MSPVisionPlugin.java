@@ -27,13 +27,13 @@ public class MSPVisionPlugin extends MAVLinkPluginBase {
 		model.vision.cov_vy = mocap.covariance[MAV_COV.VIS_COV_VY];
 		model.vision.cov_vz = mocap.covariance[MAV_COV.VIS_COV_VZ];
 
-		// model.vision.x = mocap.x;
-		// model.vision.y = mocap.y;
-		// model.vision.z = mocap.z;
-		//
-		// model.vision.h= mocap.h;
-		// model.vision.p= mocap.p;
-		// model.vision.r= mocap.r;
+		model.vision.x = mocap.x;
+		model.vision.y = mocap.y;
+		model.vision.z = mocap.z;
+
+		model.vision.h= mocap.h;
+		model.vision.p= mocap.p;
+		model.vision.r= mocap.r;
 
 		model.vision.qual = mocap.quality;
 		model.vision.errors = (int) mocap.errors;

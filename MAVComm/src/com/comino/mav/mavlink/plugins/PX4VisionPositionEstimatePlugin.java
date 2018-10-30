@@ -13,13 +13,13 @@ public class PX4VisionPositionEstimatePlugin extends MAVLinkPluginBase {
 	@Override
 	public void received(Object o) {
 
-		msg_vision_position_estimate mocap = (msg_vision_position_estimate) o;
-		model.vision.x = mocap.x;
-		model.vision.y = mocap.y;
-		model.vision.z = mocap.z;
-		model.vision.h = MSPMathUtils.fromRad(mocap.yaw);
-		model.vision.p = mocap.pitch;
-		model.vision.r = mocap.roll;
+//		msg_vision_position_estimate mocap = (msg_vision_position_estimate) o;
+//		model.vision.x = mocap.x;
+//		model.vision.y = mocap.y;
+//		model.vision.z = mocap.z;
+//		model.vision.h = MSPMathUtils.fromRad(mocap.yaw);
+//		model.vision.p = mocap.pitch;
+//		model.vision.r = mocap.roll;
 
 	}
 }

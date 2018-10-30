@@ -297,10 +297,10 @@ public class MAVProxyController implements IMAVMSPController {
 
 	@Override
 	public boolean start() {
-		while(!isConnected()) {
-			connect();
-			try { Thread.sleep(100); } catch(Exception e) { }
-		}
+//		while(!isConnected()) {
+//			connect();
+//			try { Thread.sleep(100); } catch(Exception e) { }
+//		}
 
 		status_manager.start();
 

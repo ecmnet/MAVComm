@@ -14,8 +14,6 @@ public class PX4Ping extends MAVLinkPluginBase {
 	@Override
 	public void received(Object o) {
 
-		msg_ping att = (msg_ping) o;
-
 		model.sys.setSensor(Status.MSP_IMU_AVAILABILITY, true);
 
 	}
