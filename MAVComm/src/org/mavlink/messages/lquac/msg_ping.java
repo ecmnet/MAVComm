@@ -36,11 +36,11 @@ public class msg_ping extends MAVLinkMessage {
    */
   public long seq;
   /**
-   * 0: request ping from all receiving systems, if greater than 0: message is a ping response and number is the system id of the requesting system
+   * 0: request ping from all receiving systems. If greater than 0: message is a ping response and number is the system id of the requesting system
    */
   public int target_system;
   /**
-   * 0: request ping from all receiving components, if greater than 0: message is a ping response and number is the system id of the requesting system
+   * 0: request ping from all receiving components. If greater than 0: message is a ping response and number is the component id of the requesting component.
    */
   public int target_component;
 /**
