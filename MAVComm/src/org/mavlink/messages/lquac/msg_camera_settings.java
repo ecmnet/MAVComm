@@ -24,7 +24,7 @@ public class msg_camera_settings extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_CAMERA_SETTINGS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 5;
+    payload_length = 13;
 }
 
   /**
@@ -35,18 +35,28 @@ public class msg_camera_settings extends MAVLinkMessage {
    * Camera mode
    */
   public int mode_id;
+  /**
+   * Current zoom level (0.0 to 100.0, NaN if not known)
+   */
+  public float zoomLevel;
+  /**
+   * Current focus level (0.0 to 100.0, NaN if not known)
+   */
+  public float focusLevel;
 /**
  * Decode message with raw data
  */
 public void decode(LittleEndianDataInputStream dis) throws IOException {
   time_boot_ms = (int)dis.readInt()&0x00FFFFFFFF;
   mode_id = (int)dis.readUnsignedByte()&0x00FF;
+  zoomLevel = (float)dis.readFloat();
+  focusLevel = (float)dis.readFloat();
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+5];
+  byte[] buffer = new byte[12+13];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -60,18 +70,20 @@ public byte[] encode() throws IOException {
   dos.writeByte((messageType >> 16) & 0x00FF);
   dos.writeInt((int)(time_boot_ms&0x00FFFFFFFF));
   dos.writeByte(mode_id&0x00FF);
+  dos.writeFloat(zoomLevel);
+  dos.writeFloat(focusLevel);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 5);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 13);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[15] = crcl;
-  buffer[16] = crch;
+  buffer[23] = crcl;
+  buffer[24] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_SETTINGS : " +   "  time_boot_ms="+time_boot_ms+  "  mode_id="+mode_id;}
+return "MAVLINK_MSG_ID_CAMERA_SETTINGS : " +   "  time_boot_ms="+time_boot_ms+  "  mode_id="+mode_id+  "  zoomLevel="+zoomLevel+  "  focusLevel="+focusLevel;}
 }

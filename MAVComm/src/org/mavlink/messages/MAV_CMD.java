@@ -927,6 +927,20 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_SET_CAMERA_MODE = 530;
     /**
+     * Set camera zoom. Returns CAMERA_SETTINGS message. Use NAN for reserved values.
+     * PARAM 1 : Zoom type
+     * PARAM 2 : Zoom value
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_SET_CAMERA_ZOOM = 531;
+    /**
+     * Set camera focus. Returns CAMERA_SETTINGS message. Use NAN for reserved values.
+     * PARAM 1 : Focus type
+     * PARAM 2 : Focus value
+     * PARAM 3 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_SET_CAMERA_FOCUS = 532;
+    /**
      * Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.
      * PARAM 1 : Reserved (Set to 0)
      * PARAM 2 : Duration between two consecutive pictures (in seconds)
@@ -969,19 +983,19 @@ public interface MAV_CMD {
     public final static int MAV_CMD_VIDEO_STOP_CAPTURE = 2501;
     /**
      * Start video streaming
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 1 : Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_START_STREAMING = 2502;
     /**
      * Stop the current video streaming
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 1 : Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_STOP_STREAMING = 2503;
     /**
      * Request video stream information (VIDEO_STREAM_INFORMATION)
-     * PARAM 1 : Camera ID (0 for all cameras, 1 for first, 2 for second, etc.)
+     * PARAM 1 : Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
      * PARAM 2 : 0: No Action 1: Request video stream information
      * PARAM 3 : Reserved (all remaining params)
      */

@@ -24,7 +24,7 @@ public class msg_set_video_stream_settings extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 247;
+    payload_length = 177;
 }
 
   /**
@@ -56,25 +56,25 @@ public class msg_set_video_stream_settings extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * Camera ID (1 for first, 2 for second, etc.)
+   * Stream ID (1 for first, 2 for second, etc.)
    */
   public int camera_id;
   /**
-   * Video stream URI
+   * Video stream URI (mostly for UDP/RTP)
    */
-  public char[] uri = new char[230];
+  public char[] uri = new char[160];
   public void setUri(String tmp) {
-    int len = Math.min(tmp.length(), 230);
+    int len = Math.min(tmp.length(), 160);
     for (int i=0; i<len; i++) {
       uri[i] = tmp.charAt(i);
     }
-    for (int i=len; i<230; i++) {
+    for (int i=len; i<160; i++) {
       uri[i] = 0;
     }
   }
   public String getUri() {
     String result="";
-    for (int i=0; i<230; i++) {
+    for (int i=0; i<160; i++) {
       if (uri[i] != 0) result=result+uri[i]; else break;
     }
     return result;
@@ -91,7 +91,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   target_system = (int)dis.readUnsignedByte()&0x00FF;
   target_component = (int)dis.readUnsignedByte()&0x00FF;
   camera_id = (int)dis.readUnsignedByte()&0x00FF;
-  for (int i=0; i<230; i++) {
+  for (int i=0; i<160; i++) {
     uri[i] = (char)dis.readByte();
   }
 }
@@ -99,7 +99,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+247];
+  byte[] buffer = new byte[12+177];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -119,18 +119,18 @@ public byte[] encode() throws IOException {
   dos.writeByte(target_system&0x00FF);
   dos.writeByte(target_component&0x00FF);
   dos.writeByte(camera_id&0x00FF);
-  for (int i=0; i<230; i++) {
+  for (int i=0; i<160; i++) {
     dos.writeByte(uri[i]);
   }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 247);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 177);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[257] = crcl;
-  buffer[258] = crch;
+  buffer[187] = crcl;
+  buffer[188] = crch;
   dos.close();
   return buffer;
 }

@@ -63,6 +63,7 @@ import org.mavlink.messages.lquac.msg_mission_count;
 import org.mavlink.messages.lquac.msg_param_ext_ack;
 import org.mavlink.messages.lquac.msg_set_mode;
 import org.mavlink.messages.lquac.msg_vibration;
+import org.mavlink.messages.lquac.msg_orbit_execution_status;
 import org.mavlink.messages.lquac.msg_storage_information;
 import org.mavlink.messages.lquac.msg_system_time;
 import org.mavlink.messages.lquac.msg_wifi_config_ap;
@@ -93,6 +94,7 @@ import org.mavlink.messages.lquac.msg_trajectory_representation_bezier;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
+import org.mavlink.messages.lquac.msg_utm_global_position;
 import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
@@ -230,6 +232,7 @@ import org.mavlink.messages.lquac.msg_mission_count;
 import org.mavlink.messages.lquac.msg_param_ext_ack;
 import org.mavlink.messages.lquac.msg_set_mode;
 import org.mavlink.messages.lquac.msg_vibration;
+import org.mavlink.messages.lquac.msg_orbit_execution_status;
 import org.mavlink.messages.lquac.msg_storage_information;
 import org.mavlink.messages.lquac.msg_system_time;
 import org.mavlink.messages.lquac.msg_wifi_config_ap;
@@ -261,6 +264,7 @@ import org.mavlink.messages.lquac.msg_trajectory_representation_bezier;
 import org.mavlink.messages.lquac.msg_hil_rc_inputs_raw;
 import org.mavlink.messages.lquac.msg_gps_rtcm_data;
 import org.mavlink.messages.lquac.msg_raw_pressure;
+import org.mavlink.messages.lquac.msg_utm_global_position;
 import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
@@ -578,6 +582,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_vibration(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_ORBIT_EXECUTION_STATUS:
+      msg = new msg_orbit_execution_status(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_STORAGE_INFORMATION:
       msg = new msg_storage_information(sysId, componentId);
       msg.decode(dis);
@@ -700,6 +708,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_RAW_PRESSURE:
       msg = new msg_raw_pressure(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_UTM_GLOBAL_POSITION:
+      msg = new msg_utm_global_position(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_CAMERA_SETTINGS:

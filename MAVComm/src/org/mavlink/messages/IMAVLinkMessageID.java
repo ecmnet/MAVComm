@@ -64,6 +64,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_PARAM_EXT_ACK = 324;
   public static int MAVLINK_MSG_ID_SET_MODE = 11;
   public static int MAVLINK_MSG_ID_VIBRATION = 241;
+  public static int MAVLINK_MSG_ID_ORBIT_EXECUTION_STATUS = 360;
   public static int MAVLINK_MSG_ID_STORAGE_INFORMATION = 261;
   public static int MAVLINK_MSG_ID_SYSTEM_TIME = 2;
   public static int MAVLINK_MSG_ID_WIFI_CONFIG_AP = 299;
@@ -95,6 +96,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_HIL_RC_INPUTS_RAW = 92;
   public static int MAVLINK_MSG_ID_GPS_RTCM_DATA = 233;
   public static int MAVLINK_MSG_ID_RAW_PRESSURE = 28;
+  public static int MAVLINK_MSG_ID_UTM_GLOBAL_POSITION = 340;
   public static int MAVLINK_MSG_ID_CAMERA_SETTINGS = 260;
   public static int MAVLINK_MSG_ID_DEBUG_FLOAT_ARRAY = 350;
   public static int MAVLINK_MSG_ID_WIND_COV = 231;

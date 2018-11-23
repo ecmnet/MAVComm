@@ -139,6 +139,14 @@ public interface MAV_COMPONENT {
     /**
      * 
      */
+    public final static int MAV_COMP_ID_OBSTACLE_AVOIDANCE = 196;
+    /**
+     * 
+     */
+    public final static int MAV_COMP_ID_VISUAL_INERTIAL_ODOMETRY = 197;
+    /**
+     * 
+     */
     public final static int MAV_COMP_ID_IMU = 200;
     /**
      * 

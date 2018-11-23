@@ -5,7 +5,7 @@
 package org.mavlink.messages;
 /**
  * Interface MAV_TYPE
- * 
+ * MAVLINK system type. All components in a system should report this type in their HEARTBEAT.
  **/
 public interface MAV_TYPE {
     /**
@@ -117,7 +117,7 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_GIMBAL = 26;
     /**
-     * Onboard ADSB peripheral
+     * ADSB system (standalone)
      */
     public final static int MAV_TYPE_ADSB = 27;
     /**
@@ -129,7 +129,7 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_DODECAROTOR = 29;
     /**
-     * Camera
+     * Camera (standalone)
      */
     public final static int MAV_TYPE_CAMERA = 30;
     /**
@@ -137,7 +137,7 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_CHARGING_STATION = 31;
     /**
-     * Onboard FLARM collision avoidance system
+     * FLARM collision avoidance system (standalone)
      */
     public final static int MAV_TYPE_FLARM = 32;
 }
