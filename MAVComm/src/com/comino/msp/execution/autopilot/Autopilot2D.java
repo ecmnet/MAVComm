@@ -81,6 +81,7 @@ public class Autopilot2D implements Runnable {
 	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
 
 	private static final float OBSTACLE_FAILDISTANCE     	= OBSTACLE_MINDISTANCE_1MS;
+	private static final float OBSTACLE_FAILDISTANCE_2     	= OBSTACLE_MINDISTANCE_1MS / 2f;
 
 	private static Autopilot2D      autopilot = null;
 
@@ -188,7 +189,7 @@ public class Autopilot2D implements Runnable {
 			lvfh.update_histogram(current, model.hud.s);
 
 			nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y);
-			if(nearestTarget < OBSTACLE_FAILDISTANCE && !tooClose ) {
+			if(nearestTarget < OBSTACLE_FAILDISTANCE_2  && !tooClose ) {
 				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
 				tooClose = true;
 			}

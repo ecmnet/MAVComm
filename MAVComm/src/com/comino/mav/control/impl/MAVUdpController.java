@@ -34,6 +34,8 @@
 
 package com.comino.mav.control.impl;
 
+import javax.swing.text.html.parser.Parser;
+
 import org.mavlink.messages.MAV_TYPE;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
@@ -100,7 +102,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 			try {
 				//System.out.println(comm.isConnected());
 				if(!comm.isConnected()) {
-					comm.open();
+				 comm.open();
 				}
 				model.sys.setStatus(Status.MSP_SITL, isSITL);
 				msg_heartbeat beat = new msg_heartbeat(255,1);

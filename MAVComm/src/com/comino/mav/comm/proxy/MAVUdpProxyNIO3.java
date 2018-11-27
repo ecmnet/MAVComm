@@ -91,6 +91,9 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 			isConnected = true;
 			return true;
 		}
+
+		rxBuffer.clear();
+
 		while(!isConnected) {
 			try {
 

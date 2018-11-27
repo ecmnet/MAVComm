@@ -104,6 +104,8 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 		if(isConnected)
 			return true;
 
+		parser.reset(); rxBuffer.clear();
+
 		if(channel!=null && channel.isOpen() && parser.isConnected()) {
 			isConnected = true;
 			return true;

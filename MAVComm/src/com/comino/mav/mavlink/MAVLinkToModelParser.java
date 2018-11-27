@@ -239,6 +239,10 @@ public class MAVLinkToModelParser {
 		this.cmd_ack = ack;
 	}
 
+	public void reset() {
+		mavList.clear();
+	}
+
 	public void writeMessage(LogMessage m) {
 		if (lastMessage == null || lastMessage.tms < m.tms) {
 			System.out.println(m.text);
