@@ -113,7 +113,7 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_VTOL_RESERVED5 = 25;
     /**
-     * Onboard gimbal
+     * Gimbal (standalone)
      */
     public final static int MAV_TYPE_GIMBAL = 26;
     /**
