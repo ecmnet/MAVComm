@@ -1,4 +1,4 @@
-package com.comino.parallel;
+package com.comino.msp.utils.parallel;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,11 +7,13 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import com.comino.parallel.function.Operation;
-import com.comino.parallel.partition.FixedSizeChunkPartitioner;
-import com.comino.parallel.partition.GrowingChunkPartitioner;
-import com.comino.parallel.partition.Partitioner;
-import com.comino.parallel.partition.RangePartitioner;
+import com.comino.msp.utils.parallel.GlobalExecutorPool;
+import com.comino.msp.utils.parallel.function.Operation;
+import com.comino.msp.utils.parallel.partition.FixedSizeChunkPartitioner;
+import com.comino.msp.utils.parallel.partition.GrowingChunkPartitioner;
+import com.comino.msp.utils.parallel.partition.Partitioner;
+import com.comino.msp.utils.parallel.partition.RangePartitioner;
+
 
 
 /**

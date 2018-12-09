@@ -1,4 +1,4 @@
-package com.comino.parallel.function;
+package com.comino.msp.utils.parallel.function;
 
 /**
  * An interface for defining an operation that can be applied to an object.

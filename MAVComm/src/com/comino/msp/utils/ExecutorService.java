@@ -34,22 +34,23 @@
 
 package com.comino.msp.utils;
 
+
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 
 public class ExecutorService {
 
 
-	private static final int MAXTHREADS = 20;
+	private static final int MAXTHREADS = Runtime.getRuntime().availableProcessors();
+//	private static final int MAXTHREADS = 20;
 
-	private static ScheduledThreadPoolExecutor schedThPoolExec =
-			new ScheduledThreadPoolExecutor(MAXTHREADS);
+	private static ScheduledThreadPoolExecutor schedThPoolExec = new ScheduledThreadPoolExecutor(MAXTHREADS);
 
 	{
-
+		schedThPoolExec.setThreadFactory(new DaemonThreadFactory());
 		schedThPoolExec.allowCoreThreadTimeOut(false);
 		schedThPoolExec.prestartAllCoreThreads();
-//		schedThPoolExec.setKeepAliveTime(2, TimeUnit.SECONDS);
-
+		schedThPoolExec.setRemoveOnCancelPolicy(true);
 	}
 
 	public static ScheduledThreadPoolExecutor get() {
@@ -60,13 +61,18 @@ public class ExecutorService {
 		return (int)schedThPoolExec.getActiveCount();
 	}
 
-
 	public static void shutdown() {
 		schedThPoolExec.shutdownNow();
 	}
 
-
-
+	public static class DaemonThreadFactory implements ThreadFactory {
+		@Override
+		public Thread newThread(Runnable paramRunnable) {
+			Thread t = new Thread(paramRunnable);
+			t.setDaemon(true);
+			return t;
+		}
+	}
 
 }
 

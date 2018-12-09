@@ -1,4 +1,4 @@
-package com.comino.parallel.partition;
+package com.comino.msp.utils.parallel.partition;
 
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.comino.parallel;
+package com.comino.msp.utils.parallel;
 
 /**
  * A globally available (static) fixed-size {@link ThreadPoolExecutor}. The number of

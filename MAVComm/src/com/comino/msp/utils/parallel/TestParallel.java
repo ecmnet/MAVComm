@@ -1,6 +1,6 @@
-package com.comino.parallel;
+package com.comino.msp.utils.parallel;
 
-import com.comino.parallel.function.Operation;
+import com.comino.msp.utils.parallel.function.Operation;
 
 // http://openimaj.org/tutorial/parallel-processing.html
 
