@@ -127,6 +127,8 @@ public class MAVProxyController implements IMAVMSPController {
 			break;
 		}
 
+		model.sys.setStatus(Status.MSP_ACTIVE, true);
+
 		comm.addMAVLinkListener(proxy);
 
 	}
