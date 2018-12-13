@@ -60,7 +60,7 @@ import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 
 
-public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
+public class MAVUdpCommNIO implements IMAVComm, Runnable {
 
 
 	private DataModel 				model = null;
@@ -77,17 +77,17 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 	private Selector selector;
 
-	private static MAVUdpCommNIO3 com = null;
+	private static MAVUdpCommNIO com = null;
 
 	private ByteBuffer rxBuffer = ByteBuffer.allocate(32768);
 
-	public static MAVUdpCommNIO3 getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
+	public static MAVUdpCommNIO getInstance(DataModel model, String peerAddress, int peerPort, int bindPort) {
 		if(com==null)
-			com = new MAVUdpCommNIO3(model, peerAddress, peerPort, bindPort);
+			com = new MAVUdpCommNIO(model, peerAddress, peerPort, bindPort);
 		return com;
 	}
 
-	private MAVUdpCommNIO3(DataModel model, String peerAddress, int pPort, int bPort) {
+	private MAVUdpCommNIO(DataModel model, String peerAddress, int pPort, int bPort) {
 		this.model = model;
 		this.parser = new MAVLinkToModelParser(model,this);
 		this.peerPort = new InetSocketAddress(peerAddress,pPort);
@@ -125,10 +125,12 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 			LockSupport.parkNanos(10000000);
 
-			Thread t = new Thread(this);
-			t.setName("MAVLink parser");
-			t.setDaemon(true);
-			t.start();
+//			Thread t = new Thread(this);
+//			t.setName("MAVLink parser");
+//			t.setDaemon(true);
+//			t.start();
+
+			ExecutorService.submit(this);
 
 
 		} catch(Exception e) {
@@ -259,7 +261,7 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 
 	public static void main(String[] args) {
-		MAVUdpCommNIO3 comm = new MAVUdpCommNIO3(new DataModel(), "127.0.0.1", 14556, 14550);
+		MAVUdpCommNIO comm = new MAVUdpCommNIO(new DataModel(), "127.0.0.1", 14556, 14550);
 		//	MAVUdpComm comm = new MAVUdpComm(new DataModel(), "192.168.4.1", 14555,"0.0.0.0",14550);
 
 		comm.open();

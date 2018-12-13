@@ -39,7 +39,7 @@ import javax.swing.text.html.parser.Parser;
 import org.mavlink.messages.MAV_TYPE;
 import org.mavlink.messages.lquac.msg_heartbeat;
 
-import com.comino.mav.comm.udp.MAVUdpCommNIO3;
+import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.model.segment.Status;
 
@@ -55,7 +55,7 @@ public class MAVUdpController extends MAVController implements IMAVController, R
 		this.peerPort = peerPort;
 		this.bindPort = bindPort;
 		System.out.println("UDP Controller loaded ("+peerAddress+":"+peerPort+")");
-		comm = MAVUdpCommNIO3.getInstance(model, peerAddress,peerPort, bindPort);
+		comm = MAVUdpCommNIO.getInstance(model, peerAddress,peerPort, bindPort);
 		model.sys.setStatus(Status.MSP_PROXY, false);
 	}
 

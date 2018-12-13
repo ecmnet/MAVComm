@@ -52,9 +52,10 @@ import org.mavlink.messages.lquac.msg_heartbeat;
 import com.comino.mav.comm.IMAVComm;
 import com.comino.mav.mavlink.MAVLinkReader;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
+import com.comino.msp.utils.ExecutorService;
 
 
-public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
+public class MAVUdpProxyNIO implements IMAVLinkListener, Runnable {
 
 	private SocketAddress 			bindPort = null;
 	private SocketAddress 			peerPort;
@@ -71,7 +72,7 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 	private final ByteBuffer 		rxBuffer = ByteBuffer.allocate(32768);
 
 
-	public MAVUdpProxyNIO3(String peerAddress, int pPort, String bindAddress, int bPort, IMAVComm comm) {
+	public MAVUdpProxyNIO(String peerAddress, int pPort, String bindAddress, int bPort, IMAVComm comm) {
 
 		peerPort = new InetSocketAddress(peerAddress, pPort);
 		bindPort = new InetSocketAddress(bindAddress, bPort);
@@ -116,9 +117,11 @@ public class MAVUdpProxyNIO3 implements IMAVLinkListener, Runnable {
 				channel.connect(peerPort);
 				selector = Selector.open();
 
-				Thread t = new Thread(this);
-				t.setName("Proxy worker");
-				t.start();
+//				Thread t = new Thread(this);
+//				t.setName("Proxy worker");
+//				t.start();
+
+				ExecutorService.submit(this);
 
 
 				return true;

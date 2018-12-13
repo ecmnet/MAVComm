@@ -45,9 +45,9 @@ import org.mavlink.messages.lquac.msg_command_long;
 import org.mavlink.messages.lquac.msg_statustext;
 
 import com.comino.mav.comm.IMAVComm;
-import com.comino.mav.comm.proxy.MAVUdpProxyNIO3;
+import com.comino.mav.comm.proxy.MAVUdpProxyNIO;
 import com.comino.mav.comm.serial.MAVSerialComm;
-import com.comino.mav.comm.udp.MAVUdpCommNIO3;
+import com.comino.mav.comm.udp.MAVUdpCommNIO;
 import com.comino.mav.control.IMAVCmdAcknowledge;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.control.IMAVMSPController;
@@ -70,7 +70,7 @@ public class MAVProxyController implements IMAVMSPController {
 
 
 	protected   DataModel model = null;
-	protected   MAVUdpProxyNIO3 proxy = null;
+	protected   MAVUdpProxyNIO proxy = null;
 
 	private static final int BAUDRATE_9   = 921600;
 	private static final int BAUDRATE_15  = 1500000;
@@ -102,15 +102,15 @@ public class MAVProxyController implements IMAVMSPController {
 			comm.open();
 			try { Thread.sleep(500); } catch (InterruptedException e) { }
 
-			proxy = new MAVUdpProxyNIO3("172.168.178.2",14550,"172.168.178.1",14555,comm);
+			proxy = new MAVUdpProxyNIO("172.168.178.2",14550,"172.168.178.1",14555,comm);
 			peerAddress = "172.168.178.2";
 			System.out.println("Proxy Controller loaded: "+peerAddress);
 			model.sys.setStatus(Status.MSP_SITL,false);
 			break;
 
 		case MAVController.MODE_SITL:
-			comm = MAVUdpCommNIO3.getInstance(model, "127.0.0.1",14580, 14540);
-			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
+			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14580, 14540);
+			proxy = new MAVUdpProxyNIO("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (SITL mode) loaded");
 			model.sys.setStatus(Status.MSP_SITL,true);
@@ -119,7 +119,7 @@ public class MAVProxyController implements IMAVMSPController {
 			comm = MAVSerialComm.getInstance(model, BAUDRATE_9, false);
 			comm.open();
 			try { Thread.sleep(500); } catch (InterruptedException e) { }
-			proxy = new MAVUdpProxyNIO3("127.0.0.1",14650,"0.0.0.0",14656,comm);
+			proxy = new MAVUdpProxyNIO("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (serial mode) loaded: "+peerAddress);
 			model.sys.setStatus(Status.MSP_SITL,false);
