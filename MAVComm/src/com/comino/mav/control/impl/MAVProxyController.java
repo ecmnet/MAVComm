@@ -57,7 +57,6 @@ import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 
@@ -252,13 +251,6 @@ public class MAVProxyController implements IMAVMSPController {
 	public void addMAVMessageListener(IMAVMessageListener listener) {
 		messageListener.add(listener);
 	}
-
-
-	@Override
-	public ModelCollectorService getCollector() {
-		return null;
-	}
-
 
 	@Override
 	public void writeLogMessage(LogMessage m) {

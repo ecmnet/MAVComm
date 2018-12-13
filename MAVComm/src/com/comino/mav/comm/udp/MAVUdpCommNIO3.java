@@ -55,7 +55,6 @@ import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
@@ -272,10 +271,6 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 
 		try {
 
-
-			ModelCollectorService colService = new ModelCollectorService(comm.getModel());
-			colService.start();
-
 			System.out.println("Started");
 
 			while(System.currentTimeMillis()< (time+60000)) {
@@ -292,12 +287,11 @@ public class MAVUdpCommNIO3 implements IMAVComm, Runnable {
 			}
 
 
-			colService.stop();
 			comm.close();
 
 			ExecutorService.shutdown();
 
-			System.out.println(colService.getModelList().size()+" models collected");
+
 
 
 			//			for(int i=0;i<colService.getModelList().size();i++) {

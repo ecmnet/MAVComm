@@ -45,7 +45,6 @@ import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.Grid;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
@@ -61,7 +60,6 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 	public MAVSimController() {
 		model = new DataModel();
-		collector = new ModelCollectorService(model);
 		msgList = new ArrayList<LogMessage>();
 		msgListener = new ArrayList<IMAVMessageListener>();
 		modeListener = new ArrayList<IMSPStatusChangedListener>();
@@ -87,7 +85,6 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 	@Override
 	public boolean close() {
-		collector.stop();
 		return true;
 	}
 

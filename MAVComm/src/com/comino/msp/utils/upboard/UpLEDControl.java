@@ -21,7 +21,7 @@ public class UpLEDControl {
 
 	public static void flash(String led, int time_ms) {
 		setLED(led,true);
-		ExecutorService.get().schedule(() -> { setLED(led,false); }, time_ms, TimeUnit.MILLISECONDS);
+		ExecutorService.submit(() -> { setLED(led,false); }, time_ms);
 	}
 
 	public static void clear() {

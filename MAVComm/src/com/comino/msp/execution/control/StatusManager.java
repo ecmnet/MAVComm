@@ -35,6 +35,7 @@ package com.comino.msp.execution.control;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
@@ -76,6 +77,7 @@ public class StatusManager implements Runnable {
 	private boolean isRunning                = false;
 
 	private long t_armed_start			     = 0;
+	private Future<?> task                   = null;
 
 
 	public StatusManager(DataModel model) {
@@ -90,15 +92,12 @@ public class StatusManager implements Runnable {
 		if(isRunning)
 			return;
 		isRunning = true;
-		Thread worker = new Thread(this);
-		worker.setName("StatusManager");
-		worker.setPriority(Thread.NORM_PRIORITY);
-		worker.start();
-		System.out.println("StatusManager started");
+		task = ExecutorService.submit(this, ExecutorService.HIGH, 100);
 	}
 
 	public void stop() {
 		isRunning = false;
+		task.cancel(true);
 	}
 
 
@@ -146,13 +145,6 @@ public class StatusManager implements Runnable {
 	@Override
 	public void run() {
 
-		try { Thread.sleep(200); } catch(Exception e) { }
-
-
-		while(isRunning) {
-
-			try { Thread.sleep(100); } catch(Exception e) { }
-
 			checkTimeouts();
 
 			status_current.set(model.sys);
@@ -161,7 +153,7 @@ public class StatusManager implements Runnable {
 				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
 			if(status_old.isEqual(status_current))
-				continue;
+				return;
 
 			if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
@@ -246,9 +238,6 @@ public class StatusManager implements Runnable {
 			}
 			status_old.set(status_current);
 
-		}
-
-		System.out.println("Status manager stopped");
 
 	}
 

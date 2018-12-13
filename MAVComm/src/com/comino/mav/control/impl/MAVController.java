@@ -56,7 +56,6 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
@@ -74,8 +73,6 @@ public class MAVController implements IMAVController, Runnable {
 
 	protected static IMAVController controller = null;
 	protected IMAVComm comm = null;
-
-	protected ModelCollectorService collector = null;
 
 	protected   boolean isSITL = false;
 	protected   DataModel model = null;
@@ -99,7 +96,7 @@ public class MAVController implements IMAVController, Runnable {
 		controller = this;
 		model = new DataModel();
 		status_manager = new StatusManager(model);
-		collector = new ModelCollectorService(model);
+
 	}
 
 	public String enableFileLogging(boolean enable, String directory_name) {
@@ -260,7 +257,6 @@ public class MAVController implements IMAVController, Runnable {
 
 	@Override
 	public boolean close() {
-		collector.stop();
 		comm.close();
 		if(file_log_enabled)
 			ps_log.close();
@@ -274,11 +270,6 @@ public class MAVController implements IMAVController, Runnable {
 
 	}
 
-
-	@Override
-	public ModelCollectorService getCollector() {
-		return collector;
-	}
 
 	@Override
 	public void addMAVLinkListener(IMAVLinkListener listener) {

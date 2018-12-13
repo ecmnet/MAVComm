@@ -47,7 +47,6 @@ import com.comino.mav.mavlink.MAVLinkToModelParser;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.fazecast.jSerialComm.SerialPort;
@@ -285,8 +284,6 @@ public class MAVSerialComm implements IMAVComm {
 		try {
 
 
-			ModelCollectorService colService = new ModelCollectorService(comm.getModel());
-			colService.start();
 
 
 			//	while(System.currentTimeMillis()< (time+30000)) {

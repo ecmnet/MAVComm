@@ -43,7 +43,6 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.execution.control.listener.IMAVMessageListener;
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
-import com.comino.msp.model.collector.ModelCollectorService;
 import com.comino.msp.model.segment.LogMessage;
 
 public interface IMAVController {
@@ -61,9 +60,6 @@ public interface IMAVController {
 	public DataModel getCurrentModel();
 
 	public String getConnectedAddress();
-
-
-	public ModelCollectorService getCollector();
 
 	public void writeLogMessage(LogMessage m);
 
