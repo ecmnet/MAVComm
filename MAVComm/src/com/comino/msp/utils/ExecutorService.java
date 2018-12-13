@@ -34,46 +34,93 @@
 
 package com.comino.msp.utils;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExecutorService {
 
+	public static final int LOW  = 0;
+	public static final int HIGH = 1;
 
-	private static final int MAXTHREADS = Runtime.getRuntime().availableProcessors();
 
-	private static ScheduledThreadPoolExecutor schedThPoolExec = null;
+	private static ScheduledThreadPoolExecutor low_pool  = null;
+	private static ScheduledThreadPoolExecutor high_pool = null;
 
 	public static void create() {
-		schedThPoolExec = new ScheduledThreadPoolExecutor(MAXTHREADS);
-		schedThPoolExec.setThreadFactory(new DaemonThreadFactory());
-		schedThPoolExec.allowCoreThreadTimeOut(false);
-		schedThPoolExec.setRemoveOnCancelPolicy(true);
-		int k = schedThPoolExec.prestartAllCoreThreads();
-		System.out.println(MAXTHREADS+" cores: "+k+" core threads started");
+		low_pool  = new ScheduledThreadPoolExecutor(20);
+		low_pool.setThreadFactory(new DaemonThreadFactory(Thread.NORM_PRIORITY-2,"LowPool"));
+		low_pool.allowCoreThreadTimeOut(false);
+		low_pool.setRemoveOnCancelPolicy(true);
+		low_pool.prestartAllCoreThreads();
+		System.out.println(low_pool.getCorePoolSize()+" low pool threads started");
+
+		high_pool  = new ScheduledThreadPoolExecutor(5);
+		high_pool.setThreadFactory(new DaemonThreadFactory(Thread.NORM_PRIORITY+2,"HighPool"));
+		high_pool.allowCoreThreadTimeOut(false);
+		high_pool.setRemoveOnCancelPolicy(true);
+		high_pool.prestartAllCoreThreads();
+		System.out.println(high_pool.getCorePoolSize()+" high pool threads started");
+
 	}
 
 	public static ScheduledThreadPoolExecutor get() {
-		return schedThPoolExec;
+		return low_pool;
 	}
 
 	public static int getActiveCount() {
-		return (int)schedThPoolExec.getActiveCount();
+		return (int)(low_pool.getActiveCount()+high_pool.getActiveCount());
 	}
 
-	public static void submit(Runnable r) {
-		schedThPoolExec.schedule(r, 0, TimeUnit.MILLISECONDS);
+	public static Future<?> submit(Runnable r) {
+		return low_pool.schedule(r, 0, TimeUnit.MILLISECONDS);
+	}
+
+	public static Future<?> submit(Runnable r, int priority) {
+		switch(priority) {
+		case LOW:
+			return low_pool.schedule(r, 0, TimeUnit.MILLISECONDS);
+		case HIGH:
+			return high_pool.schedule(r, 0, TimeUnit.MILLISECONDS);
+		default:
+			return null;
+		}
+	}
+
+	public static Future<?> submit(Runnable r, int priority, int period_ms) {
+		switch(priority) {
+		case LOW:
+			return low_pool.scheduleAtFixedRate(r, 0, period_ms, TimeUnit.MILLISECONDS);
+		case HIGH:
+			return high_pool.scheduleAtFixedRate(r, 0, period_ms, TimeUnit.MILLISECONDS);
+		default:
+			return null;
+		}
 	}
 
 	public static void shutdown() {
-		schedThPoolExec.shutdownNow();
+		low_pool.shutdownNow();
+		high_pool.shutdownNow();
 	}
 
 	public static class DaemonThreadFactory implements ThreadFactory {
+
+		private int priority;
+		private String poolName;
+
+		private final AtomicInteger threadNumber = new AtomicInteger(1);
+
+		public DaemonThreadFactory(int priority, String poolName) {
+			this.priority = priority;
+			this.poolName = poolName;
+		}
+
 		@Override
 		public Thread newThread(Runnable paramRunnable) {
-			Thread t = new Thread(paramRunnable);
+			Thread t = new Thread(paramRunnable, poolName+" "+threadNumber.getAndIncrement());
+			t.setPriority(priority);
 			t.setDaemon(true);
 			return t;
 		}
