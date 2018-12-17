@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_encapsulated_data
- * Data packet for images sent using the Image Transmission Protocol: https://mavlink.io/en/protocol/image_transmission.html.
+ * Data packet for images sent using the Image Transmission Protocol: https://mavlink.io/en/services/image_transmission.html.
  **/
 public class msg_encapsulated_data extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_ENCAPSULATED_DATA = 131;

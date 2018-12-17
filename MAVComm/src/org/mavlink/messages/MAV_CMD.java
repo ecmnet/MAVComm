@@ -570,7 +570,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_SET_ROI = 201;
     /**
-     * THIS INTERFACE IS DEPRECATED since 2018-01. Please use PARAM_EXT_XXX messages and the camera definition format described in https://mavlink.io/en/protocol/camera_def.html.
+     * Configure digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html ).
      * PARAM 1 : Modes: P, TV, AV, M, Etc
      * PARAM 2 : Shutter speed: Divisor number for one second
      * PARAM 3 : Aperture: F stop number
@@ -581,7 +581,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_DIGICAM_CONFIGURE = 202;
     /**
-     * THIS INTERFACE IS DEPRECATED since 2018-01. Please use PARAM_EXT_XXX messages and the camera definition format described in https://mavlink.io/en/protocol/camera_def.html.
+     * Control digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html ).
      * PARAM 1 : Session control e.g. show/hide lens
      * PARAM 2 : Zoom's absolute position
      * PARAM 3 : Zooming step value to offset zoom from the current position

@@ -13,7 +13,7 @@ import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_mission_item
  * Message encoding a mission item. This message is emitted to announce
-                the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also https://mavlink.io/en/protocol/mission.html.
+                the presence of a mission item and to set a mission item on the system. The mission item can be either in x, y, z meters (type: LOCAL) or x:lat, y:lon, z:altitude. Local frame is Z-down, right handed (NED), global frame is Z-up, right handed (ENU). See also https://mavlink.io/en/services/mission.html.
  **/
 public class msg_mission_item extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_MISSION_ITEM = 39;

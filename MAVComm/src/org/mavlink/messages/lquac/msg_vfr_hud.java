@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_vfr_hud
- * Metrics typically displayed on a HUD for fixed wing aircraft
+ * Metrics typically displayed on a HUD for fixed wing aircraft.
  **/
 public class msg_vfr_hud extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_VFR_HUD = 74;
@@ -28,27 +28,27 @@ public class msg_vfr_hud extends MAVLinkMessage {
 }
 
   /**
-   * Current airspeed
+   * Current indicated airspeed (IAS).
    */
   public float airspeed;
   /**
-   * Current ground speed
+   * Current ground speed.
    */
   public float groundspeed;
   /**
-   * Current altitude (MSL)
+   * Current altitude (MSL).
    */
   public float alt;
   /**
-   * Current climb rate
+   * Current climb rate.
    */
   public float climb;
   /**
-   * Current heading in degrees, in compass units (0..360, 0=north)
+   * Current heading in compass units (0-360, 0=north).
    */
   public int heading;
   /**
-   * Current throttle setting in integer percent, 0 to 100
+   * Current throttle setting (0 to 100).
    */
   public int throttle;
 /**

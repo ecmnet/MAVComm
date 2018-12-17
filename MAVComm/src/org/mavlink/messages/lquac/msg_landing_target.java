@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_landing_target
- * The location of a landing target. See: https://mavlink.io/en/protocol/landing_target.html
+ * The location of a landing target. See: https://mavlink.io/en/services/landing_target.html
  **/
 public class msg_landing_target extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_LANDING_TARGET = 149;

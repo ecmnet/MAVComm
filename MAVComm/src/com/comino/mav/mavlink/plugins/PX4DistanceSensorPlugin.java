@@ -19,8 +19,10 @@ public class PX4DistanceSensorPlugin extends MAVLinkPluginBase {
 		switch(lidar.type) {
 		case 1:
 			model.sys.setSensor(Status.MSP_SONAR_AVAILABILITY, true);
+			model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, false);
 			break;
 		default:
+			model.sys.setSensor(Status.MSP_SONAR_AVAILABILITY, false);
 			model.sys.setSensor(Status.MSP_LIDAR_AVAILABILITY, true);
 		}
 
