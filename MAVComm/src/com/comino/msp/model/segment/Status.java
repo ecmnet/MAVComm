@@ -72,12 +72,12 @@ public class Status extends Segment {
 
 	// High level services
 
-	public static final  int MSP_MSP_AVAILABILITY    		    		= 5;
+	public static final  int MSP_MSP_AVAILABILITY    		    = 5;
 	public static final  int MSP_OPCV_AVAILABILITY    			= 6;
 	public static final  int MSP_SYSM_AVAILABILITY    			= 7;
 	public static final  int MSP_SLAM_AVAILABILITY    			= 8;
 	public static final  int MSP_BASE_AVAILABILITY    			= 9;
-	public static final  int MSP_RTK_AVAILABILITY    		    		=10;
+	public static final  int MSP_RTK_AVAILABILITY    		    =10;
 
 	// Navigation states
 
@@ -179,6 +179,12 @@ public class Status extends Segment {
 
 	public boolean isSensorChanged(Status old, int ...box) {
 		return old.isSensorAvailable(box) ^ isSensorAvailable(box);
+	}
+
+	public boolean isSensorChanged(Status old, int mask, boolean edge) {
+		if(edge)
+			return ((old.sensors & mask) != (sensors & mask) && ((sensors & mask) == mask));
+		return ((old.sensors & mask) != (sensors & mask) && ((sensors & mask) == 0));
 	}
 
 	public void  setStatus(int box, boolean val) {

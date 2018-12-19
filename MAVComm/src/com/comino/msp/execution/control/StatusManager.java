@@ -36,8 +36,6 @@ package com.comino.msp.execution.control;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
 import com.comino.msp.execution.control.listener.IMSPStatusChangedListener;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
@@ -60,6 +58,7 @@ public class StatusManager implements Runnable {
 	public static final byte  TYPE_PX4_NAVSTATE    = 2;
 	public static final byte  TYPE_MSP_STATUS      = 3;
 	public static final byte  TYPE_MSP_AUTOPILOT   = 4;
+	public static final byte  TYPE_MSP_SERVICES    = 5;
 
 	public static final byte  EDGE_BOTH            = 0;
 	public static final byte  EDGE_RISING          = 1;
@@ -224,6 +223,29 @@ public class StatusManager implements Runnable {
 						// TODO: Implement MSP_STATUS
 
 						break;
+					case TYPE_MSP_SERVICES:
+						switch(entry.state) {
+						case EDGE_BOTH:
+							if(status_current.isSensorChanged(status_old, entry.mask)) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						case EDGE_RISING:
+							if(status_current.isSensorChanged(status_old, entry.mask, true)) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						case EDGE_FALLING:
+							if(status_current.isSensorChanged(status_old, entry.mask, false)) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+							}
+							break;
+						}
+						break;
+
 					case TYPE_MSP_AUTOPILOT:
 						if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
 
