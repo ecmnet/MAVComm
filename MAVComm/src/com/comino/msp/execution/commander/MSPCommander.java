@@ -41,6 +41,7 @@ import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.MSP_CMD;
 import org.mavlink.messages.MSP_COMPONENT_CTRL;
+import org.mavlink.messages.lquac.msg_hil_gps;
 import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.main.MSPConfig;
@@ -74,6 +75,40 @@ public class MSPCommander {
 		autopilot = Autopilot2D.getInstance(control,config);
 		this.map = autopilot.getMap2D();
 	}
+
+	public void setGlobalOrigin(double lat, double lon) {
+
+		final long MAX_GPOS_SET_MS = 5000;
+
+		long tms = System.currentTimeMillis();
+
+		if(control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID))
+			return;
+
+		msg_hil_gps gps = new msg_hil_gps(1,1);
+		gps.lat = (long)(lat * 1e7);
+		gps.lon = (long)(lon * 1e7);
+		gps.alt = (int)(control.getCurrentModel().hud.al*100);
+		gps.satellites_visible = 10;
+		gps.eph = 30;
+		gps.epv = 30;
+		gps.fix_type = 4;
+		gps.cog = 0;
+
+		while(!control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID)
+				                   && (System.currentTimeMillis() - tms) < MAX_GPOS_SET_MS) {
+			control.sendMAVLinkMessage(gps);
+			try {
+				Thread.sleep(200);
+			} catch (InterruptedException e) { }
+		}
+		gps.satellites_visible = 0;
+		gps.eph = 0;
+		gps.epv = 0;
+		gps.fix_type = 0;
+		control.sendMAVLinkMessage(gps);
+	}
+
 
 	private void registerCommands() {
 
@@ -171,6 +206,7 @@ public class MSPCommander {
 					MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
 		}
 	}
+
 
 	// SITL testing
 
