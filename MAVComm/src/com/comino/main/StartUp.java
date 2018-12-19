@@ -41,6 +41,7 @@ import org.mavlink.messages.IMAVLinkMessageID;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_CMD;
+import org.mavlink.messages.lquac.msg_hil_gps;
 import org.mavlink.messages.lquac.msg_local_position_ned_cov;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
@@ -57,6 +58,7 @@ import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.linux.LinuxUtils;
 
@@ -100,7 +102,6 @@ public class StartUp implements Runnable {
 
 		// Start services if required
 
-
 		control.start();
 
 		MSPLogger.getInstance().writeLocalMsg("MAVProxy "+config.getVersion()+" loaded");
@@ -126,6 +127,7 @@ public class StartUp implements Runnable {
 	public static void main(String[] args) {
 		new StartUp(args);
 	}
+
 
 	boolean isAvoiding = true;
 
