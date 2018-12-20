@@ -56,7 +56,7 @@ import georegression.struct.point.Vector4D_F32;
 public class OffboardManager implements Runnable {
 
 	private static final float MAX_SPEED					= 1.0f;		// Default Max speed in m/s
-	private static final float MIN_SPEED                    = 0.1f;     // Min speed in m/s
+	private static final float MIN_SPEED                    = 0.2f;     // Min speed in m/s
 	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
 
 	private static final float ACC_RATE                     = 0.05f;    // Acceleration rate per cycle in speed mode
