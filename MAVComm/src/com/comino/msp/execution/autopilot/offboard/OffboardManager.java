@@ -49,7 +49,6 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
-import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
@@ -61,7 +60,7 @@ public class OffboardManager implements Runnable {
 	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
 
 	private static final float ACC_RATE                     = 0.05f;    // Acceleration rate per cycle in speed mode
-	private static final float DESC_RATE                    = 0.3f;     // Deceleration rate per cycle in speed mode
+	private static final float DESC_RATE                    = 0.2f;     // Deceleration rate per cycle in speed mode
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 

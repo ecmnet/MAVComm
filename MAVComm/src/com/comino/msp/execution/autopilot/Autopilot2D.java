@@ -158,6 +158,7 @@ public class Autopilot2D implements Runnable {
 
 		});
 
+
 		//		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_RTL, StatusManager.EDGE_RISING, (o,n) -> {
 		//			offboard.stop();
 		//		});
@@ -167,7 +168,10 @@ public class Autopilot2D implements Runnable {
 			offboard.stop();
 		});
 
-		ExecutorService.submit(this,CYCLE_MS);
+		Thread worker = new Thread(this);
+		worker.setPriority(Thread.MIN_PRIORITY);
+		worker.setName("AutoPilot");
+		worker.start();
 
 	}
 
@@ -177,61 +181,65 @@ public class Autopilot2D implements Runnable {
 		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false; float min_distance;
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 
-		//System.out.println(model.sys.getSensorString());
+		while(true) {
+			try { Thread.sleep(CYCLE_MS); } catch(Exception s) { }
 
-		current.set(model.state.l_x, model.state.l_y,model.state.l_z);
-		lvfh.update_histogram(current, model.hud.s);
+			//System.out.println(model.sys.getSensorString());
 
-		nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y);
-		if(nearestTarget < OBSTACLE_FAILDISTANCE_2  && !tooClose ) {
-			logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
-			tooClose = true;
+			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
+			lvfh.update_histogram(current, model.hud.s);
+
+			nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y);
+			if(nearestTarget < OBSTACLE_FAILDISTANCE_2  && !tooClose ) {
+				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+				tooClose = true;
+			}
+
+			if(nearestTarget > OBSTACLE_FAILDISTANCE+ROBOT_RADIUS)
+				tooClose = false;
+
+			min_distance = getAvoidanceDistance(model.hud.s);
+
+			if(nearestTarget < min_distance && !isAvoiding) {
+				isAvoiding = true;
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
+					obstacleAvoidance();
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP))
+					stop_at_position();
+			}
+
+			if(nearestTarget > (min_distance + ROBOT_RADIUS) && isAvoiding) {
+				offboard.removeExternalControlListener();
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
+					isAvoiding = false;
+			}
+			if(mapForget)
+				map.applyMapFilter(filter);
+
+
+
+			// Publish SLAM data to GC
+			slam.px = model.slam.px;
+			slam.py = model.slam.py;
+			slam.pz = model.slam.pz;
+			slam.pd = model.slam.pd;
+			slam.pv = model.slam.pv;
+			slam.md = model.slam.di;
+
+			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
+
+				slam.ox = (float)map.getNearestObstaclePosition().x;
+				slam.oy = (float)map.getNearestObstaclePosition().y;
+				slam.oz = (float)map.getNearestObstaclePosition().z;
+
+			} else {
+
+				slam.ox = 0; slam.oy = 0; slam.oz = 0;
+			}
+
+			slam.tms = model.sys.getSynchronizedPX4Time_us();
+			control.sendMAVLinkMessage(slam);
 		}
-
-		if(nearestTarget > OBSTACLE_FAILDISTANCE+ROBOT_RADIUS)
-			tooClose = false;
-
-		min_distance = getAvoidanceDistance(model.hud.s);
-
-		if(nearestTarget < min_distance && !isAvoiding) {
-			isAvoiding = true;
-			if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-				obstacleAvoidance();
-			if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP))
-				stop_at_position();
-		}
-
-		if(nearestTarget > (min_distance + ROBOT_RADIUS) && isAvoiding) {
-			offboard.removeExternalControlListener();
-			if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-				isAvoiding = false;
-		}
-		if(mapForget)
-			map.applyMapFilter(filter);
-
-
-
-		// Publish SLAM data to GC
-		slam.px = model.slam.px;
-		slam.py = model.slam.py;
-		slam.pz = model.slam.pz;
-		slam.pd = model.slam.pd;
-		slam.pv = model.slam.pv;
-		slam.md = model.slam.di;
-
-		if(nearestTarget < OBSTACLE_FAILDISTANCE) {
-
-			slam.ox = (float)map.getNearestObstaclePosition().x;
-			slam.oy = (float)map.getNearestObstaclePosition().y;
-			slam.oz = (float)map.getNearestObstaclePosition().z;
-
-		} else {
-
-			slam.ox = 0; slam.oy = 0; slam.oz = 0;
-		}
-
-		slam.tms = model.sys.getSynchronizedPX4Time_us();
-		control.sendMAVLinkMessage(slam);
 	}
 
 	public void reset() {
