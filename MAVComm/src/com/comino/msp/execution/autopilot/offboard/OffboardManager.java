@@ -56,8 +56,12 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 1.0f;		// Default Max speed: 1 m/s
+	private static final float MAX_SPEED					= 1.0f;		// Default Max speed in m/s
+	private static final float MIN_SPEED                    = 0.1f;     // Min speed in m/s
 	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
+
+	private static final float ACC_RATE                     = 0.05f;    // Acceleration rate per cycle in speed mode
+	private static final float DESC_RATE                    = 0.3f;     // Deceleration rate per cycle in speed mode
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
@@ -343,12 +347,12 @@ public class OffboardManager implements Runnable {
 					ctl[IOffboardExternalControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
 					// speed control: reduce speed if nearer than 1s of max_speed
 					if(delta > break_radius) {
-						ctl[IOffboardExternalControl.SPEED] += 0.1*delta_sec;
+						ctl[IOffboardExternalControl.SPEED] += ACC_RATE*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
 					}
 					else {
-						ctl[IOffboardExternalControl.SPEED] -= 0.3*delta_sec;
-						if(ctl[IOffboardExternalControl.SPEED] < 0.2) ctl[IOffboardExternalControl.SPEED] = 0.2f;
+						ctl[IOffboardExternalControl.SPEED] -= DESC_RATE*delta_sec;
+						if(ctl[IOffboardExternalControl.SPEED] < MIN_SPEED) ctl[IOffboardExternalControl.SPEED] = MIN_SPEED;
 					}
 				}
 
