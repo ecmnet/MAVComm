@@ -151,8 +151,11 @@ public class StatusManager implements Runnable {
 			if (status_current.isStatus(Status.MSP_ARMED))
 				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
+			//System.out.println("test "+status_old.sensors + " -> "+status_current.sensors+" = "+model.sys.sensors);
+
 			if(status_old.isEqual(status_current))
 				return;
+
 
 			if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
@@ -224,6 +227,7 @@ public class StatusManager implements Runnable {
 
 						break;
 					case TYPE_MSP_SERVICES:
+
 						switch(entry.state) {
 						case EDGE_BOTH:
 							if(status_current.isSensorChanged(status_old, entry.mask)) {
@@ -238,6 +242,7 @@ public class StatusManager implements Runnable {
 							}
 							break;
 						case EDGE_FALLING:
+
 							if(status_current.isSensorChanged(status_old, entry.mask, false)) {
 								entry.listener.update(status_old, status_current);
 								entry.last_triggered = System.currentTimeMillis();
