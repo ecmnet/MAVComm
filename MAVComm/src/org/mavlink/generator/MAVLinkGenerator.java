@@ -353,9 +353,19 @@ public class MAVLinkGenerator {
 					}
 					fieldLen += type.getLengthType();
 
-					forToString = forToString + (j != 0 ? "+" : "") + "  \"  " + field.getName() + "=\"+"
-							+ (field.getType().isArray && field.getType().type == MAVLinkDataType.CHAR ? "get" + attr + "()" : field.getName());
-					
+					if(field.getType().isArray && field.getType().type != MAVLinkDataType.CHAR) {
+						for(int i=0;i<type.arrayLenth;i++) {
+							forToString = forToString + (j != 0 ? "+" : "") + "  \"  " + field.getName()+"["+i+"]" + "=\"+"
+									+ (field.getType().isArray && field.getType().type == MAVLinkDataType.CHAR ? "get" + attr + "()" : field.getName())
+									+"["+i+"]"+"\n";
+						}
+
+					} else
+						forToString = forToString + (j != 0 ? "+" : "") + "  \"  " + field.getName() + "=\"+"
+								+ (field.getType().isArray && field.getType().type == MAVLinkDataType.CHAR ? "get" + attr + "()" : field.getName())
+								+"\n";
+
+
 					if(j < message.getExtensionIndex() || message.getExtensionIndex() == 0) {
 						extraCrcBuffer = extraCrcBuffer + type.getCType() + " " + field.getName() + " ";
 						if (type.isArray) {
