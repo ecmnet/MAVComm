@@ -149,5 +149,55 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_AUTOPILOT_VERSION : " +   "  capabilities="+capabilities+  "  uid="+uid+  "  flight_sw_version="+flight_sw_version+  "  middleware_sw_version="+middleware_sw_version+  "  os_sw_version="+os_sw_version+  "  board_version="+board_version+  "  vendor_id="+vendor_id+  "  product_id="+product_id+  "  flight_custom_version="+flight_custom_version+  "  middleware_custom_version="+middleware_custom_version+  "  os_custom_version="+os_custom_version+  "  uid2="+uid2;}
+return "MAVLINK_MSG_ID_AUTOPILOT_VERSION : " +   "  capabilities="+capabilities
++  "  uid="+uid
++  "  flight_sw_version="+flight_sw_version
++  "  middleware_sw_version="+middleware_sw_version
++  "  os_sw_version="+os_sw_version
++  "  board_version="+board_version
++  "  vendor_id="+vendor_id
++  "  product_id="+product_id
++  "  flight_custom_version[0]="+flight_custom_version[0]
++  "  flight_custom_version[1]="+flight_custom_version[1]
++  "  flight_custom_version[2]="+flight_custom_version[2]
++  "  flight_custom_version[3]="+flight_custom_version[3]
++  "  flight_custom_version[4]="+flight_custom_version[4]
++  "  flight_custom_version[5]="+flight_custom_version[5]
++  "  flight_custom_version[6]="+flight_custom_version[6]
++  "  flight_custom_version[7]="+flight_custom_version[7]
++  "  middleware_custom_version[0]="+middleware_custom_version[0]
++  "  middleware_custom_version[1]="+middleware_custom_version[1]
++  "  middleware_custom_version[2]="+middleware_custom_version[2]
++  "  middleware_custom_version[3]="+middleware_custom_version[3]
++  "  middleware_custom_version[4]="+middleware_custom_version[4]
++  "  middleware_custom_version[5]="+middleware_custom_version[5]
++  "  middleware_custom_version[6]="+middleware_custom_version[6]
++  "  middleware_custom_version[7]="+middleware_custom_version[7]
++  "  os_custom_version[0]="+os_custom_version[0]
++  "  os_custom_version[1]="+os_custom_version[1]
++  "  os_custom_version[2]="+os_custom_version[2]
++  "  os_custom_version[3]="+os_custom_version[3]
++  "  os_custom_version[4]="+os_custom_version[4]
++  "  os_custom_version[5]="+os_custom_version[5]
++  "  os_custom_version[6]="+os_custom_version[6]
++  "  os_custom_version[7]="+os_custom_version[7]
++  "  uid2[0]="+uid2[0]
++  "  uid2[1]="+uid2[1]
++  "  uid2[2]="+uid2[2]
++  "  uid2[3]="+uid2[3]
++  "  uid2[4]="+uid2[4]
++  "  uid2[5]="+uid2[5]
++  "  uid2[6]="+uid2[6]
++  "  uid2[7]="+uid2[7]
++  "  uid2[8]="+uid2[8]
++  "  uid2[9]="+uid2[9]
++  "  uid2[10]="+uid2[10]
++  "  uid2[11]="+uid2[11]
++  "  uid2[12]="+uid2[12]
++  "  uid2[13]="+uid2[13]
++  "  uid2[14]="+uid2[14]
++  "  uid2[15]="+uid2[15]
++  "  uid2[16]="+uid2[16]
++  "  uid2[17]="+uid2[17]
+;}
 }

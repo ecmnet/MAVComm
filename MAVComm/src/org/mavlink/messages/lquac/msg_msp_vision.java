@@ -155,5 +155,55 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h="+h+  "  p="+p+  "  r="+r+  "  covariance="+covariance+  "  fps="+fps+  "  flags="+flags+  "  errors="+errors+  "  quality="+quality;}
+return "MAVLINK_MSG_ID_MSP_VISION : " +   "  tms="+tms
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  h="+h
++  "  p="+p
++  "  r="+r
++  "  covariance[0]="+covariance[0]
++  "  covariance[1]="+covariance[1]
++  "  covariance[2]="+covariance[2]
++  "  covariance[3]="+covariance[3]
++  "  covariance[4]="+covariance[4]
++  "  covariance[5]="+covariance[5]
++  "  covariance[6]="+covariance[6]
++  "  covariance[7]="+covariance[7]
++  "  covariance[8]="+covariance[8]
++  "  covariance[9]="+covariance[9]
++  "  covariance[10]="+covariance[10]
++  "  covariance[11]="+covariance[11]
++  "  covariance[12]="+covariance[12]
++  "  covariance[13]="+covariance[13]
++  "  covariance[14]="+covariance[14]
++  "  covariance[15]="+covariance[15]
++  "  covariance[16]="+covariance[16]
++  "  covariance[17]="+covariance[17]
++  "  covariance[18]="+covariance[18]
++  "  covariance[19]="+covariance[19]
++  "  covariance[20]="+covariance[20]
++  "  covariance[21]="+covariance[21]
++  "  covariance[22]="+covariance[22]
++  "  covariance[23]="+covariance[23]
++  "  covariance[24]="+covariance[24]
++  "  covariance[25]="+covariance[25]
++  "  covariance[26]="+covariance[26]
++  "  covariance[27]="+covariance[27]
++  "  covariance[28]="+covariance[28]
++  "  covariance[29]="+covariance[29]
++  "  covariance[30]="+covariance[30]
++  "  covariance[31]="+covariance[31]
++  "  covariance[32]="+covariance[32]
++  "  covariance[33]="+covariance[33]
++  "  covariance[34]="+covariance[34]
++  "  covariance[35]="+covariance[35]
++  "  fps="+fps
++  "  flags="+flags
++  "  errors="+errors
++  "  quality="+quality
+;}
 }

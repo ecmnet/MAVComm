@@ -79,5 +79,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SET_MODE : " +   "  custom_mode="+custom_mode+  "  target_system="+target_system+  "  base_mode="+base_mode;}
+return "MAVLINK_MSG_ID_SET_MODE : " +   "  custom_mode="+custom_mode
++  "  target_system="+target_system
++  "  base_mode="+base_mode
+;}
 }

@@ -103,5 +103,12 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET : " +   "  time_boot_ms="+time_boot_ms+  "  x="+x+  "  y="+y+  "  z="+z+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw;}
+return "MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET : " +   "  time_boot_ms="+time_boot_ms
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  roll="+roll
++  "  pitch="+pitch
++  "  yaw="+yaw
+;}
 }

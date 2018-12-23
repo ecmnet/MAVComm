@@ -159,5 +159,18 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ADSB_VEHICLE : " +   "  ICAO_address="+ICAO_address+  "  lat="+lat+  "  lon="+lon+  "  altitude="+altitude+  "  heading="+heading+  "  hor_velocity="+hor_velocity+  "  ver_velocity="+ver_velocity+  "  flags="+flags+  "  squawk="+squawk+  "  altitude_type="+altitude_type+  "  callsign="+getCallsign()+  "  emitter_type="+emitter_type+  "  tslc="+tslc;}
+return "MAVLINK_MSG_ID_ADSB_VEHICLE : " +   "  ICAO_address="+ICAO_address
++  "  lat="+lat
++  "  lon="+lon
++  "  altitude="+altitude
++  "  heading="+heading
++  "  hor_velocity="+hor_velocity
++  "  ver_velocity="+ver_velocity
++  "  flags="+flags
++  "  squawk="+squawk
++  "  altitude_type="+altitude_type
++  "  callsign="+getCallsign()
++  "  emitter_type="+emitter_type
++  "  tslc="+tslc
+;}
 }

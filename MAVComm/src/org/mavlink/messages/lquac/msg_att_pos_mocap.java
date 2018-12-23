@@ -105,5 +105,34 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ATT_POS_MOCAP : " +   "  time_usec="+time_usec+  "  q="+q+  "  x="+x+  "  y="+y+  "  z="+z+  "  covariance="+covariance;}
+return "MAVLINK_MSG_ID_ATT_POS_MOCAP : " +   "  time_usec="+time_usec
++  "  q[0]="+q[0]
++  "  q[1]="+q[1]
++  "  q[2]="+q[2]
++  "  q[3]="+q[3]
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  covariance[0]="+covariance[0]
++  "  covariance[1]="+covariance[1]
++  "  covariance[2]="+covariance[2]
++  "  covariance[3]="+covariance[3]
++  "  covariance[4]="+covariance[4]
++  "  covariance[5]="+covariance[5]
++  "  covariance[6]="+covariance[6]
++  "  covariance[7]="+covariance[7]
++  "  covariance[8]="+covariance[8]
++  "  covariance[9]="+covariance[9]
++  "  covariance[10]="+covariance[10]
++  "  covariance[11]="+covariance[11]
++  "  covariance[12]="+covariance[12]
++  "  covariance[13]="+covariance[13]
++  "  covariance[14]="+covariance[14]
++  "  covariance[15]="+covariance[15]
++  "  covariance[16]="+covariance[16]
++  "  covariance[17]="+covariance[17]
++  "  covariance[18]="+covariance[18]
++  "  covariance[19]="+covariance[19]
++  "  covariance[20]="+covariance[20]
+;}
 }

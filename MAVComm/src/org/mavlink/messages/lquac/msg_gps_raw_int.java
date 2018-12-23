@@ -152,5 +152,20 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_GPS_RAW_INT : " +   "  time_usec="+time_usec+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  eph="+eph+  "  epv="+epv+  "  vel="+vel+  "  cog="+cog+  "  fix_type="+fix_type+  "  satellites_visible="+satellites_visible+  "  alt_ellipsoid="+alt_ellipsoid+  "  h_acc="+h_acc+  "  v_acc="+v_acc+  "  vel_acc="+vel_acc+  "  hdg_acc="+hdg_acc;}
+return "MAVLINK_MSG_ID_GPS_RAW_INT : " +   "  time_usec="+time_usec
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  eph="+eph
++  "  epv="+epv
++  "  vel="+vel
++  "  cog="+cog
++  "  fix_type="+fix_type
++  "  satellites_visible="+satellites_visible
++  "  alt_ellipsoid="+alt_ellipsoid
++  "  h_acc="+h_acc
++  "  v_acc="+v_acc
++  "  vel_acc="+vel_acc
++  "  hdg_acc="+hdg_acc
+;}
 }

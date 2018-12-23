@@ -99,5 +99,24 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_PROTOCOL_VERSION : " +   "  version="+version+  "  min_version="+min_version+  "  max_version="+max_version+  "  spec_version_hash="+spec_version_hash+  "  library_version_hash="+library_version_hash;}
+return "MAVLINK_MSG_ID_PROTOCOL_VERSION : " +   "  version="+version
++  "  min_version="+min_version
++  "  max_version="+max_version
++  "  spec_version_hash[0]="+spec_version_hash[0]
++  "  spec_version_hash[1]="+spec_version_hash[1]
++  "  spec_version_hash[2]="+spec_version_hash[2]
++  "  spec_version_hash[3]="+spec_version_hash[3]
++  "  spec_version_hash[4]="+spec_version_hash[4]
++  "  spec_version_hash[5]="+spec_version_hash[5]
++  "  spec_version_hash[6]="+spec_version_hash[6]
++  "  spec_version_hash[7]="+spec_version_hash[7]
++  "  library_version_hash[0]="+library_version_hash[0]
++  "  library_version_hash[1]="+library_version_hash[1]
++  "  library_version_hash[2]="+library_version_hash[2]
++  "  library_version_hash[3]="+library_version_hash[3]
++  "  library_version_hash[4]="+library_version_hash[4]
++  "  library_version_hash[5]="+library_version_hash[5]
++  "  library_version_hash[6]="+library_version_hash[6]
++  "  library_version_hash[7]="+library_version_hash[7]
+;}
 }

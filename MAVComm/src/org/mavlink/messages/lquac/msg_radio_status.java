@@ -103,5 +103,12 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_RADIO_STATUS : " +   "  rxerrors="+rxerrors+  "  fixed="+fixed+  "  rssi="+rssi+  "  remrssi="+remrssi+  "  txbuf="+txbuf+  "  noise="+noise+  "  remnoise="+remnoise;}
+return "MAVLINK_MSG_ID_RADIO_STATUS : " +   "  rxerrors="+rxerrors
++  "  fixed="+fixed
++  "  rssi="+rssi
++  "  remrssi="+remrssi
++  "  txbuf="+txbuf
++  "  noise="+noise
++  "  remnoise="+remnoise
+;}
 }

@@ -91,5 +91,10 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_LOG_ENTRY : " +   "  time_utc="+time_utc+  "  size="+size+  "  id="+id+  "  num_logs="+num_logs+  "  last_log_num="+last_log_num;}
+return "MAVLINK_MSG_ID_LOG_ENTRY : " +   "  time_utc="+time_utc
++  "  size="+size
++  "  id="+id
++  "  num_logs="+num_logs
++  "  last_log_num="+last_log_num
+;}
 }

@@ -93,5 +93,7 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_STATUSTEXT : " +   "  severity="+severity+  "  text="+getText();}
+return "MAVLINK_MSG_ID_STATUSTEXT : " +   "  severity="+severity
++  "  text="+getText()
+;}
 }

@@ -109,5 +109,13 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT : " +   "  nav_roll="+nav_roll+  "  nav_pitch="+nav_pitch+  "  alt_error="+alt_error+  "  aspd_error="+aspd_error+  "  xtrack_error="+xtrack_error+  "  nav_bearing="+nav_bearing+  "  target_bearing="+target_bearing+  "  wp_dist="+wp_dist;}
+return "MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT : " +   "  nav_roll="+nav_roll
++  "  nav_pitch="+nav_pitch
++  "  alt_error="+alt_error
++  "  aspd_error="+aspd_error
++  "  xtrack_error="+xtrack_error
++  "  nav_bearing="+nav_bearing
++  "  target_bearing="+target_bearing
++  "  wp_dist="+wp_dist
+;}
 }

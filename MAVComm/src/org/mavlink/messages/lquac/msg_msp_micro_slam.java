@@ -133,5 +133,17 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_MICRO_SLAM : " +   "  tms="+tms+  "  px="+px+  "  py="+py+  "  pz="+pz+  "  pd="+pd+  "  pp="+pp+  "  pv="+pv+  "  md="+md+  "  ox="+ox+  "  oy="+oy+  "  oz="+oz+  "  wpcount="+wpcount;}
+return "MAVLINK_MSG_ID_MSP_MICRO_SLAM : " +   "  tms="+tms
++  "  px="+px
++  "  py="+py
++  "  pz="+pz
++  "  pd="+pd
++  "  pp="+pp
++  "  pv="+pv
++  "  md="+md
++  "  ox="+ox
++  "  oy="+oy
++  "  oz="+oz
++  "  wpcount="+wpcount
+;}
 }

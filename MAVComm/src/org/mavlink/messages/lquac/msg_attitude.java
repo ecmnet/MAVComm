@@ -103,5 +103,12 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ATTITUDE : " +   "  time_boot_ms="+time_boot_ms+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw+  "  rollspeed="+rollspeed+  "  pitchspeed="+pitchspeed+  "  yawspeed="+yawspeed;}
+return "MAVLINK_MSG_ID_ATTITUDE : " +   "  time_boot_ms="+time_boot_ms
++  "  roll="+roll
++  "  pitch="+pitch
++  "  yaw="+yaw
++  "  rollspeed="+rollspeed
++  "  pitchspeed="+pitchspeed
++  "  yawspeed="+yawspeed
+;}
 }

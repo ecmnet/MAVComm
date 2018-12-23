@@ -103,5 +103,12 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_TERRAIN_REPORT : " +   "  lat="+lat+  "  lon="+lon+  "  terrain_height="+terrain_height+  "  current_height="+current_height+  "  spacing="+spacing+  "  pending="+pending+  "  loaded="+loaded;}
+return "MAVLINK_MSG_ID_TERRAIN_REPORT : " +   "  lat="+lat
++  "  lon="+lon
++  "  terrain_height="+terrain_height
++  "  current_height="+current_height
++  "  spacing="+spacing
++  "  pending="+pending
++  "  loaded="+loaded
+;}
 }

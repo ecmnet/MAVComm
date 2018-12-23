@@ -91,5 +91,10 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MISSION_WRITE_PARTIAL_LIST : " +   "  start_index="+start_index+  "  end_index="+end_index+  "  target_system="+target_system+  "  target_component="+target_component+  "  mission_type="+mission_type;}
+return "MAVLINK_MSG_ID_MISSION_WRITE_PARTIAL_LIST : " +   "  start_index="+start_index
++  "  end_index="+end_index
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  mission_type="+mission_type
+;}
 }

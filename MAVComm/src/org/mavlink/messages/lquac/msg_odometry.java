@@ -163,5 +163,63 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ODOMETRY : " +   "  time_usec="+time_usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  q="+q+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  rollspeed="+rollspeed+  "  pitchspeed="+pitchspeed+  "  yawspeed="+yawspeed+  "  pose_covariance="+pose_covariance+  "  twist_covariance="+twist_covariance+  "  frame_id="+frame_id+  "  child_frame_id="+child_frame_id;}
+return "MAVLINK_MSG_ID_ODOMETRY : " +   "  time_usec="+time_usec
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  q[0]="+q[0]
++  "  q[1]="+q[1]
++  "  q[2]="+q[2]
++  "  q[3]="+q[3]
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  rollspeed="+rollspeed
++  "  pitchspeed="+pitchspeed
++  "  yawspeed="+yawspeed
++  "  pose_covariance[0]="+pose_covariance[0]
++  "  pose_covariance[1]="+pose_covariance[1]
++  "  pose_covariance[2]="+pose_covariance[2]
++  "  pose_covariance[3]="+pose_covariance[3]
++  "  pose_covariance[4]="+pose_covariance[4]
++  "  pose_covariance[5]="+pose_covariance[5]
++  "  pose_covariance[6]="+pose_covariance[6]
++  "  pose_covariance[7]="+pose_covariance[7]
++  "  pose_covariance[8]="+pose_covariance[8]
++  "  pose_covariance[9]="+pose_covariance[9]
++  "  pose_covariance[10]="+pose_covariance[10]
++  "  pose_covariance[11]="+pose_covariance[11]
++  "  pose_covariance[12]="+pose_covariance[12]
++  "  pose_covariance[13]="+pose_covariance[13]
++  "  pose_covariance[14]="+pose_covariance[14]
++  "  pose_covariance[15]="+pose_covariance[15]
++  "  pose_covariance[16]="+pose_covariance[16]
++  "  pose_covariance[17]="+pose_covariance[17]
++  "  pose_covariance[18]="+pose_covariance[18]
++  "  pose_covariance[19]="+pose_covariance[19]
++  "  pose_covariance[20]="+pose_covariance[20]
++  "  twist_covariance[0]="+twist_covariance[0]
++  "  twist_covariance[1]="+twist_covariance[1]
++  "  twist_covariance[2]="+twist_covariance[2]
++  "  twist_covariance[3]="+twist_covariance[3]
++  "  twist_covariance[4]="+twist_covariance[4]
++  "  twist_covariance[5]="+twist_covariance[5]
++  "  twist_covariance[6]="+twist_covariance[6]
++  "  twist_covariance[7]="+twist_covariance[7]
++  "  twist_covariance[8]="+twist_covariance[8]
++  "  twist_covariance[9]="+twist_covariance[9]
++  "  twist_covariance[10]="+twist_covariance[10]
++  "  twist_covariance[11]="+twist_covariance[11]
++  "  twist_covariance[12]="+twist_covariance[12]
++  "  twist_covariance[13]="+twist_covariance[13]
++  "  twist_covariance[14]="+twist_covariance[14]
++  "  twist_covariance[15]="+twist_covariance[15]
++  "  twist_covariance[16]="+twist_covariance[16]
++  "  twist_covariance[17]="+twist_covariance[17]
++  "  twist_covariance[18]="+twist_covariance[18]
++  "  twist_covariance[19]="+twist_covariance[19]
++  "  twist_covariance[20]="+twist_covariance[20]
++  "  frame_id="+frame_id
++  "  child_frame_id="+child_frame_id
+;}
 }

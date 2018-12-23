@@ -91,5 +91,10 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_RAW_PRESSURE : " +   "  time_usec="+time_usec+  "  press_abs="+press_abs+  "  press_diff1="+press_diff1+  "  press_diff2="+press_diff2+  "  temperature="+temperature;}
+return "MAVLINK_MSG_ID_RAW_PRESSURE : " +   "  time_usec="+time_usec
++  "  press_abs="+press_abs
++  "  press_diff1="+press_diff1
++  "  press_diff2="+press_diff2
++  "  temperature="+temperature
+;}
 }

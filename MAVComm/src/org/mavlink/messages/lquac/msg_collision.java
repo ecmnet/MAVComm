@@ -103,5 +103,12 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_COLLISION : " +   "  id="+id+  "  time_to_minimum_delta="+time_to_minimum_delta+  "  altitude_minimum_delta="+altitude_minimum_delta+  "  horizontal_minimum_delta="+horizontal_minimum_delta+  "  src="+src+  "  action="+action+  "  threat_level="+threat_level;}
+return "MAVLINK_MSG_ID_COLLISION : " +   "  id="+id
++  "  time_to_minimum_delta="+time_to_minimum_delta
++  "  altitude_minimum_delta="+altitude_minimum_delta
++  "  horizontal_minimum_delta="+horizontal_minimum_delta
++  "  src="+src
++  "  action="+action
++  "  threat_level="+threat_level
+;}
 }

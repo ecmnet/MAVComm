@@ -79,5 +79,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_DATA_STREAM : " +   "  message_rate="+message_rate+  "  stream_id="+stream_id+  "  on_off="+on_off;}
+return "MAVLINK_MSG_ID_DATA_STREAM : " +   "  message_rate="+message_rate
++  "  stream_id="+stream_id
++  "  on_off="+on_off
+;}
 }

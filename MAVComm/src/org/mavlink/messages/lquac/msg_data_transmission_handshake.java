@@ -103,5 +103,12 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE : " +   "  size="+size+  "  width="+width+  "  height="+height+  "  packets="+packets+  "  type="+type+  "  payload="+payload+  "  jpg_quality="+jpg_quality;}
+return "MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE : " +   "  size="+size
++  "  width="+width
++  "  height="+height
++  "  packets="+packets
++  "  type="+type
++  "  payload="+payload
++  "  jpg_quality="+jpg_quality
+;}
 }

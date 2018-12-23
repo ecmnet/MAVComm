@@ -173,5 +173,17 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms+  "  unix_time_us="+unix_time_us+  "  com_error="+com_error+  "  status="+status+  "  autopilot_mode="+autopilot_mode+  "  load="+load+  "  memory="+memory+  "  threads="+threads+  "  wifi_quality="+wifi_quality+  "  cpu_temp="+cpu_temp+  "  version="+getVersion()+  "  arch="+getArch();}
+return "MAVLINK_MSG_ID_MSP_STATUS : " +   "  uptime_ms="+uptime_ms
++  "  unix_time_us="+unix_time_us
++  "  com_error="+com_error
++  "  status="+status
++  "  autopilot_mode="+autopilot_mode
++  "  load="+load
++  "  memory="+memory
++  "  threads="+threads
++  "  wifi_quality="+wifi_quality
++  "  cpu_temp="+cpu_temp
++  "  version="+getVersion()
++  "  arch="+getArch()
+;}
 }

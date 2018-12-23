@@ -91,5 +91,10 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN : " +   "  latitude="+latitude+  "  longitude="+longitude+  "  altitude="+altitude+  "  target_system="+target_system+  "  time_usec="+time_usec;}
+return "MAVLINK_MSG_ID_SET_GPS_GLOBAL_ORIGIN : " +   "  latitude="+latitude
++  "  longitude="+longitude
++  "  altitude="+altitude
++  "  target_system="+target_system
++  "  time_usec="+time_usec
+;}
 }

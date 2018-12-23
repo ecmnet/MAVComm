@@ -73,5 +73,7 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MESSAGE_INTERVAL : " +   "  interval_us="+interval_us+  "  message_id="+message_id;}
+return "MAVLINK_MSG_ID_MESSAGE_INTERVAL : " +   "  interval_us="+interval_us
++  "  message_id="+message_id
+;}
 }

@@ -87,5 +87,6 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_AUTH_KEY : " +   "  key="+getKey();}
+return "MAVLINK_MSG_ID_AUTH_KEY : " +   "  key="+getKey()
+;}
 }

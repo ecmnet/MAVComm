@@ -175,5 +175,29 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE : " +   "  time_usec="+time_usec+  "  x_acc="+x_acc+  "  y_acc="+y_acc+  "  z_acc="+z_acc+  "  x_vel="+x_vel+  "  y_vel="+y_vel+  "  z_vel="+z_vel+  "  x_pos="+x_pos+  "  y_pos="+y_pos+  "  z_pos="+z_pos+  "  airspeed="+airspeed+  "  vel_variance="+vel_variance+  "  pos_variance="+pos_variance+  "  q="+q+  "  roll_rate="+roll_rate+  "  pitch_rate="+pitch_rate+  "  yaw_rate="+yaw_rate;}
+return "MAVLINK_MSG_ID_CONTROL_SYSTEM_STATE : " +   "  time_usec="+time_usec
++  "  x_acc="+x_acc
++  "  y_acc="+y_acc
++  "  z_acc="+z_acc
++  "  x_vel="+x_vel
++  "  y_vel="+y_vel
++  "  z_vel="+z_vel
++  "  x_pos="+x_pos
++  "  y_pos="+y_pos
++  "  z_pos="+z_pos
++  "  airspeed="+airspeed
++  "  vel_variance[0]="+vel_variance[0]
++  "  vel_variance[1]="+vel_variance[1]
++  "  vel_variance[2]="+vel_variance[2]
++  "  pos_variance[0]="+pos_variance[0]
++  "  pos_variance[1]="+pos_variance[1]
++  "  pos_variance[2]="+pos_variance[2]
++  "  q[0]="+q[0]
++  "  q[1]="+q[1]
++  "  q[2]="+q[2]
++  "  q[3]="+q[3]
++  "  roll_rate="+roll_rate
++  "  pitch_rate="+pitch_rate
++  "  yaw_rate="+yaw_rate
+;}
 }

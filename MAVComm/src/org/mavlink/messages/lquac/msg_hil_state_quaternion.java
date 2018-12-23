@@ -161,5 +161,24 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HIL_STATE_QUATERNION : " +   "  time_usec="+time_usec+  "  attitude_quaternion="+attitude_quaternion+  "  rollspeed="+rollspeed+  "  pitchspeed="+pitchspeed+  "  yawspeed="+yawspeed+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  ind_airspeed="+ind_airspeed+  "  true_airspeed="+true_airspeed+  "  xacc="+xacc+  "  yacc="+yacc+  "  zacc="+zacc;}
+return "MAVLINK_MSG_ID_HIL_STATE_QUATERNION : " +   "  time_usec="+time_usec
++  "  attitude_quaternion[0]="+attitude_quaternion[0]
++  "  attitude_quaternion[1]="+attitude_quaternion[1]
++  "  attitude_quaternion[2]="+attitude_quaternion[2]
++  "  attitude_quaternion[3]="+attitude_quaternion[3]
++  "  rollspeed="+rollspeed
++  "  pitchspeed="+pitchspeed
++  "  yawspeed="+yawspeed
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  ind_airspeed="+ind_airspeed
++  "  true_airspeed="+true_airspeed
++  "  xacc="+xacc
++  "  yacc="+yacc
++  "  zacc="+zacc
+;}
 }

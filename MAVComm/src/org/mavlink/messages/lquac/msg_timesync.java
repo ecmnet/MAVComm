@@ -73,5 +73,7 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_TIMESYNC : " +   "  tc1="+tc1+  "  ts1="+ts1;}
+return "MAVLINK_MSG_ID_TIMESYNC : " +   "  tc1="+tc1
++  "  ts1="+ts1
+;}
 }

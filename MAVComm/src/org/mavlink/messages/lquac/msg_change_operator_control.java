@@ -105,5 +105,9 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL : " +   "  target_system="+target_system+  "  control_request="+control_request+  "  version="+version+  "  passkey="+getPasskey();}
+return "MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL : " +   "  target_system="+target_system
++  "  control_request="+control_request
++  "  version="+version
++  "  passkey="+getPasskey()
+;}
 }

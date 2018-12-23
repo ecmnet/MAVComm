@@ -139,5 +139,29 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_UAVCAN_NODE_INFO : " +   "  time_usec="+time_usec+  "  uptime_sec="+uptime_sec+  "  sw_vcs_commit="+sw_vcs_commit+  "  name="+getName()+  "  hw_version_major="+hw_version_major+  "  hw_version_minor="+hw_version_minor+  "  hw_unique_id="+hw_unique_id+  "  sw_version_major="+sw_version_major+  "  sw_version_minor="+sw_version_minor;}
+return "MAVLINK_MSG_ID_UAVCAN_NODE_INFO : " +   "  time_usec="+time_usec
++  "  uptime_sec="+uptime_sec
++  "  sw_vcs_commit="+sw_vcs_commit
++  "  name="+getName()
++  "  hw_version_major="+hw_version_major
++  "  hw_version_minor="+hw_version_minor
++  "  hw_unique_id[0]="+hw_unique_id[0]
++  "  hw_unique_id[1]="+hw_unique_id[1]
++  "  hw_unique_id[2]="+hw_unique_id[2]
++  "  hw_unique_id[3]="+hw_unique_id[3]
++  "  hw_unique_id[4]="+hw_unique_id[4]
++  "  hw_unique_id[5]="+hw_unique_id[5]
++  "  hw_unique_id[6]="+hw_unique_id[6]
++  "  hw_unique_id[7]="+hw_unique_id[7]
++  "  hw_unique_id[8]="+hw_unique_id[8]
++  "  hw_unique_id[9]="+hw_unique_id[9]
++  "  hw_unique_id[10]="+hw_unique_id[10]
++  "  hw_unique_id[11]="+hw_unique_id[11]
++  "  hw_unique_id[12]="+hw_unique_id[12]
++  "  hw_unique_id[13]="+hw_unique_id[13]
++  "  hw_unique_id[14]="+hw_unique_id[14]
++  "  hw_unique_id[15]="+hw_unique_id[15]
++  "  sw_version_major="+sw_version_major
++  "  sw_version_minor="+sw_version_minor
+;}
 }

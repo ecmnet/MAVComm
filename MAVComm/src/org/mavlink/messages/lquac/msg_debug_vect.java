@@ -111,5 +111,10 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_DEBUG_VECT : " +   "  time_usec="+time_usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  name="+getName();}
+return "MAVLINK_MSG_ID_DEBUG_VECT : " +   "  time_usec="+time_usec
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  name="+getName()
+;}
 }

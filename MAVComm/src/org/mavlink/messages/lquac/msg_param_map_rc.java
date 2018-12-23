@@ -135,5 +135,14 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_PARAM_MAP_RC : " +   "  param_value0="+param_value0+  "  scale="+scale+  "  param_value_min="+param_value_min+  "  param_value_max="+param_value_max+  "  param_index="+param_index+  "  target_system="+target_system+  "  target_component="+target_component+  "  param_id="+getParam_id()+  "  parameter_rc_channel_index="+parameter_rc_channel_index;}
+return "MAVLINK_MSG_ID_PARAM_MAP_RC : " +   "  param_value0="+param_value0
++  "  scale="+scale
++  "  param_value_min="+param_value_min
++  "  param_value_max="+param_value_max
++  "  param_index="+param_index
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  param_id="+getParam_id()
++  "  parameter_rc_channel_index="+parameter_rc_channel_index
+;}
 }

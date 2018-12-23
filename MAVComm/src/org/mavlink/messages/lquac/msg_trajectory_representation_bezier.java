@@ -123,5 +123,32 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_TRAJECTORY_REPRESENTATION_BEZIER : " +   "  time_usec="+time_usec+  "  pos_x="+pos_x+  "  pos_y="+pos_y+  "  pos_z="+pos_z+  "  delta="+delta+  "  pos_yaw="+pos_yaw+  "  valid_points="+valid_points;}
+return "MAVLINK_MSG_ID_TRAJECTORY_REPRESENTATION_BEZIER : " +   "  time_usec="+time_usec
++  "  pos_x[0]="+pos_x[0]
++  "  pos_x[1]="+pos_x[1]
++  "  pos_x[2]="+pos_x[2]
++  "  pos_x[3]="+pos_x[3]
++  "  pos_x[4]="+pos_x[4]
++  "  pos_y[0]="+pos_y[0]
++  "  pos_y[1]="+pos_y[1]
++  "  pos_y[2]="+pos_y[2]
++  "  pos_y[3]="+pos_y[3]
++  "  pos_y[4]="+pos_y[4]
++  "  pos_z[0]="+pos_z[0]
++  "  pos_z[1]="+pos_z[1]
++  "  pos_z[2]="+pos_z[2]
++  "  pos_z[3]="+pos_z[3]
++  "  pos_z[4]="+pos_z[4]
++  "  delta[0]="+delta[0]
++  "  delta[1]="+delta[1]
++  "  delta[2]="+delta[2]
++  "  delta[3]="+delta[3]
++  "  delta[4]="+delta[4]
++  "  pos_yaw[0]="+pos_yaw[0]
++  "  pos_yaw[1]="+pos_yaw[1]
++  "  pos_yaw[2]="+pos_yaw[2]
++  "  pos_yaw[3]="+pos_yaw[3]
++  "  pos_yaw[4]="+pos_yaw[4]
++  "  valid_points="+valid_points
+;}
 }

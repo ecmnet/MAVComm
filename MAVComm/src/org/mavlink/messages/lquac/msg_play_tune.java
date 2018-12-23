@@ -125,5 +125,9 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_PLAY_TUNE : " +   "  target_system="+target_system+  "  target_component="+target_component+  "  tune="+getTune()+  "  tune2="+getTune2();}
+return "MAVLINK_MSG_ID_PLAY_TUNE : " +   "  target_system="+target_system
++  "  target_component="+target_component
++  "  tune="+getTune()
++  "  tune2="+getTune2()
+;}
 }

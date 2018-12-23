@@ -137,5 +137,61 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV : " +   "  time_usec="+time_usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  ax="+ax+  "  ay="+ay+  "  az="+az+  "  covariance="+covariance+  "  estimator_type="+estimator_type;}
+return "MAVLINK_MSG_ID_LOCAL_POSITION_NED_COV : " +   "  time_usec="+time_usec
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  ax="+ax
++  "  ay="+ay
++  "  az="+az
++  "  covariance[0]="+covariance[0]
++  "  covariance[1]="+covariance[1]
++  "  covariance[2]="+covariance[2]
++  "  covariance[3]="+covariance[3]
++  "  covariance[4]="+covariance[4]
++  "  covariance[5]="+covariance[5]
++  "  covariance[6]="+covariance[6]
++  "  covariance[7]="+covariance[7]
++  "  covariance[8]="+covariance[8]
++  "  covariance[9]="+covariance[9]
++  "  covariance[10]="+covariance[10]
++  "  covariance[11]="+covariance[11]
++  "  covariance[12]="+covariance[12]
++  "  covariance[13]="+covariance[13]
++  "  covariance[14]="+covariance[14]
++  "  covariance[15]="+covariance[15]
++  "  covariance[16]="+covariance[16]
++  "  covariance[17]="+covariance[17]
++  "  covariance[18]="+covariance[18]
++  "  covariance[19]="+covariance[19]
++  "  covariance[20]="+covariance[20]
++  "  covariance[21]="+covariance[21]
++  "  covariance[22]="+covariance[22]
++  "  covariance[23]="+covariance[23]
++  "  covariance[24]="+covariance[24]
++  "  covariance[25]="+covariance[25]
++  "  covariance[26]="+covariance[26]
++  "  covariance[27]="+covariance[27]
++  "  covariance[28]="+covariance[28]
++  "  covariance[29]="+covariance[29]
++  "  covariance[30]="+covariance[30]
++  "  covariance[31]="+covariance[31]
++  "  covariance[32]="+covariance[32]
++  "  covariance[33]="+covariance[33]
++  "  covariance[34]="+covariance[34]
++  "  covariance[35]="+covariance[35]
++  "  covariance[36]="+covariance[36]
++  "  covariance[37]="+covariance[37]
++  "  covariance[38]="+covariance[38]
++  "  covariance[39]="+covariance[39]
++  "  covariance[40]="+covariance[40]
++  "  covariance[41]="+covariance[41]
++  "  covariance[42]="+covariance[42]
++  "  covariance[43]="+covariance[43]
++  "  covariance[44]="+covariance[44]
++  "  estimator_type="+estimator_type
+;}
 }

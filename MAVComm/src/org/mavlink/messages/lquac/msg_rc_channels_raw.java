@@ -127,5 +127,16 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_RC_CHANNELS_RAW : " +   "  time_boot_ms="+time_boot_ms+  "  chan1_raw="+chan1_raw+  "  chan2_raw="+chan2_raw+  "  chan3_raw="+chan3_raw+  "  chan4_raw="+chan4_raw+  "  chan5_raw="+chan5_raw+  "  chan6_raw="+chan6_raw+  "  chan7_raw="+chan7_raw+  "  chan8_raw="+chan8_raw+  "  port="+port+  "  rssi="+rssi;}
+return "MAVLINK_MSG_ID_RC_CHANNELS_RAW : " +   "  time_boot_ms="+time_boot_ms
++  "  chan1_raw="+chan1_raw
++  "  chan2_raw="+chan2_raw
++  "  chan3_raw="+chan3_raw
++  "  chan4_raw="+chan4_raw
++  "  chan5_raw="+chan5_raw
++  "  chan6_raw="+chan6_raw
++  "  chan7_raw="+chan7_raw
++  "  chan8_raw="+chan8_raw
++  "  port="+port
++  "  rssi="+rssi
+;}
 }

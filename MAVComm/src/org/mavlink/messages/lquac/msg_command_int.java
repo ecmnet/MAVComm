@@ -139,5 +139,18 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_COMMAND_INT : " +   "  param1="+param1+  "  param2="+param2+  "  param3="+param3+  "  param4="+param4+  "  x="+x+  "  y="+y+  "  z="+z+  "  command="+command+  "  target_system="+target_system+  "  target_component="+target_component+  "  frame="+frame+  "  current="+current+  "  autocontinue="+autocontinue;}
+return "MAVLINK_MSG_ID_COMMAND_INT : " +   "  param1="+param1
++  "  param2="+param2
++  "  param3="+param3
++  "  param4="+param4
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  command="+command
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  frame="+frame
++  "  current="+current
++  "  autocontinue="+autocontinue
+;}
 }

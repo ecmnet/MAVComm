@@ -121,5 +121,15 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ESTIMATOR_STATUS : " +   "  time_usec="+time_usec+  "  vel_ratio="+vel_ratio+  "  pos_horiz_ratio="+pos_horiz_ratio+  "  pos_vert_ratio="+pos_vert_ratio+  "  mag_ratio="+mag_ratio+  "  hagl_ratio="+hagl_ratio+  "  tas_ratio="+tas_ratio+  "  pos_horiz_accuracy="+pos_horiz_accuracy+  "  pos_vert_accuracy="+pos_vert_accuracy+  "  flags="+flags;}
+return "MAVLINK_MSG_ID_ESTIMATOR_STATUS : " +   "  time_usec="+time_usec
++  "  vel_ratio="+vel_ratio
++  "  pos_horiz_ratio="+pos_horiz_ratio
++  "  pos_vert_ratio="+pos_vert_ratio
++  "  mag_ratio="+mag_ratio
++  "  hagl_ratio="+hagl_ratio
++  "  tas_ratio="+tas_ratio
++  "  pos_horiz_accuracy="+pos_horiz_accuracy
++  "  pos_vert_accuracy="+pos_vert_accuracy
++  "  flags="+flags
+;}
 }

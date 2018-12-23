@@ -173,5 +173,40 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_UTM_GLOBAL_POSITION : " +   "  time="+time+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  relative_alt="+relative_alt+  "  next_lat="+next_lat+  "  next_lon="+next_lon+  "  next_alt="+next_alt+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  h_acc="+h_acc+  "  v_acc="+v_acc+  "  vel_acc="+vel_acc+  "  update_rate="+update_rate+  "  uas_id="+uas_id+  "  flight_state="+flight_state+  "  flags="+flags;}
+return "MAVLINK_MSG_ID_UTM_GLOBAL_POSITION : " +   "  time="+time
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  relative_alt="+relative_alt
++  "  next_lat="+next_lat
++  "  next_lon="+next_lon
++  "  next_alt="+next_alt
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  h_acc="+h_acc
++  "  v_acc="+v_acc
++  "  vel_acc="+vel_acc
++  "  update_rate="+update_rate
++  "  uas_id[0]="+uas_id[0]
++  "  uas_id[1]="+uas_id[1]
++  "  uas_id[2]="+uas_id[2]
++  "  uas_id[3]="+uas_id[3]
++  "  uas_id[4]="+uas_id[4]
++  "  uas_id[5]="+uas_id[5]
++  "  uas_id[6]="+uas_id[6]
++  "  uas_id[7]="+uas_id[7]
++  "  uas_id[8]="+uas_id[8]
++  "  uas_id[9]="+uas_id[9]
++  "  uas_id[10]="+uas_id[10]
++  "  uas_id[11]="+uas_id[11]
++  "  uas_id[12]="+uas_id[12]
++  "  uas_id[13]="+uas_id[13]
++  "  uas_id[14]="+uas_id[14]
++  "  uas_id[15]="+uas_id[15]
++  "  uas_id[16]="+uas_id[16]
++  "  uas_id[17]="+uas_id[17]
++  "  flight_state="+flight_state
++  "  flags="+flags
+;}
 }

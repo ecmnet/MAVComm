@@ -85,5 +85,9 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_TERRAIN_REQUEST : " +   "  mask="+mask+  "  lat="+lat+  "  lon="+lon+  "  grid_spacing="+grid_spacing;}
+return "MAVLINK_MSG_ID_TERRAIN_REQUEST : " +   "  mask="+mask
++  "  lat="+lat
++  "  lon="+lon
++  "  grid_spacing="+grid_spacing
+;}
 }

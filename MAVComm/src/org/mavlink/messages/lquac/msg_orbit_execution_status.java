@@ -97,5 +97,11 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_ORBIT_EXECUTION_STATUS : " +   "  time_usec="+time_usec+  "  radius="+radius+  "  x="+x+  "  y="+y+  "  z="+z+  "  frame="+frame;}
+return "MAVLINK_MSG_ID_ORBIT_EXECUTION_STATUS : " +   "  time_usec="+time_usec
++  "  radius="+radius
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  frame="+frame
+;}
 }

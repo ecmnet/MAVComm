@@ -67,5 +67,6 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MISSION_ITEM_REACHED : " +   "  seq="+seq;}
+return "MAVLINK_MSG_ID_MISSION_ITEM_REACHED : " +   "  seq="+seq
+;}
 }

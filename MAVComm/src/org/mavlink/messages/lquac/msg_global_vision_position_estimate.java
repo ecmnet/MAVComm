@@ -113,5 +113,33 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE : " +   "  usec="+usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw+  "  covariance="+covariance;}
+return "MAVLINK_MSG_ID_GLOBAL_VISION_POSITION_ESTIMATE : " +   "  usec="+usec
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  roll="+roll
++  "  pitch="+pitch
++  "  yaw="+yaw
++  "  covariance[0]="+covariance[0]
++  "  covariance[1]="+covariance[1]
++  "  covariance[2]="+covariance[2]
++  "  covariance[3]="+covariance[3]
++  "  covariance[4]="+covariance[4]
++  "  covariance[5]="+covariance[5]
++  "  covariance[6]="+covariance[6]
++  "  covariance[7]="+covariance[7]
++  "  covariance[8]="+covariance[8]
++  "  covariance[9]="+covariance[9]
++  "  covariance[10]="+covariance[10]
++  "  covariance[11]="+covariance[11]
++  "  covariance[12]="+covariance[12]
++  "  covariance[13]="+covariance[13]
++  "  covariance[14]="+covariance[14]
++  "  covariance[15]="+covariance[15]
++  "  covariance[16]="+covariance[16]
++  "  covariance[17]="+covariance[17]
++  "  covariance[18]="+covariance[18]
++  "  covariance[19]="+covariance[19]
++  "  covariance[20]="+covariance[20]
+;}
 }

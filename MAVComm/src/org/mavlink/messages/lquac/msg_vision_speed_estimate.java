@@ -95,5 +95,18 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE : " +   "  usec="+usec+  "  x="+x+  "  y="+y+  "  z="+z+  "  covariance="+covariance;}
+return "MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE : " +   "  usec="+usec
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  covariance[0]="+covariance[0]
++  "  covariance[1]="+covariance[1]
++  "  covariance[2]="+covariance[2]
++  "  covariance[3]="+covariance[3]
++  "  covariance[4]="+covariance[4]
++  "  covariance[5]="+covariance[5]
++  "  covariance[6]="+covariance[6]
++  "  covariance[7]="+covariance[7]
++  "  covariance[8]="+covariance[8]
+;}
 }

@@ -157,5 +157,21 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED : " +   "  time_boot_ms="+time_boot_ms+  "  x="+x+  "  y="+y+  "  z="+z+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  afx="+afx+  "  afy="+afy+  "  afz="+afz+  "  yaw="+yaw+  "  yaw_rate="+yaw_rate+  "  type_mask="+type_mask+  "  target_system="+target_system+  "  target_component="+target_component+  "  coordinate_frame="+coordinate_frame;}
+return "MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED : " +   "  time_boot_ms="+time_boot_ms
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  afx="+afx
++  "  afy="+afy
++  "  afz="+afz
++  "  yaw="+yaw
++  "  yaw_rate="+yaw_rate
++  "  type_mask="+type_mask
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  coordinate_frame="+coordinate_frame
+;}
 }

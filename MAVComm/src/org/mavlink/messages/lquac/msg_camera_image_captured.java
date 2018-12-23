@@ -151,5 +151,19 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED : " +   "  time_utc="+time_utc+  "  time_boot_ms="+time_boot_ms+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  relative_alt="+relative_alt+  "  q="+q+  "  image_index="+image_index+  "  camera_id="+camera_id+  "  capture_result="+capture_result+  "  file_url="+getFile_url();}
+return "MAVLINK_MSG_ID_CAMERA_IMAGE_CAPTURED : " +   "  time_utc="+time_utc
++  "  time_boot_ms="+time_boot_ms
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  relative_alt="+relative_alt
++  "  q[0]="+q[0]
++  "  q[1]="+q[1]
++  "  q[2]="+q[2]
++  "  q[3]="+q[3]
++  "  image_index="+image_index
++  "  camera_id="+camera_id
++  "  capture_result="+capture_result
++  "  file_url="+getFile_url()
+;}
 }

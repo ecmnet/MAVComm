@@ -89,5 +89,40 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SETUP_SIGNING : " +   "  initial_timestamp="+initial_timestamp+  "  target_system="+target_system+  "  target_component="+target_component+  "  secret_key="+secret_key;}
+return "MAVLINK_MSG_ID_SETUP_SIGNING : " +   "  initial_timestamp="+initial_timestamp
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  secret_key[0]="+secret_key[0]
++  "  secret_key[1]="+secret_key[1]
++  "  secret_key[2]="+secret_key[2]
++  "  secret_key[3]="+secret_key[3]
++  "  secret_key[4]="+secret_key[4]
++  "  secret_key[5]="+secret_key[5]
++  "  secret_key[6]="+secret_key[6]
++  "  secret_key[7]="+secret_key[7]
++  "  secret_key[8]="+secret_key[8]
++  "  secret_key[9]="+secret_key[9]
++  "  secret_key[10]="+secret_key[10]
++  "  secret_key[11]="+secret_key[11]
++  "  secret_key[12]="+secret_key[12]
++  "  secret_key[13]="+secret_key[13]
++  "  secret_key[14]="+secret_key[14]
++  "  secret_key[15]="+secret_key[15]
++  "  secret_key[16]="+secret_key[16]
++  "  secret_key[17]="+secret_key[17]
++  "  secret_key[18]="+secret_key[18]
++  "  secret_key[19]="+secret_key[19]
++  "  secret_key[20]="+secret_key[20]
++  "  secret_key[21]="+secret_key[21]
++  "  secret_key[22]="+secret_key[22]
++  "  secret_key[23]="+secret_key[23]
++  "  secret_key[24]="+secret_key[24]
++  "  secret_key[25]="+secret_key[25]
++  "  secret_key[26]="+secret_key[26]
++  "  secret_key[27]="+secret_key[27]
++  "  secret_key[28]="+secret_key[28]
++  "  secret_key[29]="+secret_key[29]
++  "  secret_key[30]="+secret_key[30]
++  "  secret_key[31]="+secret_key[31]
+;}
 }

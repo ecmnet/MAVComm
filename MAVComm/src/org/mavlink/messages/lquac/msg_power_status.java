@@ -79,5 +79,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_POWER_STATUS : " +   "  Vcc="+Vcc+  "  Vservo="+Vservo+  "  flags="+flags;}
+return "MAVLINK_MSG_ID_POWER_STATUS : " +   "  Vcc="+Vcc
++  "  Vservo="+Vservo
++  "  flags="+flags
+;}
 }

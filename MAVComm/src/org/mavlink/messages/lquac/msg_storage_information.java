@@ -115,5 +115,14 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_STORAGE_INFORMATION : " +   "  time_boot_ms="+time_boot_ms+  "  total_capacity="+total_capacity+  "  used_capacity="+used_capacity+  "  available_capacity="+available_capacity+  "  read_speed="+read_speed+  "  write_speed="+write_speed+  "  storage_id="+storage_id+  "  storage_count="+storage_count+  "  status="+status;}
+return "MAVLINK_MSG_ID_STORAGE_INFORMATION : " +   "  time_boot_ms="+time_boot_ms
++  "  total_capacity="+total_capacity
++  "  used_capacity="+used_capacity
++  "  available_capacity="+available_capacity
++  "  read_speed="+read_speed
++  "  write_speed="+write_speed
++  "  storage_id="+storage_id
++  "  storage_count="+storage_count
++  "  status="+status
+;}
 }

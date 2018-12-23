@@ -79,5 +79,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_DEBUG : " +   "  time_boot_ms="+time_boot_ms+  "  value="+value+  "  ind="+ind;}
+return "MAVLINK_MSG_ID_DEBUG : " +   "  time_boot_ms="+time_boot_ms
++  "  value="+value
++  "  ind="+ind
+;}
 }

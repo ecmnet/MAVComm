@@ -91,5 +91,10 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_REQUEST_DATA_STREAM : " +   "  req_message_rate="+req_message_rate+  "  target_system="+target_system+  "  target_component="+target_component+  "  req_stream_id="+req_stream_id+  "  start_stop="+start_stop;}
+return "MAVLINK_MSG_ID_REQUEST_DATA_STREAM : " +   "  req_message_rate="+req_message_rate
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  req_stream_id="+req_stream_id
++  "  start_stop="+start_stop
+;}
 }

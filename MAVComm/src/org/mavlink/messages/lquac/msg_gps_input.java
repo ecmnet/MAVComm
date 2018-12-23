@@ -169,5 +169,23 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_GPS_INPUT : " +   "  time_usec="+time_usec+  "  time_week_ms="+time_week_ms+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  hdop="+hdop+  "  vdop="+vdop+  "  vn="+vn+  "  ve="+ve+  "  vd="+vd+  "  speed_accuracy="+speed_accuracy+  "  horiz_accuracy="+horiz_accuracy+  "  vert_accuracy="+vert_accuracy+  "  ignore_flags="+ignore_flags+  "  time_week="+time_week+  "  gps_id="+gps_id+  "  fix_type="+fix_type+  "  satellites_visible="+satellites_visible;}
+return "MAVLINK_MSG_ID_GPS_INPUT : " +   "  time_usec="+time_usec
++  "  time_week_ms="+time_week_ms
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  hdop="+hdop
++  "  vdop="+vdop
++  "  vn="+vn
++  "  ve="+ve
++  "  vd="+vd
++  "  speed_accuracy="+speed_accuracy
++  "  horiz_accuracy="+horiz_accuracy
++  "  vert_accuracy="+vert_accuracy
++  "  ignore_flags="+ignore_flags
++  "  time_week="+time_week
++  "  gps_id="+gps_id
++  "  fix_type="+fix_type
++  "  satellites_visible="+satellites_visible
+;}
 }

@@ -73,5 +73,7 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CAMERA_TRIGGER : " +   "  time_usec="+time_usec+  "  seq="+seq;}
+return "MAVLINK_MSG_ID_CAMERA_TRIGGER : " +   "  time_usec="+time_usec
++  "  seq="+seq
+;}
 }

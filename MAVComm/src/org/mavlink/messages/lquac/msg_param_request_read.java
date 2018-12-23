@@ -105,5 +105,9 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_PARAM_REQUEST_READ : " +   "  param_index="+param_index+  "  target_system="+target_system+  "  target_component="+target_component+  "  param_id="+getParam_id();}
+return "MAVLINK_MSG_ID_PARAM_REQUEST_READ : " +   "  param_index="+param_index
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  param_id="+getParam_id()
+;}
 }

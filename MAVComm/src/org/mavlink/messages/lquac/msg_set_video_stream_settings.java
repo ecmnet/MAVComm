@@ -135,5 +135,14 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS : " +   "  framerate="+framerate+  "  bitrate="+bitrate+  "  resolution_h="+resolution_h+  "  resolution_v="+resolution_v+  "  rotation="+rotation+  "  target_system="+target_system+  "  target_component="+target_component+  "  camera_id="+camera_id+  "  uri="+getUri();}
+return "MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS : " +   "  framerate="+framerate
++  "  bitrate="+bitrate
++  "  resolution_h="+resolution_h
++  "  resolution_v="+resolution_v
++  "  rotation="+rotation
++  "  target_system="+target_system
++  "  target_component="+target_component
++  "  camera_id="+camera_id
++  "  uri="+getUri()
+;}
 }

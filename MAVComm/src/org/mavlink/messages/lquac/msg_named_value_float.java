@@ -99,5 +99,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_NAMED_VALUE_FLOAT : " +   "  time_boot_ms="+time_boot_ms+  "  value="+value+  "  name="+getName();}
+return "MAVLINK_MSG_ID_NAMED_VALUE_FLOAT : " +   "  time_boot_ms="+time_boot_ms
++  "  value="+value
++  "  name="+getName()
+;}
 }

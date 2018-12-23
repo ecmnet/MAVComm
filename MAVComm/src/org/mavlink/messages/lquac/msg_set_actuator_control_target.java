@@ -95,5 +95,17 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET : " +   "  time_usec="+time_usec+  "  controls="+controls+  "  group_mlx="+group_mlx+  "  target_system="+target_system+  "  target_component="+target_component;}
+return "MAVLINK_MSG_ID_SET_ACTUATOR_CONTROL_TARGET : " +   "  time_usec="+time_usec
++  "  controls[0]="+controls[0]
++  "  controls[1]="+controls[1]
++  "  controls[2]="+controls[2]
++  "  controls[3]="+controls[3]
++  "  controls[4]="+controls[4]
++  "  controls[5]="+controls[5]
++  "  controls[6]="+controls[6]
++  "  controls[7]="+controls[7]
++  "  group_mlx="+group_mlx
++  "  target_system="+target_system
++  "  target_component="+target_component
+;}
 }

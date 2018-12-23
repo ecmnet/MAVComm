@@ -131,5 +131,19 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HOME_POSITION : " +   "  latitude="+latitude+  "  longitude="+longitude+  "  altitude="+altitude+  "  x="+x+  "  y="+y+  "  z="+z+  "  q="+q+  "  approach_x="+approach_x+  "  approach_y="+approach_y+  "  approach_z="+approach_z+  "  time_usec="+time_usec;}
+return "MAVLINK_MSG_ID_HOME_POSITION : " +   "  latitude="+latitude
++  "  longitude="+longitude
++  "  altitude="+altitude
++  "  x="+x
++  "  y="+y
++  "  z="+z
++  "  q[0]="+q[0]
++  "  q[1]="+q[1]
++  "  q[2]="+q[2]
++  "  q[3]="+q[3]
++  "  approach_x="+approach_x
++  "  approach_y="+approach_y
++  "  approach_z="+approach_z
++  "  time_usec="+time_usec
+;}
 }

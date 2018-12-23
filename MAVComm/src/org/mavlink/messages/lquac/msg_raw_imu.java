@@ -121,5 +121,15 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_RAW_IMU : " +   "  time_usec="+time_usec+  "  xacc="+xacc+  "  yacc="+yacc+  "  zacc="+zacc+  "  xgyro="+xgyro+  "  ygyro="+ygyro+  "  zgyro="+zgyro+  "  xmag="+xmag+  "  ymag="+ymag+  "  zmag="+zmag;}
+return "MAVLINK_MSG_ID_RAW_IMU : " +   "  time_usec="+time_usec
++  "  xacc="+xacc
++  "  yacc="+yacc
++  "  zacc="+zacc
++  "  xgyro="+xgyro
++  "  ygyro="+ygyro
++  "  zgyro="+zgyro
++  "  xmag="+xmag
++  "  ymag="+ymag
++  "  zmag="+zmag
+;}
 }

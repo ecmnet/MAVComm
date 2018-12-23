@@ -116,5 +116,14 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_GLOBAL_POSITION_INT : " +   "  time_boot_ms="+time_boot_ms+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  relative_alt="+relative_alt+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  hdg="+hdg;}
+return "MAVLINK_MSG_ID_GLOBAL_POSITION_INT : " +   "  time_boot_ms="+time_boot_ms
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  relative_alt="+relative_alt
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  hdg="+hdg
+;}
 }

@@ -109,5 +109,13 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_DISTANCE_SENSOR : " +   "  time_boot_ms="+time_boot_ms+  "  min_distance="+min_distance+  "  max_distance="+max_distance+  "  current_distance="+current_distance+  "  type="+type+  "  id="+id+  "  orientation="+orientation+  "  covariance="+covariance;}
+return "MAVLINK_MSG_ID_DISTANCE_SENSOR : " +   "  time_boot_ms="+time_boot_ms
++  "  min_distance="+min_distance
++  "  max_distance="+max_distance
++  "  current_distance="+current_distance
++  "  type="+type
++  "  id="+id
++  "  orientation="+orientation
++  "  covariance="+covariance
+;}
 }

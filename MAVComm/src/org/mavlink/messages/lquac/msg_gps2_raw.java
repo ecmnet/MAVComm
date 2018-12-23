@@ -133,5 +133,17 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_GPS2_RAW : " +   "  time_usec="+time_usec+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  dgps_age="+dgps_age+  "  eph="+eph+  "  epv="+epv+  "  vel="+vel+  "  cog="+cog+  "  fix_type="+fix_type+  "  satellites_visible="+satellites_visible+  "  dgps_numch="+dgps_numch;}
+return "MAVLINK_MSG_ID_GPS2_RAW : " +   "  time_usec="+time_usec
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  dgps_age="+dgps_age
++  "  eph="+eph
++  "  epv="+epv
++  "  vel="+vel
++  "  cog="+cog
++  "  fix_type="+fix_type
++  "  satellites_visible="+satellites_visible
++  "  dgps_numch="+dgps_numch
+;}
 }

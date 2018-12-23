@@ -131,5 +131,10 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_PARAM_EXT_VALUE : " +   "  param_count="+param_count+  "  param_index="+param_index+  "  param_id="+getParam_id()+  "  param_value="+getParam_value()+  "  param_type="+param_type;}
+return "MAVLINK_MSG_ID_PARAM_EXT_VALUE : " +   "  param_count="+param_count
++  "  param_index="+param_index
++  "  param_id="+getParam_id()
++  "  param_value="+getParam_value()
++  "  param_type="+param_type
+;}
 }

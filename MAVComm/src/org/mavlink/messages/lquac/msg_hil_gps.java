@@ -140,5 +140,18 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HIL_GPS : " +   "  time_usec="+time_usec+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  eph="+eph+  "  epv="+epv+  "  vel="+vel+  "  vn="+vn+  "  ve="+ve+  "  vd="+vd+  "  cog="+cog+  "  fix_type="+fix_type+  "  satellites_visible="+satellites_visible;}
+return "MAVLINK_MSG_ID_HIL_GPS : " +   "  time_usec="+time_usec
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  eph="+eph
++  "  epv="+epv
++  "  vel="+vel
++  "  vn="+vn
++  "  ve="+ve
++  "  vd="+vd
++  "  cog="+cog
++  "  fix_type="+fix_type
++  "  satellites_visible="+satellites_visible
+;}
 }

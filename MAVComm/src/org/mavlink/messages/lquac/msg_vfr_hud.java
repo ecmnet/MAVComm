@@ -97,5 +97,11 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_VFR_HUD : " +   "  airspeed="+airspeed+  "  groundspeed="+groundspeed+  "  alt="+alt+  "  climb="+climb+  "  heading="+heading+  "  throttle="+throttle;}
+return "MAVLINK_MSG_ID_VFR_HUD : " +   "  airspeed="+airspeed
++  "  groundspeed="+groundspeed
++  "  alt="+alt
++  "  climb="+climb
++  "  heading="+heading
++  "  throttle="+throttle
+;}
 }

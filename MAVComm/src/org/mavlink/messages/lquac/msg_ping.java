@@ -85,5 +85,9 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_PING : " +   "  time_usec="+time_usec+  "  seq="+seq+  "  target_system="+target_system+  "  target_component="+target_component;}
+return "MAVLINK_MSG_ID_PING : " +   "  time_usec="+time_usec
++  "  seq="+seq
++  "  target_system="+target_system
++  "  target_component="+target_component
+;}
 }

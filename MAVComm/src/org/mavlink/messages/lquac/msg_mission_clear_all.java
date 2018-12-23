@@ -79,5 +79,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MISSION_CLEAR_ALL : " +   "  target_system="+target_system+  "  target_component="+target_component+  "  mission_type="+mission_type;}
+return "MAVLINK_MSG_ID_MISSION_CLEAR_ALL : " +   "  target_system="+target_system
++  "  target_component="+target_component
++  "  mission_type="+mission_type
+;}
 }

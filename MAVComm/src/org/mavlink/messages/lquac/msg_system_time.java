@@ -73,5 +73,7 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SYSTEM_TIME : " +   "  time_unix_usec="+time_unix_usec+  "  time_boot_ms="+time_boot_ms;}
+return "MAVLINK_MSG_ID_SYSTEM_TIME : " +   "  time_unix_usec="+time_unix_usec
++  "  time_boot_ms="+time_boot_ms
+;}
 }

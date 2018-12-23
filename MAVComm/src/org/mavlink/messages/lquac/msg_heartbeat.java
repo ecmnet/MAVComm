@@ -97,5 +97,11 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HEARTBEAT : " +   "  custom_mode="+custom_mode+  "  type="+type+  "  autopilot="+autopilot+  "  base_mode="+base_mode+  "  system_status="+system_status+  "  mavlink_version="+mavlink_version;}
+return "MAVLINK_MSG_ID_HEARTBEAT : " +   "  custom_mode="+custom_mode
++  "  type="+type
++  "  autopilot="+autopilot
++  "  base_mode="+base_mode
++  "  system_status="+system_status
++  "  mavlink_version="+mavlink_version
+;}
 }

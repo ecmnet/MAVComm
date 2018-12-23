@@ -85,5 +85,9 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_FLIGHT_INFORMATION : " +   "  arming_time_utc="+arming_time_utc+  "  takeoff_time_utc="+takeoff_time_utc+  "  flight_uuid="+flight_uuid+  "  time_boot_ms="+time_boot_ms;}
+return "MAVLINK_MSG_ID_FLIGHT_INFORMATION : " +   "  arming_time_utc="+arming_time_utc
++  "  takeoff_time_utc="+takeoff_time_utc
++  "  flight_uuid="+flight_uuid
++  "  time_boot_ms="+time_boot_ms
+;}
 }

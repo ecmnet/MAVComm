@@ -157,5 +157,21 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_HIL_STATE : " +   "  time_usec="+time_usec+  "  roll="+roll+  "  pitch="+pitch+  "  yaw="+yaw+  "  rollspeed="+rollspeed+  "  pitchspeed="+pitchspeed+  "  yawspeed="+yawspeed+  "  lat="+lat+  "  lon="+lon+  "  alt="+alt+  "  vx="+vx+  "  vy="+vy+  "  vz="+vz+  "  xacc="+xacc+  "  yacc="+yacc+  "  zacc="+zacc;}
+return "MAVLINK_MSG_ID_HIL_STATE : " +   "  time_usec="+time_usec
++  "  roll="+roll
++  "  pitch="+pitch
++  "  yaw="+yaw
++  "  rollspeed="+rollspeed
++  "  pitchspeed="+pitchspeed
++  "  yawspeed="+yawspeed
++  "  lat="+lat
++  "  lon="+lon
++  "  alt="+alt
++  "  vx="+vx
++  "  vy="+vy
++  "  vz="+vz
++  "  xacc="+xacc
++  "  yacc="+yacc
++  "  zacc="+zacc
+;}
 }

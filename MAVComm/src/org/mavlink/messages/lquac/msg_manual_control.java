@@ -97,5 +97,11 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_MANUAL_CONTROL : " +   "  x="+x+  "  y="+y+  "  z="+z+  "  r="+r+  "  buttons="+buttons+  "  target="+target;}
+return "MAVLINK_MSG_ID_MANUAL_CONTROL : " +   "  x="+x
++  "  y="+y
++  "  z="+z
++  "  r="+r
++  "  buttons="+buttons
++  "  target="+target
+;}
 }

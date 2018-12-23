@@ -79,5 +79,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_LOGGING_ACK : " +   "  sequence="+sequence+  "  target_system="+target_system+  "  target_component="+target_component;}
+return "MAVLINK_MSG_ID_LOGGING_ACK : " +   "  sequence="+sequence
++  "  target_system="+target_system
++  "  target_component="+target_component
+;}
 }

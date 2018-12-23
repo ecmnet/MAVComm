@@ -131,5 +131,25 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_BATTERY_STATUS : " +   "  current_consumed="+current_consumed+  "  energy_consumed="+energy_consumed+  "  temperature="+temperature+  "  voltages="+voltages+  "  current_battery="+current_battery+  "  id="+id+  "  battery_function="+battery_function+  "  type="+type+  "  battery_remaining="+battery_remaining+  "  time_remaining="+time_remaining+  "  charge_state="+charge_state;}
+return "MAVLINK_MSG_ID_BATTERY_STATUS : " +   "  current_consumed="+current_consumed
++  "  energy_consumed="+energy_consumed
++  "  temperature="+temperature
++  "  voltages[0]="+voltages[0]
++  "  voltages[1]="+voltages[1]
++  "  voltages[2]="+voltages[2]
++  "  voltages[3]="+voltages[3]
++  "  voltages[4]="+voltages[4]
++  "  voltages[5]="+voltages[5]
++  "  voltages[6]="+voltages[6]
++  "  voltages[7]="+voltages[7]
++  "  voltages[8]="+voltages[8]
++  "  voltages[9]="+voltages[9]
++  "  current_battery="+current_battery
++  "  id="+id
++  "  battery_function="+battery_function
++  "  type="+type
++  "  battery_remaining="+battery_remaining
++  "  time_remaining="+time_remaining
++  "  charge_state="+charge_state
+;}
 }

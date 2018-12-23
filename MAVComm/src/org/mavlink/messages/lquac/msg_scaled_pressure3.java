@@ -85,5 +85,9 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_SCALED_PRESSURE3 : " +   "  time_boot_ms="+time_boot_ms+  "  press_abs="+press_abs+  "  press_diff="+press_diff+  "  temperature="+temperature;}
+return "MAVLINK_MSG_ID_SCALED_PRESSURE3 : " +   "  time_boot_ms="+time_boot_ms
++  "  press_abs="+press_abs
++  "  press_diff="+press_diff
++  "  temperature="+temperature
+;}
 }

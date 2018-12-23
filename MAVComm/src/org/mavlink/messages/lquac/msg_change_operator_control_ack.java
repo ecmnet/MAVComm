@@ -79,5 +79,8 @@ public byte[] encode() throws IOException {
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK : " +   "  gcs_system_id="+gcs_system_id+  "  control_request="+control_request+  "  ack="+ack;}
+return "MAVLINK_MSG_ID_CHANGE_OPERATOR_CONTROL_ACK : " +   "  gcs_system_id="+gcs_system_id
++  "  control_request="+control_request
++  "  ack="+ack
+;}
 }
