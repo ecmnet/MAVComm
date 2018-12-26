@@ -284,18 +284,22 @@ public class StatusManager implements Runnable {
 
 		if (checkTimeOut(model.raw.tms, TIMEOUT_FLOW)) {
 			model.sys.setSensor(Status.MSP_PIX4FLOW_AVAILABILITY, false);
+			model.raw.fq = 0;
 		}
 
 		if (checkTimeOut(model.vision.tms, TIMEOUT_VISION)) {
 			model.sys.setSensor(Status.MSP_OPCV_AVAILABILITY, false);
+			model.vision.clear();
 		}
 
 		if (checkTimeOut(model.gps.tms, TIMEOUT_GPS)) {
 			model.sys.setSensor(Status.MSP_GPS_AVAILABILITY, false);
+			model.gps.clear();
 		}
 
 		if (checkTimeOut(model.grid.tms, TIMEOUT_SLAM)) {
 			model.sys.setSensor(Status.MSP_SLAM_AVAILABILITY, false);
+			model.slam.clear();
 		}
 
 		if(!model.sys.isStatus(Status.MSP_SITL)) {
