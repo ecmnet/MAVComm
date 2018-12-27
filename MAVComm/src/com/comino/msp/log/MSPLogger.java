@@ -74,6 +74,7 @@ public class MSPLogger {
 	public void writeLocalMsg(String msg, int severity) {
 		LogMessage m = new LogMessage();
 		m.text = msg; m.severity = severity;
+		m.tms = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
 		control.writeLogMessage(m);
 	}
 
@@ -81,6 +82,7 @@ public class MSPLogger {
 		if(debug_msg_enabled) {
 			LogMessage m = new LogMessage();
 			m.text = msg; m.severity = MAV_SEVERITY.MAV_SEVERITY_DEBUG;
+			m.tms = control.getCurrentModel().sys.getSynchronizedPX4Time_us();
 			control.writeLogMessage(m);
 		}
 	}
