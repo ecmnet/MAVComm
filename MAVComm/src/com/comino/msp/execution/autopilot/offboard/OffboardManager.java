@@ -38,7 +38,6 @@ import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
-import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.main.MSPConfig;
@@ -55,12 +54,13 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 1.0f;		// Default Max speed in m/s
-	private static final float MIN_SPEED                    = 0.2f;     // Min speed in m/s
+	private static final float MAX_SPEED					= 0.5f;		// Default Max speed in m/s
+	private static final float MIN_SPEED                    = 0.1f;     // Min speed in m/s
 	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
+	private static final int   RC_LAND_THRESHOLD            = 1600;		// RC channel 8 landing threshold
 
-	private static final float ACC_RATE                     = 0.05f;    // Acceleration rate per cycle in speed mode
-	private static final float DESC_RATE                    = 0.2f;     // Deceleration rate per cycle in speed mode
+	private static final float ACC_RATE                     = 0.025f;    // Acceleration rate per cycle in speed mode
+//	private static final float DESC_RATE                    = 0.2f;     // Deceleration rate per cycle in speed mode
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
 
@@ -113,7 +113,7 @@ public class OffboardManager implements Runnable {
 
 		max_speed = config.getFloatProperty("AP2D_MAX_SPEED", String.valueOf(MAX_SPEED));
 		System.out.println("Offboard: speed constraints: "+max_speed+" m/s ");
-		break_radius = max_speed*2;
+		break_radius = max_speed * 2;
 		System.out.println("Offboard: break-radius: "+break_radius+" m");
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE,
@@ -248,12 +248,18 @@ public class OffboardManager implements Runnable {
 			if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				// Safety check: if RC attached, check XY sticks and fallback to POSHOLD if moved
 				if(Math.abs(model.rc.s1 -1500) > RC_DEADBAND || Math.abs(model.rc.s2 -1500) > RC_DEADBAND) {
-					logger.writeLocalMsg("[msp] OffboardUpdater stopped: RC",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
+					logger.writeLocalMsg("[msp] OffboardUpdater stopped: RC",MAV_SEVERITY.MAV_SEVERITY_INFO);
 					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 					enabled = false;
 				}
+
+			    if(model.rc.s7 > RC_LAND_THRESHOLD) {
+			    	logger.writeLocalMsg("[msp] LANDING initiated via RC",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			    	control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
+			    	enabled = false;
+			}
 			}
 
 			delta_sec = UPDATE_RATE / 1000.0f;
@@ -350,7 +356,7 @@ public class OffboardManager implements Runnable {
 						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
 					}
 					else {
-						ctl[IOffboardExternalControl.SPEED] -= DESC_RATE*delta_sec;
+						ctl[IOffboardExternalControl.SPEED] = delta / 2f ; //-= DESC_RATE*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] < MIN_SPEED) ctl[IOffboardExternalControl.SPEED] = MIN_SPEED;
 					}
 				}
