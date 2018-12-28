@@ -253,13 +253,15 @@ public class OffboardManager implements Runnable {
 							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 					enabled = false;
+					continue;
 				}
 
 				// Safety: Channel 8 triggers landing mode of PX4
 				if(model.rc.s7 > RC_LAND_THRESHOLD) {
-					logger.writeLocalMsg("[msp] LANDING initiated via RC",MAV_SEVERITY.MAV_SEVERITY_INFO);
+					logger.writeLocalMsg("[msp] OffboardUpdater stopped: Landing",MAV_SEVERITY.MAV_SEVERITY_INFO);
 					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
 					enabled = false;
+					continue;
 				}
 			}
 
