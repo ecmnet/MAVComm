@@ -24,6 +24,10 @@ public class PX4RCChannelstPlugin extends MAVLinkPluginBase {
 		model.rc.s1  = rc.chan2_raw < 65534 ? (short) rc.chan2_raw : 1500;
 		model.rc.s2  = rc.chan3_raw < 65534 ? (short) rc.chan3_raw : 1500;
 		model.rc.s3  = rc.chan4_raw < 65534 ? (short) rc.chan4_raw : 1500;
+		model.rc.s4  = rc.chan5_raw < 65534 ? (short) rc.chan5_raw : 1500;
+		model.rc.s5  = rc.chan6_raw < 65534 ? (short) rc.chan6_raw : 1500;
+		model.rc.s6  = rc.chan7_raw < 65534 ? (short) rc.chan7_raw : 1500;
+		model.rc.s7  = rc.chan8_raw < 65534 ? (short) rc.chan8_raw : 1500;
 		model.rc.tms = model.sys.getSynchronizedPX4Time_us();
 
 	}
