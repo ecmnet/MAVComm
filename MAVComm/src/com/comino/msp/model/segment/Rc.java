@@ -78,6 +78,29 @@ public class Rc extends Segment {
 		return at;
 	}
 
+	public float get(int channel) {
+		switch(channel) {
+		case 1:
+			return s0;
+		case 2:
+			return s1;
+		case 3:
+			return s2;
+		case 4:
+			return s3;
+		case 5:
+			return s4;
+		case 6:
+			return s5;
+		case 7:
+			return s6;
+		case 8:
+			return s7;
+		default:
+			return Float.NaN;
+		}
+	}
+
 	//--------------------------------------------------------------------------------------------------------
 
 

@@ -57,9 +57,11 @@ public class OffboardManager implements Runnable {
 	private static final float MAX_SPEED					= 0.5f;		// Default Max speed in m/s
 	private static final float MIN_SPEED                    = 0.1f;     // Min speed in m/s
 	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
+
+	private static final int   RC_LAND_CHANNEL				= 8;        // RC channel 8 landing
 	private static final int   RC_LAND_THRESHOLD            = 1600;		// RC channel 8 landing threshold
 
-	private static final float ACC_RATE                     = 0.025f;    // Acceleration rate per cycle in speed mode
+	private static final float ACC_RATE                     = 0.025f;   // Acceleration rate per cycle in speed mode
 	//	private static final float DESC_RATE                    = 0.2f;     // Deceleration rate per cycle in speed mode
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
@@ -257,7 +259,7 @@ public class OffboardManager implements Runnable {
 				}
 
 				// Safety: Channel 8 triggers landing mode of PX4
-				if(model.rc.s7 > RC_LAND_THRESHOLD) {
+				if(model.rc.get(RC_LAND_CHANNEL) > RC_LAND_THRESHOLD) {
 					logger.writeLocalMsg("[msp] OffboardUpdater stopped: Landing",MAV_SEVERITY.MAV_SEVERITY_INFO);
 					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
 					enabled = false;
