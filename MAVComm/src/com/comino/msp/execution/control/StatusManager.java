@@ -297,9 +297,9 @@ public class StatusManager implements Runnable {
 			model.gps.clear();
 		}
 
-		if (checkTimeOut(model.grid.tms, TIMEOUT_SLAM)) {
+		if (checkTimeOut(model.slam.tms, TIMEOUT_SLAM)) {
 			model.sys.setSensor(Status.MSP_SLAM_AVAILABILITY, false);
-			model.slam.clear();
+            model.slam.clear();
 		}
 
 		if(!model.sys.isStatus(Status.MSP_SITL)) {

@@ -487,6 +487,7 @@ public class OffboardManager implements Runnable {
 			model.slam.pd = MSP3DUtils.getXYDirection(target, current);
 			model.slam.pv = speed;
 			model.slam.di = MSP3DUtils.distance2D(target,current);
+			model.slam.tms = model.sys.getSynchronizedPX4Time_us();
 		} else
 			model.slam.clear();
 
