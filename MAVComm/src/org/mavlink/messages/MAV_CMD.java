@@ -920,44 +920,55 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_RESET_CAMERA_SETTINGS = 529;
     /**
-     * Set camera running mode. Use NAN for reserved values.
+     * Set camera running mode. Use NaN for reserved values. GCS will send a MAV_CMD_REQUEST_VIDEO_STREAM_STATUS command after a mode change if the camera supports video streaming.
      * PARAM 1 : Reserved (Set to 0)
-     * PARAM 2 : Camera mode (see CAMERA_MODE enum)
+     * PARAM 2 : Camera mode
      * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_SET_CAMERA_MODE = 530;
     /**
-     * Set camera zoom. Returns CAMERA_SETTINGS message. Use NAN for reserved values.
+     * Set camera zoom. Camera must respond with a CAMERA_SETTINGS message (on success). Use NaN for reserved values.
      * PARAM 1 : Zoom type
-     * PARAM 2 : Zoom value
+     * PARAM 2 : Zoom value. The range of valid values depend on the zoom type.
      * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_SET_CAMERA_ZOOM = 531;
     /**
-     * Set camera focus. Returns CAMERA_SETTINGS message. Use NAN for reserved values.
+     * Set camera focus. Camera must respond with a CAMERA_SETTINGS message (on success). Use NaN for reserved values.
      * PARAM 1 : Focus type
      * PARAM 2 : Focus value
      * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_SET_CAMERA_FOCUS = 532;
     /**
-     * Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NAN for reserved values.
+     * Tagged jump target. Can be jumped to with MAV_CMD_DO_JUMP_TAG.
+     * PARAM 1 : Tag.
+     */
+    public final static int MAV_CMD_JUMP_TAG = 600;
+    /**
+     * Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.
+     * PARAM 1 : Target tag to jump to.
+     * PARAM 2 : Repeat count
+     */
+    public final static int MAV_CMD_DO_JUMP_TAG = 601;
+    /**
+     * Start image capture sequence. Sends CAMERA_IMAGE_CAPTURED after each capture. Use NaN for reserved values.
      * PARAM 1 : Reserved (Set to 0)
-     * PARAM 2 : Duration between two consecutive pictures (in seconds)
-     * PARAM 3 : Number of images to capture total - 0 for unlimited capture
-     * PARAM 4 : Capture sequence (ID to prevent double captures when a command is retransmitted, 0: unused, >= 1: used)
+     * PARAM 2 : Desired elapsed time between two consecutive pictures (in seconds). Minimum values depend on hardware (typically greater than 2 seconds).
+     * PARAM 3 : Total number of images to capture. 0 to capture forever/until MAV_CMD_IMAGE_STOP_CAPTURE.
+     * PARAM 4 : Capture sequence number starting from 1. This is only valid for single-capture (param3 == 1). Increment the capture ID for each capture command to prevent double captures when a command is re-transmitted. Use 0 to ignore it.
      * PARAM 5 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_IMAGE_START_CAPTURE = 2000;
     /**
-     * Stop image capture sequence Use NAN for reserved values.
+     * Stop image capture sequence Use NaN for reserved values.
      * PARAM 1 : Reserved (Set to 0)
      * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_IMAGE_STOP_CAPTURE = 2001;
     /**
-     * Re-request a CAMERA_IMAGE_CAPTURE packet. Use NAN for reserved values.
-     * PARAM 1 : Sequence number for missing CAMERA_IMAGE_CAPTURE packet
+     * Re-request a CAMERA_IMAGE_CAPTURE message. Use NaN for reserved values.
+     * PARAM 1 : Sequence number for missing CAMERA_IMAGE_CAPTURE message
      * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_CAMERA_IMAGE_CAPTURE = 2002;
@@ -969,37 +980,42 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_TRIGGER_CONTROL = 2003;
     /**
-     * Starts video capture (recording). Use NAN for reserved values.
-     * PARAM 1 : Reserved (Set to 0)
+     * Starts video capture (recording). Use NaN for reserved values.
+     * PARAM 1 : Video Stream ID (0 for all streams)
      * PARAM 2 : Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)
      * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_VIDEO_START_CAPTURE = 2500;
     /**
-     * Stop the current video capture (recording). Use NAN for reserved values.
-     * PARAM 1 : Reserved (Set to 0)
+     * Stop the current video capture (recording). Use NaN for reserved values.
+     * PARAM 1 : Video Stream ID (0 for all streams)
      * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_VIDEO_STOP_CAPTURE = 2501;
     /**
      * Start video streaming
-     * PARAM 1 : Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
+     * PARAM 1 : Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_START_STREAMING = 2502;
     /**
-     * Stop the current video streaming
-     * PARAM 1 : Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
+     * Stop the given video stream
+     * PARAM 1 : Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
      * PARAM 2 : Reserved
      */
     public final static int MAV_CMD_VIDEO_STOP_STREAMING = 2503;
     /**
      * Request video stream information (VIDEO_STREAM_INFORMATION)
-     * PARAM 1 : Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
-     * PARAM 2 : 0: No Action 1: Request video stream information
-     * PARAM 3 : Reserved (all remaining params)
+     * PARAM 1 : Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
+     * PARAM 2 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION = 2504;
+    /**
+     * Request video stream status (VIDEO_STREAM_STATUS)
+     * PARAM 1 : Video Stream ID (0 for all streams, 1 for first, 2 for second, etc.)
+     * PARAM 2 : Reserved (all remaining params)
+     */
+    public final static int MAV_CMD_REQUEST_VIDEO_STREAM_STATUS = 2505;
     /**
      * Request to start streaming logging data over MAVLink (see also LOGGING_DATA message)
      * PARAM 1 : Format: 0: ULog
@@ -1025,12 +1041,12 @@ public interface MAV_CMD {
     /**
      * 
      * PARAM 1 : Landing gear ID (default: 0, -1 for all)
-     * PARAM 2 : Landing gear position (Down: 0, Up: 1, NAN for no change)
-     * PARAM 3 : Reserved, set to NAN
-     * PARAM 4 : Reserved, set to NAN
-     * PARAM 5 : Reserved, set to NAN
-     * PARAM 6 : Reserved, set to NAN
-     * PARAM 7 : Reserved, set to NAN
+     * PARAM 2 : Landing gear position (Down: 0, Up: 1, NaN for no change)
+     * PARAM 3 : Reserved, set to NaN
+     * PARAM 4 : Reserved, set to NaN
+     * PARAM 5 : Reserved, set to NaN
+     * PARAM 6 : Reserved, set to NaN
+     * PARAM 7 : Reserved, set to NaN
      */
     public final static int MAV_CMD_AIRFRAME_CONFIGURATION = 2520;
     /**

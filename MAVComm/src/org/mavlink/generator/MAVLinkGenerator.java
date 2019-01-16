@@ -66,7 +66,7 @@ public class MAVLinkGenerator {
 
 	protected String target = "target";
 
-	public static int[] MAVLINK_MESSAGE_CRCS = new int[512];
+	public static int[] MAVLINK_MESSAGE_CRCS = new int[9999];
 
 	/**
 	 * Main class for the generator.

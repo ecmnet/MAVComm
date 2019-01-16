@@ -24,7 +24,7 @@ public class msg_distance_sensor extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_DISTANCE_SENSOR;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 14;
+    payload_length = 38;
 }
 
   /**
@@ -59,6 +59,18 @@ public class msg_distance_sensor extends MAVLinkMessage {
    * Measurement covariance, 0 for unknown / invalid readings
    */
   public int covariance;
+  /**
+   * Horizontal Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.
+   */
+  public float horizontal_fov;
+  /**
+   * Vertical Field of View (angle) where the distance measurement is valid and the field of view is known. Otherwise this is set to 0.
+   */
+  public float vertical_fov;
+  /**
+   * Quaternion of the sensor orientation in vehicle body frame (w, x, y, z order, zero-rotation is 1, 0, 0, 0). Zero-rotation is along the vehicle body x-axis. This field is required if the orientation is set to MAV_SENSOR_ROTATION_CUSTOM. Set it to 0 if invalid."
+   */
+  public float[] quaternion = new float[4];
 /**
  * Decode message with raw data
  */
@@ -71,12 +83,17 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   id = (int)dis.readUnsignedByte()&0x00FF;
   orientation = (int)dis.readUnsignedByte()&0x00FF;
   covariance = (int)dis.readUnsignedByte()&0x00FF;
+  horizontal_fov = (float)dis.readFloat();
+  vertical_fov = (float)dis.readFloat();
+  for (int i=0; i<4; i++) {
+    quaternion[i] = (float)dis.readFloat();
+  }
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+14];
+  byte[] buffer = new byte[12+38];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -96,15 +113,20 @@ public byte[] encode() throws IOException {
   dos.writeByte(id&0x00FF);
   dos.writeByte(orientation&0x00FF);
   dos.writeByte(covariance&0x00FF);
+  dos.writeFloat(horizontal_fov);
+  dos.writeFloat(vertical_fov);
+  for (int i=0; i<4; i++) {
+    dos.writeFloat(quaternion[i]);
+  }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 14);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 38);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[24] = crcl;
-  buffer[25] = crch;
+  buffer[48] = crcl;
+  buffer[49] = crch;
   dos.close();
   return buffer;
 }
@@ -117,5 +139,11 @@ return "MAVLINK_MSG_ID_DISTANCE_SENSOR : " +   "  time_boot_ms="+time_boot_ms
 +  "  id="+id
 +  "  orientation="+orientation
 +  "  covariance="+covariance
++  "  horizontal_fov="+horizontal_fov
++  "  vertical_fov="+vertical_fov
++  "  quaternion[0]="+quaternion[0]
++  "  quaternion[1]="+quaternion[1]
++  "  quaternion[2]="+quaternion[2]
++  "  quaternion[3]="+quaternion[3]
 ;}
 }

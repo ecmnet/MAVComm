@@ -100,6 +100,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_CAMERA_SETTINGS = 260;
   public static int MAVLINK_MSG_ID_DEBUG_FLOAT_ARRAY = 350;
   public static int MAVLINK_MSG_ID_WIND_COV = 231;
+  public static int MAVLINK_MSG_ID_CELLULAR_STATUS = 334;
   public static int MAVLINK_MSG_ID_HIGH_LATENCY2 = 235;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED = 32;
   public static int MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT = 62;
@@ -127,12 +128,15 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_MISSION_REQUEST_INT = 51;
   public static int MAVLINK_MSG_ID_MANUAL_SETPOINT = 81;
   public static int MAVLINK_MSG_ID_NAMED_VALUE_FLOAT = 251;
+  public static int MAVLINK_MSG_ID_VIDEO_STREAM_STATUS = 270;
+  public static int MAVLINK_MSG_ID_STATUSTEXT_LONG = 365;
   public static int MAVLINK_MSG_ID_SCALED_IMU = 26;
   public static int MAVLINK_MSG_ID_RC_CHANNELS_SCALED = 34;
   public static int MAVLINK_MSG_ID_ALTITUDE = 141;
   public static int MAVLINK_MSG_ID_MSP_COMMAND = 181;
   public static int MAVLINK_MSG_ID_MISSION_REQUEST_PARTIAL_LIST = 37;
   public static int MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV = 63;
+  public static int MAVLINK_MSG_ID_WHEEL_DISTANCE = 9000;
   public static int MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE = 103;
   public static int MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE = 70;
   public static int MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS = 262;
@@ -179,6 +183,5 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION = 269;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED_SYSTEM_GLOBAL_OFFSET = 89;
   public static int MAVLINK_MSG_ID_RESOURCE_REQUEST = 142;
-  public static int MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS = 270;
   public static int MAVLINK_MSG_ID_MSP_MICRO_SLAM = 184;
 }

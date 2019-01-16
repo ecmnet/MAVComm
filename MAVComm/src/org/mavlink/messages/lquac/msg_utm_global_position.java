@@ -84,7 +84,7 @@ public class msg_utm_global_position extends MAVLinkMessage {
    */
   public int vel_acc;
   /**
-   * Seconds * 1E2 until next update. Set to 0 if unknown or in data driven mode.
+   * Time until next update. Set to 0 if unknown or in data driven mode.
    */
   public int update_rate;
   /**

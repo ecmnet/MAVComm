@@ -1,5 +1,5 @@
 /**
- * Generated class : msg_video_stream_information
+ * Generated class : msg_video_stream_status
  * DO NOT MODIFY!
  **/
 package org.mavlink.messages.lquac;
@@ -11,102 +11,54 @@ import java.io.IOException;
 import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
- * Class msg_video_stream_information
- * Information about video stream
+ * Class msg_video_stream_status
+ * Information about the status of a video stream.
  **/
-public class msg_video_stream_information extends MAVLinkMessage {
-  public static final int MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION = 269;
-  private static final long serialVersionUID = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
-  public msg_video_stream_information() {
+public class msg_video_stream_status extends MAVLinkMessage {
+  public static final int MAVLINK_MSG_ID_VIDEO_STREAM_STATUS = 270;
+  private static final long serialVersionUID = MAVLINK_MSG_ID_VIDEO_STREAM_STATUS;
+  public msg_video_stream_status() {
     this(1,1);
 }
-  public msg_video_stream_information(int sysId, int componentId) {
-    messageType = MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION;
+  public msg_video_stream_status(int sysId, int componentId) {
+    messageType = MAVLINK_MSG_ID_VIDEO_STREAM_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 213;
+    payload_length = 19;
 }
 
   /**
-   * Frame rate.
+   * Frame rate
    */
   public float framerate;
   /**
-   * Bit rate.
+   * Bit rate
    */
   public long bitrate;
   /**
-   * Bitmap of stream status flags.
+   * Bitmap of stream status flags
    */
   public int flags;
   /**
-   * Horizontal resolution.
+   * Horizontal resolution
    */
   public int resolution_h;
   /**
-   * Vertical resolution.
+   * Vertical resolution
    */
   public int resolution_v;
   /**
-   * Video image rotation clockwise.
+   * Video image rotation clockwise
    */
   public int rotation;
   /**
-   * Horizontal Field of view.
+   * Horizontal Field of view
    */
   public int hfov;
   /**
    * Video Stream ID (1 for first, 2 for second, etc.)
    */
   public int stream_id;
-  /**
-   * Number of streams available.
-   */
-  public int count;
-  /**
-   * Type of stream.
-   */
-  public int type;
-  /**
-   * Stream name.
-   */
-  public char[] name = new char[32];
-  public void setName(String tmp) {
-    int len = Math.min(tmp.length(), 32);
-    for (int i=0; i<len; i++) {
-      name[i] = tmp.charAt(i);
-    }
-    for (int i=len; i<32; i++) {
-      name[i] = 0;
-    }
-  }
-  public String getName() {
-    String result="";
-    for (int i=0; i<32; i++) {
-      if (name[i] != 0) result=result+name[i]; else break;
-    }
-    return result;
-  }
-  /**
-   * Video stream URI (TCP or RTSP URI ground station should connect to) or port number (UDP port ground station should listen to).
-   */
-  public char[] uri = new char[160];
-  public void setUri(String tmp) {
-    int len = Math.min(tmp.length(), 160);
-    for (int i=0; i<len; i++) {
-      uri[i] = tmp.charAt(i);
-    }
-    for (int i=len; i<160; i++) {
-      uri[i] = 0;
-    }
-  }
-  public String getUri() {
-    String result="";
-    for (int i=0; i<160; i++) {
-      if (uri[i] != 0) result=result+uri[i]; else break;
-    }
-    return result;
-  }
 /**
  * Decode message with raw data
  */
@@ -119,20 +71,12 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   rotation = (int)dis.readUnsignedShort()&0x00FFFF;
   hfov = (int)dis.readUnsignedShort()&0x00FFFF;
   stream_id = (int)dis.readUnsignedByte()&0x00FF;
-  count = (int)dis.readUnsignedByte()&0x00FF;
-  type = (int)dis.readUnsignedByte()&0x00FF;
-  for (int i=0; i<32; i++) {
-    name[i] = (char)dis.readByte();
-  }
-  for (int i=0; i<160; i++) {
-    uri[i] = (char)dis.readByte();
-  }
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+213];
+  byte[] buffer = new byte[12+19];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -152,28 +96,20 @@ public byte[] encode() throws IOException {
   dos.writeShort(rotation&0x00FFFF);
   dos.writeShort(hfov&0x00FFFF);
   dos.writeByte(stream_id&0x00FF);
-  dos.writeByte(count&0x00FF);
-  dos.writeByte(type&0x00FF);
-  for (int i=0; i<32; i++) {
-    dos.writeByte(name[i]);
-  }
-  for (int i=0; i<160; i++) {
-    dos.writeByte(uri[i]);
-  }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 213);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 19);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[223] = crcl;
-  buffer[224] = crch;
+  buffer[29] = crcl;
+  buffer[30] = crch;
   dos.close();
   return buffer;
 }
 public String toString() {
-return "MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION : " +   "  framerate="+framerate
+return "MAVLINK_MSG_ID_VIDEO_STREAM_STATUS : " +   "  framerate="+framerate
 +  "  bitrate="+bitrate
 +  "  flags="+flags
 +  "  resolution_h="+resolution_h
@@ -181,9 +117,5 @@ return "MAVLINK_MSG_ID_VIDEO_STREAM_INFORMATION : " +   "  framerate="+framerate
 +  "  rotation="+rotation
 +  "  hfov="+hfov
 +  "  stream_id="+stream_id
-+  "  count="+count
-+  "  type="+type
-+  "  name="+getName()
-+  "  uri="+getUri()
 ;}
 }

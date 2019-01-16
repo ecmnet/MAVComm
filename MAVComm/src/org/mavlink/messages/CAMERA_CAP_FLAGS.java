@@ -40,4 +40,8 @@ public interface CAMERA_CAP_FLAGS {
      * Camera has basic focus control (MAV_CMD_SET_CAMERA_FOCUS)
      */
     public final static int CAMERA_CAP_FLAGS_HAS_BASIC_FOCUS = 128;
+    /**
+     * Camera has video streaming capabilities (use MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION for video streaming info)
+     */
+    public final static int CAMERA_CAP_FLAGS_HAS_VIDEO_STREAM = 256;
 }

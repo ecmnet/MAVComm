@@ -28,7 +28,7 @@ public class msg_mission_request_partial_list extends MAVLinkMessage {
 }
 
   /**
-   * Start index, 0 by default
+   * Start index
    */
   public int start_index;
   /**

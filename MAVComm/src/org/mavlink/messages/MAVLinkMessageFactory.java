@@ -98,6 +98,7 @@ import org.mavlink.messages.lquac.msg_utm_global_position;
 import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
+import org.mavlink.messages.lquac.msg_cellular_status;
 import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
@@ -125,11 +126,14 @@ import org.mavlink.messages.lquac.msg_mission_item_int;
 import org.mavlink.messages.lquac.msg_mission_request_int;
 import org.mavlink.messages.lquac.msg_manual_setpoint;
 import org.mavlink.messages.lquac.msg_named_value_float;
+import org.mavlink.messages.lquac.msg_video_stream_status;
+import org.mavlink.messages.lquac.msg_statustext_long;
 import org.mavlink.messages.lquac.msg_scaled_imu;
 import org.mavlink.messages.lquac.msg_rc_channels_scaled;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_mission_request_partial_list;
 import org.mavlink.messages.lquac.msg_global_position_int_cov;
+import org.mavlink.messages.lquac.msg_wheel_distance;
 import org.mavlink.messages.lquac.msg_vision_speed_estimate;
 import org.mavlink.messages.lquac.msg_rc_channels_override;
 import org.mavlink.messages.lquac.msg_camera_capture_status;
@@ -175,7 +179,6 @@ import org.mavlink.messages.lquac.msg_odometry;
 import org.mavlink.messages.lquac.msg_video_stream_information;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
-import org.mavlink.messages.lquac.msg_set_video_stream_settings;
 import org.mavlink.messages.lquac.msg_request_data_stream;
 import org.mavlink.messages.lquac.msg_actuator_control_target;
 import org.mavlink.messages.lquac.msg_setup_signing;
@@ -268,6 +271,7 @@ import org.mavlink.messages.lquac.msg_utm_global_position;
 import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
+import org.mavlink.messages.lquac.msg_cellular_status;
 import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
@@ -295,12 +299,15 @@ import org.mavlink.messages.lquac.msg_mission_item_int;
 import org.mavlink.messages.lquac.msg_mission_request_int;
 import org.mavlink.messages.lquac.msg_manual_setpoint;
 import org.mavlink.messages.lquac.msg_named_value_float;
+import org.mavlink.messages.lquac.msg_video_stream_status;
+import org.mavlink.messages.lquac.msg_statustext_long;
 import org.mavlink.messages.lquac.msg_scaled_imu;
 import org.mavlink.messages.lquac.msg_rc_channels_scaled;
 import org.mavlink.messages.lquac.msg_altitude;
 import org.mavlink.messages.lquac.msg_msp_command;
 import org.mavlink.messages.lquac.msg_mission_request_partial_list;
 import org.mavlink.messages.lquac.msg_global_position_int_cov;
+import org.mavlink.messages.lquac.msg_wheel_distance;
 import org.mavlink.messages.lquac.msg_vision_speed_estimate;
 import org.mavlink.messages.lquac.msg_rc_channels_override;
 import org.mavlink.messages.lquac.msg_camera_capture_status;
@@ -347,7 +354,6 @@ import org.mavlink.messages.lquac.msg_odometry;
 import org.mavlink.messages.lquac.msg_video_stream_information;
 import org.mavlink.messages.lquac.msg_local_position_ned_system_global_offset;
 import org.mavlink.messages.lquac.msg_resource_request;
-import org.mavlink.messages.lquac.msg_set_video_stream_settings;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 /**
  * Class MAVLinkMessageFactory
@@ -726,6 +732,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_wind_cov(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_CELLULAR_STATUS:
+      msg = new msg_cellular_status(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_HIGH_LATENCY2:
       msg = new msg_high_latency2(sysId, componentId);
       msg.decode(dis);
@@ -834,6 +844,14 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_named_value_float(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_VIDEO_STREAM_STATUS:
+      msg = new msg_video_stream_status(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_STATUSTEXT_LONG:
+      msg = new msg_statustext_long(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_SCALED_IMU:
       msg = new msg_scaled_imu(sysId, componentId);
       msg.decode(dis);
@@ -856,6 +874,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV:
       msg = new msg_global_position_int_cov(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_WHEEL_DISTANCE:
+      msg = new msg_wheel_distance(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE:
@@ -1040,10 +1062,6 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_RESOURCE_REQUEST:
       msg = new msg_resource_request(sysId, componentId);
-      msg.decode(dis);
-      break;
-  case MAVLINK_MSG_ID_SET_VIDEO_STREAM_SETTINGS:
-      msg = new msg_set_video_stream_settings(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_MSP_MICRO_SLAM:
