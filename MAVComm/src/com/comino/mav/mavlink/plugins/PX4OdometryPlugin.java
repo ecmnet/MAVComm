@@ -1,17 +1,17 @@
 package com.comino.mav.mavlink.plugins;
 
-import org.mavlink.messages.lquac.msg_utm_global_position;
+import org.mavlink.messages.lquac.msg_odometry;
 
 public class PX4OdometryPlugin extends MAVLinkPluginBase {
 
 	public PX4OdometryPlugin() {
-		super(msg_utm_global_position.class);
+		super(msg_odometry.class);
 	}
 
 	@Override
 	public void received(Object o) {
 
-		msg_utm_global_position utem = (msg_utm_global_position) o;
+		msg_odometry odom = (msg_odometry) o;
 
 
 	}
