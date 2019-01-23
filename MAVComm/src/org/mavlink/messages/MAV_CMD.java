@@ -64,14 +64,14 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_RETURN_TO_LAUNCH = 20;
     /**
-     * Land at location
-     * PARAM 1 : Abort Alt
-     * PARAM 2 : Precision land mode. (0 = normal landing, 1 = opportunistic precision landing, 2 = required precsion landing)
-     * PARAM 3 : Empty
+     * Land at location.
+     * PARAM 1 : Minimum target altitude if landing is aborted (0 = undefined/use system default).
+     * PARAM 2 : Precision land mode.
+     * PARAM 3 : Empty.
      * PARAM 4 : Desired yaw angle. NaN for unchanged.
-     * PARAM 5 : Latitude
-     * PARAM 6 : Longitude
-     * PARAM 7 : Altitude (ground level)
+     * PARAM 5 : Latitude.
+     * PARAM 6 : Longitude.
+     * PARAM 7 : Landing altitude (ground level in current frame).
      */
     public final static int MAV_CMD_NAV_LAND = 21;
     /**
@@ -207,7 +207,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_SPLINE_WAYPOINT = 82;
     /**
-     * Takeoff from ground using VTOL mode
+     * Takeoff from ground using VTOL mode including transition to forward flight.
      * PARAM 1 : Empty
      * PARAM 2 : Front transition heading, see VTOL_TRANSITION_HEADING enum.
      * PARAM 3 : Empty
