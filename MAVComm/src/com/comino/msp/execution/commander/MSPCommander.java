@@ -241,14 +241,14 @@ public class MSPCommander {
 		Vector3D_F32   pos          = new Vector3D_F32();
 		System.err.println("SITL -> set example obstacle map");
 
-		pos.y = 0.5f + model.state.l_y;
+		pos.y = 1.5f + model.state.l_y;
 		pos.z =  model.state.l_z;
 		for(int i = 0; i < 40;i++) {
 			pos.x = -1.25f + i *0.05f + model.state.l_x;
 			map.update(pos); map.update(pos); map.update(pos);
 		}
 
-		pos.y = 1.75f + model.state.l_y;
+		pos.y = 2.75f + model.state.l_y;
 		pos.z =  model.state.l_z;
 		for(int i = 0; i < 30;i++) {
 			pos.x = -1.25f + i *0.05f + model.state.l_x;
@@ -279,7 +279,7 @@ public class MSPCommander {
 		System.err.println("SITL -> set example obstacle map");
 		pos.z = 1.0f + model.state.l_z;
 
-		pos.y = 2f + model.state.l_y;
+		pos.y = 4f + model.state.l_y;
 		pos.x = -0.15f + model.state.l_x;
 		map.update(pos); map.update(pos); map.update(pos);
 		pos.x = -0.10f + model.state.l_x;

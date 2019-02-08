@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017-2019 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,8 +57,8 @@ public class LocalVFH2D {
 	private static final int  MAX_ACCELERATION		= 100;
 
 	private static final int MAX_SPEED   	    	= 800;
-	private static final int MAX_SPEED_WIDE			= 500;
-	private static final int MAX_SPEED_NARROW    	= 300;
+	private static final int MAX_SPEED_WIDE			= 400;
+	private static final int MAX_SPEED_NARROW    	= 200;
 
 	private static final float LOCK_INCREMENT		= 0.05f;
 
@@ -71,29 +71,29 @@ public class LocalVFH2D {
 
 	private float[]  		hist;
 
-	private List<result>		results;
-	private List<pair>       borders;
+	private List<result>	results;
+	private List<pair>      borders;
 
 	private float			desired_tdir			= 0;
 	private float			selected_tdir       	= 0;
 	private float 			last_selected_tdir  	= 0;
 
-	private float			locks				= 0;
-	private float           minDistance_mm   	= 0;
-	private long            deadlock_tms    	= 0;
+	private float			locks					= 0;
+	private float           minDistance_mm   		= 0;
+	private long            deadlock_tms    		= 0;
 
-	private float			selected_speed	  	= 0;
+	private float			selected_speed	  		= 0;
 	private float         	last_selected_speed 	= 0;
 
 	private int   			max_speed_for_selected_angle;
 
-	private long				last_update_time		=0;
+	private long			last_update_time		=0;
 
-	private int 			   safety_dist_0ms		= 100;
-	private int 			   safety_dist_1ms    	= 200;
+	private int 			safety_dist_0ms			= 100;
+	private int 			safety_dist_1ms    		= 500;
 
-	private int				robot_radius        = 0;
-	private int              threshold           = 0;
+	private int				robot_radius        	= 0;
+	private int             threshold           	= 0;
 
 	public LocalVFH2D(ILocalMap map, float robot_radius_m, int threshold) {
 
@@ -330,7 +330,7 @@ public class LocalVFH2D {
 
 
 				if(p.s < tdir && tdir < p.e) {
-					new_result.speed = MAX_SPEED;
+					new_result.speed = MAX_SPEED_WIDE;
 					new_result.angle = tdir;
 					results.add(new_result.clone());
 				}
