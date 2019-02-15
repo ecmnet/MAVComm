@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_battery_status
- * Battery information
+ * Battery information. Updates GCS with flight controller battery status. Use SMART_BATTERY_* messages instead for smart batteries.
  **/
 public class msg_battery_status extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_BATTERY_STATUS = 147;

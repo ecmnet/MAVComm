@@ -48,7 +48,7 @@ public class msg_attitude_quaternion_cov extends MAVLinkMessage {
    */
   public float yawspeed;
   /**
-   * Attitude covariance
+   * Row-major representation of a 3x3 attitude covariance matrix (states: roll, pitch, yaw; first three entries are the first ROW, next three entries are the second row, etc.). If unknown, assign NaN value to first element in the array.
    */
   public float[] covariance = new float[9];
 /**

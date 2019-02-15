@@ -64,7 +64,7 @@ public class msg_rc_channels_raw extends MAVLinkMessage {
    */
   public int chan8_raw;
   /**
-   * Servo output port (set of 8 outputs = 1 port). Most MAVs will just use one, but this allows for more than 8 servos.
+   * Servo output port (set of 8 outputs = 1 port). Flight stacks running on Pixhawk should use: 0 = MAIN, 1 = AUX.
    */
   public int port;
   /**

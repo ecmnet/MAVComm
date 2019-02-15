@@ -121,6 +121,7 @@ import org.mavlink.messages.lquac.msg_trajectory_representation_waypoints;
 import org.mavlink.messages.lquac.msg_radio_status;
 import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
+import org.mavlink.messages.lquac.msg_smart_battery_info;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_mission_item_int;
 import org.mavlink.messages.lquac.msg_mission_request_int;
@@ -157,6 +158,7 @@ import org.mavlink.messages.lquac.msg_param_set;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
 import org.mavlink.messages.lquac.msg_hil_actuator_controls;
+import org.mavlink.messages.lquac.msg_smart_battery_status;
 import org.mavlink.messages.lquac.msg_manual_control;
 import org.mavlink.messages.lquac.msg_message_interval;
 import org.mavlink.messages.lquac.msg_scaled_pressure;
@@ -294,6 +296,7 @@ import org.mavlink.messages.lquac.msg_trajectory_representation_waypoints;
 import org.mavlink.messages.lquac.msg_radio_status;
 import org.mavlink.messages.lquac.msg_follow_target;
 import org.mavlink.messages.lquac.msg_gps_raw_int;
+import org.mavlink.messages.lquac.msg_smart_battery_info;
 import org.mavlink.messages.lquac.msg_sys_status;
 import org.mavlink.messages.lquac.msg_mission_item_int;
 import org.mavlink.messages.lquac.msg_mission_request_int;
@@ -331,6 +334,7 @@ import org.mavlink.messages.lquac.msg_param_set;
 import org.mavlink.messages.lquac.msg_gps_status;
 import org.mavlink.messages.lquac.msg_set_position_target_global_int;
 import org.mavlink.messages.lquac.msg_hil_actuator_controls;
+import org.mavlink.messages.lquac.msg_smart_battery_status;
 import org.mavlink.messages.lquac.msg_manual_control;
 import org.mavlink.messages.lquac.msg_message_interval;
 import org.mavlink.messages.lquac.msg_scaled_pressure;
@@ -824,6 +828,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_gps_raw_int(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_SMART_BATTERY_INFO:
+      msg = new msg_smart_battery_info(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_SYS_STATUS:
       msg = new msg_sys_status(sysId, componentId);
       msg.decode(dis);
@@ -970,6 +978,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS:
       msg = new msg_hil_actuator_controls(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_SMART_BATTERY_STATUS:
+      msg = new msg_smart_battery_status(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_MANUAL_CONTROL:

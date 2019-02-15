@@ -123,6 +123,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_RADIO_STATUS = 109;
   public static int MAVLINK_MSG_ID_FOLLOW_TARGET = 144;
   public static int MAVLINK_MSG_ID_GPS_RAW_INT = 24;
+  public static int MAVLINK_MSG_ID_SMART_BATTERY_INFO = 370;
   public static int MAVLINK_MSG_ID_SYS_STATUS = 1;
   public static int MAVLINK_MSG_ID_MISSION_ITEM_INT = 73;
   public static int MAVLINK_MSG_ID_MISSION_REQUEST_INT = 51;
@@ -160,6 +161,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GPS_STATUS = 25;
   public static int MAVLINK_MSG_ID_SET_POSITION_TARGET_GLOBAL_INT = 86;
   public static int MAVLINK_MSG_ID_HIL_ACTUATOR_CONTROLS = 93;
+  public static int MAVLINK_MSG_ID_SMART_BATTERY_STATUS = 371;
   public static int MAVLINK_MSG_ID_MANUAL_CONTROL = 69;
   public static int MAVLINK_MSG_ID_MESSAGE_INTERVAL = 244;
   public static int MAVLINK_MSG_ID_SCALED_PRESSURE = 29;

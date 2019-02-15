@@ -43,6 +43,12 @@
                   <param index="2">autopilot mode</param>
                   <param index="3">mode parameter</param>
               </entry>
+              <entry value="77" name="MSP_CMD_SET_HOMEPOS">
+                  <description>Sets home position and enables GPOS</description>
+                  <param index="1">latitude</param>
+                  <param index="2">longitude</param>
+                  <param index="3">altitude</param>
+              </entry>
             </enum>
 
             <enum name="MSP_COMPONENT_CTRL">

@@ -5,7 +5,7 @@
 package org.mavlink.messages;
 /**
  * Interface MAV_BATTERY_CHARGE_STATE
- * Enumeration for low battery states.
+ * Enumeration for battery charge states.
  **/
 public interface MAV_BATTERY_CHARGE_STATE {
     /**
@@ -36,4 +36,8 @@ public interface MAV_BATTERY_CHARGE_STATE {
      * Battery is diagnosed to be defective or an error occurred, usage is discouraged / prohibited.
      */
     public final static int MAV_BATTERY_CHARGE_STATE_UNHEALTHY = 6;
+    /**
+     * Battery is charging.
+     */
+    public final static int MAV_BATTERY_CHARGE_STATE_CHARGING = 7;
 }

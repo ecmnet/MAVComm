@@ -72,13 +72,13 @@ public class msg_odometry extends MAVLinkMessage {
    */
   public float yawspeed;
   /**
-   * Pose (states: x, y, z, roll, pitch, yaw) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)
+   * Row-major representation of a 6x6 pose cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
    */
   public float[] pose_covariance = new float[21];
   /**
-   * Twist (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed) covariance matrix upper right triangle (first six entries are the first ROW, next five entries are the second ROW, etc.)
+   * Row-major representation of a 6x6 velocity cross-covariance matrix upper right triangle (states: vx, vy, vz, rollspeed, pitchspeed, yawspeed; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
    */
-  public float[] twist_covariance = new float[21];
+  public float[] velocity_covariance = new float[21];
   /**
    * Coordinate frame of reference for the pose data.
    */
@@ -108,7 +108,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
     pose_covariance[i] = (float)dis.readFloat();
   }
   for (int i=0; i<21; i++) {
-    twist_covariance[i] = (float)dis.readFloat();
+    velocity_covariance[i] = (float)dis.readFloat();
   }
   frame_id = (int)dis.readUnsignedByte()&0x00FF;
   child_frame_id = (int)dis.readUnsignedByte()&0x00FF;
@@ -146,7 +146,7 @@ public byte[] encode() throws IOException {
     dos.writeFloat(pose_covariance[i]);
   }
   for (int i=0; i<21; i++) {
-    dos.writeFloat(twist_covariance[i]);
+    dos.writeFloat(velocity_covariance[i]);
   }
   dos.writeByte(frame_id&0x00FF);
   dos.writeByte(child_frame_id&0x00FF);
@@ -198,27 +198,27 @@ return "MAVLINK_MSG_ID_ODOMETRY : " +   "  time_usec="+time_usec
 +  "  pose_covariance[18]="+pose_covariance[18]
 +  "  pose_covariance[19]="+pose_covariance[19]
 +  "  pose_covariance[20]="+pose_covariance[20]
-+  "  twist_covariance[0]="+twist_covariance[0]
-+  "  twist_covariance[1]="+twist_covariance[1]
-+  "  twist_covariance[2]="+twist_covariance[2]
-+  "  twist_covariance[3]="+twist_covariance[3]
-+  "  twist_covariance[4]="+twist_covariance[4]
-+  "  twist_covariance[5]="+twist_covariance[5]
-+  "  twist_covariance[6]="+twist_covariance[6]
-+  "  twist_covariance[7]="+twist_covariance[7]
-+  "  twist_covariance[8]="+twist_covariance[8]
-+  "  twist_covariance[9]="+twist_covariance[9]
-+  "  twist_covariance[10]="+twist_covariance[10]
-+  "  twist_covariance[11]="+twist_covariance[11]
-+  "  twist_covariance[12]="+twist_covariance[12]
-+  "  twist_covariance[13]="+twist_covariance[13]
-+  "  twist_covariance[14]="+twist_covariance[14]
-+  "  twist_covariance[15]="+twist_covariance[15]
-+  "  twist_covariance[16]="+twist_covariance[16]
-+  "  twist_covariance[17]="+twist_covariance[17]
-+  "  twist_covariance[18]="+twist_covariance[18]
-+  "  twist_covariance[19]="+twist_covariance[19]
-+  "  twist_covariance[20]="+twist_covariance[20]
++  "  velocity_covariance[0]="+velocity_covariance[0]
++  "  velocity_covariance[1]="+velocity_covariance[1]
++  "  velocity_covariance[2]="+velocity_covariance[2]
++  "  velocity_covariance[3]="+velocity_covariance[3]
++  "  velocity_covariance[4]="+velocity_covariance[4]
++  "  velocity_covariance[5]="+velocity_covariance[5]
++  "  velocity_covariance[6]="+velocity_covariance[6]
++  "  velocity_covariance[7]="+velocity_covariance[7]
++  "  velocity_covariance[8]="+velocity_covariance[8]
++  "  velocity_covariance[9]="+velocity_covariance[9]
++  "  velocity_covariance[10]="+velocity_covariance[10]
++  "  velocity_covariance[11]="+velocity_covariance[11]
++  "  velocity_covariance[12]="+velocity_covariance[12]
++  "  velocity_covariance[13]="+velocity_covariance[13]
++  "  velocity_covariance[14]="+velocity_covariance[14]
++  "  velocity_covariance[15]="+velocity_covariance[15]
++  "  velocity_covariance[16]="+velocity_covariance[16]
++  "  velocity_covariance[17]="+velocity_covariance[17]
++  "  velocity_covariance[18]="+velocity_covariance[18]
++  "  velocity_covariance[19]="+velocity_covariance[19]
++  "  velocity_covariance[20]="+velocity_covariance[20]
 +  "  frame_id="+frame_id
 +  "  child_frame_id="+child_frame_id
 ;}

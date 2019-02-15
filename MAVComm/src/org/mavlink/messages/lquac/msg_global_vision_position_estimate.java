@@ -56,7 +56,7 @@ public class msg_global_vision_position_estimate extends MAVLinkMessage {
    */
   public float yaw;
   /**
-   * Pose covariance matrix upper right triangular (first six entries are the first ROW, next five entries are the second ROW, etc.)
+   * Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x_global, y_global, z_global, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
    */
   public float[] covariance = new float[21];
 /**

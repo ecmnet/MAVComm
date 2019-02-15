@@ -28,31 +28,31 @@ public class msg_radio_status extends MAVLinkMessage {
 }
 
   /**
-   * Receive errors
+   * Count of radio packet receive errors (since boot).
    */
   public int rxerrors;
   /**
-   * Count of error corrected packets
+   * Count of error corrected radio packets (since boot).
    */
   public int fixed;
   /**
-   * Local signal strength
+   * Local (message sender) recieved signal strength indication in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.
    */
   public int rssi;
   /**
-   * Remote signal strength
+   * Remote (message receiver) signal strength indication in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.
    */
   public int remrssi;
   /**
-   * Remaining free buffer space.
+   * Remaining free transmitter buffer space.
    */
   public int txbuf;
   /**
-   * Background noise level
+   * Local background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], 255: invalid/unknown.
    */
   public int noise;
   /**
-   * Remote background noise level
+   * Remote background noise level. These are device dependent RSSI values (scale as approx 2x dB on SiK radios). Values: [0-254], 255: invalid/unknown.
    */
   public int remnoise;
 /**

@@ -44,7 +44,7 @@ public class msg_vision_speed_estimate extends MAVLinkMessage {
    */
   public float z;
   /**
-   * Linear velocity covariance matrix (1st three entries - 1st row, etc.)
+   * Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.
    */
   public float[] covariance = new float[9];
 /**

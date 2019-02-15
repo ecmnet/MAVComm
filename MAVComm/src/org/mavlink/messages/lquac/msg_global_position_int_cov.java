@@ -60,7 +60,7 @@ public class msg_global_position_int_cov extends MAVLinkMessage {
    */
   public float vz;
   /**
-   * Covariance matrix (first six entries are the first ROW, next six entries are the second row, etc.)
+   * Row-major representation of a 6x6 position and velocity 6x6 cross-covariance matrix (states: lat, lon, alt, vx, vy, vz; first six entries are the first ROW, next six entries are the second row, etc.). If unknown, assign NaN value to first element in the array.
    */
   public float[] covariance = new float[36];
   /**

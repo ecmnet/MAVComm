@@ -80,9 +80,10 @@ public class MSPCommander {
 
 			final long MAX_GPOS_SET_MS = 20000;
 
+
 			long tms = System.currentTimeMillis();
 
-			if(control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID))
+			if(control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID) || lat == 0.0 || lon == 0.0)
 				return;
 
 
@@ -124,6 +125,9 @@ public class MSPCommander {
 					break;
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
 					setOffboardPosition(cmd);
+					break;
+				case MSP_CMD.MSP_CMD_SET_HOMEPOS:
+					setGlobalOrigin(cmd.param1 / 1e7, cmd.param2 / 1e7);
 					break;
 				case MSP_CMD.MSP_CMD_AUTOMODE:
 					setAutopilotMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);

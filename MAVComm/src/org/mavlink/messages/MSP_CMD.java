@@ -51,4 +51,11 @@ public interface MSP_CMD {
      * PARAM 3 : mode parameter
      */
     public final static int MSP_CMD_AUTOMODE = 76;
+    /**
+     * Sets home position and enables GPOS
+     * PARAM 1 : latitude
+     * PARAM 2 : longitude
+     * PARAM 3 : altitude
+     */
+    public final static int MSP_CMD_SET_HOMEPOS = 77;
 }

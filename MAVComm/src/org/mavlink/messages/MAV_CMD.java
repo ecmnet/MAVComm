@@ -207,9 +207,9 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_SPLINE_WAYPOINT = 82;
     /**
-     * Takeoff from ground using VTOL mode including transition to forward flight.
+     * Takeoff from ground using VTOL mode, and transition to forward flight with specified heading.
      * PARAM 1 : Empty
-     * PARAM 2 : Front transition heading, see VTOL_TRANSITION_HEADING enum.
+     * PARAM 2 : Front transition heading.
      * PARAM 3 : Empty
      * PARAM 4 : Yaw angle in degrees. NaN for unchanged.
      * PARAM 5 : Latitude
@@ -251,14 +251,14 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_DELAY = 93;
     /**
-     * Descend and place payload.  Vehicle descends until it detects a hanging payload has reached the ground, the gripper is opened to release the payload
-     * PARAM 1 : Maximum distance to descend (meters)
+     * Descend and place payload. Vehicle moves to specified location, descends until it detects a hanging payload has reached the ground, and then releases the payload. If ground is not detected before the reaching the maximum descent value (param1), the command will complete without releasing the payload.
+     * PARAM 1 : Maximum distance to descend.
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
-     * PARAM 5 : Latitude (deg * 1E7)
-     * PARAM 6 : Longitude (deg * 1E7)
-     * PARAM 7 : Altitude (meters)
+     * PARAM 5 : Latitude
+     * PARAM 6 : Longitude
+     * PARAM 7 : Altitude
      */
     public final static int MAV_CMD_NAV_PAYLOAD_PLACE = 94;
     /**
@@ -863,6 +863,12 @@ public interface MAV_CMD {
      * PARAM 2 : The interval between two messages, in microseconds. Set to -1 to disable and 0 to request default rate.
      */
     public final static int MAV_CMD_SET_MESSAGE_INTERVAL = 511;
+    /**
+     * Request the target system(s) emit a single instance of a specified message (i.e. a "one-shot" version of MAV_CMD_SET_MESSAGE_INTERVAL).
+     * PARAM 1 : The MAVLink message ID of the requested message.
+     * PARAM 2 : Index id (if appropriate). The use of this parameter (if any), must be defined in the requested message.
+     */
+    public final static int MAV_CMD_REQUEST_MESSAGE = 512;
     /**
      * Request MAVLink protocol version compatibility
      * PARAM 1 : 1: Request supported protocol versions by all nodes on the network
