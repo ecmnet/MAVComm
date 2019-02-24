@@ -80,7 +80,7 @@ public class msg_hil_rc_inputs_raw extends MAVLinkMessage {
    */
   public int chan12_raw;
   /**
-   * Receive signal strength indicator. Values: [0-100], 255: invalid/unknown.
+   * Receive signal strength indicator in device-dependent units/scale. Values: [0-254], 255: invalid/unknown.
    */
   public int rssi;
 /**
