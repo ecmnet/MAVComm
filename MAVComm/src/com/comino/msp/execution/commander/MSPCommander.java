@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017,2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017-2019 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -52,6 +52,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
+import com.comino.msp.utils.ExecutorService;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -76,21 +77,23 @@ public class MSPCommander {
 		this.map = autopilot.getMap2D();
 	}
 
-	public void setGlobalOrigin(double lat, double lon) {
+	public void setGlobalOrigin(double lat, double lon, double altitude) {
 
-			final long MAX_GPOS_SET_MS = 20000;
+		final long MAX_GPOS_SET_MS = 20000;
 
+		if(control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID) || lat == 0.0 || lon == 0.0 ||
+				control.getCurrentModel().sys.isSensorAvailable(Status.MSP_GPS_AVAILABILITY))
+			return;
+
+		ExecutorService.submit(() -> {
 
 			long tms = System.currentTimeMillis();
-
-			if(control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID) || lat == 0.0 || lon == 0.0)
-				return;
 
 
 			msg_hil_gps gps = new msg_hil_gps(1,1);
 			gps.lat = (long)(lat * 1e7);
 			gps.lon = (long)(lon * 1e7);
-			gps.alt = (int)(control.getCurrentModel().hud.al*100);
+			gps.alt = (int)(altitude);
 			gps.satellites_visible = 10;
 			gps.eph = 30;
 			gps.epv = 30;
@@ -98,7 +101,7 @@ public class MSPCommander {
 			gps.cog = 0;
 
 			while(!control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID)
-					                   && (System.currentTimeMillis() - tms) < MAX_GPOS_SET_MS) {
+					&& (System.currentTimeMillis() - tms) < MAX_GPOS_SET_MS) {
 				control.sendMAVLinkMessage(gps);
 				try {
 					Thread.sleep(200);
@@ -109,7 +112,13 @@ public class MSPCommander {
 			gps.satellites_visible = 0;
 			gps.fix_type = 0;
 			control.sendMAVLinkMessage(gps);
-		}
+
+			MSPLogger.getInstance().writeLocalMsg("Global reference position set from MAVGCL",
+					MAV_SEVERITY.MAV_SEVERITY_INFO);
+
+		}, ExecutorService.LOW );
+
+	}
 
 	private void registerCommands() {
 
@@ -127,7 +136,7 @@ public class MSPCommander {
 					setOffboardPosition(cmd);
 					break;
 				case MSP_CMD.MSP_CMD_SET_HOMEPOS:
-					setGlobalOrigin(cmd.param1 / 1e7, cmd.param2 / 1e7);
+					setGlobalOrigin(cmd.param1 / 1e7f, cmd.param2 / 1e7f, cmd.param3 / 1e3f );
 					break;
 				case MSP_CMD.MSP_CMD_AUTOMODE:
 					setAutopilotMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
@@ -165,12 +174,12 @@ public class MSPCommander {
 		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
-				setXObstacleForSITL();
+			setXObstacleForSITL();
 			//	autopilot.applyMapFilter();
 			break;
 		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
 			//    autopilot.square(3);
-			    setYObstacleForSITL();
+			setYObstacleForSITL();
 			//  autopilot.landLocal();
 			break;
 		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
