@@ -93,7 +93,7 @@ public class MSPCommander {
 			msg_hil_gps gps = new msg_hil_gps(1,1);
 			gps.lat = (long)(lat * 1e7);
 			gps.lon = (long)(lon * 1e7);
-			gps.alt = (int)(altitude);
+			gps.alt = (int)(altitude * 1000);
 			gps.satellites_visible = 10;
 			gps.eph = 30;
 			gps.epv = 30;
