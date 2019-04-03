@@ -637,7 +637,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_FENCE_ENABLE = 207;
     /**
      * Mission command to trigger a parachute
-     * PARAM 1 : action (0=disable, 1=enable, 2=release, for some systems see PARACHUTE_ACTION enum, not in general message set.)
+     * PARAM 1 : action
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -814,14 +814,14 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN = 246;
     /**
-     * Hold / continue the current action
-     * PARAM 1 : MAV_GOTO_DO_HOLD: hold MAV_GOTO_DO_CONTINUE: continue with next item in mission plan
-     * PARAM 2 : MAV_GOTO_HOLD_AT_CURRENT_POSITION: Hold at current position MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position
-     * PARAM 3 : MAV_FRAME coordinate frame of hold point
-     * PARAM 4 : Desired yaw angle in degrees
-     * PARAM 5 : Latitude / X position
-     * PARAM 6 : Longitude / Y position
-     * PARAM 7 : Altitude / Z position
+     * Override current mission with command to pause mission, pause mission and move to position, continue/resume mission. When param 1 indicates that the mission is paused (MAV_GOTO_DO_HOLD), param 2 defines whether it holds in place or moves to another position.
+     * PARAM 1 : MAV_GOTO_DO_HOLD: pause mission and either hold or move to specified position (depending on param2), MAV_GOTO_DO_CONTINUE: resume mission.
+     * PARAM 2 : MAV_GOTO_HOLD_AT_CURRENT_POSITION: hold at current position, MAV_GOTO_HOLD_AT_SPECIFIED_POSITION: hold at specified position.
+     * PARAM 3 : Coordinate frame of hold point.
+     * PARAM 4 : Desired yaw angle.
+     * PARAM 5 : Latitude / X position.
+     * PARAM 6 : Longitude / Y position.
+     * PARAM 7 : Altitude / Z position.
      */
     public final static int MAV_CMD_OVERRIDE_GOTO = 252;
     /**

@@ -24,7 +24,7 @@ public class msg_vision_position_estimate extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 116;
+    payload_length = 117;
 }
 
   /**
@@ -59,6 +59,10 @@ public class msg_vision_position_estimate extends MAVLinkMessage {
    * Row-major representation of pose 6x6 cross-covariance matrix upper right triangle (states: x, y, z, roll, pitch, yaw; first six entries are the first ROW, next five entries are the second ROW, etc.). If unknown, assign NaN value to first element in the array.
    */
   public float[] covariance = new float[21];
+  /**
+   * Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.
+   */
+  public int reset_counter;
 /**
  * Decode message with raw data
  */
@@ -73,12 +77,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   for (int i=0; i<21; i++) {
     covariance[i] = (float)dis.readFloat();
   }
+  reset_counter = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+116];
+  byte[] buffer = new byte[12+117];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -100,15 +105,16 @@ public byte[] encode() throws IOException {
   for (int i=0; i<21; i++) {
     dos.writeFloat(covariance[i]);
   }
+  dos.writeByte(reset_counter&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 116);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 117);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[126] = crcl;
-  buffer[127] = crch;
+  buffer[127] = crcl;
+  buffer[128] = crch;
   dos.close();
   return buffer;
 }
@@ -141,5 +147,6 @@ return "MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE : " +   "  usec="+usec
 +  "  covariance[18]="+covariance[18]
 +  "  covariance[19]="+covariance[19]
 +  "  covariance[20]="+covariance[20]
++  "  reset_counter="+reset_counter
 ;}
 }

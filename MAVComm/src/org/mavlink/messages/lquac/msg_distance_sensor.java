@@ -56,7 +56,7 @@ public class msg_distance_sensor extends MAVLinkMessage {
    */
   public int orientation;
   /**
-   * Measurement variance. Max standard deviation is 6cm. 256 if unknown.
+   * Measurement variance. Max standard deviation is 6cm. 255 if unknown.
    */
   public int covariance;
   /**

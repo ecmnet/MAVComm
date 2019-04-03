@@ -24,7 +24,7 @@ public class msg_vision_speed_estimate extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 56;
+    payload_length = 57;
 }
 
   /**
@@ -47,6 +47,10 @@ public class msg_vision_speed_estimate extends MAVLinkMessage {
    * Row-major representation of 3x3 linear velocity covariance matrix (states: vx, vy, vz; 1st three entries - 1st row, etc.). If unknown, assign NaN value to first element in the array.
    */
   public float[] covariance = new float[9];
+  /**
+   * Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.
+   */
+  public int reset_counter;
 /**
  * Decode message with raw data
  */
@@ -58,12 +62,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   for (int i=0; i<9; i++) {
     covariance[i] = (float)dis.readFloat();
   }
+  reset_counter = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+56];
+  byte[] buffer = new byte[12+57];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -82,15 +87,16 @@ public byte[] encode() throws IOException {
   for (int i=0; i<9; i++) {
     dos.writeFloat(covariance[i]);
   }
+  dos.writeByte(reset_counter&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 56);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 57);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[66] = crcl;
-  buffer[67] = crch;
+  buffer[67] = crcl;
+  buffer[68] = crch;
   dos.close();
   return buffer;
 }
@@ -108,5 +114,6 @@ return "MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE : " +   "  usec="+usec
 +  "  covariance[6]="+covariance[6]
 +  "  covariance[7]="+covariance[7]
 +  "  covariance[8]="+covariance[8]
++  "  reset_counter="+reset_counter
 ;}
 }
