@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_param_request_list
- * Request all parameters of this component. After this request, all parameters are emitted.
+ * Request all parameters of this component. After this request, all parameters are emitted. The parameter microservice is documented at https://mavlink.io/en/services/parameter.html
  **/
 public class msg_param_request_list extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_PARAM_REQUEST_LIST = 21;

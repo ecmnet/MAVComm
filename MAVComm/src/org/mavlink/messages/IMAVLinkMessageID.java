@@ -101,6 +101,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_DEBUG_FLOAT_ARRAY = 350;
   public static int MAVLINK_MSG_ID_WIND_COV = 231;
   public static int MAVLINK_MSG_ID_CELLULAR_STATUS = 334;
+  public static int MAVLINK_MSG_ID_TIME_ESTIMATE_TO_TARGET = 380;
   public static int MAVLINK_MSG_ID_HIGH_LATENCY2 = 235;
   public static int MAVLINK_MSG_ID_LOCAL_POSITION_NED = 32;
   public static int MAVLINK_MSG_ID_NAV_CONTROLLER_OUTPUT = 62;
@@ -139,6 +140,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_GLOBAL_POSITION_INT_COV = 63;
   public static int MAVLINK_MSG_ID_WHEEL_DISTANCE = 9000;
   public static int MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE = 103;
+  public static int MAVLINK_MSG_ID_MISSION_CHANGED = 52;
   public static int MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE = 70;
   public static int MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS = 262;
   public static int MAVLINK_MSG_ID_LOGGING_ACK = 268;

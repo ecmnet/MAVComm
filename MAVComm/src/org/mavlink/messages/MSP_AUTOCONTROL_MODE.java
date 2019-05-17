@@ -21,6 +21,10 @@ public interface MSP_AUTOCONTROL_MODE {
      */
     public final static int OBSTACLE_AVOIDANCE = 2;
     /**
+     * JumpBack mode
+     */
+    public final static int COLLISION_PREVENTION = 3;
+    /**
      * Interactive mode (by mouse)
      */
     public final static int INTERACTIVE = 9;

@@ -29,7 +29,7 @@ public interface MAV_MODE_FLAG_DECODE_POSITION {
      */
     public final static int MAV_MODE_FLAG_DECODE_POSITION_GUIDED = 8;
     /**
-     * Sixt bit:   00000100
+     * Sixth bit:   00000100
      */
     public final static int MAV_MODE_FLAG_DECODE_POSITION_AUTO = 4;
     /**

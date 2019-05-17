@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_command_long
- * Send a command with up to seven parameters to the MAV
+ * Send a command with up to seven parameters to the MAV. The command microservice is documented at https://mavlink.io/en/services/command.html
  **/
 public class msg_command_long extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_COMMAND_LONG = 76;

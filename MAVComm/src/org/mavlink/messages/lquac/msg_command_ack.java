@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_command_ack
- * Report status of a command. Includes feedback whether the command was executed.
+ * Report status of a command. Includes feedback whether the command was executed. The command microservice is documented at https://mavlink.io/en/services/command.html
  **/
 public class msg_command_ack extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_COMMAND_ACK = 77;

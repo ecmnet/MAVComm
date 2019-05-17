@@ -99,6 +99,7 @@ import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
 import org.mavlink.messages.lquac.msg_cellular_status;
+import org.mavlink.messages.lquac.msg_time_estimate_to_target;
 import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
@@ -136,6 +137,7 @@ import org.mavlink.messages.lquac.msg_mission_request_partial_list;
 import org.mavlink.messages.lquac.msg_global_position_int_cov;
 import org.mavlink.messages.lquac.msg_wheel_distance;
 import org.mavlink.messages.lquac.msg_vision_speed_estimate;
+import org.mavlink.messages.lquac.msg_mission_changed;
 import org.mavlink.messages.lquac.msg_rc_channels_override;
 import org.mavlink.messages.lquac.msg_camera_capture_status;
 import org.mavlink.messages.lquac.msg_logging_ack;
@@ -274,6 +276,7 @@ import org.mavlink.messages.lquac.msg_camera_settings;
 import org.mavlink.messages.lquac.msg_debug_float_array;
 import org.mavlink.messages.lquac.msg_wind_cov;
 import org.mavlink.messages.lquac.msg_cellular_status;
+import org.mavlink.messages.lquac.msg_time_estimate_to_target;
 import org.mavlink.messages.lquac.msg_high_latency2;
 import org.mavlink.messages.lquac.msg_local_position_ned;
 import org.mavlink.messages.lquac.msg_nav_controller_output;
@@ -312,6 +315,7 @@ import org.mavlink.messages.lquac.msg_mission_request_partial_list;
 import org.mavlink.messages.lquac.msg_global_position_int_cov;
 import org.mavlink.messages.lquac.msg_wheel_distance;
 import org.mavlink.messages.lquac.msg_vision_speed_estimate;
+import org.mavlink.messages.lquac.msg_mission_changed;
 import org.mavlink.messages.lquac.msg_rc_channels_override;
 import org.mavlink.messages.lquac.msg_camera_capture_status;
 import org.mavlink.messages.lquac.msg_logging_ack;
@@ -740,6 +744,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_cellular_status(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_TIME_ESTIMATE_TO_TARGET:
+      msg = new msg_time_estimate_to_target(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_HIGH_LATENCY2:
       msg = new msg_high_latency2(sysId, componentId);
       msg.decode(dis);
@@ -890,6 +898,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_VISION_SPEED_ESTIMATE:
       msg = new msg_vision_speed_estimate(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_MISSION_CHANGED:
+      msg = new msg_mission_changed(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_RC_CHANNELS_OVERRIDE:

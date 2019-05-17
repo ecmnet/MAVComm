@@ -5,14 +5,14 @@
 package org.mavlink.messages;
 /**
  * Interface MAV_CMD
- * Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data.
+ * Commands to be executed by the MAV. They can be executed on user request, or as part of a mission script. If the action is used in a mission, the parameter mapping to the waypoint/mission message is as follows: Param 1, Param 2, Param 3, Param 4, X: Param 5, Y:Param 6, Z:Param 7. This command list is similar what ARINC 424 is for commercial aircraft: A data format how to interpret waypoint/mission data. See https://mavlink.io/en/guide/xml_schema.html#MAV_CMD for information about the structure of the MAV_CMD entries
  **/
 public interface MAV_CMD {
     /**
      * Navigate to waypoint.
-     * PARAM 1 : Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)
-     * PARAM 2 : Acceptance radius in meters (if the sphere with this radius is hit, the waypoint counts as reached)
-     * PARAM 3 : 0 to pass through the WP, if > 0 radius in meters to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.
+     * PARAM 1 : Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)
+     * PARAM 2 : Acceptance radius (if the sphere with this radius is hit, the waypoint counts as reached)
+     * PARAM 3 : 0 to pass through the WP, if > 0 radius to pass by WP. Positive value for clockwise orbit, negative value for counter-clockwise orbit. Allows trajectory control.
      * PARAM 4 : Desired yaw angle at waypoint (rotary wing). NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
@@ -23,8 +23,8 @@ public interface MAV_CMD {
      * Loiter around this waypoint an unlimited amount of time
      * PARAM 1 : Empty
      * PARAM 2 : Empty
-     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
-     * PARAM 4 : Desired yaw angle.
+     * PARAM 3 : Radius around waypoint. If positive loiter clockwise, else counter-clockwise
+     * PARAM 4 : Desired yaw angle. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -32,10 +32,10 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_LOITER_UNLIM = 17;
     /**
      * Loiter around this waypoint for X turns
-     * PARAM 1 : Turns
+     * PARAM 1 : Number of turns.
      * PARAM 2 : Empty
-     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
-     * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle
+     * PARAM 3 : Radius around waypoint. If positive loiter clockwise, else counter-clockwise
+     * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -43,10 +43,10 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_LOITER_TURNS = 18;
     /**
      * Loiter around this waypoint for X seconds
-     * PARAM 1 : Seconds (decimal)
+     * PARAM 1 : Loiter time.
      * PARAM 2 : Empty
-     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
-     * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle
+     * PARAM 3 : Radius around waypoint. If positive loiter clockwise, else counter-clockwise.
+     * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location. Else, this is desired yaw angle.  NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -88,30 +88,30 @@ public interface MAV_CMD {
     /**
      * Land at local position (local frame only)
      * PARAM 1 : Landing target number (if available)
-     * PARAM 2 : Maximum accepted offset from desired landing position [m] - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land
-     * PARAM 3 : Landing descend rate [ms^-1]
-     * PARAM 4 : Desired yaw angle [rad]
-     * PARAM 5 : Y-axis position [m]
-     * PARAM 6 : X-axis position [m]
-     * PARAM 7 : Z-axis / ground level position [m]
+     * PARAM 2 : Maximum accepted offset from desired landing position - computed magnitude from spherical coordinates: d = sqrt(x^2 + y^2 + z^2), which gives the maximum accepted distance between the desired landing position and the position where the vehicle is about to land
+     * PARAM 3 : Landing descend rate
+     * PARAM 4 : Desired yaw angle
+     * PARAM 5 : Y-axis position
+     * PARAM 6 : X-axis position
+     * PARAM 7 : Z-axis / ground level position
      */
     public final static int MAV_CMD_NAV_LAND_LOCAL = 23;
     /**
      * Takeoff from local position (local frame only)
-     * PARAM 1 : Minimum pitch (if airspeed sensor present), desired pitch without sensor [rad]
+     * PARAM 1 : Minimum pitch (if airspeed sensor present), desired pitch without sensor
      * PARAM 2 : Empty
-     * PARAM 3 : Takeoff ascend rate [ms^-1]
-     * PARAM 4 : Yaw angle [rad] (if magnetometer or another yaw estimation source present), ignored without one of these
-     * PARAM 5 : Y-axis position [m]
-     * PARAM 6 : X-axis position [m]
-     * PARAM 7 : Z-axis position [m]
+     * PARAM 3 : Takeoff ascend rate
+     * PARAM 4 : Yaw angle (if magnetometer or another yaw estimation source present), ignored without one of these
+     * PARAM 5 : Y-axis position
+     * PARAM 6 : X-axis position
+     * PARAM 7 : Z-axis position
      */
     public final static int MAV_CMD_NAV_TAKEOFF_LOCAL = 24;
     /**
      * Vehicle following, i.e. this waypoint represents the position of a moving vehicle
      * PARAM 1 : Following logic to use (e.g. loitering or sinusoidal following) - depends on specific autopilot implementation
      * PARAM 2 : Ground speed of vehicle to be followed
-     * PARAM 3 : Radius around waypoint, in meters. If positive loiter clockwise, else counter-clockwise
+     * PARAM 3 : Radius around waypoint. If positive loiter clockwise, else counter-clockwise
      * PARAM 4 : Desired yaw angle.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
@@ -126,13 +126,13 @@ public interface MAV_CMD {
      * PARAM 4 : Empty
      * PARAM 5 : Empty
      * PARAM 6 : Empty
-     * PARAM 7 : Desired altitude in meters
+     * PARAM 7 : Desired altitude
      */
     public final static int MAV_CMD_NAV_CONTINUE_AND_CHANGE_ALT = 30;
     /**
      * Begin loiter at the specified Latitude and Longitude.  If Lat=Lon=0, then loiter at the current position.  Don't consider the navigation command complete (don't leave loiter) until the altitude has been reached.  Additionally, if the Heading Required parameter is non-zero the  aircraft will not leave the loiter until heading toward the next waypoint.
      * PARAM 1 : Heading Required (0 = False)
-     * PARAM 2 : Radius in meters. If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.
+     * PARAM 2 : Radius. If positive loiter clockwise, negative counter-clockwise, 0 means no change to standard loiter.
      * PARAM 3 : Empty
      * PARAM 4 : Forward moving aircraft this sets exit xtrack location: 0 for center of loiter wp, 1 for exit location
      * PARAM 5 : Latitude
@@ -142,13 +142,13 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_LOITER_TO_ALT = 31;
     /**
      * Being following a target
-     * PARAM 1 : System ID (the system ID of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode
+     * PARAM 1 : System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode.
      * PARAM 2 : RESERVED
      * PARAM 3 : RESERVED
-     * PARAM 4 : altitude flag: 0: Keep current altitude, 1: keep altitude difference to target, 2: go to a fixed altitude above home
-     * PARAM 5 : altitude
+     * PARAM 4 : Altitude mode: 0: Keep current altitude, 1: keep altitude difference to target, 2: go to a fixed altitude above home.
+     * PARAM 5 : Altitude above home. (used if mode=2)
      * PARAM 6 : RESERVED
-     * PARAM 7 : TTL in seconds in which the MAV should go to the default position hold mode after a message rx timeout
+     * PARAM 7 : Time to land in which the MAV should go to the default position hold mode after a message RX timeout.
      */
     public final static int MAV_CMD_DO_FOLLOW = 32;
     /**
@@ -157,15 +157,15 @@ public interface MAV_CMD {
      * PARAM 2 : Camera q2
      * PARAM 3 : Camera q3
      * PARAM 4 : Camera q4
-     * PARAM 5 : altitude offset from target (m)
-     * PARAM 6 : X offset from target (m)
-     * PARAM 7 : Y offset from target (m)
+     * PARAM 5 : altitude offset from target
+     * PARAM 6 : X offset from target
+     * PARAM 7 : Y offset from target
      */
     public final static int MAV_CMD_DO_FOLLOW_REPOSITION = 33;
     /**
      * Start orbiting on the circumference of a circle defined by the parameters. Setting any value NaN results in using defaults.
-     * PARAM 1 : Radius of the circle in meters. positive: Orbit clockwise. negative: Orbit counter-clockwise.
-     * PARAM 2 : Velocity tangential in m/s. NaN: Vehicle configuration default.
+     * PARAM 1 : Radius of the circle. positive: Orbit clockwise. negative: Orbit counter-clockwise.
+     * PARAM 2 : Tangential Velocity. NaN: Vehicle configuration default.
      * PARAM 3 : Yaw behavior of the vehicle. 0: vehicle front points to the center (default). 1: Hold last heading. 2: Leave yaw uncontrolled.
      * PARAM 4 : Reserved (e.g. for dynamic center beacon options)
      * PARAM 5 : Center point latitude (if no MAV_FRAME specified) / X coordinate according to MAV_FRAME. NaN: Use current vehicle position or current center if already orbiting.
@@ -175,7 +175,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_ORBIT = 34;
     /**
      * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
-     * PARAM 1 : Region of interest mode. (see MAV_ROI enum)
+     * PARAM 1 : Region of interest mode.
      * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
      * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
      * PARAM 4 : Empty
@@ -189,7 +189,7 @@ public interface MAV_CMD {
      * PARAM 1 : 0: Disable local obstacle avoidance / local path planning (without resetting map), 1: Enable local path planning, 2: Enable and reset local path planning
      * PARAM 2 : 0: Disable full path planning (without resetting map), 1: Enable, 2: Enable and reset map/occupancy grid, 3: Enable and reset planned route, but not occupancy grid
      * PARAM 3 : Empty
-     * PARAM 4 : Yaw angle at goal, in compass degrees, [0..360]
+     * PARAM 4 : Yaw angle at goal
      * PARAM 5 : Latitude/X of goal
      * PARAM 6 : Longitude/Y of goal
      * PARAM 7 : Altitude/Z of goal
@@ -197,7 +197,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_PATHPLANNING = 81;
     /**
      * Navigate to waypoint using a spline path.
-     * PARAM 1 : Hold time in decimal seconds. (ignored by fixed wing, time to stay at waypoint for rotary wing)
+     * PARAM 1 : Hold time. (ignored by fixed wing, time to stay at waypoint for rotary wing)
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -211,7 +211,7 @@ public interface MAV_CMD {
      * PARAM 1 : Empty
      * PARAM 2 : Front transition heading.
      * PARAM 3 : Empty
-     * PARAM 4 : Yaw angle in degrees. NaN for unchanged.
+     * PARAM 4 : Yaw angle. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude
@@ -222,7 +222,7 @@ public interface MAV_CMD {
      * PARAM 1 : Empty
      * PARAM 2 : Empty
      * PARAM 3 : Approach altitude (with the same reference as the Altitude field). NaN if unspecified.
-     * PARAM 4 : Yaw angle in degrees. NaN for unchanged.
+     * PARAM 4 : Yaw angle. NaN for unchanged.
      * PARAM 5 : Latitude
      * PARAM 6 : Longitude
      * PARAM 7 : Altitude (ground level)
@@ -241,7 +241,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_GUIDED_ENABLE = 92;
     /**
      * Delay the next navigation command a number of seconds or until a specified time
-     * PARAM 1 : Delay in seconds (decimal, -1 to enable time-of-day fields)
+     * PARAM 1 : Delay (-1 to enable time-of-day fields)
      * PARAM 2 : hour (24h format, UTC, -1 to ignore)
      * PARAM 3 : minute (24h format, UTC, -1 to ignore)
      * PARAM 4 : second (24h format, UTC)
@@ -274,7 +274,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_LAST = 95;
     /**
      * Delay mission state machine.
-     * PARAM 1 : Delay in seconds (decimal)
+     * PARAM 1 : Delay
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -285,7 +285,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_CONDITION_DELAY = 112;
     /**
      * Ascend/descend at rate.  Delay mission state machine until desired altitude reached.
-     * PARAM 1 : Descent / Ascend rate (m/s)
+     * PARAM 1 : Descent / Ascend rate.
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -296,7 +296,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_CONDITION_CHANGE_ALT = 113;
     /**
      * Delay mission state machine until within desired distance of next NAV point.
-     * PARAM 1 : Distance (meters)
+     * PARAM 1 : Distance.
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -307,10 +307,10 @@ public interface MAV_CMD {
     public final static int MAV_CMD_CONDITION_DISTANCE = 114;
     /**
      * Reach a certain target angle.
-     * PARAM 1 : target angle: [0-360], 0 is north
-     * PARAM 2 : speed during yaw change:[deg per second]
-     * PARAM 3 : direction: negative: counter clockwise, positive: clockwise [-1,1]
-     * PARAM 4 : relative offset or absolute angle: [ 1,0]
+     * PARAM 1 : target angle, 0 is north
+     * PARAM 2 : angular speed
+     * PARAM 3 : direction: -1: counter clockwise, 1: clockwise
+     * PARAM 4 : 0: absolute angle, 1: relative offset
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
@@ -329,7 +329,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_CONDITION_LAST = 159;
     /**
      * Set system mode.
-     * PARAM 1 : Mode, as defined by ENUM MAV_MODE
+     * PARAM 1 : Mode
      * PARAM 2 : Custom mode - this is system specific, please refer to the individual autopilot specifications for details.
      * PARAM 3 : Custom sub mode - this is system specific, please refer to the individual autopilot specifications for details.
      * PARAM 4 : Empty
@@ -352,9 +352,9 @@ public interface MAV_CMD {
     /**
      * Change speed and/or throttle set points.
      * PARAM 1 : Speed type (0=Airspeed, 1=Ground Speed, 2=Climb Speed, 3=Descent Speed)
-     * PARAM 2 : Speed  (m/s, -1 indicates no change)
-     * PARAM 3 : Throttle  ( Percent, -1 indicates no change)
-     * PARAM 4 : absolute or relative [0,1]
+     * PARAM 2 : Speed (-1 indicates no change)
+     * PARAM 3 : Throttle (-1 indicates no change)
+     * PARAM 4 : 0: absolute, 1: relative
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
@@ -384,8 +384,8 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_SET_PARAMETER = 180;
     /**
      * Set a relay to a condition.
-     * PARAM 1 : Relay number
-     * PARAM 2 : Setting (1=on, 0=off, others possible depending on system hardware)
+     * PARAM 1 : Relay instance number.
+     * PARAM 2 : Setting. (1=on, 0=off, others possible depending on system hardware)
      * PARAM 3 : Empty
      * PARAM 4 : Empty
      * PARAM 5 : Empty
@@ -395,9 +395,9 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_SET_RELAY = 181;
     /**
      * Cycle a relay on and off for a desired number of cycles with a desired period.
-     * PARAM 1 : Relay number
-     * PARAM 2 : Cycle count
-     * PARAM 3 : Cycle time (seconds, decimal)
+     * PARAM 1 : Relay instance number.
+     * PARAM 2 : Cycle count.
+     * PARAM 3 : Cycle time.
      * PARAM 4 : Empty
      * PARAM 5 : Empty
      * PARAM 6 : Empty
@@ -406,8 +406,8 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_REPEAT_RELAY = 182;
     /**
      * Set a servo to a desired PWM value.
-     * PARAM 1 : Servo number
-     * PARAM 2 : PWM (microseconds, 1000 to 2000 typical)
+     * PARAM 1 : Servo instance number.
+     * PARAM 2 : Pulse Width Modulation.
      * PARAM 3 : Empty
      * PARAM 4 : Empty
      * PARAM 5 : Empty
@@ -417,10 +417,10 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_SET_SERVO = 183;
     /**
      * Cycle a between its nominal setting and a desired PWM for a desired number of cycles with a desired period.
-     * PARAM 1 : Servo number
-     * PARAM 2 : PWM (microseconds, 1000 to 2000 typical)
-     * PARAM 3 : Cycle count
-     * PARAM 4 : Cycle time (seconds)
+     * PARAM 1 : Servo instance number.
+     * PARAM 2 : Pulse Width Modulation.
+     * PARAM 3 : Cycle count.
+     * PARAM 4 : Cycle time.
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
@@ -439,8 +439,8 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_FLIGHTTERMINATION = 185;
     /**
      * Change altitude set point.
-     * PARAM 1 : Altitude in meters
-     * PARAM 2 : Mav frame of new altitude (see MAV_FRAME)
+     * PARAM 1 : Altitude.
+     * PARAM 2 : Frame of new altitude.
      * PARAM 3 : Empty
      * PARAM 4 : Empty
      * PARAM 5 : Empty
@@ -461,8 +461,8 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_LAND_START = 189;
     /**
      * Mission command to perform a landing from a rally point.
-     * PARAM 1 : Break altitude (meters)
-     * PARAM 2 : Landing speed (m/s)
+     * PARAM 1 : Break altitude
+     * PARAM 2 : Landing speed
      * PARAM 3 : Empty
      * PARAM 4 : Empty
      * PARAM 5 : Empty
@@ -472,7 +472,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_RALLY_LAND = 190;
     /**
      * Mission command to safely abort an autonomous landing.
-     * PARAM 1 : Altitude (meters)
+     * PARAM 1 : Altitude
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -484,7 +484,7 @@ public interface MAV_CMD {
     /**
      * Reposition the vehicle to a specific WGS84 global position.
      * PARAM 1 : Ground speed, less than 0 (-1) for default
-     * PARAM 2 : Bitmask of option flags, see the MAV_DO_REPOSITION_FLAGS enum.
+     * PARAM 2 : Bitmask of option flags.
      * PARAM 3 : Reserved
      * PARAM 4 : Yaw heading, NaN for unchanged. For planes indicates loiter direction (0: clockwise, 1: counter clockwise)
      * PARAM 5 : Latitude (deg * 1E7)
@@ -551,7 +551,7 @@ public interface MAV_CMD {
      * Control onboard camera system.
      * PARAM 1 : Camera ID (-1 for all)
      * PARAM 2 : Transmission: 0: disabled, 1: enabled compressed, 2: enabled raw
-     * PARAM 3 : Transmission mode: 0: video stream, >0: single images every n seconds (decimal)
+     * PARAM 3 : Transmission mode: 0: video stream, >0: single images every n seconds
      * PARAM 4 : Recording: 0: disabled, 1: enabled compressed, 2: enabled raw
      * PARAM 5 : Empty
      * PARAM 6 : Empty
@@ -560,9 +560,9 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_CONTROL_VIDEO = 200;
     /**
      * Sets the region of interest (ROI) for a sensor set or the vehicle itself. This can then be used by the vehicles control system to control the vehicle attitude and the attitude of various sensors such as cameras.
-     * PARAM 1 : Region of interest mode. (see MAV_ROI enum)
-     * PARAM 2 : Waypoint index/ target ID. (see MAV_ROI enum)
-     * PARAM 3 : ROI index (allows a vehicle to manage multiple ROI's)
+     * PARAM 1 : Region of interest mode.
+     * PARAM 2 : Waypoint index/ target ID (depends on param 1).
+     * PARAM 3 : Region of interest index. (allows a vehicle to manage multiple ROI's)
      * PARAM 4 : Empty
      * PARAM 5 : MAV_ROI_WPNEXT: pitch offset from next waypoint, MAV_ROI_LOCATION: latitude
      * PARAM 6 : MAV_ROI_WPNEXT: roll offset from next waypoint, MAV_ROI_LOCATION: longitude
@@ -571,13 +571,13 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_SET_ROI = 201;
     /**
      * Configure digital camera. This is a fallback message for systems that have not yet implemented PARAM_EXT_XXX messages and camera definition files (see https://mavlink.io/en/services/camera_def.html ).
-     * PARAM 1 : Modes: P, TV, AV, M, Etc
-     * PARAM 2 : Shutter speed: Divisor number for one second
-     * PARAM 3 : Aperture: F stop number
-     * PARAM 4 : ISO number e.g. 80, 100, 200, Etc
-     * PARAM 5 : Exposure type enumerator
-     * PARAM 6 : Command Identity
-     * PARAM 7 : Main engine cut-off time before camera trigger in seconds/10 (0 means no cut-off)
+     * PARAM 1 : Modes: P, TV, AV, M, Etc.
+     * PARAM 2 : Shutter speed: Divisor number for one second.
+     * PARAM 3 : Aperture: F stop number.
+     * PARAM 4 : ISO number e.g. 80, 100, 200, Etc.
+     * PARAM 5 : Exposure type enumerator.
+     * PARAM 6 : Command Identity.
+     * PARAM 7 : Main engine cut-off time before camera trigger. (0 means no cut-off)
      */
     public final static int MAV_CMD_DO_DIGICAM_CONFIGURE = 202;
     /**
@@ -593,7 +593,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_DIGICAM_CONTROL = 203;
     /**
      * Mission command to configure a camera or antenna mount
-     * PARAM 1 : Mount operation mode (see MAV_MOUNT_MODE enum)
+     * PARAM 1 : Mount operation mode
      * PARAM 2 : stabilize roll? (1 = yes, 0 = no)
      * PARAM 3 : stabilize pitch? (1 = yes, 0 = no)
      * PARAM 4 : stabilize yaw? (1 = yes, 0 = no)
@@ -607,16 +607,16 @@ public interface MAV_CMD {
      * PARAM 1 : pitch depending on mount mode (degrees or degrees/second depending on pitch input).
      * PARAM 2 : roll depending on mount mode (degrees or degrees/second depending on roll input).
      * PARAM 3 : yaw depending on mount mode (degrees or degrees/second depending on yaw input).
-     * PARAM 4 : alt in meters depending on mount mode.
+     * PARAM 4 : altitude depending on mount mode.
      * PARAM 5 : latitude in degrees * 1E7, set if appropriate mount mode.
      * PARAM 6 : longitude in degrees * 1E7, set if appropriate mount mode.
-     * PARAM 7 : MAV_MOUNT_MODE enum value
+     * PARAM 7 : Mount mode.
      */
     public final static int MAV_CMD_DO_MOUNT_CONTROL = 205;
     /**
      * Mission command to set camera trigger distance for this flight. The camera is triggered each time this distance is exceeded. This command can also be used to set the shutter integration time for the camera.
-     * PARAM 1 : Camera trigger distance (meters). 0 to stop triggering.
-     * PARAM 2 : Camera shutter integration time (milliseconds). -1 or 0 to ignore
+     * PARAM 1 : Camera trigger distance. 0 to stop triggering.
+     * PARAM 2 : Camera shutter integration time. -1 or 0 to ignore
      * PARAM 3 : Trigger camera once immediately. (0 = no trigger, 1 = trigger)
      * PARAM 4 : Empty
      * PARAM 5 : Empty
@@ -647,19 +647,19 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_PARACHUTE = 208;
     /**
-     * Mission command to perform motor test
-     * PARAM 1 : motor number (a number from 1 to max number of motors on the vehicle)
-     * PARAM 2 : throttle type (0=throttle percentage, 1=PWM, 2=pilot throttle channel pass-through. See MOTOR_TEST_THROTTLE_TYPE enum)
-     * PARAM 3 : throttle
-     * PARAM 4 : timeout (in seconds)
-     * PARAM 5 : motor count (number of motors to test to test in sequence, waiting for the timeout above between them; 0=1 motor, 1=1 motor, 2=2 motors...)
-     * PARAM 6 : motor test order (See MOTOR_TEST_ORDER enum)
+     * Mission command to perform motor test.
+     * PARAM 1 : Motor instance number. (from 1 to max number of motors on the vehicle)
+     * PARAM 2 : Throttle type.
+     * PARAM 3 : Throttle.
+     * PARAM 4 : Timeout.
+     * PARAM 5 : Motor count. (number of motors to test to test in sequence, waiting for the timeout above between them; 0=1 motor, 1=1 motor, 2=2 motors...)
+     * PARAM 6 : Motor test order.
      * PARAM 7 : Empty
      */
     public final static int MAV_CMD_DO_MOTOR_TEST = 209;
     /**
-     * Change to/from inverted flight
-     * PARAM 1 : inverted (0=normal, 1=inverted)
+     * Change to/from inverted flight.
+     * PARAM 1 : Inverted flight. (0=normal, 1=inverted)
      * PARAM 2 : Empty
      * PARAM 3 : Empty
      * PARAM 4 : Empty
@@ -669,10 +669,10 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_DO_INVERTED_FLIGHT = 210;
     /**
-     * Sets a desired vehicle turn angle and speed change
-     * PARAM 1 : yaw angle to adjust steering by in centidegress
-     * PARAM 2 : speed - normalized to 0 .. 1
-     * PARAM 3 : Empty
+     * Sets a desired vehicle turn angle and speed change.
+     * PARAM 1 : Yaw angle to adjust steering by.
+     * PARAM 2 : Speed.
+     * PARAM 3 : Final angle. (0=absolute, 1=relative)
      * PARAM 4 : Empty
      * PARAM 5 : Empty
      * PARAM 6 : Empty
@@ -681,8 +681,8 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_SET_YAW_SPEED = 213;
     /**
      * Mission command to set camera trigger interval for this flight. If triggering is enabled, the camera is triggered each time this interval expires. This command can also be used to set the shutter integration time for the camera.
-     * PARAM 1 : Camera trigger cycle time (milliseconds). -1 or 0 to ignore.
-     * PARAM 2 : Camera shutter integration time (milliseconds). Should be less than trigger cycle time. -1 or 0 to ignore.
+     * PARAM 1 : Camera trigger cycle time. -1 or 0 to ignore.
+     * PARAM 2 : Camera shutter integration time. Should be less than trigger cycle time. -1 or 0 to ignore.
      * PARAM 3 : Empty
      * PARAM 4 : Empty
      * PARAM 5 : Empty
@@ -692,10 +692,10 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_SET_CAM_TRIGG_INTERVAL = 214;
     /**
      * Mission command to control a camera or antenna mount, using a quaternion as reference.
-     * PARAM 1 : q1 - quaternion param #1, w (1 in null-rotation)
-     * PARAM 2 : q2 - quaternion param #2, x (0 in null-rotation)
-     * PARAM 3 : q3 - quaternion param #3, y (0 in null-rotation)
-     * PARAM 4 : q4 - quaternion param #4, z (0 in null-rotation)
+     * PARAM 1 : quaternion param q1, w (1 in null-rotation)
+     * PARAM 2 : quaternion param q2, x (0 in null-rotation)
+     * PARAM 3 : quaternion param q3, y (0 in null-rotation)
+     * PARAM 4 : quaternion param q4, z (0 in null-rotation)
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
@@ -714,10 +714,10 @@ public interface MAV_CMD {
     public final static int MAV_CMD_DO_GUIDED_MASTER = 221;
     /**
      * Set limits for external control
-     * PARAM 1 : Timeout - maximum time (in seconds) that external controller will be allowed to control vehicle. 0 means no timeout.
-     * PARAM 2 : Altitude (MSL) min, in meters - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit.
-     * PARAM 3 : Altitude (MSL) max, in meters - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit.
-     * PARAM 4 : Horizontal move limit, in meters - if vehicle moves more than this distance from its location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal move limit.
+     * PARAM 1 : Timeout - maximum time that external controller will be allowed to control vehicle. 0 means no timeout.
+     * PARAM 2 : Altitude (MSL) min - if vehicle moves below this alt, the command will be aborted and the mission will continue. 0 means no lower altitude limit.
+     * PARAM 3 : Altitude (MSL) max - if vehicle moves above this alt, the command will be aborted and the mission will continue. 0 means no upper altitude limit.
+     * PARAM 4 : Horizontal move limit - if vehicle moves more than this distance from its location at the moment the command was executed, the command will be aborted and the mission will continue. 0 means no horizontal move limit.
      * PARAM 5 : Empty
      * PARAM 6 : Empty
      * PARAM 7 : Empty
@@ -727,7 +727,7 @@ public interface MAV_CMD {
      * Control vehicle engine. This is interpreted by the vehicles engine controller to change the target engine state. It is intended for vehicles with internal combustion engines
      * PARAM 1 : 0: Stop engine, 1:Start Engine
      * PARAM 2 : 0: Warm start, 1:Cold start. Controls use of choke where applicable
-     * PARAM 3 : Height delay (meters). This is for commanding engine start only after the vehicle has gained the specified height. Used in VTOL vehicles during takeoff to start engine after the aircraft is off the ground. Zero for no delay.
+     * PARAM 3 : Height delay. This is for commanding engine start only after the vehicle has gained the specified height. Used in VTOL vehicles during takeoff to start engine after the aircraft is off the ground. Zero for no delay.
      * PARAM 4 : Empty
      * PARAM 5 : Empty
      * PARAM 5 : Empty
@@ -795,7 +795,7 @@ public interface MAV_CMD {
      * Request storage of different parameter values and logs. This command will be only accepted if in pre-flight mode.
      * PARAM 1 : Parameter storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM, 2: Reset to defaults
      * PARAM 2 : Mission storage: 0: READ FROM FLASH/EEPROM, 1: WRITE CURRENT TO FLASH/EEPROM, 2: Reset to defaults
-     * PARAM 3 : Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, > 1: start logging with rate of param 3 in Hz (e.g. set to 1000 for 1000 Hz logging)
+     * PARAM 3 : Onboard logging: 0: Ignore, 1: Start default rate logging, -1: Stop logging, > 1: logging rate (e.g. set to 1000 for 1000 Hz logging)
      * PARAM 4 : Reserved
      * PARAM 5 : Empty
      * PARAM 6 : Empty
@@ -832,7 +832,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_MISSION_START = 300;
     /**
      * Arms / Disarms a component
-     * PARAM 1 : 1 to arm, 0 to disarm
+     * PARAM 1 : 0: disarm, 1: arm
      */
     public final static int MAV_CMD_COMPONENT_ARM_DISARM = 400;
     /**
@@ -847,9 +847,9 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_GET_HOME_POSITION = 410;
     /**
-     * Starts receiver pairing
-     * PARAM 1 : 0:Spektrum
-     * PARAM 2 : RC type (see RC_TYPE enum)
+     * Starts receiver pairing.
+     * PARAM 1 : 0:Spektrum.
+     * PARAM 2 : RC type.
      */
     public final static int MAV_CMD_START_RX_PAIR = 500;
     /**
@@ -860,7 +860,7 @@ public interface MAV_CMD {
     /**
      * Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM
      * PARAM 1 : The MAVLink message ID
-     * PARAM 2 : The interval between two messages, in microseconds. Set to -1 to disable and 0 to request default rate.
+     * PARAM 2 : The interval between two messages. Set to -1 to disable and 0 to request default rate.
      */
     public final static int MAV_CMD_SET_MESSAGE_INTERVAL = 511;
     /**
@@ -954,7 +954,7 @@ public interface MAV_CMD {
     /**
      * Jump to the matching tag in the mission list. Repeat this action for the specified number of times. A mission should contain a single matching tag for each jump. If this is not the case then a jump to a missing tag should complete the mission, and a jump where there are multiple matching tags should always select the one with the lowest mission sequence number.
      * PARAM 1 : Target tag to jump to.
-     * PARAM 2 : Repeat count
+     * PARAM 2 : Repeat count.
      */
     public final static int MAV_CMD_DO_JUMP_TAG = 601;
     /**
@@ -988,7 +988,7 @@ public interface MAV_CMD {
     /**
      * Starts video capture (recording). Use NaN for reserved values.
      * PARAM 1 : Video Stream ID (0 for all streams)
-     * PARAM 2 : Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency in Hz)
+     * PARAM 2 : Frequency CAMERA_CAPTURE_STATUS messages should be sent while recording (0 for no messages, otherwise frequency)
      * PARAM 3 : Reserved (all remaining params)
      */
     public final static int MAV_CMD_VIDEO_START_CAPTURE = 2500;
@@ -1068,15 +1068,15 @@ public interface MAV_CMD {
     public final static int MAV_CMD_CONTROL_HIGH_LATENCY = 2600;
     /**
      * Create a panorama at the current position
-     * PARAM 1 : Viewing angle horizontal of the panorama (in degrees, +- 0.5 the total angle)
-     * PARAM 2 : Viewing angle vertical of panorama (in degrees)
-     * PARAM 3 : Speed of the horizontal rotation (in degrees per second)
-     * PARAM 4 : Speed of the vertical rotation (in degrees per second)
+     * PARAM 1 : Viewing angle horizontal of the panorama (+- 0.5 the total angle)
+     * PARAM 2 : Viewing angle vertical of panorama.
+     * PARAM 3 : Speed of the horizontal rotation.
+     * PARAM 4 : Speed of the vertical rotation.
      */
     public final static int MAV_CMD_PANORAMA_CREATE = 2800;
     /**
      * Request VTOL transition
-     * PARAM 1 : The target VTOL state, as defined by ENUM MAV_VTOL_STATE. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.
+     * PARAM 1 : The target VTOL state. Only MAV_VTOL_STATE_MC and MAV_VTOL_STATE_FW can be used.
      */
     public final static int MAV_CMD_DO_VTOL_TRANSITION = 3000;
     /**
@@ -1144,7 +1144,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_FENCE_POLYGON_VERTEX_EXCLUSION = 5002;
     /**
      * Circular fence area. The vehicle must stay inside this area.
-     * PARAM 1 : radius in meters
+     * PARAM 1 : Radius.
      * PARAM 2 : Reserved
      * PARAM 3 : Reserved
      * PARAM 4 : Reserved
@@ -1155,7 +1155,7 @@ public interface MAV_CMD {
     public final static int MAV_CMD_NAV_FENCE_CIRCLE_INCLUSION = 5003;
     /**
      * Circular fence area. The vehicle must stay outside this area.
-     * PARAM 1 : radius in meters
+     * PARAM 1 : Radius.
      * PARAM 2 : Reserved
      * PARAM 3 : Reserved
      * PARAM 4 : Reserved
@@ -1189,9 +1189,9 @@ public interface MAV_CMD {
     /**
      * Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity.
      * PARAM 1 : Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.
-     * PARAM 2 : Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.
+     * PARAM 2 : Desired approach vector in compass heading. A negative value indicates the system can define the approach vector at will.
      * PARAM 3 : Desired ground speed at release time. This can be overridden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.
-     * PARAM 4 : Minimum altitude clearance to the release position in meters. A negative value indicates the system can define the clearance at will.
+     * PARAM 4 : Minimum altitude clearance to the release position. A negative value indicates the system can define the clearance at will.
      * PARAM 5 : Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
      * PARAM 6 : Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT
      * PARAM 7 : Altitude (MSL), in meters

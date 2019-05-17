@@ -78,6 +78,9 @@
               <entry value="2" name="OBSTACLE_AVOIDANCE">
                   <description>JumpBack mode</description>
               </entry>
+              <entry value="3" name="COLLISION_PREVENTION">
+                  <description>JumpBack mode</description>
+              </entry>
               <entry value="9" name="INTERACTIVE">
                   <description>Interactive mode (by mouse)</description>
               </entry>

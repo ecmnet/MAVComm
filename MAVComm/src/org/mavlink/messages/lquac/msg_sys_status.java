@@ -36,7 +36,7 @@ public class msg_sys_status extends MAVLinkMessage {
    */
   public long onboard_control_sensors_enabled;
   /**
-   * Bitmap showing which onboard controllers and sensors are operational or have an error:  Value of 0: not enabled. Value of 1: enabled.
+   * Bitmap showing which onboard controllers and sensors have an error (or are operational). Value of 0: error. Value of 1: healthy.
    */
   public long onboard_control_sensors_health;
   /**
