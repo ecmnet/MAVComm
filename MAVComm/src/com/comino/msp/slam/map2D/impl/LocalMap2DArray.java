@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017, 2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017, 2019 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,34 +44,15 @@ import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F64;
 
-public class LocalMap2DArray implements ILocalMap {
+public class LocalMap2DArray extends LocalMap2DBase implements ILocalMap {
 
 	private static int        FILTER_SIZE_PX     = 2;
 
 	private static final int  MAX_CERTAINITY     = 400;
 	private static final int  CERTAINITY_INCR    = 20;
 
-	private short[][] 		map;
-	private short[][]    	window;
 
-	private int 				cell_size_mm;
-	private float			center_x_mm;
-	private float			center_y_mm;
-
-	private float			local_x_mm;
-	private float			local_y_mm;
-
-	private int 			    map_dimension;
-	private int             window_dimension;
-
-	private int				threshold = 0;
-
-	private DataModel		model = null;
 	private GrayU8          mapU8 = null;
-
-	private boolean        is_loaded = false;
-
-	private Point3D_F64 nearestObstaclePoition = new Point3D_F64();
 
 	public LocalMap2DArray() {
 		this(40.0f,0.05f,2.0f,2);
@@ -107,10 +88,6 @@ public class LocalMap2DArray implements ILocalMap {
 		System.out.println(" and filter radius  "+FILTER_SIZE_PX*cell_size_mm+"mm");
 	}
 
-	public void setDataModel(DataModel model) {
-		this.model = model;
-	}
-
 	public void 	setLocalPosition(Vector3D_F32 point) {
 		local_x_mm = point.x *1000f + center_x_mm;;
 		local_y_mm = point.y *1000f + center_y_mm;;
@@ -141,65 +118,6 @@ public class LocalMap2DArray implements ILocalMap {
 		return true;
 	}
 
-	public void processWindow(float lpos_x, float lpos_y) {
-
-		int px,py, new_x,new_y;
-		int center = window_dimension/2;
-
-		px = (int)Math.floor( (lpos_x * 1000.0f + center_x_mm) / cell_size_mm);
-		py = (int)Math.floor( (lpos_y * 1000.0f + center_y_mm) / cell_size_mm);
-
-
-		for (int y = 0; y < window_dimension; y++) {
-			for (int x = 0; x < window_dimension; x++) {
-
-				new_x = x + px - center;
-				new_y = y + py - center;
-
-				if (new_x < map_dimension && new_y < map_dimension && new_x >= 0 && new_y >= 0)
-					window[x][y] = map[new_x][new_y];
-				else
-					window[x][y] = Short.MAX_VALUE;
-			}
-		}
-	}
-
-	public int getWindowValue(int x, int y) {
-		return window[x][y];
-	}
-
-
-	public float nearestDistance(float lpos_x, float lpos_y) {
-
-		float distance = Float.MAX_VALUE, d;
-		int center = window_dimension/2;
-		nearestObstaclePoition.set(0, 0, 0);
-		for (int y = 0; y < window_dimension; y++) {
-			for (int x = 0; x < window_dimension; x++) {
-				if(window[x][y] <= threshold)
-					continue;
-				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
-				if(d < distance) {
-					distance = d;
-					nearestObstaclePoition.set(((x-center)*cell_size_mm +cell_size_mm/2f)/1000f+lpos_x,
-			                   ((y-center)*cell_size_mm +cell_size_mm/2f)/1000f+lpos_y, 0);
-				}
-			}
-		}
-		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
-	}
-
-	public Point3D_F64 getNearestObstaclePosition() {
-		 return nearestObstaclePoition;
-	}
-
-	public short get(float xpos, float ypos) {
-		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
-		int y = (int)Math.floor((ypos*1000f+center_y_mm)/cell_size_mm);
-		if(x >=0 && x < map[0].length && y >=0 && y < map[0].length)
-			return map[x][y];
-		return -1;
-	}
 
 	public boolean set(float xpos, float ypos, int value) {
 		int x = (int)Math.floor((xpos*1000f+center_x_mm)/cell_size_mm);
@@ -208,53 +126,6 @@ public class LocalMap2DArray implements ILocalMap {
 		return true;
 	}
 
-
-	public void toDataModel( boolean debug) {
-		//		//TODO: Only transfer changes
-		for (int y = 0; y <map_dimension; y++) {
-			for (int x = 0; x < map_dimension; x++) {
-				if(map[x][y] > threshold)
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
-				else
-					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
-			}
-		}
-		if(debug)
-			System.out.println(model.grid);
-	}
-
-	public int getWindowDimension() {
-		return window_dimension;
-	}
-
-	public int getMapDimension() {
-		return map_dimension;
-	}
-
-	public int getCellSize_mm() {
-		return cell_size_mm;
-	}
-
-	public void reset() {
-		for (int y = 0; y <map_dimension; y++) {
-			for (int x = 0; x < map_dimension; x++) {
-				map[x][y] = 0;
-			}
-		}
-		is_loaded = false;
-	}
-
-	public short[][] get() {
-		return map;
-	}
-
-	public void setIsLoaded(boolean loaded) {
-		is_loaded = loaded;
-	}
-
-	public boolean isLoaded() {
-		return is_loaded;
-	}
 
 	@Override
 	public GrayU16 getMap() {
@@ -317,40 +188,6 @@ public class LocalMap2DArray implements ILocalMap {
 		return false;
 	}
 
-	public String toString() {
-		StringBuilder b = new StringBuilder();
-		for(int y=0; y<map_dimension; y++) {
-			for(int x=0; x<map_dimension; x++) {
-				if(Math.abs(local_x_mm - x * cell_size_mm)<cell_size_mm &&
-						Math.abs(local_y_mm - y * cell_size_mm)<cell_size_mm)
-					b.append("o ");
-				else if(map[x][y]>0) {
-					b.append("X ");
-				}
-				else
-					b.append(". ");
-			}
-			b.append("\n");
-		}
-		b.append("\n");
-		return b.toString();
-	}
-
-	public String windowToString() {
-		StringBuilder b = new StringBuilder();
-		for(int y=0; y<window.length; y++) {
-			for(int x=0; x<window.length; x++) {
-				if(window[x][y]>0) {
-					b.append("X ");
-				}
-				else
-					b.append(". ");
-			}
-			b.append("\n");
-		}
-		b.append("\n");
-		return b.toString();
-	}
 
 	public static void main(String[] args) {
 		LocalMap2DArray map = new LocalMap2DArray(11,1,2, 1);
