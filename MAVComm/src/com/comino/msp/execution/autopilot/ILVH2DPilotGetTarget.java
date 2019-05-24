@@ -35,7 +35,7 @@ package com.comino.msp.execution.autopilot;
 
 import georegression.struct.point.Vector4D_F32;
 
-public interface IAutoPilotGetTarget {
+public interface ILVH2DPilotGetTarget {
 
 	public void getTarget(Vector4D_F32 target);
 

@@ -31,21 +31,24 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.execution.autopilot;
+package com.comino.msp.execution.autopilot.old;
 
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.MAV_DISTANCE_SENSOR;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
+import org.mavlink.messages.lquac.msg_obstacle_distance;
 
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
+import com.comino.msp.execution.autopilot.ILVH2DPilotGetTarget;
 import com.comino.msp.execution.autopilot.offboard.IOffboardExternalControl;
 import com.comino.msp.execution.autopilot.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.autopilot.offboard.OffboardManager;
@@ -55,6 +58,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.slam.colprev.CollisionPreventionConverter;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
@@ -68,7 +72,7 @@ import com.comino.msp.utils.MSP3DUtils;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 
-public class Autopilot2D implements Runnable {
+public class Autopilot2DCollPrev implements Runnable {
 
 	private static final int   CYCLE_MS						= 100;
 
@@ -83,7 +87,7 @@ public class Autopilot2D implements Runnable {
 	private static final float OBSTACLE_FAILDISTANCE     	= OBSTACLE_MINDISTANCE_1MS;
 	private static final float OBSTACLE_FAILDISTANCE_2     	= OBSTACLE_MINDISTANCE_1MS / 2f;
 
-	private static Autopilot2D      autopilot = null;
+	private static Autopilot2DCollPrev      autopilot = null;
 
 	private OffboardManager         offboard = null;
 	private DataModel               model    = null;
@@ -92,29 +96,29 @@ public class Autopilot2D implements Runnable {
 	private WayPointTracker         tracker  = null;
 
 	private ILocalMap				map     = null;
-	private LocalVFH2D              lvfh     = null;
 
-	private IAutoPilotGetTarget targetListener = null;
+	private ILVH2DPilotGetTarget targetListener = null;
+
+	private CollisionPreventionConverter   collprev = null;
 
 	private boolean            	isAvoiding  		= false;
 	private boolean				mapForget   		= false;
 	private boolean             flowCheck           = false;
-	private float             	nearestTarget 	    = 0;
 
 	private ILocalMapFilter filter = null;
 
 
-	public static Autopilot2D getInstance(IMAVController control,MSPConfig config) {
+	public static Autopilot2DCollPrev getInstance(IMAVController control,MSPConfig config) {
 		if(autopilot == null)
-			autopilot = new Autopilot2D(control,config);
+			autopilot = new Autopilot2DCollPrev(control,config);
 		return autopilot;
 	}
 
-	public static Autopilot2D getInstance() {
+	public static Autopilot2DCollPrev getInstance() {
 		return autopilot;
 	}
 
-	private Autopilot2D(IMAVController control, MSPConfig config) {
+	private Autopilot2DCollPrev(IMAVController control, MSPConfig config) {
 
 		System.out.println("Autopilot2D instantiated");
 
@@ -137,7 +141,8 @@ public class Autopilot2D implements Runnable {
 		else
 			this.map      = new LocalMap2DRaycast(model,WINDOWSIZE,CERTAINITY_THRESHOLD);
 
-		this.lvfh  = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
+		this.collprev = new CollisionPreventionConverter(map,CERTAINITY_THRESHOLD);
+
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		//
@@ -178,67 +183,39 @@ public class Autopilot2D implements Runnable {
 	@Override
 	public void run() {
 
-		Vector3D_F32 current = new Vector3D_F32(); boolean tooClose = false; float min_distance;
-		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
+		float[] distances; msg_obstacle_distance dist = new msg_obstacle_distance(1,2);
+
+		Vector3D_F32 current = new Vector3D_F32();
+
 
 		while(true) {
 			try { Thread.sleep(CYCLE_MS); } catch(Exception s) { }
 
-			//System.out.println(model.sys.getSensorString());
-
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
-			lvfh.update_histogram(current, model.hud.s);
+			distances = collprev.update(current);
 
-			nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y);
-			if(nearestTarget < OBSTACLE_FAILDISTANCE_2  && !tooClose ) {
-				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
-				tooClose = true;
+			dist.increment = 5;
+			dist.max_distance = 1000;
+			dist.min_distance = 1;
+			dist.sensor_type = MAV_DISTANCE_SENSOR.MAV_DISTANCE_SENSOR_RADAR;
+
+			for(int i=0;i<distances.length;i++) {
+				if(distances[i]<10000)
+					dist.distances[i] = (int)distances[i] / 10;
+				else
+					dist.distances[i] = dist.max_distance + 1;
 			}
 
-			if(nearestTarget > OBSTACLE_FAILDISTANCE+ROBOT_RADIUS)
-				tooClose = false;
+			dist.time_usec = model.sys.getSynchronizedPX4Time_us();
 
-			min_distance = getAvoidanceDistance(model.hud.s);
+			control.sendMAVLinkMessage(dist);
 
-			if(nearestTarget < min_distance && !isAvoiding) {
-				isAvoiding = true;
-				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-					obstacleAvoidance();
-				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP))
-					stop_at_position();
-			}
 
-			if(nearestTarget > (min_distance + ROBOT_RADIUS) && isAvoiding) {
-				offboard.removeExternalControlListener();
-				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
-					isAvoiding = false;
-			}
 			if(mapForget)
 				map.applyMapFilter(filter);
 
 
 
-			// Publish SLAM data to GC
-			slam.px = model.slam.px;
-			slam.py = model.slam.py;
-			slam.pz = model.slam.pz;
-			slam.pd = model.slam.pd;
-			slam.pv = model.slam.pv;
-			slam.md = model.slam.di;
-
-			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
-
-				slam.ox = (float)map.getNearestObstaclePosition().x;
-				slam.oy = (float)map.getNearestObstaclePosition().y;
-				slam.oz = (float)map.getNearestObstaclePosition().z;
-
-			} else {
-
-				slam.ox = 0; slam.oy = 0; slam.oz = 0;
-			}
-
-			slam.tms = model.sys.getSynchronizedPX4Time_us();
-			control.sendMAVLinkMessage(slam);
 		}
 	}
 
@@ -263,7 +240,7 @@ public class Autopilot2D implements Runnable {
 			logger.writeLocalMsg("[msp] No Map for this home position found.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 	}
 
-	public void registerTargetListener(IAutoPilotGetTarget cb) {
+	public void registerTargetListener(ILVH2DPilotGetTarget cb) {
 		isAvoiding = false;
 		this.targetListener = cb;
 	}
@@ -356,57 +333,7 @@ public class Autopilot2D implements Runnable {
 	}
 
 
-	public void obstacleAvoidance() {
 
-
-		final Vector4D_F32 current    = new Vector4D_F32();
-		final Vector4D_F32 projected  = new Vector4D_F32();
-
-		float[] ctl = new float[2];
-
-		final msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-
-		current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
-
-		lvfh.init(model.hud.s);
-
-		// Determine projected position via CB
-		if(targetListener!=null) {
-			targetListener.getTarget(projected);
-		} else
-			return;
-
-		offboard.setTarget(projected);
-
-		// determine velocity setpoint via callback
-		offboard.registerExternalControlListener((speed, target_dir, distance) -> {
-
-			current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
-
-			if(!model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
-				offboard.setTarget(current);
-			}
-
-			try {
-				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance*1000f);
-				ctl[IOffboardExternalControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
-				ctl[IOffboardExternalControl.SPEED] = lvfh.getSelectedSpeed();
-
-			} catch(Exception e) {
-				logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
-				offboard.setTarget(current);
-			}
-			return ctl;
-		});
-
-		offboard.start(OffboardManager.MODE_SPEED_POSITION);
-		if(!model.sys.isStatus(Status.MSP_LANDED)) {
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-		}
-		logger.writeLocalMsg("[msp] ObstacleAvoidance executed",MAV_SEVERITY.MAV_SEVERITY_WARNING);
-	}
 
 	public void return_along_path(boolean enable) {
 

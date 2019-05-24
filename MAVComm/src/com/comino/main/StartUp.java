@@ -52,7 +52,6 @@ import org.mavlink.messages.lquac.msg_timesync;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.mav.control.impl.MAVController;
 import com.comino.mav.control.impl.MAVProxyController;
-import com.comino.msp.execution.autopilot.Autopilot2D;
 import com.comino.msp.execution.commander.MSPCommander;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
@@ -121,7 +120,6 @@ public class StartUp implements Runnable {
 				}
 			}
 		});
-		Autopilot2D.getInstance().reset(true);
 	}
 
 	public static void main(String[] args) {

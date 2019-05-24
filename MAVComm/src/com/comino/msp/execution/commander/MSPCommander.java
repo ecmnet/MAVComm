@@ -46,7 +46,10 @@ import org.mavlink.messages.lquac.msg_msp_command;
 
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVMSPController;
-import com.comino.msp.execution.autopilot.Autopilot2D;
+import com.comino.msp.execution.autopilot.AutoPilotBase;
+import com.comino.msp.execution.autopilot.CollisonPreventionPilot;
+import com.comino.msp.execution.autopilot.LVH2DPilot;
+import com.comino.msp.execution.autopilot.old.Autopilot2DCollPrev;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -60,7 +63,7 @@ import georegression.struct.point.Vector3D_F32;
 public class MSPCommander {
 
 	private IMAVMSPController        control 	= null;
-	private Autopilot2D              autopilot 	= null;
+	private AutoPilotBase           autopilot 	= null;
 	private DataModel                  model 	= null;
 	private ILocalMap                	map  	= null;
 
@@ -73,7 +76,9 @@ public class MSPCommander {
 
 		System.out.println("Commander initialized");
 
-		autopilot = Autopilot2D.getInstance(control,config);
+		autopilot = AutoPilotBase.getInstance(CollisonPreventionPilot.class,control,config);
+//		autopilot = AutoPilotBase.getInstance(LVH2DPilot.class,control,config);
+
 		this.map = autopilot.getMap2D();
 	}
 
@@ -132,63 +137,24 @@ public class MSPCommander {
 				case MSP_CMD.MSP_CMD_RESTART:
 					restartCompanion(cmd);
 					break;
-				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
-					setOffboardPosition(cmd);
-					break;
+//				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
+//					setOffboardPosition(cmd);
+//					break;
 				case MSP_CMD.MSP_CMD_SET_HOMEPOS:
 					setGlobalOrigin(cmd.param1 / 1e7f, cmd.param2 / 1e7f, cmd.param3 / 1e3f );
 					break;
 				case MSP_CMD.MSP_CMD_AUTOMODE:
-					setAutopilotMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
+					autopilot.setMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
 					break;
 				case MSP_CMD.MSP_CMD_MICROSLAM:
 					switch((int)cmd.param1) {
 					case MSP_COMPONENT_CTRL.RESET:
-						autopilot.reset(); break;
+						autopilot.resetMap(); break;
 					}
 					break;
 				}
 			}
 		});
-	}
-
-	private void setAutopilotMode(int mode, float param, boolean enable) {
-		model.sys.setAutopilotMode(mode, enable);
-		switch(mode) {
-		case MSP_AUTOCONTROL_MODE.ABORT:
-			autopilot.abort();
-			break;
-		case MSP_AUTOCONTROL_ACTION.RTL:
-			if(enable)
-				autopilot.returnToLand(3000);
-			break;
-		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
-			autopilot.return_along_path(enable);
-			break;
-		case MSP_AUTOCONTROL_ACTION.SAVE_MAP2D:
-			autopilot.saveMap2D();
-			break;
-		case MSP_AUTOCONTROL_ACTION.LOAD_MAP2D:
-			autopilot.loadMap2D();
-			break;
-		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
-			break;
-		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
-			setXObstacleForSITL();
-			//	autopilot.applyMapFilter();
-			break;
-		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
-			//    autopilot.square(3);
-			setYObstacleForSITL();
-			//  autopilot.landLocal();
-			break;
-		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
-			autopilot.offboardPosHold(enable);
-			break;
-		case MSP_AUTOCONTROL_ACTION.APPLY_MAP_FILTER:
-			autopilot.applyMapFilter();
-			break;
-		}
 	}
 
 
@@ -200,11 +166,11 @@ public class MSPCommander {
 	}
 
 
-	private void setOffboardPosition(msg_msp_command cmd) {
-		//autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
-		autopilot.reset(false);
-		autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
-	}
+//	private void setOffboardPosition(msg_msp_command cmd) {
+//		//autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+//		autopilot.resetMap();
+//		autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+//	}
 
 
 
@@ -221,114 +187,5 @@ public class MSPCommander {
 	}
 
 
-	// SITL testing
-
-	private void setCircleObstacleForSITL() {
-		if(map==null)
-			return;
-		map.reset();
-		Vector3D_F32   pos          = new Vector3D_F32();
-		System.err.println("SITL -> set example obstacle map");
-		pos.x = 0.5f + model.state.l_x;
-		pos.y = 0.4f + model.state.l_y;
-		pos.z = 1.0f + model.state.l_z;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.y = 0.45f + model.state.l_y;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.y = 0.50f + model.state.l_y;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.y = 0.55f + model.state.l_y;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.y = 0.60f + model.state.l_y;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.y = 0.65f + model.state.l_y;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.y = 0.70f + model.state.l_y;
-		map.update(pos); map.update(pos); map.update(pos);
-	}
-
-	private void setXObstacleForSITL() {
-		if(map==null)
-			return;
-		map.reset();
-		Vector3D_F32   pos          = new Vector3D_F32();
-		System.err.println("SITL -> set example obstacle map");
-
-		pos.y = 1.5f + model.state.l_y;
-		pos.z =  model.state.l_z;
-		for(int i = 0; i < 40;i++) {
-			pos.x = -1.25f + i *0.05f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-		}
-
-		pos.y = 2.75f + model.state.l_y;
-		pos.z =  model.state.l_z;
-		for(int i = 0; i < 30;i++) {
-			pos.x = -1.25f + i *0.05f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-		}
-
-		for(int i = 0; i < 30;i++) {
-			pos.x = 1.25f + i *0.05f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-		}
-
-		pos.x = 2.0f + model.state.l_x;
-		for(int i = 0; i < 25;i++) {
-			pos.y = -1 + i *0.05f + model.state.l_y;
-			map.update(pos); map.update(pos); map.update(pos);
-		}
-
-
-
-	}
-
-	private void setYObstacleForSITL() {
-		float x,y;
-		if(map==null)
-			return;
-		map.reset();
-		Vector3D_F32   pos          = new Vector3D_F32();
-		System.err.println("SITL -> set example obstacle map");
-		pos.z = 1.0f + model.state.l_z;
-
-		pos.y = 4f + model.state.l_y;
-		pos.x = -0.15f + model.state.l_x;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.x = -0.10f + model.state.l_x;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.x = -0.05f + model.state.l_x;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.x =  0.00f + model.state.l_x;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.x = 0.05f + model.state.l_x;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.x = 0.10f + model.state.l_x;
-		map.update(pos); map.update(pos); map.update(pos);
-		pos.x = 0.15f + model.state.l_x;
-		map.update(pos); map.update(pos); map.update(pos);
-
-		float dotx, doty ; float[] r = new float[2];
-
-		for(int j=0; j< 30; j++) {
-
-			dotx = (float)((Math.random()*10-5f));
-			doty = (float)((Math.random()*10-5f));
-
-			MSPMathUtils.rotateRad(r, dotx, doty, (float)Math.random() * 6.28f);
-
-			for(int i=0; i< 40; i++) {
-
-				x =  (float)Math.random()*.8f - 0.4f + r[0];
-				y =  (float)Math.random()*.8f - 0.4f + r[1];
-
-				pos.x = x;
-				pos.y = y ;
-				map.update(pos); map.update(pos); map.update(pos);
-
-			}
-		}
-
-	}
 
 }

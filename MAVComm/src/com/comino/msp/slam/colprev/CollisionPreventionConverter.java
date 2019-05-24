@@ -5,7 +5,7 @@ import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 
-public class CollisionPrevention {
+public class CollisionPreventionConverter {
 
 	private static final int	ALPHA = 5;
 
@@ -16,7 +16,7 @@ public class CollisionPrevention {
 
 	private int             threshold           	= 0;
 
-	public CollisionPrevention(ILocalMap map, int threshold) {
+	public CollisionPreventionConverter(ILocalMap map, int threshold) {
 
 		this.map       = map;
 		this.polar     = new float[360 / ALPHA];
