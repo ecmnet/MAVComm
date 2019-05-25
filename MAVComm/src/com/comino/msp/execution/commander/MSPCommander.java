@@ -137,9 +137,9 @@ public class MSPCommander {
 				case MSP_CMD.MSP_CMD_RESTART:
 					restartCompanion(cmd);
 					break;
-//				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
-//					setOffboardPosition(cmd);
-//					break;
+				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALPOS:
+					setOffboardPosition(cmd);
+					break;
 				case MSP_CMD.MSP_CMD_SET_HOMEPOS:
 					setGlobalOrigin(cmd.param1 / 1e7f, cmd.param2 / 1e7f, cmd.param3 / 1e3f );
 					break;
@@ -166,11 +166,11 @@ public class MSPCommander {
 	}
 
 
-//	private void setOffboardPosition(msg_msp_command cmd) {
-//		//autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
-//		autopilot.resetMap();
-//		autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
-//	}
+	private void setOffboardPosition(msg_msp_command cmd) {
+		//autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+		autopilot.resetMap();
+		autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+	}
 
 
 

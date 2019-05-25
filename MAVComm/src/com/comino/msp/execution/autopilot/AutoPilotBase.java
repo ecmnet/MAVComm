@@ -8,6 +8,7 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
+import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.impl.LocalMap2DRaycast;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
@@ -32,6 +33,8 @@ public abstract class AutoPilotBase implements Runnable {
 	protected boolean               flowCheck  = false;
 
 	protected boolean              isRunning   = false;
+
+	protected ILocalMapFilter mapFilter = null;
 
 
 
@@ -117,6 +120,15 @@ public abstract class AutoPilotBase implements Runnable {
 
 	public void setTarget(float x, float y, float z, float yaw) {
 
+	}
+
+	public void moveto(float x, float y, float z, float yaw) {
+
+	}
+
+	public void registerMapFilter(ILocalMapFilter filter) {
+		System.out.println("registering MapFilter "+filter.getClass().getSimpleName());
+		this.mapFilter = filter;
 	}
 
 	@Override

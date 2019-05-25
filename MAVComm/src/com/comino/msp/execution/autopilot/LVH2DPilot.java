@@ -40,7 +40,6 @@ public class LVH2DPilot extends AutoPilotBase {
 	private boolean            	isAvoiding    = false;
 	private float             	nearestTarget = 0;
 
-	private ILocalMapFilter filter             = null;
     private ILVH2DPilotGetTarget targetListener = null;
 
 
@@ -48,7 +47,8 @@ public class LVH2DPilot extends AutoPilotBase {
 		super(control,config);
 		this.offboard = new OffboardManager(control);
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
-		this.filter   = new DenoiseMapFilter(800,800);
+
+		registerMapFilter(new DenoiseMapFilter(800,800));
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		//
@@ -138,8 +138,8 @@ public class LVH2DPilot extends AutoPilotBase {
 			slam.tms = model.sys.getSynchronizedPX4Time_us();
 			control.sendMAVLinkMessage(slam);
 
-			if(mapForget)
-				map.applyMapFilter(filter);
+			if(mapForget && mapFilter != null)
+				map.applyMapFilter(mapFilter);
 
 
 		}
@@ -228,6 +228,21 @@ public class LVH2DPilot extends AutoPilotBase {
 		offboard.registerActionListener(action);
 		offboard.setTarget(target);
 		offboard.start(OffboardManager.MODE_SPEED_POSITION);
+	}
+
+	public void moveto(float x, float y, float z, float yaw) {
+		final Vector4D_F32 target     = new Vector4D_F32(x,y,model.state.l_z,Float.NaN);
+
+		if(flowCheck && !model.sys.isSensorAvailable(Status.MSP_PIX4FLOW_AVAILABILITY)) {
+			logger.writeLocalMsg("[msp] Autopilot: Aborting. No Flow available.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			return;
+		}
+
+		execute(target, (m,d) -> {
+			offboard.finalize();
+			logger.writeLocalMsg("[msp] Autopilot: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
+		});
 	}
 
 

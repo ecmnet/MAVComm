@@ -6,6 +6,7 @@ import org.mavlink.messages.lquac.msg_obstacle_distance;
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.msp.slam.colprev.CollisionPreventionConverter;
+import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
 
 import georegression.struct.point.Vector3D_F32;
 
@@ -17,6 +18,9 @@ public class CollisonPreventionPilot extends AutoPilotBase {
 
 	protected CollisonPreventionPilot(IMAVController control, MSPConfig config) {
 		super(control,config);
+
+		registerMapFilter(new DenoiseMapFilter(800,800));
+
 		this.collprev = new CollisionPreventionConverter(map,CERTAINITY_THRESHOLD);
 		start();
 	}
@@ -51,6 +55,9 @@ public class CollisonPreventionPilot extends AutoPilotBase {
 			msg.time_usec = model.sys.getSynchronizedPX4Time_us();
 
 			control.sendMAVLinkMessage(msg);
+
+			if(mapForget && mapFilter != null)
+				map.applyMapFilter(mapFilter);
 
 
 		}
