@@ -60,6 +60,7 @@ import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
 
+@SuppressWarnings("unused")
 public class MSPCommander {
 
 	private IMAVMSPController        control 	= null;

@@ -40,7 +40,7 @@ public class LVH2DPilot extends AutoPilotBase {
 	private boolean            	isAvoiding    = false;
 	private float             	nearestTarget = 0;
 
-    private ILVH2DPilotGetTarget targetListener = null;
+	private ILVH2DPilotGetTarget targetListener = null;
 
 
 	protected LVH2DPilot(IMAVController control, MSPConfig config) {
@@ -48,7 +48,8 @@ public class LVH2DPilot extends AutoPilotBase {
 		this.offboard = new OffboardManager(control);
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
 
-		registerMapFilter(new DenoiseMapFilter(800,800));
+		if(mapForget)
+			registerMapFilter(new DenoiseMapFilter(800,800));
 
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		//
@@ -159,7 +160,7 @@ public class LVH2DPilot extends AutoPilotBase {
 
 	private void clearAutopilotActions() {
 		isAvoiding = false;
-//		targetListener = null;
+		//		targetListener = null;
 		model.sys.autopilot &= 0b11000000000000000111111111111111;
 		offboard.removeActionListener();
 		control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));

@@ -135,116 +135,116 @@ public abstract class AutoPilotBase implements Runnable {
 	public abstract void run();
 
 
-/*******************************************************************************/
-// SITL testing
+	/*******************************************************************************/
+	// SITL testing
 
-		public void setCircleObstacleForSITL() {
-			if(map==null)
-				return;
-			map.reset();
-			Vector3D_F32   pos          = new Vector3D_F32();
-			System.err.println("SITL -> set example obstacle map");
-			pos.x = 0.5f + model.state.l_x;
-			pos.y = 0.4f + model.state.l_y;
-			pos.z = 1.0f + model.state.l_z;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.y = 0.45f + model.state.l_y;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.y = 0.50f + model.state.l_y;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.y = 0.55f + model.state.l_y;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.y = 0.60f + model.state.l_y;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.y = 0.65f + model.state.l_y;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.y = 0.70f + model.state.l_y;
+	public void setCircleObstacleForSITL() {
+		if(map==null)
+			return;
+		map.reset();
+		Vector3D_F32   pos          = new Vector3D_F32();
+		System.err.println("SITL -> set example obstacle map");
+		pos.x = 0.5f + model.state.l_x;
+		pos.y = 0.4f + model.state.l_y;
+		pos.z = 1.0f + model.state.l_z;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.y = 0.45f + model.state.l_y;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.y = 0.50f + model.state.l_y;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.y = 0.55f + model.state.l_y;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.y = 0.60f + model.state.l_y;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.y = 0.65f + model.state.l_y;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.y = 0.70f + model.state.l_y;
+		map.update(pos); map.update(pos); map.update(pos);
+	}
+
+	public void setXObstacleForSITL() {
+		if(map==null)
+			return;
+		map.reset();
+		Vector3D_F32   pos          = new Vector3D_F32();
+		System.err.println("SITL -> set example obstacle map");
+
+		pos.y = 1.5f + model.state.l_y;
+		pos.z =  model.state.l_z;
+		for(int i = 0; i < 40;i++) {
+			pos.x = -1.25f + i *0.05f + model.state.l_x;
 			map.update(pos); map.update(pos); map.update(pos);
 		}
 
-		public void setXObstacleForSITL() {
-			if(map==null)
-				return;
-			map.reset();
-			Vector3D_F32   pos          = new Vector3D_F32();
-			System.err.println("SITL -> set example obstacle map");
-
-			pos.y = 1.5f + model.state.l_y;
-			pos.z =  model.state.l_z;
-			for(int i = 0; i < 40;i++) {
-				pos.x = -1.25f + i *0.05f + model.state.l_x;
-				map.update(pos); map.update(pos); map.update(pos);
-			}
-
-			pos.y = 2.75f + model.state.l_y;
-			pos.z =  model.state.l_z;
-			for(int i = 0; i < 30;i++) {
-				pos.x = -1.25f + i *0.05f + model.state.l_x;
-				map.update(pos); map.update(pos); map.update(pos);
-			}
-
-			for(int i = 0; i < 30;i++) {
-				pos.x = 1.25f + i *0.05f + model.state.l_x;
-				map.update(pos); map.update(pos); map.update(pos);
-			}
-
-			pos.x = 2.0f + model.state.l_x;
-			for(int i = 0; i < 25;i++) {
-				pos.y = -1 + i *0.05f + model.state.l_y;
-				map.update(pos); map.update(pos); map.update(pos);
-			}
-
-
-
+		pos.y = 2.75f + model.state.l_y;
+		pos.z =  model.state.l_z;
+		for(int i = 0; i < 30;i++) {
+			pos.x = -1.25f + i *0.05f + model.state.l_x;
+			map.update(pos); map.update(pos); map.update(pos);
 		}
 
-		public void setYObstacleForSITL() {
-			float x,y;
-			if(map==null)
-				return;
-			map.reset();
-			Vector3D_F32   pos          = new Vector3D_F32();
-			System.err.println("SITL -> set example obstacle map");
-			pos.z = 1.0f + model.state.l_z;
-
-			pos.y = 4f + model.state.l_y;
-			pos.x = -0.15f + model.state.l_x;
+		for(int i = 0; i < 30;i++) {
+			pos.x = 1.25f + i *0.05f + model.state.l_x;
 			map.update(pos); map.update(pos); map.update(pos);
-			pos.x = -0.10f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.x = -0.05f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.x =  0.00f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.x = 0.05f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.x = 0.10f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-			pos.x = 0.15f + model.state.l_x;
-			map.update(pos); map.update(pos); map.update(pos);
-
-			float dotx, doty ; float[] r = new float[2];
-
-			for(int j=0; j< 30; j++) {
-
-				dotx = (float)((Math.random()*10-5f));
-				doty = (float)((Math.random()*10-5f));
-
-				MSPMathUtils.rotateRad(r, dotx, doty, (float)Math.random() * 6.28f);
-
-				for(int i=0; i< 40; i++) {
-
-					x =  (float)Math.random()*.8f - 0.4f + r[0];
-					y =  (float)Math.random()*.8f - 0.4f + r[1];
-
-					pos.x = x;
-					pos.y = y ;
-					map.update(pos); map.update(pos); map.update(pos);
-
-				}
-			}
-
 		}
+
+		pos.x = 2.0f + model.state.l_x;
+		for(int i = 0; i < 25;i++) {
+			pos.y = -1 + i *0.05f + model.state.l_y;
+			map.update(pos); map.update(pos); map.update(pos);
+		}
+
+
+
+	}
+
+	public void setYObstacleForSITL() {
+		float x,y;
+		if(map==null)
+			return;
+		map.reset();
+		Vector3D_F32   pos          = new Vector3D_F32();
+		System.err.println("SITL -> set example obstacle map");
+		pos.z = 1.0f + model.state.l_z;
+
+		pos.y = 4f + model.state.l_y;
+		pos.x = -0.15f + model.state.l_x;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.x = -0.10f + model.state.l_x;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.x = -0.05f + model.state.l_x;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.x =  0.00f + model.state.l_x;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.x = 0.05f + model.state.l_x;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.x = 0.10f + model.state.l_x;
+		map.update(pos); map.update(pos); map.update(pos);
+		pos.x = 0.15f + model.state.l_x;
+		map.update(pos); map.update(pos); map.update(pos);
+
+		float dotx, doty ; float[] r = new float[2];
+
+		for(int j=0; j< 30; j++) {
+
+			dotx = (float)((Math.random()*10-5f));
+			doty = (float)((Math.random()*10-5f));
+
+			MSPMathUtils.rotateRad(r, dotx, doty, (float)Math.random() * 6.28f);
+
+			for(int i=0; i< 40; i++) {
+
+				x =  (float)Math.random()*.8f - 0.4f + r[0];
+				y =  (float)Math.random()*.8f - 0.4f + r[1];
+
+				pos.x = x;
+				pos.y = y ;
+				map.update(pos); map.update(pos); map.update(pos);
+
+			}
+		}
+
+	}
 
 
 }

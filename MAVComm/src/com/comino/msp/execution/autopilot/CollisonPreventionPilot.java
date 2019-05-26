@@ -1,10 +1,19 @@
 package com.comino.msp.execution.autopilot;
 
+import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_DISTANCE_SENSOR;
+import org.mavlink.messages.MAV_MODE_FLAG;
+import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_obstacle_distance;
 
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
+import com.comino.mav.mavlink.MAV_CUST_MODE;
+import com.comino.msp.execution.autopilot.offboard.OffboardManager;
+import com.comino.msp.execution.control.StatusManager;
+import com.comino.msp.model.segment.LogMessage;
+import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.colprev.CollisionPreventionConverter;
 import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
 
@@ -19,9 +28,22 @@ public class CollisonPreventionPilot extends AutoPilotBase {
 	protected CollisonPreventionPilot(IMAVController control, MSPConfig config) {
 		super(control,config);
 
-		registerMapFilter(new DenoiseMapFilter(800,800));
+		if(mapForget)
+			registerMapFilter(new DenoiseMapFilter(800,800));
 
 		this.collprev = new CollisionPreventionConverter(map,CERTAINITY_THRESHOLD);
+
+
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
+			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
+				return;
+
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+			control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed. Switched to PosHold", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+		});
+
 		start();
 	}
 
