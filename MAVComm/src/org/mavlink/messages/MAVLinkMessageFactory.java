@@ -146,6 +146,7 @@ import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_log_entry;
 import org.mavlink.messages.lquac.msg_data_transmission_handshake;
+import org.mavlink.messages.lquac.msg_link_node_status;
 import org.mavlink.messages.lquac.msg_set_home_position;
 import org.mavlink.messages.lquac.msg_gps2_raw;
 import org.mavlink.messages.lquac.msg_position_target_global_int;
@@ -174,6 +175,7 @@ import org.mavlink.messages.lquac.msg_servo_output_raw;
 import org.mavlink.messages.lquac.msg_debug;
 import org.mavlink.messages.lquac.msg_param_request_read;
 import org.mavlink.messages.lquac.msg_command_int;
+import org.mavlink.messages.lquac.msg_actuator_output_status;
 import org.mavlink.messages.lquac.msg_gps_input;
 import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
@@ -324,6 +326,7 @@ import org.mavlink.messages.lquac.msg_optical_flow_rad;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 import org.mavlink.messages.lquac.msg_log_entry;
 import org.mavlink.messages.lquac.msg_data_transmission_handshake;
+import org.mavlink.messages.lquac.msg_link_node_status;
 import org.mavlink.messages.lquac.msg_set_home_position;
 import org.mavlink.messages.lquac.msg_gps2_raw;
 import org.mavlink.messages.lquac.msg_position_target_global_int;
@@ -353,6 +356,7 @@ import org.mavlink.messages.lquac.msg_debug;
 import org.mavlink.messages.lquac.msg_msp_micro_grid;
 import org.mavlink.messages.lquac.msg_param_request_read;
 import org.mavlink.messages.lquac.msg_command_int;
+import org.mavlink.messages.lquac.msg_actuator_output_status;
 import org.mavlink.messages.lquac.msg_gps_input;
 import org.mavlink.messages.lquac.msg_mission_set_current;
 import org.mavlink.messages.lquac.msg_rc_channels;
@@ -936,6 +940,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       msg = new msg_data_transmission_handshake(sysId, componentId);
       msg.decode(dis);
       break;
+  case MAVLINK_MSG_ID_LINK_NODE_STATUS:
+      msg = new msg_link_node_status(sysId, componentId);
+      msg.decode(dis);
+      break;
   case MAVLINK_MSG_ID_SET_HOME_POSITION:
       msg = new msg_set_home_position(sysId, componentId);
       msg.decode(dis);
@@ -1050,6 +1058,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_COMMAND_INT:
       msg = new msg_command_int(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_ACTUATOR_OUTPUT_STATUS:
+      msg = new msg_actuator_output_status(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_GPS_INPUT:

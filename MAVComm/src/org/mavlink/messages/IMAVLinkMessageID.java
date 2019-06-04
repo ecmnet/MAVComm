@@ -149,6 +149,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_SET_POSITION_TARGET_LOCAL_NED = 84;
   public static int MAVLINK_MSG_ID_LOG_ENTRY = 118;
   public static int MAVLINK_MSG_ID_DATA_TRANSMISSION_HANDSHAKE = 130;
+  public static int MAVLINK_MSG_ID_LINK_NODE_STATUS = 8;
   public static int MAVLINK_MSG_ID_SET_HOME_POSITION = 243;
   public static int MAVLINK_MSG_ID_GPS2_RAW = 124;
   public static int MAVLINK_MSG_ID_POSITION_TARGET_GLOBAL_INT = 87;
@@ -178,6 +179,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_MSP_MICRO_GRID = 183;
   public static int MAVLINK_MSG_ID_PARAM_REQUEST_READ = 20;
   public static int MAVLINK_MSG_ID_COMMAND_INT = 75;
+  public static int MAVLINK_MSG_ID_ACTUATOR_OUTPUT_STATUS = 375;
   public static int MAVLINK_MSG_ID_GPS_INPUT = 232;
   public static int MAVLINK_MSG_ID_MISSION_SET_CURRENT = 41;
   public static int MAVLINK_MSG_ID_RC_CHANNELS = 65;
