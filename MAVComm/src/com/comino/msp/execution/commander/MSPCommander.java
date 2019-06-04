@@ -77,8 +77,8 @@ public class MSPCommander {
 
 		System.out.println("Commander initialized");
 
-		autopilot = AutoPilotBase.getInstance(CollisonPreventionPilot.class,control,config);
-//		autopilot = AutoPilotBase.getInstance(LVH2DPilot.class,control,config);
+//		autopilot = AutoPilotBase.getInstance(CollisonPreventionPilot.class,control,config);
+		autopilot = AutoPilotBase.getInstance(LVH2DPilot.class,control,config);
 
 		this.map = autopilot.getMap2D();
 	}

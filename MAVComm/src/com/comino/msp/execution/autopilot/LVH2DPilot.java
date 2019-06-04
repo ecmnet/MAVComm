@@ -3,6 +3,7 @@ package com.comino.msp.execution.autopilot;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
@@ -184,6 +185,48 @@ public class LVH2DPilot extends AutoPilotBase {
 			}
 			offboard.stop();
 		}
+	}
+
+
+
+	@Override
+	public void setMode(int mode, float param, boolean enable) {
+		switch(mode) {
+		case MSP_AUTOCONTROL_MODE.ABORT:
+			abort();
+			break;
+		case MSP_AUTOCONTROL_ACTION.RTL:
+			if(enable)
+				returnToLand(3000);
+			break;
+//		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
+//			return_along_path(enable);
+//			break;
+		case MSP_AUTOCONTROL_ACTION.SAVE_MAP2D:
+			saveMap2D();
+			break;
+		case MSP_AUTOCONTROL_ACTION.LOAD_MAP2D:
+			loadMap2D();
+			break;
+		case MSP_AUTOCONTROL_ACTION.AUTO_MISSION:
+			break;
+		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
+			setXObstacleForSITL();
+			//	autopilot.applyMapFilter();
+			break;
+		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
+			//    autopilot.square(3);
+			setYObstacleForSITL();
+			//  autopilot.landLocal();
+			break;
+		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
+			offboardPosHold(enable);
+			break;
+//		case MSP_AUTOCONTROL_ACTION.APPLY_MAP_FILTER:
+//			applyMapFilter();
+//			break;
+		}
+		super.setMode(mode, param, enable);
 	}
 
 	public void abort() {

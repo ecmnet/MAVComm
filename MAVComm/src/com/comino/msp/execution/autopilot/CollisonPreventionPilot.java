@@ -4,6 +4,7 @@ import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_DISTANCE_SENSOR;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_obstacle_distance;
 
@@ -46,6 +47,7 @@ public class CollisonPreventionPilot extends AutoPilotBase {
 
 		start();
 	}
+
 
 	public void run() {
 

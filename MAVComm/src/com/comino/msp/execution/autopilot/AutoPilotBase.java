@@ -89,7 +89,7 @@ public abstract class AutoPilotBase implements Runnable {
 	}
 
 	public void setMode(int mode, float param, boolean enable) {
-
+		model.sys.setAutopilotMode(mode, enable);
 	}
 
 	public void resetMap() {
