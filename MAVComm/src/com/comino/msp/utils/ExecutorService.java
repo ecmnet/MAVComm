@@ -50,14 +50,14 @@ public class ExecutorService {
 	private static ScheduledThreadPoolExecutor high_pool = null;
 
 	public static void create() {
-		low_pool  = new ScheduledThreadPoolExecutor(20);
+		low_pool  = new ScheduledThreadPoolExecutor(10);
 		low_pool.setThreadFactory(new DaemonThreadFactory(Thread.NORM_PRIORITY-2,"LowPool"));
 		low_pool.allowCoreThreadTimeOut(false);
 		low_pool.setRemoveOnCancelPolicy(true);
 		low_pool.prestartAllCoreThreads();
 		System.out.println(low_pool.getCorePoolSize()+" low pool threads started");
 
-		high_pool  = new ScheduledThreadPoolExecutor(5);
+		high_pool  = new ScheduledThreadPoolExecutor(2);
 		high_pool.setThreadFactory(new DaemonThreadFactory(Thread.NORM_PRIORITY+2,"HighPool"));
 		high_pool.allowCoreThreadTimeOut(false);
 		high_pool.setRemoveOnCancelPolicy(true);
