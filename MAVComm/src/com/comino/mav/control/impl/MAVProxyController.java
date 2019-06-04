@@ -37,6 +37,8 @@ package com.comino.mav.control.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.mavlink.messages.IMAVLinkMessageID;
 import org.mavlink.messages.MAVLinkMessage;
@@ -59,8 +61,9 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
+import com.comino.msp.utils.ExecutorService;
 
-public class MAVProxyController implements IMAVMSPController {
+public class MAVProxyController implements IMAVMSPController, Runnable {
 
 	protected String peerAddress = null;
 
@@ -77,6 +80,8 @@ public class MAVProxyController implements IMAVMSPController {
 
 	private StatusManager 				status_manager 	= null;
 	private List<IMAVMessageListener> 	messageListener = null;
+
+	private ScheduledFuture<?> future = null;
 
 	private int mode;
 
@@ -209,6 +214,7 @@ public class MAVProxyController implements IMAVMSPController {
 		if(comm.isConnected()) {
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
 		}
+		future = ExecutorService.get().scheduleAtFixedRate(this, 1, 1, TimeUnit.SECONDS);
 		return true;
 	}
 
@@ -301,6 +307,17 @@ public class MAVProxyController implements IMAVMSPController {
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL, IMAVLinkMessageID.MAVLINK_MSG_ID_ATTITUDE_TARGET,20000);
 		}
 		return true;
+	}
+
+
+	@Override
+	public void run() {
+		if(!proxy.isConnected())  {
+			proxy.open();
+		}
+		if(!comm.isConnected()) {
+			comm.open();
+		}
 	}
 
 }
