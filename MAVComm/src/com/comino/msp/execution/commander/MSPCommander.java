@@ -169,7 +169,7 @@ public class MSPCommander {
 
 	private void setOffboardPosition(msg_msp_command cmd) {
 		//autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
-		autopilot.resetMap();
+	//	autopilot.resetMap();
 		autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
 	}
 
