@@ -155,7 +155,7 @@ public class MAVUdpCommNIO implements IMAVComm, Runnable {
 	@Override
 	public void run() {
 		SelectionKey key = null;
-		Iterator<?> selectedKeys = null; MAVLinkMessage msg = null;
+		Iterator<?> selectedKeys = null;
 
 		if(channel.isConnected()) {
 			isConnected = true;
