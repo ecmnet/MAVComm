@@ -101,6 +101,11 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 		model.sys.setStatus(Status.MSP_SITL, mode == MAVController.MODE_NORMAL);
 		model.sys.setStatus(Status.MSP_PROXY, true);
 
+		status_manager.addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_CONNECTED, StatusManager.EDGE_RISING, (a,b) -> {
+			System.out.println("Connection to device established...");
+		});
+
+
 		switch(mode) {
 		case MAVController.MODE_NORMAL:
 			comm = MAVSerialComm.getInstance(model, BAUDRATE_15, false);
@@ -114,11 +119,11 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 			break;
 
 		case MAVController.MODE_SITL:
+			model.sys.setStatus(Status.MSP_SITL,true);
 			comm = MAVUdpCommNIO.getInstance(model, "127.0.0.1",14580, 14540);
 			proxy = new MAVUdpProxyNIO("127.0.0.1",14650,"0.0.0.0",14656,comm);
 			peerAddress = "127.0.0.1";
 			System.out.println("Proxy Controller (SITL mode) loaded");
-			model.sys.setStatus(Status.MSP_SITL,true);
 			break;
 		case MAVController.MODE_USB:
 			comm = MAVSerialComm.getInstance(model, BAUDRATE_9, false);
@@ -151,7 +156,7 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 			}
 			return true;
 		} catch (Exception e1) {
-		       MSPLogger.getInstance().writeLocalMsg("Command rejected: "+msg);
+			MSPLogger.getInstance().writeLocalMsg("Command rejected: "+msg);
 			return false;
 		}
 
@@ -210,6 +215,7 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 
 	@Override
 	public boolean connect() {
+		try { Thread.sleep(500); } catch (InterruptedException e) { }
 		comm.open(); proxy.open();
 		if(comm.isConnected()) {
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
@@ -306,6 +312,7 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL, IMAVLinkMessageID.MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE,50000);
 			sendMAVLinkCmd(MAV_CMD.MAV_CMD_SET_MESSAGE_INTERVAL, IMAVLinkMessageID.MAVLINK_MSG_ID_ATTITUDE_TARGET,20000);
 		}
+
 		return true;
 	}
 
@@ -317,6 +324,10 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 		}
 		if(!comm.isConnected()) {
 			comm.open();
+			if(comm.isConnected()) {
+				sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
+				System.out.println("Connection to device established...");
+			}
 		}
 	}
 
