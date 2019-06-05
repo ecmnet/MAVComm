@@ -69,8 +69,9 @@ public class StatusManager implements Runnable {
 
 	public DataModel model                   = null;
 
-	private Status status_current 			 = null;
-	private Status status_old 				 = null;
+	private volatile Status status_current 	 = null;
+	private volatile Status status_old 		 = null;
+
 	private List<StatusListenerEntry>  list  = null;
 
 	private boolean isRunning                = false;
@@ -138,131 +139,134 @@ public class StatusManager implements Runnable {
 	}
 
 	public void reset() {
-    	status_old.status &= 0x1;
+		status_old.status &= 0x1;
 	}
 
 	@Override
 	public void run() {
 
+
+		synchronized(this) {
+
 			checkTimeouts();
 
 			status_current.set(model.sys);
 
-			if (status_current.isStatus(Status.MSP_ARMED))
-				model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
-
-			//System.out.println("test "+status_old.sensors + " -> "+status_current.sensors+" = "+model.sys.sensors);
-
 			if(status_old.isEqual(status_current))
 				return;
+		}
 
 
-			if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
-				t_armed_start = System.currentTimeMillis();
+		if (status_current.isStatus(Status.MSP_ARMED))
+			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
-			try {
 
-				for (StatusListenerEntry entry : list) {
+		if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
+			t_armed_start = System.currentTimeMillis();
 
-					switch(entry.type) {
-					case TYPE_PX4_STATUS:
-						//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
-						switch(entry.state) {
-						case EDGE_BOTH:
-							if(status_current.isStatusChanged(status_old, entry.mask)) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
-						case EDGE_RISING:
-							if(status_current.isStatusChanged(status_old, entry.mask, true)) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
-						case EDGE_FALLING:
-							if(status_current.isStatusChanged(status_old, entry.mask, false)) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
+		try {
+
+			for (StatusListenerEntry entry : list) {
+
+				switch(entry.type) {
+				case TYPE_PX4_STATUS:
+					//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
+					switch(entry.state) {
+					case EDGE_BOTH:
+						if(status_current.isStatusChanged(status_old, entry.mask)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
-					case TYPE_PX4_NAVSTATE:
-
-					    if(status_current.nav_state != status_old.nav_state) {
-					  //     	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
-							switch(entry.state) {
-							case EDGE_BOTH:
-								if((status_current.nav_state != entry.mask && status_old.nav_state == entry.mask ) ||
-								   (status_current.nav_state == entry.mask && status_old.nav_state != entry.mask )
-										) {
-									entry.listener.update(status_old, status_current);
-									entry.last_triggered = System.currentTimeMillis();
-							//		System.out.println("Trigger:"+status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
-								}
-								break;
-							case EDGE_RISING:
-								if(status_current.nav_state != entry.mask && status_old.nav_state!=entry.mask) {
-									entry.listener.update(status_old, status_current);
-									entry.last_triggered = System.currentTimeMillis();
-							//		System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => R "+entry.mask);
-								}
-								break;
-							case EDGE_FALLING:
-
-								if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
-									entry.listener.update(status_old, status_current);
-									entry.last_triggered = System.currentTimeMillis();
-								//	System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => F "+entry.mask);
-								}
-								break;
-							}
+					case EDGE_RISING:
+						if(status_current.isStatusChanged(status_old, entry.mask, true)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
-					case TYPE_RESERVED:
-
-						// TODO: Implement MSP_STATUS
-
-						break;
-					case TYPE_MSP_SERVICES:
-
-						switch(entry.state) {
-						case EDGE_BOTH:
-							if(status_current.isSensorChanged(status_old, entry.mask)) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
-						case EDGE_RISING:
-							if(status_current.isSensorChanged(status_old, entry.mask, true)) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
-						case EDGE_FALLING:
-
-							if(status_current.isSensorChanged(status_old, entry.mask, false)) {
-								entry.listener.update(status_old, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-							}
-							break;
-						}
-						break;
-
-					case TYPE_MSP_AUTOPILOT:
-						if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
-
+					case EDGE_FALLING:
+						if(status_current.isStatusChanged(status_old, entry.mask, false)) {
 							entry.listener.update(status_old, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
 					}
+					break;
+				case TYPE_PX4_NAVSTATE:
+
+					if(status_current.nav_state != status_old.nav_state) {
+						//     	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
+						switch(entry.state) {
+						case EDGE_BOTH:
+							if((status_current.nav_state != entry.mask && status_old.nav_state == entry.mask ) ||
+									(status_current.nav_state == entry.mask && status_old.nav_state != entry.mask )
+									) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+								//		System.out.println("Trigger:"+status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
+							}
+							break;
+						case EDGE_RISING:
+							if(status_current.nav_state != entry.mask && status_old.nav_state!=entry.mask) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+								//		System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => R "+entry.mask);
+							}
+							break;
+						case EDGE_FALLING:
+
+							if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
+								entry.listener.update(status_old, status_current);
+								entry.last_triggered = System.currentTimeMillis();
+								//	System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => F "+entry.mask);
+							}
+							break;
+						}
+					}
+					break;
+				case TYPE_RESERVED:
+
+					// TODO: Implement MSP_STATUS
+
+					break;
+				case TYPE_MSP_SERVICES:
+
+					switch(entry.state) {
+					case EDGE_BOTH:
+						if(status_current.isSensorChanged(status_old, entry.mask)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+						break;
+					case EDGE_RISING:
+						if(status_current.isSensorChanged(status_old, entry.mask, true)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+						break;
+					case EDGE_FALLING:
+
+						if(status_current.isSensorChanged(status_old, entry.mask, false)) {
+							entry.listener.update(status_old, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+						break;
+					}
+					break;
+
+				case TYPE_MSP_AUTOPILOT:
+					if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
+
+						entry.listener.update(status_old, status_current);
+						entry.last_triggered = System.currentTimeMillis();
+					}
+					break;
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-			status_old.set(status_current);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		status_old.set(status_current);
 
 
 	}
@@ -298,7 +302,7 @@ public class StatusManager implements Runnable {
 
 		if (checkTimeOut(model.slam.tms, TIMEOUT_SLAM)) {
 			model.sys.setSensor(Status.MSP_SLAM_AVAILABILITY, false);
-            model.slam.clear();
+			model.slam.clear();
 		}
 
 		if(!model.sys.isStatus(Status.MSP_SITL)) {
