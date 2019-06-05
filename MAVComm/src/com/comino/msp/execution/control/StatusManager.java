@@ -56,7 +56,7 @@ public class StatusManager implements Runnable {
 	public static final byte  TYPE_ALL             = 0;
 	public static final byte  TYPE_PX4_STATUS      = 1;
 	public static final byte  TYPE_PX4_NAVSTATE    = 2;
-	public static final byte  TYPE_MSP_STATUS      = 3;
+	public static final byte  TYPE_RESERVED        = 3;
 	public static final byte  TYPE_MSP_AUTOPILOT   = 4;
 	public static final byte  TYPE_MSP_SERVICES    = 5;
 
@@ -160,7 +160,6 @@ public class StatusManager implements Runnable {
 			if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
 				t_armed_start = System.currentTimeMillis();
 
-
 			try {
 
 				for (StatusListenerEntry entry : list) {
@@ -221,7 +220,7 @@ public class StatusManager implements Runnable {
 							}
 						}
 						break;
-					case TYPE_MSP_STATUS:
+					case TYPE_RESERVED:
 
 						// TODO: Implement MSP_STATUS
 
