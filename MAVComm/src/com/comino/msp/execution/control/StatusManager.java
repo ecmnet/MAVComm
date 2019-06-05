@@ -69,8 +69,8 @@ public class StatusManager implements Runnable {
 
 	public DataModel model                   = null;
 
-	private volatile Status status_current 	 = null;
-	private volatile Status status_old 		 = null;
+	private  Status status_current 	 = null;
+	private  Status status_old 		 = null;
 
 	private List<StatusListenerEntry>  list  = null;
 
@@ -146,15 +146,13 @@ public class StatusManager implements Runnable {
 	public void run() {
 
 
-		synchronized(this) {
+		checkTimeouts();
 
-			checkTimeouts();
+		status_current.set(model.sys);
 
-			status_current.set(model.sys);
+		if(status_old.isEqual(status_current))
+			return;
 
-			if(status_old.isEqual(status_current))
-				return;
-		}
 
 
 		if (status_current.isStatus(Status.MSP_ARMED))
