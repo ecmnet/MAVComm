@@ -132,19 +132,20 @@ public class Status extends Segment {
 
 
 	public void set(Status s) {
-		sensors  = s.sensors;
-		status   = s.status;
-		error1   = s.error1;
-		load_p   = s.load_p;
-		load_m   = s.load_m;
-		drops_p  = s.drops_p;
-		imu_temp = s.imu_temp;
+		sensors    = s.sensors;
+		status     = s.status;
+		error1     = s.error1;
+		load_p     = s.load_p;
+		load_m     = s.load_m;
+		drops_p    = s.drops_p;
+		imu_temp   = s.imu_temp;
+		
 		px4_status = s.px4_status;
 		nav_state  = s.nav_state;
 		autopilot  = s.autopilot;
 
-		t_armed_ms = s.t_armed_ms;
-		t_boot_ms  = s.t_boot_ms;
+		t_armed_ms    = s.t_armed_ms;
+		t_boot_ms     = s.t_boot_ms;
 		wifi_quality  = s. wifi_quality;
 
 		msp_temp = s.msp_temp;
