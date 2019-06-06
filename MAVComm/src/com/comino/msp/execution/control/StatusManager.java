@@ -85,19 +85,19 @@ public class StatusManager implements Runnable {
 		this.status_current = new Status();
 		this.status_old     = new Status();
 		this.list  = new ArrayList<StatusListenerEntry>();
-
 	}
 
 	public void start() {
 		if(isRunning)
 			return;
 		isRunning = true;
+		status_old.set(model.sys);
 		task = ExecutorService.submit(this, ExecutorService.HIGH, 100);
 	}
 
 	public void stop() {
 		isRunning = false;
-		task.cancel(true);
+		task.cancel(false);
 	}
 
 
@@ -154,7 +154,6 @@ public class StatusManager implements Runnable {
 			return;
 
 
-
 		if (status_current.isStatus(Status.MSP_ARMED))
 			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
 
@@ -168,7 +167,6 @@ public class StatusManager implements Runnable {
 
 				switch(entry.type) {
 				case TYPE_PX4_STATUS:
-					//	System.err.println(status_current.getStatus()+" "+entry.listener.getClass().getName()+":"+status_current.isStatusChanged(status_old, entry.mask));
 					switch(entry.state) {
 					case EDGE_BOTH:
 						if(status_current.isStatusChanged(status_old, entry.mask)) {

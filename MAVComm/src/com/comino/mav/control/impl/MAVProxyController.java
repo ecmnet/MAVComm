@@ -102,6 +102,7 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 		model.sys.setStatus(Status.MSP_PROXY, true);
 
 		status_manager.addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_CONNECTED, StatusManager.EDGE_RISING, (a,b) -> {
+			model.sys.setStatus(Status.MSP_ACTIVE, true);
 			System.out.println("Connection to device established...");
 		});
 
@@ -135,8 +136,6 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 			model.sys.setStatus(Status.MSP_SITL,false);
 			break;
 		}
-
-		model.sys.setStatus(Status.MSP_ACTIVE, true);
 
 		comm.addMAVLinkListener(proxy);
 
@@ -207,7 +206,7 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 
 
 	public boolean isConnected() {
-		model.sys.setStatus(Status.MSP_ACTIVE, comm.isConnected());
+//		model.sys.setStatus(Status.MSP_ACTIVE, comm.isConnected());
 		if(mode == MAVController.MODE_NORMAL)
 			return proxy.isConnected() && comm.isConnected();
 		return proxy.isConnected();
@@ -323,11 +322,8 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 			proxy.open();
 		}
 		if(!comm.isConnected()) {
+			model.sys.setStatus(Status.MSP_ACTIVE, false);
 			comm.open();
-			if(comm.isConnected()) {
-				sendMAVLinkCmd(MAV_CMD.MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES, 1);
-				System.out.println("Connection to device established...");
-			}
 		}
 	}
 
