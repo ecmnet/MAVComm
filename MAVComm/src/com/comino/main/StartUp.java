@@ -75,6 +75,7 @@ public class StartUp implements Runnable {
 
 	public StartUp(String[] args) {
 
+		ExecutorService.create();
 
 		if(args.length != 0) {
 			is_simulation = true;
@@ -89,7 +90,6 @@ public class StartUp implements Runnable {
 			control = new MAVProxyController(MAVController.MODE_NORMAL);
 		}
 
-		ExecutorService.create();
 
 		model = control.getCurrentModel();
 
