@@ -26,6 +26,7 @@ import org.mavlink.messages.lquac.msg_debug_vect;
 import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_mission_current;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
+import org.mavlink.messages.lquac.msg_isbd_link_status;
 import org.mavlink.messages.lquac.msg_mission_clear_all;
 import org.mavlink.messages.lquac.msg_uavcan_node_status;
 import org.mavlink.messages.lquac.msg_att_pos_mocap;
@@ -204,6 +205,7 @@ import org.mavlink.messages.lquac.msg_msp_status;
 import org.mavlink.messages.lquac.msg_battery_status;
 import org.mavlink.messages.lquac.msg_mission_current;
 import org.mavlink.messages.lquac.msg_vision_position_estimate;
+import org.mavlink.messages.lquac.msg_isbd_link_status;
 import org.mavlink.messages.lquac.msg_mission_clear_all;
 import org.mavlink.messages.lquac.msg_uavcan_node_status;
 import org.mavlink.messages.lquac.msg_att_pos_mocap;
@@ -450,6 +452,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE:
       msg = new msg_vision_position_estimate(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_ISBD_LINK_STATUS:
+      msg = new msg_isbd_link_status(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_MISSION_CLEAR_ALL:

@@ -27,6 +27,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_BATTERY_STATUS = 147;
   public static int MAVLINK_MSG_ID_MISSION_CURRENT = 42;
   public static int MAVLINK_MSG_ID_VISION_POSITION_ESTIMATE = 102;
+  public static int MAVLINK_MSG_ID_ISBD_LINK_STATUS = 335;
   public static int MAVLINK_MSG_ID_MISSION_CLEAR_ALL = 45;
   public static int MAVLINK_MSG_ID_UAVCAN_NODE_STATUS = 310;
   public static int MAVLINK_MSG_ID_ATT_POS_MOCAP = 138;

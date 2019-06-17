@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_autopilot_version
- * Version and capability of autopilot software
+ * Version and capability of autopilot software. This should be emitted in response to a MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES command.
  **/
 public class msg_autopilot_version extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_AUTOPILOT_VERSION = 148;

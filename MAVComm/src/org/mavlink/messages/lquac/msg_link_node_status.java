@@ -52,7 +52,7 @@ public class msg_link_node_status extends MAVLinkMessage {
    */
   public long messages_lost;
   /**
-   * Number of bytes that could not be parsed correctly
+   * Number of bytes that could not be parsed correctly.
    */
   public int rx_parse_err;
   /**

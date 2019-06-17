@@ -876,7 +876,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_REQUEST_PROTOCOL_VERSION = 519;
     /**
-     * Request autopilot capabilities
+     * Request autopilot capabilities. The receiver should ACK the command and then emit its capabilities in an AUTOPILOT_VERSION message
      * PARAM 1 : 1: Request autopilot version
      * PARAM 2 : Reserved (all remaining params)
      */

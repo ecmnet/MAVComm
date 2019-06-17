@@ -55,14 +55,13 @@ public class ExecutorService {
 		low_pool.allowCoreThreadTimeOut(false);
 		low_pool.setRemoveOnCancelPolicy(true);
 		low_pool.prestartAllCoreThreads();
-		System.out.println(low_pool.getCorePoolSize()+" low pool threads started");
 
-		high_pool  = new ScheduledThreadPoolExecutor(2);
+		high_pool  = new ScheduledThreadPoolExecutor(1);
 		high_pool.setThreadFactory(new DaemonThreadFactory(Thread.NORM_PRIORITY+2,"HighPool"));
 		high_pool.allowCoreThreadTimeOut(false);
 		high_pool.setRemoveOnCancelPolicy(true);
 		high_pool.prestartAllCoreThreads();
-		System.out.println(high_pool.getCorePoolSize()+" high pool threads started");
+		System.out.println("("+low_pool.getCorePoolSize()+","+high_pool.getCorePoolSize()+") threads started");
 
 	}
 
