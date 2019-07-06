@@ -119,7 +119,7 @@ public class MSPCommander {
 			gps.fix_type = 0;
 			control.sendMAVLinkMessage(gps);
 
-			MSPLogger.getInstance().writeLocalMsg("Global reference position set from MAVGCL",
+			MSPLogger.getInstance().writeLocalMsg("[msp] Reference position set from MAVGCL",
 					MAV_SEVERITY.MAV_SEVERITY_INFO);
 
 		}, ExecutorService.LOW );
