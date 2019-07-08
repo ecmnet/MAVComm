@@ -87,8 +87,8 @@ public class MSPCommander {
 
 		final long MAX_GPOS_SET_MS = 20000;
 
-		if(control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID) || lat == 0.0 || lon == 0.0 ||
-				control.getCurrentModel().sys.isSensorAvailable(Status.MSP_GPS_AVAILABILITY))
+		if(model.sys.isStatus(Status.MSP_GPOS_VALID) || lat == 0.0 || lon == 0.0 ||
+				model.sys.isSensorAvailable(Status.MSP_GPS_AVAILABILITY))
 			return;
 
 		ExecutorService.submit(() -> {
@@ -106,7 +106,7 @@ public class MSPCommander {
 			gps.fix_type = 4;
 			gps.cog = 0;
 
-			while(!control.getCurrentModel().sys.isStatus(Status.MSP_GPOS_VALID)
+			while(!model.sys.isStatus(Status.MSP_GPOS_VALID)
 					&& (System.currentTimeMillis() - tms) < MAX_GPOS_SET_MS) {
 				control.sendMAVLinkMessage(gps);
 				try {
