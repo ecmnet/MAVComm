@@ -325,7 +325,8 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 		if(!comm.isConnected()) {
 			model.sys.setStatus(Status.MSP_ACTIVE, false);
 			comm.open();
-		}
+		} else
+			model.sys.setStatus(Status.MSP_ACTIVE, true);
 	}
 
 }

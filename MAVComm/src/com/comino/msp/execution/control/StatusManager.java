@@ -310,7 +310,7 @@ public class StatusManager implements Runnable {
 
 		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {
 			model.sys.setStatus(Status.MSP_CONNECTED, false);
-			model.sys.setStatus(Status.MSP_ACTIVE, false);
+		//	model.sys.setStatus(Status.MSP_ACTIVE, false);
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 		}
 	}
