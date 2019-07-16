@@ -24,7 +24,7 @@ public class msg_trajectory_representation_waypoints extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_TRAJECTORY_REPRESENTATION_WAYPOINTS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 229;
+    payload_length = 239;
 }
 
   /**
@@ -76,6 +76,10 @@ public class msg_trajectory_representation_waypoints extends MAVLinkMessage {
    */
   public float[] vel_yaw = new float[5];
   /**
+   * Scheduled action for each waypoint, UINT16_MAX if not being used.
+   */
+  public int[] command = new int[5];
+  /**
    * Number of valid points (up-to 5 waypoints are possible)
    */
   public int valid_points;
@@ -117,13 +121,16 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   for (int i=0; i<5; i++) {
     vel_yaw[i] = (float)dis.readFloat();
   }
+  for (int i=0; i<5; i++) {
+    command[i] = (int)dis.readUnsignedShort()&0x00FFFF;
+  }
   valid_points = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+229];
+  byte[] buffer = new byte[12+239];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -169,16 +176,19 @@ public byte[] encode() throws IOException {
   for (int i=0; i<5; i++) {
     dos.writeFloat(vel_yaw[i]);
   }
+  for (int i=0; i<5; i++) {
+    dos.writeShort(command[i]&0x00FFFF);
+  }
   dos.writeByte(valid_points&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 229);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 239);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[239] = crcl;
-  buffer[240] = crch;
+  buffer[249] = crcl;
+  buffer[250] = crch;
   dos.close();
   return buffer;
 }
@@ -239,6 +249,11 @@ return "MAVLINK_MSG_ID_TRAJECTORY_REPRESENTATION_WAYPOINTS : " +   "  time_usec=
 +  "  vel_yaw[2]="+vel_yaw[2]
 +  "  vel_yaw[3]="+vel_yaw[3]
 +  "  vel_yaw[4]="+vel_yaw[4]
++  "  command[0]="+command[0]
++  "  command[1]="+command[1]
++  "  command[2]="+command[2]
++  "  command[3]="+command[3]
++  "  command[4]="+command[4]
 +  "  valid_points="+valid_points
 ;}
 }

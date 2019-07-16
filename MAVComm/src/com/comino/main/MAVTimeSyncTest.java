@@ -49,8 +49,8 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 	public MAVTimeSyncTest(String[] args) {
 
 
-	//		control = new MAVUdpController("172.168.178.1",14555,14550, false);
-		     control = new MAVUdpController("127.0.0.1",14557,14540, true);
+	//	control = new MAVUdpController("172.168.178.1",14555,14550, false);
+		     control = new MAVUdpController("127.0.0.1",14650,14656, true);
     //     	control.enableFileLogging(true, null);
          	control.addMAVLinkListener(this);
 
@@ -58,7 +58,7 @@ public class MAVTimeSyncTest implements Runnable, IMAVLinkListener {
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				System.err.println("..");
 			}
 			control.connect();
 			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_LOGGING_STOP);

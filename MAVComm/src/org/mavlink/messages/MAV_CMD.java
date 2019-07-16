@@ -141,7 +141,7 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_NAV_LOITER_TO_ALT = 31;
     /**
-     * Being following a target
+     * Begin following a target
      * PARAM 1 : System ID (of the FOLLOW_TARGET beacon). Send 0 to disable follow-me and return to the default position hold mode.
      * PARAM 2 : RESERVED
      * PARAM 3 : RESERVED

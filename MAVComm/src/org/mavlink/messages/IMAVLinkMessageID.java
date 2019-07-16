@@ -172,6 +172,7 @@ public interface IMAVLinkMessageID {
   public static int MAVLINK_MSG_ID_HIL_STATE_QUATERNION = 115;
   public static int MAVLINK_MSG_ID_STATUSTEXT = 253;
   public static int MAVLINK_MSG_ID_PARAM_MAP_RC = 50;
+  public static int MAVLINK_MSG_ID_FENCE_STATUS = 162;
   public static int MAVLINK_MSG_ID_POWER_STATUS = 125;
   public static int MAVLINK_MSG_ID_ATTITUDE_QUATERNION_COV = 61;
   public static int MAVLINK_MSG_ID_HIL_OPTICAL_FLOW = 114;

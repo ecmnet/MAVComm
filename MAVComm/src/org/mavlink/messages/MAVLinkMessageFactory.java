@@ -169,6 +169,7 @@ import org.mavlink.messages.lquac.msg_scaled_pressure;
 import org.mavlink.messages.lquac.msg_hil_state_quaternion;
 import org.mavlink.messages.lquac.msg_statustext;
 import org.mavlink.messages.lquac.msg_param_map_rc;
+import org.mavlink.messages.lquac.msg_fence_status;
 import org.mavlink.messages.lquac.msg_power_status;
 import org.mavlink.messages.lquac.msg_attitude_quaternion_cov;
 import org.mavlink.messages.lquac.msg_hil_optical_flow;
@@ -350,6 +351,7 @@ import org.mavlink.messages.lquac.msg_scaled_pressure;
 import org.mavlink.messages.lquac.msg_hil_state_quaternion;
 import org.mavlink.messages.lquac.msg_statustext;
 import org.mavlink.messages.lquac.msg_param_map_rc;
+import org.mavlink.messages.lquac.msg_fence_status;
 import org.mavlink.messages.lquac.msg_power_status;
 import org.mavlink.messages.lquac.msg_attitude_quaternion_cov;
 import org.mavlink.messages.lquac.msg_hil_optical_flow;
@@ -1032,6 +1034,10 @@ public static MAVLinkMessage getMessage(int msgid, int sysId, int componentId, b
       break;
   case MAVLINK_MSG_ID_PARAM_MAP_RC:
       msg = new msg_param_map_rc(sysId, componentId);
+      msg.decode(dis);
+      break;
+  case MAVLINK_MSG_ID_FENCE_STATUS:
+      msg = new msg_fence_status(sysId, componentId);
       msg.decode(dis);
       break;
   case MAVLINK_MSG_ID_POWER_STATUS:

@@ -58,4 +58,12 @@ public interface MSP_CMD {
      * PARAM 3 : altitude
      */
     public final static int MSP_CMD_SET_HOMEPOS = 77;
+    /**
+     * Set offboard velocities via MSP in vehicle frame
+     * PARAM 1 : Vel.X   (set to NAN to ignore)
+     * PARAM 2 : Vel.X   (set to NAN to ignore)
+     * PARAM 3 : Vel.Z   (set to NAN to ignore)
+     * PARAM 4 : Vel Yaw (set to NAN to ignore)
+     */
+    public final static int MSP_CMD_OFFBOARD_SETLOCALVEL = 78;
 }

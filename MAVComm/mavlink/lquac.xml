@@ -49,6 +49,14 @@
                   <param index="2">longitude</param>
                   <param index="3">altitude</param>
               </entry>
+               <entry value="78" name="MSP_CMD_OFFBOARD_SETLOCALVEL">
+                  <description>Set offboard velocities via MSP in vehicle frame</description>
+                  <param index="1">Enable speed control (MSP_COMPONENT_CTRL)</param>
+                  <param index="2">Vel.X   (set to NAN to ignore)</param>
+                  <param index="3">Vel.X   (set to NAN to ignore)</param>
+                  <param index="4">Vel.Z   (set to NAN to ignore)</param>
+                  <param index="5">Vel Yaw (set to NAN to ignore)</param>
+              </entry>
             </enum>
 
             <enum name="MSP_COMPONENT_CTRL">
