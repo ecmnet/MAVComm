@@ -35,7 +35,6 @@ public class LVH2DPilot extends AutoPilotBase {
 	private static final float OBSTACLE_FAILDISTANCE     	= OBSTACLE_MINDISTANCE_1MS;
 	private static final float OBSTACLE_FAILDISTANCE_2     	= OBSTACLE_MINDISTANCE_1MS / 2f;
 
-	private OffboardManager         offboard  = null;
 	private LocalVFH2D              lvfh      = null;
 
 	private boolean            	isAvoiding    = false;
@@ -46,7 +45,7 @@ public class LVH2DPilot extends AutoPilotBase {
 
 	protected LVH2DPilot(IMAVController control, MSPConfig config) {
 		super(control,config);
-		this.offboard = new OffboardManager(control);
+
 		this.lvfh     = new LocalVFH2D(map,ROBOT_RADIUS, CERTAINITY_THRESHOLD);
 
 		if(mapForget)

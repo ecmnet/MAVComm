@@ -147,6 +147,9 @@ public class MSPCommander {
 				case MSP_CMD.MSP_CMD_AUTOMODE:
 					autopilot.setMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
 					break;
+				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALVEL:
+					autopilot.setCurrentLocalSpeed((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE,cmd.param2, cmd.param3, cmd.param4, cmd.param5);
+					break;
 				case MSP_CMD.MSP_CMD_MICROSLAM:
 					switch((int)cmd.param1) {
 					case MSP_COMPONENT_CTRL.RESET:

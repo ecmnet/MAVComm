@@ -4,6 +4,7 @@ import org.mavlink.messages.MAV_SEVERITY;
 
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
+import com.comino.msp.execution.autopilot.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
@@ -28,6 +29,7 @@ public abstract class AutoPilotBase implements Runnable {
 	protected MSPLogger               logger   = null;
 	protected IMAVController          control  = null;
 	protected ILocalMap				  map      = null;
+	protected OffboardManager         offboard = null;
 
 	protected boolean			    mapForget  = false;
 	protected boolean               flowCheck  = false;
@@ -61,6 +63,7 @@ public abstract class AutoPilotBase implements Runnable {
 		this.control  = control;
 		this.model    = control.getCurrentModel();
 		this.logger   = MSPLogger.getInstance();
+		this.offboard = new OffboardManager(control);
 
 		if(control.isSimulation())
 			this.map      = new LocalMap2DArray(model,WINDOWSIZE,CERTAINITY_THRESHOLD);
@@ -124,6 +127,16 @@ public abstract class AutoPilotBase implements Runnable {
 
 	public void moveto(float x, float y, float z, float yaw) {
 
+	}
+
+	public void setCurrentLocalSpeed(boolean enable, float p, float r, float h, float y) {
+		if(enable) {
+			offboard.setTarget(p,r,h,y);
+			offboard.start(OffboardManager.MODE_SPEED);
+		} else {
+			offboard.setCurrentAsTarget();
+			offboard.start(OffboardManager.MODE_LOITER);
+		}
 	}
 
 	public void registerMapFilter(ILocalMapFilter filter) {

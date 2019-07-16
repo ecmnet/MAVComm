@@ -171,6 +171,14 @@ public class OffboardManager implements Runnable {
 		already_fired = false;
 	}
 
+	public void setTarget(float x, float y, float z, float yaw) {
+		this.mode = MODE_LOITER;
+		target.set(x,y,z,yaw);
+		valid_setpoint = true;
+		new_setpoint = true;
+		already_fired = false;
+	}
+
 	public Vector4D_F32 getCurrentTarget() {
 		return target;
 	}
@@ -317,14 +325,8 @@ public class OffboardManager implements Runnable {
 					watch_tms = System.currentTimeMillis();
 					target.set(0,0,0,0);
 				}
-				current.set(model.state.l_vx, model.state.l_vy, model.state.l_vz,model.attitude.yr);
-				sendSpeedControlToVehice(target);
-
-				delta = MSP3DUtils.distance3D(target,current);
-				if(delta < acceptance_radius_speed && valid_setpoint) {
-					fireAction(model, delta);
-					watch_tms = System.currentTimeMillis();
-				}
+				sendSpeedControlToVehice(target,MAV_FRAME.MAV_FRAME_BODY_NED);
+				watch_tms = System.currentTimeMillis();
 				break;
 
 			case MODE_SPEED_POSITION:
@@ -423,7 +425,7 @@ public class OffboardManager implements Runnable {
 			enabled = false;
 	}
 
-	private void sendSpeedControlToVehice(Vector4D_F32 target) {
+	private void sendSpeedControlToVehice(Vector4D_F32 target, int frame) {
 
 		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 		cmd.target_component = 1;
@@ -440,7 +442,7 @@ public class OffboardManager implements Runnable {
 		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
 		if(target.w==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000100000000000;
 
-		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
+		cmd.coordinate_frame = frame;
 
 		if(!control.sendMAVLinkMessage(cmd))
 			enabled = false;
