@@ -98,6 +98,8 @@ public class OffboardManager implements Runnable {
 	private boolean    	already_fired			    		= false;
 	private boolean    	valid_setpoint                   	= false;
 	private boolean    	new_setpoint                   	 	= false;
+
+	private long        setpoint_tms                        = 0;
 	//	private boolean     step_mode                        	= false;
 	//	private boolean    	step_trigger                    	= false;
 
@@ -153,6 +155,7 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
+		setpoint_tms = System.currentTimeMillis();
 	}
 
 	public void setTarget(Vector3D_F32 t, float w) {
@@ -161,6 +164,7 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
+		setpoint_tms = System.currentTimeMillis();
 	}
 
 	public void setTarget(Vector4D_F32 t) {
@@ -169,6 +173,7 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
+		setpoint_tms = System.currentTimeMillis();
 	}
 
 	public void setTarget(float x, float y, float z, float yaw) {
@@ -177,6 +182,7 @@ public class OffboardManager implements Runnable {
 		valid_setpoint = true;
 		new_setpoint = true;
 		already_fired = false;
+		setpoint_tms = System.currentTimeMillis();
 	}
 
 	public Vector4D_F32 getCurrentTarget() {
@@ -189,6 +195,7 @@ public class OffboardManager implements Runnable {
 		already_fired = false;
 		new_setpoint = true;
 		valid_setpoint = true;
+		setpoint_tms = System.currentTimeMillis();
 	}
 
 	public void setCurrentSetPointAsTarget() {
@@ -197,6 +204,7 @@ public class OffboardManager implements Runnable {
 		already_fired = false;
 		new_setpoint = true;
 		valid_setpoint = true;
+		setpoint_tms = System.currentTimeMillis();
 	}
 
 	public void finalize() {
@@ -321,12 +329,17 @@ public class OffboardManager implements Runnable {
 				break;
 
 			case MODE_SPEED:
+
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
 					target.set(0,0,0,0);
 				}
 				sendSpeedControlToVehice(target,MAV_FRAME.MAV_FRAME_BODY_NED);
-				watch_tms = System.currentTimeMillis();
+
+				if((System.currentTimeMillis()- setpoint_tms) > 1000)
+					valid_setpoint = false;
+				else
+				     watch_tms = System.currentTimeMillis();
 				break;
 
 			case MODE_SPEED_POSITION:
