@@ -131,11 +131,11 @@ public abstract class AutoPilotBase implements Runnable {
 
 	public void setCurrentLocalSpeed(boolean enable, float p, float r, float h, float y) {
 		if(enable) {
-			offboard.setTarget(p,r,h,y);
-			offboard.start(OffboardManager.MODE_SPEED);
+			offboard.setTarget(p,r,h,y,OffboardManager.MODE_SPEED);
+		//	offboard.start(OffboardManager.MODE_SPEED);
 		} else {
 			offboard.setCurrentAsTarget();
-			offboard.start(OffboardManager.MODE_LOITER);
+		//	offboard.start(OffboardManager.MODE_LOITER);
 		}
 	}
 

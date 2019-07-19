@@ -176,8 +176,8 @@ public class OffboardManager implements Runnable {
 		setpoint_tms = System.currentTimeMillis();
 	}
 
-	public void setTarget(float x, float y, float z, float yaw) {
-		this.mode = MODE_LOITER;
+	public void setTarget(float x, float y, float z, float yaw, int mode) {
+		this.mode = mode;
 		target.set(x,y,z,yaw);
 		valid_setpoint = true;
 		new_setpoint = true;

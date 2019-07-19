@@ -60,13 +60,13 @@ public class LVH2DPilot extends AutoPilotBase {
 				return;
 			offboard.setCurrentSetPointAsTarget();
 			offboard.start(OffboardManager.MODE_LOITER);
-			if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
-				model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
+		//	if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+				model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, false);
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 				control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
-			}
+		//	}
 
 		});
 
