@@ -54,14 +54,14 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 0.5f;		// Default Max speed in m/s
-	private static final float MIN_SPEED                    = 0.0f;     // Min speed in m/s
-	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
+	private static final float MAX_SPEED					= 0.750f;          	// Default Max speed in m/s
+	private static final float MIN_SPEED                    = MAX_SPEED/10f;   	// Min speed in m/s
+	private static final int   RC_DEADBAND             		= 20;				// RC XY deadband for safety check
 
 	private static final int   RC_LAND_CHANNEL				= 8;        // RC channel 8 landing
 	private static final int   RC_LAND_THRESHOLD            = 1600;		// RC channel 8 landing threshold
 
-	private static final float ACC_RATE                     = 0.05f;         // Acceleration rate per cycle in speed mode
+	private static final float ACC_RATE                     = 0.1f;        	// Acceleration rate per cycle in speed mode
 	//	private static final float DESC_RATE                    = 0.2f;     // Deceleration rate per cycle in speed mode
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
@@ -88,9 +88,10 @@ public class OffboardManager implements Runnable {
 	private int						mode					= 0;
 	private Vector4D_F32			target					= null;
 	private Vector4D_F32			current					= null;
+	private Vector4D_F32            start                   = null;
 	private Vector3D_F32			current_speed			= null;
 
-	private float	 	acceptance_radius_pos				= 0.1f;
+	private float	 	acceptance_radius_pos				= 0.05f;
 	private float	   	acceptance_radius_speed				= 0.05f;
 	private float       acceptance_yaw                      = 0.02f;
 	private float       max_speed							= MAX_SPEED;
@@ -110,6 +111,7 @@ public class OffboardManager implements Runnable {
 		this.logger         = MSPLogger.getInstance();
 		this.target         = new Vector4D_F32();
 		this.current        = new Vector4D_F32();
+		this.start          = new Vector4D_F32();
 
 		this.current_speed  = new Vector3D_F32();
 
@@ -242,7 +244,7 @@ public class OffboardManager implements Runnable {
 	@Override
 	public void run() {
 
-		float delta, delta_sec, delta_w;  long tms, sleep_tms = 0; float[] ctl = new float[2];
+		float delta, delta_sec, delta_w, delta_s; long tms, sleep_tms = 0; float[] ctl = new float[2];
 		long watch_tms = System.currentTimeMillis();
 
 		already_fired = false; if(!new_setpoint) valid_setpoint = false;
@@ -296,7 +298,8 @@ public class OffboardManager implements Runnable {
 			if(new_setpoint) {
 				new_setpoint = false;
 				ctl[IOffboardExternalControl.ANGLE] = 0;
-				ctl[IOffboardExternalControl.SPEED] = (float)Math.sqrt(model.target_state.l_vx*model.target_state.l_vx + model.target_state.l_vy*model.target_state.l_vy);
+				ctl[IOffboardExternalControl.SPEED] = 0; //(float)Math.sqrt(model.target_state.l_vx*model.target_state.l_vx + model.target_state.l_vy*model.target_state.l_vy);
+				start.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 				toModel(0,target,current);
 			}
 
@@ -376,6 +379,8 @@ public class OffboardManager implements Runnable {
 					continue;
 				}
 
+				delta_s = MSP3DUtils.distance2D(current,start);
+
 				if(ext_control_listener!=null) {
 					ctl = ext_control_listener.determine(model.hud.s, MSP3DUtils.getXYDirection(target, current), delta);
 				}
@@ -385,12 +390,15 @@ public class OffboardManager implements Runnable {
 
 					// break radius causes the jump: current speed << delta/2f; => not breaking but acceleerating
 					if(delta > break_radius) {
-						ctl[IOffboardExternalControl.SPEED] += ACC_RATE*delta_sec;
+						if(ctl[IOffboardExternalControl.SPEED] > delta_s/4f)
+						  ctl[IOffboardExternalControl.SPEED] += delta_s * delta_sec / 4f ;
+						else
+						  ctl[IOffboardExternalControl.SPEED] += ACC_RATE*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
 					}
 					else {
-						if(delta / 2f < ctl[IOffboardExternalControl.SPEED])
-						   ctl[IOffboardExternalControl.SPEED] = delta / 2f ; //-= DESC_RATE*delta_sec;
+						if(delta / 4f < ctl[IOffboardExternalControl.SPEED])
+						   ctl[IOffboardExternalControl.SPEED] -=  delta * delta_sec / 4f ; //-= DESC_RATE*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] < MIN_SPEED) ctl[IOffboardExternalControl.SPEED] = MIN_SPEED;
 					}
 				}
