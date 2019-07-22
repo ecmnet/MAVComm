@@ -60,13 +60,10 @@ public class LVH2DPilot extends AutoPilotBase {
 				return;
 			offboard.setCurrentSetPointAsTarget();
 			offboard.start(OffboardManager.MODE_LOITER);
-		//	if(!model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
-				model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, false);
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 				control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
-		//	}
 
 		});
 
@@ -274,8 +271,7 @@ public class LVH2DPilot extends AutoPilotBase {
 	}
 
 	public void moveto(float x, float y, float z, float yaw) {
-		final Vector4D_F32 target     = new Vector4D_F32(x,y,model.state.l_z,Float.NaN);
-
+        final Vector4D_F32 target = new Vector4D_F32(x,y,z,yaw);
 		if(flowCheck && !model.sys.isSensorAvailable(Status.MSP_PIX4FLOW_AVAILABILITY)) {
 			logger.writeLocalMsg("[msp] Autopilot: Aborting. No Flow available.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			return;

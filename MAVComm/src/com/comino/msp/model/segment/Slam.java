@@ -47,6 +47,7 @@ public class Slam extends Segment {
 	public float    pd;		// planned direction XY
 	public float    pp;		// planned direction YZ
 	public float    pv;		// planned speed
+	public float    dw;     // distance to next waypoint
 	public float    di;     // distance to target
 	public float    ox;		// nearest obstacle x
 	public float    oy;		// nearest obstacle y
@@ -64,6 +65,7 @@ public class Slam extends Segment {
 		py = a.py;
 		pz = a.pz;
 		di = a.di;
+		dw = a.dw;
 		ox = a.ox;
 		oy = a.oy;
 		oz = a.oz;
@@ -83,6 +85,7 @@ public class Slam extends Segment {
 		py = 0;
 		pz = 0;
 		di = 0;
+		dw = 0;
 		ox = 0;
 		oy = 0;
 		oz = 0;

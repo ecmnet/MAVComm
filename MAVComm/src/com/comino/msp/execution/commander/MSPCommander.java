@@ -171,9 +171,10 @@ public class MSPCommander {
 
 
 	private void setOffboardPosition(msg_msp_command cmd) {
-		//autopilot.setTarget(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
-	//	autopilot.resetMap();
-		autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, cmd.param4);
+		if(cmd.param3 == 0 || cmd.param3 == Float.NaN)
+		  autopilot.moveto(cmd.param1, cmd.param2, model.target_state.l_z, Float.NaN);
+		else
+		  autopilot.moveto(cmd.param1, cmd.param2, cmd.param3, Float.NaN);
 	}
 
 

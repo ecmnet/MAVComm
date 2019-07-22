@@ -24,7 +24,7 @@ public class msg_msp_micro_slam extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_MSP_MICRO_SLAM;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 52;
+    payload_length = 56;
 }
 
   /**
@@ -60,6 +60,10 @@ public class msg_msp_micro_slam extends MAVLinkMessage {
    */
   public float md;
   /**
+   * Distance to waypoint
+   */
+  public float mw;
+  /**
    * Obstacle X
    */
   public float ox;
@@ -87,6 +91,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   pp = (float)dis.readFloat();
   pv = (float)dis.readFloat();
   md = (float)dis.readFloat();
+  mw = (float)dis.readFloat();
   ox = (float)dis.readFloat();
   oy = (float)dis.readFloat();
   oz = (float)dis.readFloat();
@@ -96,7 +101,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+52];
+  byte[] buffer = new byte[12+56];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -116,6 +121,7 @@ public byte[] encode() throws IOException {
   dos.writeFloat(pp);
   dos.writeFloat(pv);
   dos.writeFloat(md);
+  dos.writeFloat(mw);
   dos.writeFloat(ox);
   dos.writeFloat(oy);
   dos.writeFloat(oz);
@@ -123,12 +129,12 @@ public byte[] encode() throws IOException {
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 52);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 56);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[62] = crcl;
-  buffer[63] = crch;
+  buffer[66] = crcl;
+  buffer[67] = crch;
   dos.close();
   return buffer;
 }
@@ -141,6 +147,7 @@ return "MAVLINK_MSG_ID_MSP_MICRO_SLAM : " +   "  tms="+tms
 +  "  pp="+pp
 +  "  pv="+pv
 +  "  md="+md
++  "  mw="+mw
 +  "  ox="+ox
 +  "  oy="+oy
 +  "  oz="+oz

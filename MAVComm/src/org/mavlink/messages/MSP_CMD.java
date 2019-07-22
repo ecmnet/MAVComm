@@ -60,10 +60,11 @@ public interface MSP_CMD {
     public final static int MSP_CMD_SET_HOMEPOS = 77;
     /**
      * Set offboard velocities via MSP in vehicle frame
-     * PARAM 1 : Vel.X   (set to NAN to ignore)
+     * PARAM 1 : Enable speed control (MSP_COMPONENT_CTRL)
      * PARAM 2 : Vel.X   (set to NAN to ignore)
-     * PARAM 3 : Vel.Z   (set to NAN to ignore)
-     * PARAM 4 : Vel Yaw (set to NAN to ignore)
+     * PARAM 3 : Vel.X   (set to NAN to ignore)
+     * PARAM 4 : Vel.Z   (set to NAN to ignore)
+     * PARAM 5 : Vel Yaw (set to NAN to ignore)
      */
     public final static int MSP_CMD_OFFBOARD_SETLOCALVEL = 78;
 }

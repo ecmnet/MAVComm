@@ -92,7 +92,7 @@ public class StatusManager implements Runnable {
 			return;
 		isRunning = true;
 		status_old.set(model.sys);
-		task = ExecutorService.submit(this, ExecutorService.HIGH, 100);
+		task = ExecutorService.submit(this, ExecutorService.LOW, 50);
 	}
 
 	public void stop() {
