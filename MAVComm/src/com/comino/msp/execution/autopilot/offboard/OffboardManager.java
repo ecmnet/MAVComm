@@ -55,13 +55,13 @@ import georegression.struct.point.Vector4D_F32;
 public class OffboardManager implements Runnable {
 
 	private static final float MAX_SPEED					= 0.5f;		// Default Max speed in m/s
-	private static final float MIN_SPEED                    = 0.1f;     // Min speed in m/s
+	private static final float MIN_SPEED                    = 0.0f;     // Min speed in m/s
 	private static final int   RC_DEADBAND             		= 20;		// RC XY deadband for safety check
 
 	private static final int   RC_LAND_CHANNEL				= 8;        // RC channel 8 landing
 	private static final int   RC_LAND_THRESHOLD            = 1600;		// RC channel 8 landing threshold
 
-	private static final float ACC_RATE                     = 0.025f;   // Acceleration rate per cycle in speed mode
+	private static final float ACC_RATE                     = 0.05f;         // Acceleration rate per cycle in speed mode
 	//	private static final float DESC_RATE                    = 0.2f;     // Deceleration rate per cycle in speed mode
 
 	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
@@ -90,7 +90,7 @@ public class OffboardManager implements Runnable {
 	private Vector4D_F32			current					= null;
 	private Vector3D_F32			current_speed			= null;
 
-	private float	 	acceptance_radius_pos				= 0.2f;
+	private float	 	acceptance_radius_pos				= 0.1f;
 	private float	   	acceptance_radius_speed				= 0.05f;
 	private float       acceptance_yaw                      = 0.02f;
 	private float       max_speed							= MAX_SPEED;
@@ -128,6 +128,7 @@ public class OffboardManager implements Runnable {
 
 	public void start(int m) {
 		mode = m;
+
 		if(!enabled) {
 			enabled = true;
 			Thread worker = new Thread(this);
@@ -295,7 +296,7 @@ public class OffboardManager implements Runnable {
 			if(new_setpoint) {
 				new_setpoint = false;
 				ctl[IOffboardExternalControl.ANGLE] = 0;
-				ctl[IOffboardExternalControl.SPEED] = 0;
+				ctl[IOffboardExternalControl.SPEED] = (float)Math.sqrt(model.target_state.l_vx*model.target_state.l_vx + model.target_state.l_vy*model.target_state.l_vy);
 				toModel(0,target,current);
 			}
 
@@ -344,6 +345,17 @@ public class OffboardManager implements Runnable {
 
 			case MODE_SPEED_POSITION:
 
+				// TODO:
+				// - Switch to Position mode only if no new setpoint after certain timeout
+				// - decrease acceptance radius massively, increase speed ramp ups
+				// - altitude speed control to be added
+				// - Yaw handling: If current yaw and calculated direction < yaw-limit: Start already moving and
+				//   turn during flight; otherwise turn to calculated direction before start moving (until yaw-limit is reached)
+				//   Calculate yaw limit depending on the estimated flight time to next WP
+				// - yaw speed control to be added
+				// - add distance to WP target to KeyFigures/Datamodel
+
+
 				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 				watch_tms = System.currentTimeMillis();
 
@@ -353,7 +365,6 @@ public class OffboardManager implements Runnable {
 				}
 
 				delta = MSP3DUtils.distance2D(target,current);
-
 
 				if(delta < acceptance_radius_pos && valid_setpoint ) {
 					watch_tms = System.currentTimeMillis();
@@ -371,12 +382,15 @@ public class OffboardManager implements Runnable {
 				else {
 					ctl[IOffboardExternalControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
 					// speed control: reduce speed if nearer than 1s of max_speed
+
+					// break radius causes the jump: current speed << delta/2f; => not breaking but acceleerating
 					if(delta > break_radius) {
 						ctl[IOffboardExternalControl.SPEED] += ACC_RATE*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
 					}
 					else {
-						ctl[IOffboardExternalControl.SPEED] = delta / 2f ; //-= DESC_RATE*delta_sec;
+						if(delta / 2f < ctl[IOffboardExternalControl.SPEED])
+						   ctl[IOffboardExternalControl.SPEED] = delta / 2f ; //-= DESC_RATE*delta_sec;
 						if(ctl[IOffboardExternalControl.SPEED] < MIN_SPEED) ctl[IOffboardExternalControl.SPEED] = MIN_SPEED;
 					}
 				}
