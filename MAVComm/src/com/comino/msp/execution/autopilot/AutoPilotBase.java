@@ -4,7 +4,7 @@ import org.mavlink.messages.MAV_SEVERITY;
 
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
-import com.comino.msp.execution.autopilot.offboard.OffboardManager;
+import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;

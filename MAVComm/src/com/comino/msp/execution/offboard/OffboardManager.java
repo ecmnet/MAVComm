@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.execution.autopilot.offboard;
+package com.comino.msp.execution.offboard;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
@@ -403,11 +403,15 @@ public class OffboardManager implements Runnable {
 					}
 				}
 
-				current_speed.set((float)Math.sin(ctl[IOffboardExternalControl.ANGLE]), (float)Math.cos(ctl[IOffboardExternalControl.ANGLE]), 0) ;
+				current_speed.set((float)Math.sin(ctl[IOffboardExternalControl.ANGLE]), (float)Math.cos(ctl[IOffboardExternalControl.ANGLE]),
+				//		0 );
+						 ( target.z - current.z ) * delta_sec * 15 ) ;
+
 				current_speed.scale(ctl[IOffboardExternalControl.SPEED]);
 
 				constraint_speed(current_speed);
 				sendSpeedControlToVehice(current_speed,(float)(2*Math.PI)-ctl[IOffboardExternalControl.ANGLE]+(float)Math.PI/2f);
+
 
 				toModel(current_speed.norm(),target,current);
 
@@ -500,13 +504,16 @@ public class OffboardManager implements Runnable {
 
 		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000001000;
 		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000010000;
-		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
+	    if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
+
+
 
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
 		if(!control.sendMAVLinkMessage(cmd))
 			enabled = false;
 	}
+
 
 	private void fireAction(DataModel model,float delta) {
 		if(action_listener!=null && !already_fired) {

@@ -31,7 +31,7 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.execution.autopilot.offboard;
+package com.comino.msp.execution.offboard;
 
 public interface IOffboardExternalControl {
 
