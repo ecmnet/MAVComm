@@ -20,6 +20,7 @@ public class MspMicroSlamPlugin extends MAVLinkPluginBase {
 		model.slam.pz = slam.pz;
 		model.slam.di = slam.md;
 		model.slam.dw = slam.mw;
+		model.slam.dm = slam.dm;
 		model.slam.ox = slam.ox;
 		model.slam.oy = slam.oy;
 		model.slam.oz = slam.oz;

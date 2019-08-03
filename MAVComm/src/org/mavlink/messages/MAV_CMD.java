@@ -833,6 +833,7 @@ public interface MAV_CMD {
     /**
      * Arms / Disarms a component
      * PARAM 1 : 0: disarm, 1: arm
+     * PARAM 2 : 0: only arm-disarm when landed, 21196: enforce arming/disarming even in-air (during flight)
      */
     public final static int MAV_CMD_COMPONENT_ARM_DISARM = 400;
     /**
