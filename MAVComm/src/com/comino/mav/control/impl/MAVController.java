@@ -75,7 +75,7 @@ public class MAVController implements IMAVController, Runnable {
 	protected IMAVComm comm = null;
 
 	protected   boolean isSITL = false;
-	protected   DataModel model = null;
+	protected   volatile DataModel model = null;
 
 	protected   int commError = 0;
 

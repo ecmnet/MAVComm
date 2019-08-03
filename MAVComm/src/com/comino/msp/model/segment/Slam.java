@@ -48,6 +48,7 @@ public class Slam extends Segment {
 	public float    pp;		// planned direction YZ
 	public float    pv;		// planned speed
 	public float    dw;     // distance to next waypoint
+	public float    dm;     // minimal distance to obstacle
 	public float    di;     // distance to target
 	public float    ox;		// nearest obstacle x
 	public float    oy;		// nearest obstacle y
@@ -66,6 +67,7 @@ public class Slam extends Segment {
 		pz = a.pz;
 		di = a.di;
 		dw = a.dw;
+		dm = a.dm;
 		ox = a.ox;
 		oy = a.oy;
 		oz = a.oz;
@@ -78,17 +80,18 @@ public class Slam extends Segment {
 	}
 
 	public void clear() {
-		pv = 0;
-		pd = 0;
-		pp = 0;
-		px = 0;
-		py = 0;
-		pz = 0;
-		di = 0;
-		dw = 0;
-		ox = 0;
-		oy = 0;
-		oz = 0;
+		pv = Float.NaN;
+		pd = Float.NaN;
+		pp = Float.NaN;
+		px = Float.NaN;
+		py = Float.NaN;
+		pz = Float.NaN;
+		di = Float.NaN;
+		dw = Float.NaN;
+		dm = Float.NaN;
+		ox = Float.NaN;
+		oy = Float.NaN;
+		oz = Float.NaN;
 	}
 
 }

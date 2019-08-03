@@ -121,6 +121,7 @@ public class LVH2DPilot extends AutoPilotBase {
 			slam.pd = model.slam.pd;
 			slam.pv = model.slam.pv;
 			slam.md = model.slam.di;
+			slam.dm = model.slam.dm;
 
 			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
 
