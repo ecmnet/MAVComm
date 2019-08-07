@@ -403,6 +403,17 @@ public class OffboardManager implements Runnable {
 					}
 				}
 
+				// Collision detection 2nd level: Absolute speed constraint if collision risk detected
+				// Experimental: Risk is if min_distance of detector < 1.5m; at 0.3m set speed to 0
+				// Should be only in derection of flight (+/-75 degree)
+				// Put that into constraint speed
+				if(!Float.isNaN(model.slam.dm) && model.slam.dm < 1.5f && model.slam.dm > 0) {
+					logger.writeLocalMsg("[msp] Offboard: Collision risk. Speed reduced.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+					ctl[IOffboardExternalControl.SPEED] = ctl[IOffboardExternalControl.SPEED] * (model.slam.dm - 0.3f);
+					if(ctl[IOffboardExternalControl.SPEED]<0)
+						ctl[IOffboardExternalControl.SPEED] = 0;
+				}
+
 				current_speed.set((float)Math.sin(ctl[IOffboardExternalControl.ANGLE]), (float)Math.cos(ctl[IOffboardExternalControl.ANGLE]),
 				//		0 );
 						 ( target.z - current.z ) * delta_sec * 15 ) ;

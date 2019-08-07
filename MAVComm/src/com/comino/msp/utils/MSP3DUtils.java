@@ -3,6 +3,7 @@ package com.comino.msp.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.comino.msp.execution.offboard.IOffboardExternalControl;
 import com.comino.msp.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;
@@ -98,6 +99,25 @@ public class MSP3DUtils {
 			return (float)(Math.atan(dy/dx)+Math.PI);
 
 		return 0;
+	}
+
+	public static float getXZDirection(Vector4D_F32 target,Vector4D_F32 current) {
+
+		float dx = target.getX() - current.getX();
+		float dz = target.getZ() - current.getZ();
+
+		if((dx > 0 && dz > 0) || (dx > 0 && dz < 0))
+		   return (float)Math.atan(dz/dx);
+		if((dx < 0 && dz > 0) || (dx < 0 && dz < 0))
+			return (float)(Math.atan(dz/dx)+Math.PI);
+
+		return 0;
+	}
+
+	public static Vector3D_F32 convertToVector3D(float angle_xy, float angle_xz, float speed, Vector3D_F32 result) {
+		result.set((float)Math.cos(angle_xy), (float)Math.sin(angle_xy),(float)Math.sin(angle_xz));
+		result.scale(speed);
+		return result;
 	}
 
 	public static Vector3D_F32 interpolateLinear(float where, Vector3D_F32 start, Vector3D_F32 end, Vector3D_F32 result) {

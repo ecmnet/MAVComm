@@ -94,4 +94,11 @@ public class Slam extends Segment {
 		oz = Float.NaN;
 	}
 
+	public void set(float pd, float pp, float pv, float di) {
+		this.di = di;
+		this.pd = pd;
+		this.pp = pp;
+		this.pv = pv;
+	}
+
 }

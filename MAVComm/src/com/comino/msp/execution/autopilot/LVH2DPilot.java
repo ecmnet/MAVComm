@@ -16,7 +16,6 @@ import com.comino.msp.execution.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
-import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
 import com.comino.msp.slam.vfh.LocalVFH2D;
 import com.comino.msp.utils.MSP3DUtils;
@@ -95,8 +94,9 @@ public class LVH2DPilot extends AutoPilotBase {
 				tooClose = true;
 			}
 
-			if(nearestTarget > OBSTACLE_FAILDISTANCE+ROBOT_RADIUS)
+			if(nearestTarget > OBSTACLE_FAILDISTANCE+ROBOT_RADIUS) {
 				tooClose = false;
+			}
 
 			min_distance = getAvoidanceDistance(model.hud.s);
 
@@ -121,19 +121,24 @@ public class LVH2DPilot extends AutoPilotBase {
 			slam.pd = model.slam.pd;
 			slam.pv = model.slam.pv;
 			slam.md = model.slam.di;
-			slam.dm = model.slam.dm;
+
 
 			if(nearestTarget < OBSTACLE_FAILDISTANCE) {
 
 				slam.ox = (float)map.getNearestObstaclePosition().x;
 				slam.oy = (float)map.getNearestObstaclePosition().y;
 				slam.oz = (float)map.getNearestObstaclePosition().z;
+				if(control.isSimulation())
+					model.slam.dm = nearestTarget;
 
 			} else {
 
 				slam.ox = 0; slam.oy = 0; slam.oz = 0;
+				if(control.isSimulation())
+					model.slam.dm = Float.NaN;
 			}
 
+			slam.dm = model.slam.dm;
 			slam.tms = model.sys.getSynchronizedPX4Time_us();
 			control.sendMAVLinkMessage(slam);
 
