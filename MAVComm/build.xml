@@ -15,7 +15,7 @@
 
 	<target name="get_metadata" depends="clean">
 
-		<get src="https://github.com/mavlink/mavlink/raw/master/message_definitions/v1.0/common.xml" dest="mavlink/common.xml" />
+	<get src="https://github.com/mavlink/mavlink/raw/master/message_definitions/v1.0/common.xml" dest="mavlink/common.xml" />
 
 	</target>
 
