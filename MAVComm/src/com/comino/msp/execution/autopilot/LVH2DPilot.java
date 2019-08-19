@@ -50,27 +50,6 @@ public class LVH2DPilot extends AutoPilotBase {
 		if(mapForget)
 			registerMapFilter(new DenoiseMapFilter(800,800));
 
-		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
-		//
-		// TODO: Landing during takeoff switches to offboard mode here => should directly land instead
-		//       Update: 		works in SITL, but not on vehicle (timing?)
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
-				return;
-			offboard.setCurrentSetPointAsTarget();
-			offboard.start(OffboardManager.MODE_LOITER);
-				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
-				control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
-
-		});
-
-		// Stop offboard updater as soon as landed
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (o,n) -> {
-			offboard.stop();
-		});
-
 		start();
 	}
 

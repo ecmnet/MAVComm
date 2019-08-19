@@ -1,12 +1,17 @@
 package com.comino.msp.execution.autopilot;
 
+import org.mavlink.messages.MAV_CMD;
+import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
+import com.comino.mav.mavlink.MAV_CUST_MODE;
+import com.comino.msp.execution.control.StatusManager;
 import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
+import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
@@ -75,6 +80,28 @@ public abstract class AutoPilotBase implements Runnable {
 
 		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true") & !model.sys.isStatus(Status.MSP_SITL);
 		System.out.println(instanceName+": FlowCheck enabled: "+flowCheck);
+
+		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
+		//
+		// TODO: Landing during takeoff switches to offboard mode here => should directly land instead
+		//       Update: 		works in SITL, but not on vehicle (timing?)
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
+			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
+				return;
+			offboard.setCurrentSetPointAsTarget();
+			offboard.start(OffboardManager.MODE_LOITER);
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+			control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+
+		});
+
+		// Stop offboard updater as soon as landed
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (o,n) -> {
+			offboard.stop();
+		});
+
 
 
 	}

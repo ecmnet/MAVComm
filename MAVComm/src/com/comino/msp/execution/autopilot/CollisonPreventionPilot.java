@@ -34,17 +34,6 @@ public class CollisonPreventionPilot extends AutoPilotBase {
 
 		this.collprev = new CollisionPreventionConverter(map,CERTAINITY_THRESHOLD);
 
-
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
-			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
-				return;
-
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-			control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed. Switched to PosHold", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
-		});
-
 		start();
 	}
 
