@@ -370,8 +370,6 @@ public class Autopilot2D  implements Runnable {
 		final Vector4D_F32 current    = new Vector4D_F32();
 		final Vector4D_F32 projected  = new Vector4D_F32();
 
-		float[] ctl = new float[2];
-
 		final msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
 
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
@@ -387,7 +385,7 @@ public class Autopilot2D  implements Runnable {
 		offboard.setTarget(projected);
 
 		// determine velocity setpoint via callback
-		offboard.registerExternalControlListener((speed, target_dir, distance) -> {
+		offboard.registerExternalControlListener((speed, target_dir, distance, ctl) -> {
 
 			current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
 
@@ -397,14 +395,13 @@ public class Autopilot2D  implements Runnable {
 
 			try {
 				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance*1000f);
-				ctl[IOffboardExternalControl.ANGLE] = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
-				ctl[IOffboardExternalControl.SPEED] = lvfh.getSelectedSpeed();
+				ctl.angle_xy = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
+				ctl.value = lvfh.getSelectedSpeed();
 
 			} catch(Exception e) {
 				logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
 				offboard.setTarget(current);
 			}
-			return ctl;
 		});
 
 		offboard.start(OffboardManager.MODE_SPEED_POSITION);

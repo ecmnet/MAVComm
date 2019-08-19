@@ -40,6 +40,8 @@ public class MSPMathUtils {
 	public static final double 	toRad   					  	= Math.PI / 180.0;
 	public static final double 	fromRad 					  	= 180.0 / Math.PI ;
 
+	public static final float PI2							    = 2f*(float)Math.PI;
+
 	private static final double 	CONSTANTS_RADIUS_OF_EARTH  	= 6371000.0;
 	private static  Reference   	ref                         	= new Reference();
 
@@ -172,6 +174,18 @@ public class MSPMathUtils {
 		rotated[0] =  posx * (float)Math.cos(heading_rad) + posy * (float)Math.sin(heading_rad);
 		rotated[1] = -posx * (float)Math.sin(heading_rad) + posy * (float)Math.cos(heading_rad);
 		return rotated;
+	}
+
+	public static float constraint(float value, float max, float min) {
+		if(!Float.isNaN(max) && value > max) return max;
+		if(!Float.isNaN(min) && value < min) return min;
+		return value;
+	}
+
+	public static float normAngle(float angle) {
+		if(angle >  Math.PI) return angle - PI2;
+		if(angle < -Math.PI) return angle + PI2;
+		return angle;
 	}
 
 	private static class Reference {

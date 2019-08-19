@@ -33,11 +33,11 @@
 
 package com.comino.msp.execution.offboard;
 
+import com.comino.msp.utils.struct.Polar3D_F32;
+
 public interface IOffboardExternalControl {
 
-	public static final int ANGLE = 0;
-	public static final int SPEED = 1;
 
-	public float[] determine(float current_speed, float target_dir, float distance_to_goal);
+	public void determine(float current_speed, float target_dir, float distance_to_goal, Polar3D_F32 control);
 
 }

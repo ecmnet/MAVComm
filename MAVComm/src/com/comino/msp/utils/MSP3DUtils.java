@@ -7,6 +7,7 @@ import com.comino.msp.execution.offboard.IOffboardExternalControl;
 import com.comino.msp.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;
+import georegression.metric.UtilAngle;
 import georegression.struct.EulerType;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
@@ -50,12 +51,39 @@ public class MSP3DUtils {
 		return (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 	}
 
+
 	public static float angleXY(Vector3D_F32 t, Vector3D_F32 c) {
-		return (float)Math.atan2(t.y-c.y, t.x-c.x);
+
+		float dx = t.getX() - c.getX();
+		float dy = t.getY() - c.getY();
+
+		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
+		   return (float)Math.atan(dy/dx);
+		if((dx < 0 && dy > 0) || (dx < 0 && dy < 0))
+			return (float)(Math.atan(dy/dx)+Math.PI);
+
+		return 0;
 	}
 
 	public static float angleXY(Vector4D_F32 t, Vector4D_F32 c) {
-		return (float)Math.atan2(t.y-c.y, t.x-c.x);
+
+		float dx = t.getX() - c.getX();
+		float dy = t.getY() - c.getY();
+
+		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
+		   return (float)Math.atan(dy/dx);
+		if((dx < 0 && dy > 0) || (dx < 0 && dy < 0))
+			return (float)(Math.atan(dy/dx)+Math.PI);
+
+		return 0;
+	}
+
+	public static float angleXZ(Vector4D_F32 t, Vector4D_F32 c) {
+		return (float)Math.asin((t.z-c.z)/distance3D(t,c));
+	}
+
+	public static float angleXZ(Vector3D_F32 t, Vector3D_F32 c) {
+		return (float)Math.asin((t.z-c.z)/distance3D(t,c));
 	}
 
 	public static Vector4D_F32 getCurrentVector4D(DataModel model) {
@@ -64,6 +92,11 @@ public class MSP3DUtils {
 
 	public static Vector3D_F32 convertTo3D(Vector4D_F32 v) {
 		return new Vector3D_F32(v.x,v.y,v.z);
+	}
+
+	public static Vector3D_F32 convertTo3D(Vector4D_F32 v, Vector3D_F32 t) {
+		t.set(v.x,v.y,v.z);
+		return t;
 	}
 
 	public static void convertModelToSe3_F32(DataModel model, Se3_F32 state) {
@@ -88,6 +121,7 @@ public class MSP3DUtils {
 		return v[YAW];
 	}
 
+
 	public static float getXYDirection(Vector4D_F32 target,Vector4D_F32 current) {
 
 		float dx = target.getX() - current.getX();
@@ -106,16 +140,16 @@ public class MSP3DUtils {
 		float dx = target.getX() - current.getX();
 		float dz = target.getZ() - current.getZ();
 
-		if((dx > 0 && dz > 0) || (dx > 0 && dz < 0))
+		if((dz > 0 && dx > 0) || (dz > 0 && dx < 0))
 		   return (float)Math.atan(dz/dx);
-		if((dx < 0 && dz > 0) || (dx < 0 && dz < 0))
+		if((dz < 0 && dx > 0) || (dz < 0 && dx < 0))
 			return (float)(Math.atan(dz/dx)+Math.PI);
 
 		return 0;
 	}
 
 	public static Vector3D_F32 convertToVector3D(float angle_xy, float angle_xz, float speed, Vector3D_F32 result) {
-		result.set((float)Math.cos(angle_xy), (float)Math.sin(angle_xy),(float)Math.sin(angle_xz));
+		result.set((float)( Math.cos(angle_xy) * Math.cos(angle_xz)), (float)(Math.sin(angle_xy)* Math.cos(angle_xz)),(float)Math.sin(angle_xz));
 		result.scale(speed);
 		return result;
 	}

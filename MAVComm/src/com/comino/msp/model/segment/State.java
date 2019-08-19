@@ -185,6 +185,14 @@ public class State extends Segment {
 		c_frame = 0;
 	}
 
+	public float getSpeed() {
+		return (float)Math.sqrt(l_vx*l_vx+l_vy*l_vy+l_vz*l_vz);
+	}
+
+	public float getXYSpeed() {
+		return (float)Math.sqrt(l_vx*l_vx+l_vy*l_vy);
+	}
+
 	public void print(String header) {
 		System.out.printf("%s State: x= %3.2f y=%3.2f z=%3.2f h=%3.2f - vx= %3.2f vy=%3.2f vz=%3.2f vh=%3.2f \n",
 				header,l_x,l_y,l_z,h);

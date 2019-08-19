@@ -38,8 +38,10 @@ import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
+import com.comino.libs.TrajMathLib;
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
@@ -48,28 +50,23 @@ import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.utils.MSP3DUtils;
+import com.comino.msp.utils.MSPMathUtils;
+import com.comino.msp.utils.struct.Polar3D_F32;
 
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 0.750f;          	// Default Max speed in m/s
-	private static final float MIN_SPEED                    = MAX_SPEED/10f;   	// Min speed in m/s
+	private static final float MAX_SPEED					= 1.00f;          	// Default Max speed in m/s
+	private static final float MAX_TURN_SPEED               = 0.2f;   	        // Max speed that allow turning before start
+
 	private static final int   RC_DEADBAND             		= 20;				// RC XY deadband for safety check
-
-	private static final int   RC_LAND_CHANNEL				= 8;        // RC channel 8 landing
-	private static final int   RC_LAND_THRESHOLD            = 1600;		// RC channel 8 landing threshold
-
-	private static final float ACC_RATE                     = 0.1f;        	// Acceleration rate per cycle in speed mode
-	//	private static final float DESC_RATE                    = 0.2f;     // Deceleration rate per cycle in speed mode
-
-	//	private static final float MIN_REL_ALTITUDE          = 0.3f;
+	private static final int   RC_LAND_CHANNEL				= 8;                // RC channel 8 landing
+	private static final int   RC_LAND_THRESHOLD            = 1600;		        // RC channel 8 landing threshold
 
 	private static final int UPDATE_RATE                 	= 50;
 	private static final int SETPOINT_TIMEOUT_MS         	= 15000;
-
-	private static final float PI2							= 2f*(float)Math.PI;
 
 	public static final int MODE_LOITER	 		   			= 0;
 	public static final int MODE_POSITION	 		   		= 1;
@@ -78,21 +75,21 @@ public class OffboardManager implements Runnable {
 	public static final int MODE_LAND_LOCAL		 	    	= 4;
 	public static final int MODE_START_LOCAL 	    		= 5;
 
-	private MSPLogger 				logger					= null;
-	private DataModel 				model					= null;
-	private IMAVController         	control      			= null;
+	private MSPLogger 				 logger					= null;
+	private DataModel 				 model					= null;
+	private IMAVController         	 control      			= null;
 	private IOffboardTargetAction    action_listener     	= null;		// CB target reached
 	private IOffboardExternalControl ext_control_listener   = null;		// CB external angle+speed control in MODE_SPEED_POSITION
 
 	private boolean					enabled					= false;
 	private int						mode					= 0;
-	private Vector4D_F32			target					= null;
-	private Vector4D_F32			current					= null;
-	private Vector4D_F32            start                   = null;
-	private Vector3D_F32			current_speed			= null;
+	private final Vector4D_F32		target					= new Vector4D_F32();
+	private final Vector4D_F32		current					= new Vector4D_F32();
+	private final Vector4D_F32      start                   = new Vector4D_F32();
+	private final Vector3D_F32		control_speed			= new Vector3D_F32();
 
-	private float	 	acceptance_radius_pos				= 0.05f;
-	private float	   	acceptance_radius_speed				= 0.05f;
+
+	private float	 	acceptance_radius_pos				= 0.2f;
 	private float       acceptance_yaw                      = 0.02f;
 	private float       max_speed							= MAX_SPEED;
 	private float		break_radius					    = MAX_SPEED;
@@ -101,43 +98,40 @@ public class OffboardManager implements Runnable {
 	private boolean    	new_setpoint                   	 	= false;
 
 	private long        setpoint_tms                        = 0;
-	//	private boolean     step_mode                        	= false;
-	//	private boolean    	step_trigger                    	= false;
-
 
 	public OffboardManager(IMAVController control) {
 		this.control        = control;
 		this.model          = control.getCurrentModel();
 		this.logger         = MSPLogger.getInstance();
-		this.target         = new Vector4D_F32();
-		this.current        = new Vector4D_F32();
-		this.start          = new Vector4D_F32();
-
-		this.current_speed  = new Vector3D_F32();
 
 		MSPConfig config		= MSPConfig.getInstance();
 
 		max_speed = config.getFloatProperty("AP2D_MAX_SPEED", String.valueOf(MAX_SPEED));
 		System.out.println("Offboard: speed constraints: "+max_speed+" m/s ");
-		break_radius = max_speed * 2;
 		System.out.println("Offboard: break-radius: "+break_radius+" m");
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE,
 				Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
 					valid_setpoint = false;
 				});
+		control.getStatusManager().addListener(Status.MSP_ARMED, (o,n) -> {
+			model.slam.clear();
+			model.slam.tms = model.sys.getSynchronizedPX4Time_us();
+
+		});
 	}
 
 	public void start(int m) {
 		mode = m;
-
 		if(!enabled) {
 			enabled = true;
 			Thread worker = new Thread(this);
 			worker.setPriority(Thread.MIN_PRIORITY);
 			worker.setName("OffboardManager");
 			worker.start();
+			try { Thread.sleep(5); } catch (InterruptedException e) { }
 		}
+
 	}
 
 	public void start(int m, int delay_ms) {
@@ -152,7 +146,7 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setTarget(Vector3D_F32 t) {
-		mode = MODE_LOITER;
+		//	mode = MODE_LOITER;
 		target.set(t.x,t.y,t.z,Float.NaN);
 		target.w = MSP3DUtils.getXYDirection(target, current);
 		valid_setpoint = true;
@@ -162,7 +156,7 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setTarget(Vector3D_F32 t, float w) {
-		mode = MODE_LOITER;
+		//	mode = MODE_LOITER;
 		target.set(t.x,t.y,t.z,w);
 		valid_setpoint = true;
 		new_setpoint = true;
@@ -171,7 +165,16 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void setTarget(Vector4D_F32 t) {
-		mode = MODE_LOITER;
+		//	mode = MODE_LOITER;
+		target.set(t);
+		valid_setpoint = true;
+		new_setpoint = true;
+		already_fired = false;
+		setpoint_tms = System.currentTimeMillis();
+	}
+
+	public void setTarget(Vector4D_F32 t, int mode) {
+		this.mode = mode;
 		target.set(t);
 		valid_setpoint = true;
 		new_setpoint = true;
@@ -244,19 +247,19 @@ public class OffboardManager implements Runnable {
 	@Override
 	public void run() {
 
-		float delta, delta_sec, delta_w, delta_s; long tms, sleep_tms = 0; float[] ctl = new float[2];
+		float delta, delta_w; long tms, sleep_tms = 0;
 		long watch_tms = System.currentTimeMillis();
+
+		Polar3D_F32 path = new Polar3D_F32(); // planned direct path
+		Polar3D_F32 ctl  = new Polar3D_F32(); // speed control
+		Polar3D_F32 way  = new Polar3D_F32(); // path already done
 
 		already_fired = false; if(!new_setpoint) valid_setpoint = false;
 
-		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
+		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_INFO);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, true);
 
 		tms = System.currentTimeMillis();
-
-		//		// Check bottom clearance for minimal altitude above ground. Abort offboard if too low
-		//		if(model.hud.ar < MIN_REL_ALTITUDE)
-		//			enabled = false;
 
 		while(enabled) {
 
@@ -266,27 +269,12 @@ public class OffboardManager implements Runnable {
 			if(sleep_tms> 0 && enabled && sleep_tms < UPDATE_RATE)
 				try { Thread.sleep(sleep_tms); 	} catch (InterruptedException e) { }
 
-			if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
-				// Safety check: if RC attached, check XY sticks and fallback to POSHOLD if moved
-				if(Math.abs(model.rc.s1 -1500) > RC_DEADBAND || Math.abs(model.rc.s2 -1500) > RC_DEADBAND) {
-					logger.writeLocalMsg("[msp] OffboardUpdater stopped: RC",MAV_SEVERITY.MAV_SEVERITY_INFO);
-					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-							MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-							MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
-					enabled = false;
-					continue;
-				}
-
-				// Safety: Channel 8 triggers landing mode of PX4
-				if(model.rc.get(RC_LAND_CHANNEL) > RC_LAND_THRESHOLD) {
-					logger.writeLocalMsg("[msp] OffboardUpdater stopped: Landing",MAV_SEVERITY.MAV_SEVERITY_INFO);
-					control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
-					enabled = false;
-					continue;
-				}
+			if(model.sys.isStatus(Status.MSP_RC_ATTACHED) && !safety_check()) {
+				enabled = false;
+				continue;
 			}
 
-			delta_sec = UPDATE_RATE / 1000.0f;
+			current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 
 			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS ) {
 				valid_setpoint = false; mode = MODE_POSITION;
@@ -296,11 +284,13 @@ public class OffboardManager implements Runnable {
 			}
 
 			if(new_setpoint) {
-				new_setpoint = false;
-				ctl[IOffboardExternalControl.ANGLE] = 0;
-				ctl[IOffboardExternalControl.SPEED] = 0; //(float)Math.sqrt(model.target_state.l_vx*model.target_state.l_vx + model.target_state.l_vy*model.target_state.l_vy);
+				new_setpoint = false; ctl.clear(); way.clear();
+
 				start.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
-				toModel(0,target,current);
+
+				path.set(target, current);
+				break_radius = path.value / 2f;
+
 			}
 
 			switch(mode) {
@@ -310,6 +300,7 @@ public class OffboardManager implements Runnable {
 					setCurrentAsTarget();
 				sendPositionControlToVehice(target);
 				watch_tms = System.currentTimeMillis();
+				toModel(control_speed.norm(),target,current);
 				break;
 
 			case MODE_POSITION:
@@ -317,7 +308,6 @@ public class OffboardManager implements Runnable {
 					watch_tms = System.currentTimeMillis();
 					setCurrentAsTarget();
 				}
-				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 
 				sendPositionControlToVehice(target);
 
@@ -343,96 +333,88 @@ public class OffboardManager implements Runnable {
 				if((System.currentTimeMillis()- setpoint_tms) > 1000)
 					valid_setpoint = false;
 				else
-				     watch_tms = System.currentTimeMillis();
+					watch_tms = System.currentTimeMillis();
 				break;
 
 			case MODE_SPEED_POSITION:
 
 				// TODO:
-				// - Switch to Position mode only if no new setpoint after certain timeout
-				// - decrease acceptance radius massively, increase speed ramp ups
-				// - altitude speed control to be added
-				// - Yaw handling: If current yaw and calculated direction < yaw-limit: Start already moving and
-				//   turn during flight; otherwise turn to calculated direction before start moving (until yaw-limit is reached)
+				// - Switch to Position mode only if no new setpoint after certain timeout or empty queue
+				// - Setpoint-Queue
 				//   Calculate yaw limit depending on the estimated flight time to next WP
 				// - yaw speed control to be added
 				// - add distance to WP target to KeyFigures/Datamodel
+				// - eventually PID controller for Z
+				// - Control setpoint changes during flight (speed limit)
 
+				// see:
+				// https://github.com/PX4/Firmware/commit/4eb9c7d812c8ac78a6609057466135f47798e8c8
 
-				current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 				watch_tms = System.currentTimeMillis();
 
-				if(!valid_setpoint) {
-					watch_tms = System.currentTimeMillis();
-					current_speed.set(0,0,0);
-				}
+				way.set(current,start);
 
-				delta = MSP3DUtils.distance2D(target,current);
+				if(valid_setpoint)
+					path.set(target, current);
+				else
+					path.clear();
 
-				if(delta < acceptance_radius_pos && valid_setpoint ) {
-					watch_tms = System.currentTimeMillis();
 
-					ctl[IOffboardExternalControl.ANGLE] = 0;
-					ctl[IOffboardExternalControl.SPEED] = 0;
-
-					mode = MODE_POSITION;
+				if(path.value < acceptance_radius_pos && valid_setpoint ) {
+					ctl.clear();
+					fireAction(model, path.value);
+					mode = MODE_LOITER;
 					continue;
 				}
 
-				delta_s = MSP3DUtils.distance2D(current,start);
-
 				if(ext_control_listener!=null) {
-					ctl = ext_control_listener.determine(model.hud.s, MSP3DUtils.getXYDirection(target, current), delta);
+
+					ext_control_listener.determine(model.state.getXYSpeed(), MSP3DUtils.getXYDirection(target, current), path.value, ctl);
+
 				}
 				else {
-					ctl[IOffboardExternalControl.ANGLE] = (float)(2*Math.PI)- MSP3DUtils.getXYDirection(target, current)+(float)Math.PI/2;
-					// speed control: reduce speed if nearer than 1s of max_speed
 
-					// break radius causes the jump: current speed << delta/2f; => not breaking but acceleerating
-					if(delta > break_radius) {
-						if(ctl[IOffboardExternalControl.SPEED] > delta_s/4f)
-						  ctl[IOffboardExternalControl.SPEED] += delta_s * delta_sec / 4f ;
-						else
-						  ctl[IOffboardExternalControl.SPEED] += ACC_RATE*delta_sec;
-						if(ctl[IOffboardExternalControl.SPEED] > MAX_SPEED) ctl[IOffboardExternalControl.SPEED] = MAX_SPEED;
-					}
-					else {
-						if(delta / 4f < ctl[IOffboardExternalControl.SPEED])
-						   ctl[IOffboardExternalControl.SPEED] -=  delta * delta_sec / 4f ; //-= DESC_RATE*delta_sec;
-						if(ctl[IOffboardExternalControl.SPEED] < MIN_SPEED) ctl[IOffboardExternalControl.SPEED] = MIN_SPEED;
-					}
+					// get angles from direct path planned
+					ctl.angle_xy =  path.angle_xy;
+					ctl.angle_xz =  path.angle_xz;
+
+					// determine speed depending on the distance
+					if(way.value < break_radius)
+						ctl.value = TrajMathLib.computeSpeedFromDistance(5f, 1f, max_speed, way.value);
+					else
+						ctl.value = TrajMathLib.computeSpeedFromDistance(1.5f, 1f, max_speed, path.value);
+
 				}
+
+				// if vehicle is not moving and turn angle > 180° => turn before moveing
+				if(Math.abs(ctl.angle_xy - current.w) > Math.PI && model.state.getXYSpeed() < MAX_TURN_SPEED)
+					ctl.value = 0;
 
 				// Collision detection 2nd level: Absolute speed constraint if collision risk detected
 				// Experimental: Risk is if min_distance of detector < 1.5m; at 0.3m set speed to 0
 				// Should be only in derection of flight (+/-75 degree)
 				// Put that into constraint speed
-				if(!Float.isNaN(model.slam.dm) && model.slam.dm < 1.5f && model.slam.dm > 0) {
-					logger.writeLocalMsg("[msp] Offboard: Collision risk. Speed reduced.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-					ctl[IOffboardExternalControl.SPEED] = ctl[IOffboardExternalControl.SPEED] * (model.slam.dm - 0.3f);
-					if(ctl[IOffboardExternalControl.SPEED]<0)
-						ctl[IOffboardExternalControl.SPEED] = 0;
-				}
+				//				if(!Float.isNaN(model.slam.dm) && model.slam.dm < 1.5f && model.slam.dm > 0) {
+				//					logger.writeLocalMsg("[msp] Offboard: Collision risk. Speed reduced.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+				//					ctl[IOffboardExternalControl.SPEED] = ctl[IOffboardExternalControl.SPEED] * (model.slam.dm - 0.3f);
+				//					if(ctl[IOffboardExternalControl.SPEED]<0)
+				//						ctl[IOffboardExternalControl.SPEED] = 0;
+				//				}
 
-				current_speed.set((float)Math.sin(ctl[IOffboardExternalControl.ANGLE]), (float)Math.cos(ctl[IOffboardExternalControl.ANGLE]),
-				//		0 );
-						 ( target.z - current.z ) * delta_sec * 15 ) ;
+				// get kartesian from polar coordinates
+				ctl.get(control_speed);
+				constraint_speed(control_speed);
 
-				current_speed.scale(ctl[IOffboardExternalControl.SPEED]);
+				sendSpeedControlToVehice(control_speed,ctl.angle_xy);
 
-				constraint_speed(current_speed);
-				sendSpeedControlToVehice(current_speed,(float)(2*Math.PI)-ctl[IOffboardExternalControl.ANGLE]+(float)Math.PI/2f);
-
-
-				toModel(current_speed.norm(),target,current);
+				//	System.out.println(ctl+ "/ "+path);
+				toModel(control_speed.norm(),target,current);
 
 				break;
 
 			}
-
-			try { Thread.sleep(10); 	} catch (InterruptedException e) { }
-
 		}
+
 		action_listener = null; ext_control_listener = null;
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, false);
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
@@ -456,13 +438,10 @@ public class OffboardManager implements Runnable {
 		cmd.target_system    = 1;
 		cmd.type_mask        = 0b000101111111000;
 
-		if(target.w >  Math.PI) target.w = target.w - PI2;
-		if(target.w < -Math.PI) target.w = target.w + PI2;
-
 		cmd.x   = target.x;
 		cmd.y   = target.y;
 		cmd.z   = target.z;
-		cmd.yaw = Float.isNaN(target.w)? model.attitude.y : target.w;
+		cmd.yaw = Float.isNaN(target.w)? model.attitude.y : MSPMathUtils.normAngle(target.w);
 
 		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000001;
 		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000010;
@@ -503,27 +482,23 @@ public class OffboardManager implements Runnable {
 		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
 		cmd.target_component = 1;
 		cmd.target_system    = 1;
-		cmd.type_mask        = 0b000101111000111;
-
-		if(yaw >  Math.PI) yaw = yaw - PI2;
-		if(yaw < -Math.PI) yaw = yaw + PI2;
+		cmd.type_mask        = 0b00000111000111;
 
 		cmd.vx       = target.x;
 		cmd.vy       = target.y;
 		cmd.vz       = target.z;
-		cmd.yaw      = yaw;
+		cmd.yaw      = MSPMathUtils.normAngle(yaw);
 
 		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000001000;
 		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000010000;
-	    if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
-
-
+		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
 
 		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
 
 		if(!control.sendMAVLinkMessage(cmd))
 			enabled = false;
 	}
+
 
 
 	private void fireAction(DataModel model,float delta) {
@@ -535,15 +510,36 @@ public class OffboardManager implements Runnable {
 
 	private void toModel(float speed, Vector4D_F32 target, Vector4D_F32 current) {
 
-		if(speed > 0.05) {
+		if(mode!=MODE_LOITER) {
 			model.slam.px = target.getX();
 			model.slam.py = target.getY();
 			model.slam.pz = target.getZ();
 			model.slam.pd = MSP3DUtils.getXYDirection(target, current);
 			model.slam.pv = speed;
 			model.slam.di = MSP3DUtils.distance2D(target,current);
-			model.slam.tms = model.sys.getSynchronizedPX4Time_us();
+		} else
+			model.slam.clear();
+
+		model.slam.tms = model.sys.getSynchronizedPX4Time_us();
+	}
+
+	private boolean safety_check() {
+
+		if(Math.abs(model.rc.s1 -1500) > RC_DEADBAND || Math.abs(model.rc.s2 -1500) > RC_DEADBAND) {
+			logger.writeLocalMsg("[msp] OffboardUpdater stopped: RC",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+			return false;
 		}
 
+		// Safety: Channel 8 triggers landing mode of PX4
+		if(model.rc.get(RC_LAND_CHANNEL) > RC_LAND_THRESHOLD) {
+			logger.writeLocalMsg("[msp] OffboardUpdater stopped: Landing",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 0, 2, 0.05f );
+			return false;
+		}
+		return true;
 	}
+
 }
