@@ -41,6 +41,9 @@ public class LVH2DPilot extends AutoPilotBase {
 
 	private ILVH2DPilotGetTarget targetListener = null;
 
+	private final Vector4D_F32 current    = new Vector4D_F32();
+	private final Vector4D_F32 projected  = new Vector4D_F32();
+
 
 	protected LVH2DPilot(IMAVController control, MSPConfig config) {
 		super(control,config);
@@ -272,10 +275,7 @@ public class LVH2DPilot extends AutoPilotBase {
 	public void obstacleAvoidance() {
 
 
-		final Vector4D_F32 current    = new Vector4D_F32();
-		final Vector4D_F32 projected  = new Vector4D_F32();
-
-		System.out.println("NT="+nearestTarget);
+	//	System.out.println("NT="+nearestTarget);
 
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
 
@@ -300,12 +300,8 @@ public class LVH2DPilot extends AutoPilotBase {
 
 			try {
 				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance*1000f);
-				ctl.angle_xy = (float)(2* Math.PI) - lvfh.getSelectedDirection() - (float)Math.PI/2f;
+				ctl.angle_xy =  lvfh.getSelectedDirection()-(float)Math.PI;
 				ctl.value = lvfh.getSelectedSpeed();
-
-//				lvfh.select(MSP3DUtils.angleXY(projected, current)- (float)Math.PI, speed, distance*1000f);
-//				ctl.angle_xy =  (float)(2* Math.PI) - lvfh.getSelectedDirection() + (float)Math.PI;
-//				ctl.value = lvfh.getSelectedSpeed();
 
 			} catch(Exception e) {
 				logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);

@@ -277,18 +277,20 @@ public class OffboardManager implements Runnable {
 			current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 
 			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS ) {
-				valid_setpoint = false; mode = MODE_POSITION;
+				valid_setpoint = false; mode = MODE_LOITER;
 
 				if(model.sys.nav_state == Status.NAVIGATION_STATE_OFFBOARD)
 					logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			}
 
+			// a new setpoint was provided
 			if(new_setpoint) {
 				new_setpoint = false; ctl.clear(); way.clear();
 
 				start.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 
 				path.set(target, current);
+
 				break_radius = path.value / 2f;
 
 			}
@@ -339,7 +341,7 @@ public class OffboardManager implements Runnable {
 			case MODE_SPEED_POSITION:
 
 				// TODO:
-				// - Switch to Position mode only if no new setpoint after certain timeout or empty queue
+				// - Switch to Loiter mode only if no new setpoint after certain timeout or empty queue
 				// - Setpoint-Queue
 				//   Calculate yaw limit depending on the estimated flight time to next WP
 				// - yaw speed control to be added
@@ -370,7 +372,7 @@ public class OffboardManager implements Runnable {
 				if(ext_control_listener!=null) {
 
 					ext_control_listener.determine(model.state.getXYSpeed(), MSP3DUtils.getXYDirection(target, current), path.value, ctl);
-
+					ctl.angle_xz =  path.angle_xz;
 				}
 				else {
 
