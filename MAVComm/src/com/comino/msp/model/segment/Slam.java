@@ -55,7 +55,7 @@ public class Slam extends Segment {
 	public float    oz;		// nearest obstacle z
 
 	public Slam() {
-
+		clear();
 	}
 
 	public void set(Slam a) {
@@ -80,8 +80,8 @@ public class Slam extends Segment {
 	}
 
 	public void clear() {
-		pv = Float.NaN;
-		pd = Float.NaN;
+		pv = 0;
+		pd = 0;
 		pp = Float.NaN;
 		px = Float.NaN;
 		py = Float.NaN;
