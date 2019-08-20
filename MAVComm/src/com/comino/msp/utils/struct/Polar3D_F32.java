@@ -34,12 +34,24 @@ public class Polar3D_F32 {
 	}
 
 
-	public void set(float angle_xy, float angle_xz, float length) {
-		this.angle_xy = MSPMathUtils.normAngle(angle_xy);
-		this.angle_xz = MSPMathUtils.normAngle(angle_xz);
-		this.value    = length;
+//	public void set(float angle_xy, float angle_xz, float length) {
+//		this.angle_xy = MSPMathUtils.normAngle(angle_xy);
+//		this.angle_xz = MSPMathUtils.normAngle(angle_xz);
+//		this.value    = length;
+//	}
+
+	public void set(float vx, float vy, float vz) {
+		this.value    = (float)Math.sqrt((vx)*(vx) + (vy)*(vy) + (vz)*(vz));
+		this.angle_xy = getDirection(vy, vx);
+		this.angle_xz = (float)Math.asin((vz)/this.value);
+
+		this.angle_xy = MSPMathUtils.normAngle(this.angle_xy);
+		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
 	}
 
+	public void set(Vector3D_F32 t) {
+		set(t.x,t.y,t.z);
+	}
 
 	public void set(Vector4D_F32 t, Vector4D_F32 c) {
 		this.value    = (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));

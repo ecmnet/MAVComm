@@ -49,7 +49,6 @@ import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.execution.autopilot.AutoPilotBase;
 import com.comino.msp.execution.autopilot.CollisonPreventionPilot;
 import com.comino.msp.execution.autopilot.LVH2DPilot;
-import com.comino.msp.execution.autopilot.old.Autopilot2DCollPrev;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;

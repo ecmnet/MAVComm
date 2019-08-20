@@ -33,6 +33,9 @@
 
 package com.comino.msp.execution.offboard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -69,11 +72,9 @@ public class OffboardManager implements Runnable {
 	private static final int SETPOINT_TIMEOUT_MS         	= 15000;
 
 	public static final int MODE_LOITER	 		   			= 0;
-	public static final int MODE_POSITION	 		   		= 1;
-	public static final int MODE_SPEED	 		        	= 2;
-	public static final int MODE_SPEED_POSITION	 	    	= 3;
-	public static final int MODE_LAND_LOCAL		 	    	= 4;
-	public static final int MODE_START_LOCAL 	    		= 5;
+	public static final int MODE_BODY_SPEED                 = 1;
+	public static final int MODE_SPEED_POSITION	 	    	= 2;
+	public static final int MODE_TRAJECTORY 	 	    	= 3;
 
 	private MSPLogger 				 logger					= null;
 	private DataModel 				 model					= null;
@@ -90,7 +91,6 @@ public class OffboardManager implements Runnable {
 
 
 	private float	 	acceptance_radius_pos				= 0.2f;
-	private float       acceptance_yaw                      = 0.02f;
 	private float       max_speed							= MAX_SPEED;
 	private float		break_radius					    = MAX_SPEED;
 	private boolean    	already_fired			    		= false;
@@ -229,6 +229,8 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void removeExternalControlListener() {
+		// consider current setpoint as new to set the start position at this point in time
+		this.new_setpoint = true;
 		this.ext_control_listener = null;
 	}
 
@@ -247,12 +249,13 @@ public class OffboardManager implements Runnable {
 	@Override
 	public void run() {
 
-		float delta, delta_w; long tms, sleep_tms = 0;
+		long tms, sleep_tms = 0;
 		long watch_tms = System.currentTimeMillis();
 
 		Polar3D_F32 path = new Polar3D_F32(); // planned direct path
-		Polar3D_F32 ctl  = new Polar3D_F32(); // speed control
 		Polar3D_F32 way  = new Polar3D_F32(); // path already done
+		Polar3D_F32 cur  = new Polar3D_F32(); // current path
+		Polar3D_F32 ctl  = new Polar3D_F32(); // speed control
 
 		already_fired = false; if(!new_setpoint) valid_setpoint = false;
 
@@ -276,6 +279,7 @@ public class OffboardManager implements Runnable {
 
 			current.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 
+
 			if(valid_setpoint && (System.currentTimeMillis()-watch_tms ) > SETPOINT_TIMEOUT_MS ) {
 				valid_setpoint = false; mode = MODE_LOITER;
 
@@ -283,17 +287,6 @@ public class OffboardManager implements Runnable {
 					logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			}
 
-			// a new setpoint was provided
-			if(new_setpoint) {
-				new_setpoint = false; ctl.clear(); way.clear();
-
-				start.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
-
-				path.set(target, current);
-
-				break_radius = path.value / 2f;
-
-			}
 
 			switch(mode) {
 
@@ -305,26 +298,7 @@ public class OffboardManager implements Runnable {
 				toModel(control_speed.norm(),target,current);
 				break;
 
-			case MODE_POSITION:
-				if(!valid_setpoint) {
-					watch_tms = System.currentTimeMillis();
-					setCurrentAsTarget();
-				}
-
-				sendPositionControlToVehice(target);
-
-
-				delta = MSP3DUtils.distance2D(target,current);
-				delta_w = Float.isNaN(target.w) ? 0 : Math.abs(target.w - current.w);
-
-				if(delta < acceptance_radius_pos && valid_setpoint && delta_w < acceptance_yaw) {
-					fireAction(model, delta);
-					watch_tms = System.currentTimeMillis();
-					continue;
-				}
-				break;
-
-			case MODE_SPEED:
+			case MODE_BODY_SPEED:
 
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
@@ -352,9 +326,18 @@ public class OffboardManager implements Runnable {
 				// see:
 				// https://github.com/PX4/Firmware/commit/4eb9c7d812c8ac78a6609057466135f47798e8c8
 
+				// a new setpoint was provided
+				if(new_setpoint) {
+					new_setpoint = false; ctl.clear(); way.clear();
+					start.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
+					path.set(target, current);
+					break_radius = path.value / 2f;
+				}
+
 				watch_tms = System.currentTimeMillis();
 
 				way.set(current,start);
+				cur.set(model.state.l_vx, model.state.l_vy, model.state.l_vz );
 
 				if(valid_setpoint)
 					path.set(target, current);
@@ -371,8 +354,14 @@ public class OffboardManager implements Runnable {
 
 				if(ext_control_listener!=null) {
 
-					ext_control_listener.determine(model.state.getXYSpeed(), MSP3DUtils.getXYDirection(target, current), path.value, ctl);
+					ext_control_listener.determine(cur.value, MSP3DUtils.getXYDirection(target, current), path.value, ctl);
 					ctl.angle_xz =  path.angle_xz;
+
+					ctl.get(control_speed);
+					constraint_speed(control_speed);
+
+					// do not turn heading into the avoidance direction
+					sendSpeedControlToVehice(control_speed,current.w);
 				}
 				else {
 
@@ -381,16 +370,25 @@ public class OffboardManager implements Runnable {
 					ctl.angle_xz =  path.angle_xz;
 
 					// determine speed depending on the distance
-					if(way.value < break_radius)
+					if(way.value < break_radius) {
+						// determine target speed
 						ctl.value = TrajMathLib.computeSpeedFromDistance(5f, 1f, max_speed, way.value);
-					else
+						// if target speed < current speed, use current speed
+						if(cur.value > ctl.value) ctl.value = cur.value;
+					}
+					else {
+						// determine speed
 						ctl.value = TrajMathLib.computeSpeedFromDistance(1.5f, 1f, max_speed, path.value);
+						// if target speed > current speed, use current speed
+						if(cur.value < ctl.value) ctl.value = cur.value;
+					}
 
-				}
+
 
 				// if vehicle is not moving and turn angle > 180° => turn before moveing
-				if(Math.abs(ctl.angle_xy - current.w) > Math.PI && model.state.getXYSpeed() < MAX_TURN_SPEED)
+				if(Math.abs(ctl.angle_xy - current.w) > Math.PI && cur.value < MAX_TURN_SPEED && break_radius < 2f)
 					ctl.value = 0;
+
 
 				// Collision detection 2nd level: Absolute speed constraint if collision risk detected
 				// Experimental: Risk is if min_distance of detector < 1.5m; at 0.3m set speed to 0
@@ -408,6 +406,8 @@ public class OffboardManager implements Runnable {
 				constraint_speed(control_speed);
 
 				sendSpeedControlToVehice(control_speed,ctl.angle_xy);
+
+				}
 
 				//	System.out.println(ctl+ "/ "+path);
 				toModel(control_speed.norm(),target,current);

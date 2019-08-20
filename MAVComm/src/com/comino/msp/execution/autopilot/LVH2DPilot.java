@@ -28,8 +28,8 @@ public class LVH2DPilot extends AutoPilotBase {
 	private static final int              CYCLE_MS	        = 50;
 	private static final float            ROBOT_RADIUS      = 0.25f;
 
-	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
-	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
+	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.7f;
+	private static final float OBSTACLE_MINDISTANCE_1MS  	= 2.5f;
 
 	private static final float OBSTACLE_FAILDISTANCE     	= OBSTACLE_MINDISTANCE_1MS;
 	private static final float OBSTACLE_FAILDISTANCE_2     	= OBSTACLE_MINDISTANCE_1MS / 2f;
@@ -68,7 +68,7 @@ public class LVH2DPilot extends AutoPilotBase {
 			//System.out.println(model.sys.getSensorString());
 
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
-			lvfh.update_histogram(current, model.hud.s);
+			lvfh.update_histogram(current);
 
 			nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y);
 			if(nearestTarget < OBSTACLE_FAILDISTANCE_2  && !tooClose ) {
@@ -92,9 +92,11 @@ public class LVH2DPilot extends AutoPilotBase {
 			}
 
 			if(nearestTarget > (min_distance + ROBOT_RADIUS) && isAvoiding) {
-				offboard.removeExternalControlListener();
-				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE))
+				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
+					offboard.removeExternalControlListener();
 					isAvoiding = false;
+					logger.writeLocalMsg("[msp] Avoidance cleared.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+				}
 			}
 
 			// Publish SLAM data to GC
@@ -141,7 +143,7 @@ public class LVH2DPilot extends AutoPilotBase {
 		isAvoiding = false;
 		Vector4D_F32 target = new Vector4D_F32(x,y,z,yaw);
 		offboard.setTarget(target);
-		offboard.start(OffboardManager.MODE_POSITION);
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
 	}
 
 	private void clearAutopilotActions() {
@@ -154,8 +156,7 @@ public class LVH2DPilot extends AutoPilotBase {
 
 	public void offboardPosHold(boolean enable) {
 		if(enable) {
-			offboard.setCurrentAsTarget();
-			offboard.start(OffboardManager.MODE_POSITION);
+			offboard.start(OffboardManager.MODE_LOITER);
 			if(!model.sys.isStatus(Status.MSP_LANDED) && !model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
 				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
@@ -223,8 +224,7 @@ public class LVH2DPilot extends AutoPilotBase {
 					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
 			offboard.stop();
 		} else {
-			offboard.setCurrentAsTarget();
-			offboard.start(OffboardManager.MODE_POSITION);
+			offboard.start(OffboardManager.MODE_LOITER);
 		}
 	}
 
@@ -247,8 +247,7 @@ public class LVH2DPilot extends AutoPilotBase {
 	}
 
 	public void stop_at_position() {
-		offboard.setCurrentAsTarget();
-		offboard.start(OffboardManager.MODE_POSITION);
+		offboard.start(OffboardManager.MODE_LOITER);
 	}
 
 	public void execute(Vector4D_F32 target,IOffboardTargetAction action) {
@@ -279,7 +278,7 @@ public class LVH2DPilot extends AutoPilotBase {
 
 		current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
 
-		lvfh.init(model.hud.s);
+		lvfh.init(model.state.getXYSpeed());
 
 		// Determine projected position via CB
 		if(targetListener!=null) {
@@ -299,7 +298,7 @@ public class LVH2DPilot extends AutoPilotBase {
 			}
 
 			try {
-				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed, distance*1000f);
+				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed , distance*1000f);
 				ctl.angle_xy =  lvfh.getSelectedDirection()-(float)Math.PI;
 				ctl.value = lvfh.getSelectedSpeed();
 

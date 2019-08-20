@@ -85,7 +85,7 @@ public class LocalVFH2D {
 	private float			selected_speed	  		= 0;
 	private float         	last_selected_speed 	= 0;
 
-	private int   			max_speed_for_selected_angle;
+	private int   			max_speed_for_selected_angle = MAX_SPEED;
 
 	private long			last_update_time		=0;
 
@@ -143,13 +143,13 @@ public class LocalVFH2D {
 	}
 
 	public void init(float current_speed) {
-		selected_speed = Math.min(current_speed * 1000.0f, max_speed_for_selected_angle );
+		selected_speed = current_speed * 1000f; //Math.min(current_speed, max_speed_for_selected_angle );
 		last_selected_speed = selected_speed;
 		minDistance_mm = Float.MAX_VALUE;
 		locks = 0;
 	}
 
-	public void update_histogram(Vector3D_F32 current, float current_speed) {
+	public void update_histogram(Vector3D_F32 current) {
 		int beta = 0; int sigma;
 
 		float min_distance = this.robot_radius;
@@ -200,8 +200,8 @@ public class LocalVFH2D {
 		}
 
 		if(getAbsoluteDirection(hist,(int)MSPMathUtils.fromRad(tdir_rad), SMAX) < 0) {
-			selected_speed = 0;
-			last_selected_speed = 0;
+			selected_speed = current_speed*1000f ;
+			last_selected_speed = selected_speed ;
 			return;
 		}
 
@@ -224,13 +224,16 @@ public class LocalVFH2D {
 		}
 
 		selected_speed = Math.min( last_selected_speed + speed_incr, max_speed_for_selected_angle );
-		if(selected_speed < 0) selected_speed = 0;
+		if(selected_speed < 0.1) selected_speed = 0.1f;
+
+	//	System.out.println(selected_speed);
+
 		last_selected_speed = selected_speed;
 	}
 
 	private boolean cantTurnToTarget(float distance_to_target_mm, float tdir_rad, float speed) {
 
-		float blocked_circle_radius = (robot_radius + get_Safety_Dist(speed))/1000f;
+		float blocked_circle_radius = (robot_radius + get_Safety_Dist(speed*1000f))/1000f;
 
 		float dist_between_centres;
 
