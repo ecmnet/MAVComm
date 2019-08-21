@@ -51,7 +51,7 @@ public interface ILocalMap {
 
 	public boolean update(float lpos_x, float lpos_y, Point3D_F64 point);
 
-	public float nearestDistance(float lpos_x, float lpos_y);
+	public float nearestDistance(float lpos_x, float lpos_y, float anglexy);
 
 	public Point3D_F64 getNearestObstaclePosition();
 

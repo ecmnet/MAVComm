@@ -57,9 +57,9 @@ public class MSP3DUtils {
 		float dx = t.getX() - c.getX();
 		float dy = t.getY() - c.getY();
 
-		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
-		   return (float)Math.atan(dy/dx);
-		if((dx < 0 && dy > 0) || (dx < 0 && dy < 0))
+		if((dx >= 0 && dy > 0) || (dx >= 0 && dy < 0))
+			return (float)Math.atan(dy/dx);
+		if((dx < 0 && dy >= 0) || (dx < 0 && dy < 0))
 			return (float)(Math.atan(dy/dx)+Math.PI);
 
 		return 0;
@@ -70,9 +70,9 @@ public class MSP3DUtils {
 		float dx = t.getX() - c.getX();
 		float dy = t.getY() - c.getY();
 
-		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
-		   return (float)Math.atan(dy/dx);
-		if((dx < 0 && dy > 0) || (dx < 0 && dy < 0))
+		if((dx >= 0 && dy > 0) || (dx >= 0 && dy < 0))
+			return (float)Math.atan(dy/dx);
+		if((dx < 0 && dy >= 0) || (dx < 0 && dy < 0))
 			return (float)(Math.atan(dy/dx)+Math.PI);
 
 		return 0;
@@ -123,9 +123,9 @@ public class MSP3DUtils {
 
 	public static float getXYDirection(float dx, float dy) {
 
-		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
-		   return (float)Math.atan(dy/dx);
-		if((dx < 0 && dy > 0) || (dx < 0 && dy < 0))
+		if((dx >= 0 && dy >= 0) || (dx >= 0 && dy < 0))
+			return (float)Math.atan(dy/dx);
+		if((dx < 0 && dy >= 0) || (dx < 0 && dy < 0))
 			return (float)(Math.atan(dy/dx)+Math.PI);
 
 		return 0;
@@ -137,10 +137,6 @@ public class MSP3DUtils {
 		return getXYDirection(target.getX() - current.getX(), target.getY() - current.getY());
 	}
 
-	public static float getXZDirection(Vector4D_F32 target,Vector4D_F32 current) {
-
-		return getXYDirection(target.getX() - current.getX(), target.getZ() - current.getZ());
-	}
 
 	public static Vector3D_F32 convertToVector3D(float angle_xy, float angle_xz, float speed, Vector3D_F32 result) {
 		result.set((float)( Math.cos(angle_xy) * Math.cos(angle_xz)), (float)(Math.sin(angle_xy)* Math.cos(angle_xz)),(float)Math.sin(angle_xz));

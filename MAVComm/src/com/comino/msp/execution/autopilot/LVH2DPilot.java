@@ -29,7 +29,7 @@ public class LVH2DPilot extends AutoPilotBase {
 	private static final float            ROBOT_RADIUS      = 0.25f;
 
 	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
-	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
+	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.0f;
 
 	private static final float OBSTACLE_FAILDISTANCE     	= OBSTACLE_MINDISTANCE_1MS;
 	private static final float OBSTACLE_FAILDISTANCE_2     	= OBSTACLE_MINDISTANCE_1MS / 2f;
@@ -69,9 +69,9 @@ public class LVH2DPilot extends AutoPilotBase {
 			current.set(model.state.l_x, model.state.l_y,model.state.l_z);
 			lvfh.update_histogram(current);
 
-			nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y);
+			nearestTarget = map.nearestDistance(model.state.l_x, model.state.l_y,MSP3DUtils.getXYDirection(model.state.l_vx, model.state.l_vy));
 			if(nearestTarget < OBSTACLE_FAILDISTANCE_2  && !tooClose ) {
-				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_CRITICAL);
+				logger.writeLocalMsg("[msp] Collision warning.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 				tooClose = true;
 			}
 
@@ -315,6 +315,9 @@ public class LVH2DPilot extends AutoPilotBase {
 	}
 
 	private float getAvoidanceDistance( float speed ) {
+		if(speed < 0.1f)
+			return 0.3f;
+
 		float val = OBSTACLE_MINDISTANCE_0MS + (speed*( OBSTACLE_MINDISTANCE_1MS-OBSTACLE_MINDISTANCE_0MS ));
 		if ( val < 0 ) 	val = 0;
 		return val;

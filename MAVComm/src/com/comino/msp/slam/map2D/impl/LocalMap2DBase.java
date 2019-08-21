@@ -37,6 +37,7 @@ import com.comino.msp.model.DataModel;
 
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.utils.MSP3DUtils;
+import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Point3D_F64;
 
@@ -46,6 +47,7 @@ public abstract class LocalMap2DBase implements ILocalMap {
 
 	protected short[][] map;
 	protected short[][] window;
+	protected float[][] window_angles;
 
 	protected int cell_size_mm;
 	protected float center_x_mm;
@@ -85,6 +87,24 @@ public abstract class LocalMap2DBase implements ILocalMap {
 					window[x][y] = Short.MAX_VALUE;
 			}
 		}
+	}
+
+	public void initWindowAngles() {
+
+		this.window_angles = new float[window_dimension][window_dimension];
+		int center = window_dimension / 2;
+
+		for (int y = 0; y < window_dimension; y++) {
+			for (int x = 0; x < window_dimension; x++) {
+				window_angles[x][y] = MSP3DUtils.getXYDirection(x-center, y-center);
+			}
+		}
+
+//		System.out.println(MSPMathUtils.fromRad(window_angles[center][window_dimension-1]));
+//		System.out.println(MSPMathUtils.fromRad(window_angles[window_dimension-1][center]));
+//		System.out.println(MSPMathUtils.fromRad(window_angles[window_dimension-1][window_dimension-1]));
+//		System.out.println(MSPMathUtils.fromRad(window_angles[0][0]));
+
 	}
 
 	/******************************************************************************************************/
@@ -140,9 +160,9 @@ public abstract class LocalMap2DBase implements ILocalMap {
 	}
 
 	// TODO: Limit nearest distance to flight direction
-	public float nearestDistance(float lpos_x, float lpos_y) {
+	public float nearestDistance(float lpos_x, float lpos_y, float anglexy) {
 
-		float distance = Float.MAX_VALUE, d;
+		float distance = Float.MAX_VALUE, d; float angle = 0; //float a=0;
 		int center = window_dimension/2;
 
 		for (int y = 0; y < window_dimension; y++) {
@@ -150,13 +170,15 @@ public abstract class LocalMap2DBase implements ILocalMap {
 				if(window[x][y] <= threshold)
 					continue;
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
-				if(d < distance) {
-					distance = d;
+				angle = window_angles[x][y];
+				if(d < distance && Math.abs(angle - anglexy)< Math.PI/4) {
+					distance = d; //a = Math.abs(angle - anglexy);
 					nearestObstaclePoition.set(((x-center)*cell_size_mm - cell_size_mm/2f)/1000f+lpos_x,
 							                   ((y-center)*cell_size_mm - cell_size_mm/2f)/1000f+lpos_y, 0);
 				}
 			}
 		}
+	//	System.out.println(MSPMathUtils.fromRad(a)+" - "+ MSPMathUtils.fromRad(anglexy));
 		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
 	}
 
@@ -193,6 +215,19 @@ public abstract class LocalMap2DBase implements ILocalMap {
 				}
 				else
 					b.append(". ");
+			}
+			b.append("\n");
+		}
+		b.append("\n");
+		return b.toString();
+	}
+
+	public String anglesToString() {
+		StringBuilder b = new StringBuilder();
+		for(int y=0; y<window.length; y++) {
+			for(int x=0; x<window.length; x++) {
+				b.append(MSPMathUtils.fromRad(window_angles[x][y]));
+				b.append(" ");
 			}
 			b.append("\n");
 		}

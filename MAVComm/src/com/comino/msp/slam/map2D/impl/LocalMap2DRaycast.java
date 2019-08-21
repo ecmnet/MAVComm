@@ -73,6 +73,8 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		window_dimension = (int)Math.floor(window_diameter_m / cell_size_m );
 		window = new short[window_dimension][window_dimension];
 
+		initWindowAngles();
+
 		reset();
 
 		this.center_x_mm = center_x_m * 1000f;
