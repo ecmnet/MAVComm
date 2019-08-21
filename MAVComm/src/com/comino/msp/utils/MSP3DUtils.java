@@ -121,11 +121,7 @@ public class MSP3DUtils {
 		return v[YAW];
 	}
 
-
-	public static float getXYDirection(Vector4D_F32 target,Vector4D_F32 current) {
-
-		float dx = target.getX() - current.getX();
-		float dy = target.getY() - current.getY();
+	public static float getXYDirection(float dx, float dy) {
 
 		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
 		   return (float)Math.atan(dy/dx);
@@ -135,17 +131,15 @@ public class MSP3DUtils {
 		return 0;
 	}
 
+
+	public static float getXYDirection(Vector4D_F32 target,Vector4D_F32 current) {
+
+		return getXYDirection(target.getX() - current.getX(), target.getY() - current.getY());
+	}
+
 	public static float getXZDirection(Vector4D_F32 target,Vector4D_F32 current) {
 
-		float dx = target.getX() - current.getX();
-		float dz = target.getZ() - current.getZ();
-
-		if((dz > 0 && dx > 0) || (dz > 0 && dx < 0))
-		   return (float)Math.atan(dz/dx);
-		if((dz < 0 && dx > 0) || (dz < 0 && dx < 0))
-			return (float)(Math.atan(dz/dx)+Math.PI);
-
-		return 0;
+		return getXYDirection(target.getX() - current.getX(), target.getZ() - current.getZ());
 	}
 
 	public static Vector3D_F32 convertToVector3D(float angle_xy, float angle_xz, float speed, Vector3D_F32 result) {

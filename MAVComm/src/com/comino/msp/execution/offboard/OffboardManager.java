@@ -33,15 +33,11 @@
 
 package com.comino.msp.execution.offboard;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
-import org.mavlink.messages.lquac.msg_msp_micro_slam;
 import org.mavlink.messages.lquac.msg_set_position_target_local_ned;
 
 import com.comino.libs.TrajMathLib;
@@ -74,7 +70,6 @@ public class OffboardManager implements Runnable {
 	public static final int MODE_LOITER	 		   			= 0;
 	public static final int MODE_BODY_SPEED                 = 1;
 	public static final int MODE_SPEED_POSITION	 	    	= 2;
-	public static final int MODE_TRAJECTORY 	 	    	= 3;
 
 	private MSPLogger 				 logger					= null;
 	private DataModel 				 model					= null;
@@ -229,7 +224,7 @@ public class OffboardManager implements Runnable {
 	}
 
 	public void removeExternalControlListener() {
-		// consider current setpoint as new to set the start position at this point in time
+		// consider current setpoint as new to set the start position at
 		this.new_setpoint = true;
 		this.ext_control_listener = null;
 	}
@@ -354,14 +349,17 @@ public class OffboardManager implements Runnable {
 
 				if(ext_control_listener!=null) {
 
-					ext_control_listener.determine(cur.value, MSP3DUtils.getXYDirection(target, current), path.value, ctl);
-					ctl.angle_xz =  path.angle_xz;
+					ext_control_listener.determine(cur.value, path , ctl);
+					ctl.angle_xz =  path.angle_xz; // TODO: Check if this is valid for trajectories
 
 					ctl.get(control_speed);
 					constraint_speed(control_speed);
 
-					// do not turn heading into the avoidance direction
-					sendSpeedControlToVehice(control_speed,current.w);
+					if(Float.isNaN(ctl.yaw))
+						sendSpeedControlToVehice(control_speed,current.w);
+					else
+						sendSpeedControlToVehice(control_speed,ctl.yaw);
+
 				}
 				else {
 
@@ -384,28 +382,27 @@ public class OffboardManager implements Runnable {
 					}
 
 
+					// if vehicle is not moving and turn angle > 180° => turn before moveing
+					if(Math.abs(ctl.angle_xy - current.w) > Math.PI && cur.value < MAX_TURN_SPEED && break_radius < 2f)
+						ctl.value = 0;
 
-				// if vehicle is not moving and turn angle > 180° => turn before moveing
-				if(Math.abs(ctl.angle_xy - current.w) > Math.PI && cur.value < MAX_TURN_SPEED && break_radius < 2f)
-					ctl.value = 0;
 
+					// Collision detection 2nd level: Absolute speed constraint if collision risk detected
+					// Experimental: Risk is if min_distance of detector < 1.5m; at 0.3m set speed to 0
+					// Should be only in derection of flight (+/-75 degree)
+					// Put that into constraint speed
+					//				if(!Float.isNaN(model.slam.dm) && model.slam.dm < 1.5f && model.slam.dm > 0) {
+					//					logger.writeLocalMsg("[msp] Offboard: Collision risk. Speed reduced.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+					//					ctl[IOffboardExternalControl.SPEED] = ctl[IOffboardExternalControl.SPEED] * (model.slam.dm - 0.3f);
+					//					if(ctl[IOffboardExternalControl.SPEED]<0)
+					//						ctl[IOffboardExternalControl.SPEED] = 0;
+					//				}
 
-				// Collision detection 2nd level: Absolute speed constraint if collision risk detected
-				// Experimental: Risk is if min_distance of detector < 1.5m; at 0.3m set speed to 0
-				// Should be only in derection of flight (+/-75 degree)
-				// Put that into constraint speed
-				//				if(!Float.isNaN(model.slam.dm) && model.slam.dm < 1.5f && model.slam.dm > 0) {
-				//					logger.writeLocalMsg("[msp] Offboard: Collision risk. Speed reduced.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-				//					ctl[IOffboardExternalControl.SPEED] = ctl[IOffboardExternalControl.SPEED] * (model.slam.dm - 0.3f);
-				//					if(ctl[IOffboardExternalControl.SPEED]<0)
-				//						ctl[IOffboardExternalControl.SPEED] = 0;
-				//				}
+					// get kartesian from polar coordinates
+					ctl.get(control_speed);
+					constraint_speed(control_speed);
 
-				// get kartesian from polar coordinates
-				ctl.get(control_speed);
-				constraint_speed(control_speed);
-
-				sendSpeedControlToVehice(control_speed,ctl.angle_xy);
+					sendSpeedControlToVehice(control_speed,ctl.angle_xy);
 
 				}
 

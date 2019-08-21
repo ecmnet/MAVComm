@@ -28,8 +28,8 @@ public class LVH2DPilot extends AutoPilotBase {
 	private static final int              CYCLE_MS	        = 50;
 	private static final float            ROBOT_RADIUS      = 0.25f;
 
-	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.7f;
-	private static final float OBSTACLE_MINDISTANCE_1MS  	= 2.5f;
+	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
+	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
 
 	private static final float OBSTACLE_FAILDISTANCE     	= OBSTACLE_MINDISTANCE_1MS;
 	private static final float OBSTACLE_FAILDISTANCE_2     	= OBSTACLE_MINDISTANCE_1MS / 2f;
@@ -41,7 +41,6 @@ public class LVH2DPilot extends AutoPilotBase {
 
 	private ILVH2DPilotGetTarget targetListener = null;
 
-	private final Vector4D_F32 current    = new Vector4D_F32();
 	private final Vector4D_F32 projected  = new Vector4D_F32();
 
 
@@ -247,7 +246,9 @@ public class LVH2DPilot extends AutoPilotBase {
 	}
 
 	public void stop_at_position() {
+		offboard.setCurrentAsTarget();
 		offboard.start(OffboardManager.MODE_LOITER);
+		logger.writeLocalMsg("[msp] Autopilot: Emergency breaking",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 	}
 
 	public void execute(Vector4D_F32 target,IOffboardTargetAction action) {
@@ -276,8 +277,6 @@ public class LVH2DPilot extends AutoPilotBase {
 
 	//	System.out.println("NT="+nearestTarget);
 
-		current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
-
 		lvfh.init(model.state.getXYSpeed());
 
 		// Determine projected position via CB
@@ -289,22 +288,20 @@ public class LVH2DPilot extends AutoPilotBase {
 		offboard.setTarget(projected);
 
 		// determine velocity setpoint via callback
-		offboard.registerExternalControlListener((speed, target_dir, distance, ctl) -> {
-
-			current.set(model.state.l_x,model.state.l_y,model.state.l_z,Float.NaN);
+		offboard.registerExternalControlListener((speed, target, ctl) -> {
 
 			if(!model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
-				offboard.setTarget(current);
+				offboard.setCurrentAsTarget();
 			}
 
 			try {
-				lvfh.select(MSP3DUtils.angleXY(projected, current)+(float)Math.PI, speed , distance*1000f);
+				lvfh.select(target.angle_xy+(float)Math.PI, speed , target.value * 1000f);
 				ctl.angle_xy =  lvfh.getSelectedDirection()-(float)Math.PI;
 				ctl.value = lvfh.getSelectedSpeed();
 
 			} catch(Exception e) {
 				logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
-				offboard.setTarget(current);
+				offboard.setCurrentAsTarget();
 			}
 		});
 
@@ -319,8 +316,7 @@ public class LVH2DPilot extends AutoPilotBase {
 
 	private float getAvoidanceDistance( float speed ) {
 		float val = OBSTACLE_MINDISTANCE_0MS + (speed*( OBSTACLE_MINDISTANCE_1MS-OBSTACLE_MINDISTANCE_0MS ));
-		if ( val < 0 )
-			val = 0;
+		if ( val < 0 ) 	val = 0;
 		return val;
 	}
 

@@ -11,6 +11,7 @@ public class Polar3D_F32 {
 	public float angle_xy = 0;
 	public float angle_xz = 0;
 	public float value    = 0;
+	public float yaw      = Float.NaN;
 
 	private static final float PI2 = 2f*(float)Math.PI;
 
@@ -31,6 +32,7 @@ public class Polar3D_F32 {
 		angle_xy = 0;
 		angle_xz = 0;
 		value    = 0;
+		yaw      = Float.NaN;
 	}
 
 
@@ -49,6 +51,7 @@ public class Polar3D_F32 {
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
 	}
 
+
 	public void set(Vector3D_F32 t) {
 		set(t.x,t.y,t.z);
 	}
@@ -60,6 +63,8 @@ public class Polar3D_F32 {
 
 		this.angle_xy = MSPMathUtils.normAngle(this.angle_xy);
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
+
+		this.yaw      = t.w;
 
 	}
 

@@ -38,6 +38,6 @@ import com.comino.msp.utils.struct.Polar3D_F32;
 public interface IOffboardExternalControl {
 
 
-	public void determine(float current_speed, float target_dir, float distance_to_goal, Polar3D_F32 control);
+	public void determine(float current_speed, Polar3D_F32 target , Polar3D_F32 control);
 
 }
