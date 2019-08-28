@@ -96,6 +96,7 @@ public abstract class LocalMap2DBase implements ILocalMap {
 		for (int y = 0; y < window_dimension; y++) {
 			for (int x = 0; x < window_dimension; x++) {
 				window_angles[x][y] = MSP3DUtils.getXYDirection(x-center, y-center);
+			//	System.out.println("["+x+","+y+"]"+window_angles[x][y]);
 			}
 		}
 
@@ -166,12 +167,14 @@ public abstract class LocalMap2DBase implements ILocalMap {
 					continue;
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
 				if(d < distance ) {
-					result.angle_xy = window_angles[x][y];
-					distance = d;
+					   result.angle_xy = window_angles[x][y];
+					   distance = d;
 				}
 			}
 		}
+
 		result.value = (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
+		//System.out.println(result);
 	}
 
 	/******************************************************************************************************/

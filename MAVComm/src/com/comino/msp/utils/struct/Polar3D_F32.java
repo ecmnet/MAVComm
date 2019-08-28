@@ -124,6 +124,11 @@ public class Polar3D_F32 {
 
 	private float getDirection(float dy, float dx) {
 
+		if(dx == 0 && dy >= 0)
+			return  (float)Math.PI/2;
+		if(dx == 0 && dy < 0)
+			return -(float)Math.PI/2;
+
 		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
 			return (float)Math.atan(dy/dx);
 		if((dx < 0 && dy > 0) || (dx < 0 && dy < 0))

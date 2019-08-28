@@ -123,12 +123,17 @@ public class MSP3DUtils {
 
 	public static float getXYDirection(float dx, float dy) {
 
-		if((dx >= 0 && dy >= 0) || (dx >= 0 && dy < 0))
+		if(dx == 0 && dy >= 0)
+			return  (float)Math.PI/2;
+		if(dx == 0 && dy < 0)
+			return -(float)Math.PI/2;
+
+		if((dx > 0 && dy >= 0) || (dx >= 0 && dy < 0))
 			return (float)Math.atan(dy/dx);
 		if((dx < 0 && dy >= 0) || (dx < 0 && dy < 0))
 			return (float)(Math.atan(dy/dx)+Math.PI);
 
-		return 0;
+		return Float.NaN;
 	}
 
 
