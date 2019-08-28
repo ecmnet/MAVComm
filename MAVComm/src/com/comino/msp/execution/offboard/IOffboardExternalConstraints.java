@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017,2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,54 +31,12 @@
  *
  ****************************************************************************/
 
-package com.comino.msp.slam.map2D;
+package com.comino.msp.execution.offboard;
 
-import com.comino.msp.model.DataModel;
-import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
 import com.comino.msp.utils.struct.Polar3D_F32;
 
-import boofcv.struct.image.GrayU16;
-import georegression.struct.point.Point3D_F64;
-import georegression.struct.point.Vector3D_F32;
-import georegression.struct.point.Vector4D_F64;
+public interface IOffboardExternalConstraints {
 
-public interface ILocalMap {
-
-	public boolean update(Vector3D_F32 point);
-
-	public boolean update(Point3D_F64 point);
-
-	public boolean update(Point3D_F64 point, Vector4D_F64 pos);
-
-	public boolean update(float lpos_x, float lpos_y, Point3D_F64 point);
-
-	public void nearestObstacle(Polar3D_F32 result);
-
-	public void processWindow(float lpos_x, float lpos_y);
-
-	public int getWindowValue(int x, int y);
-
-	public int getWindowDimension();
-
-	public int getMapDimension();
-
-	public int getCellSize_mm();
-
-	public GrayU16 getMap();
-
-	public void applyMapFilter(ILocalMapFilter filter);
-
-	public short[][] get();
-
-	public void reset();
-
-	public void setDataModel(DataModel model);
-
-	public void toDataModel(boolean debug);
-
-	public void setIsLoaded( boolean loaded);
-
-	public boolean isLoaded();
-
+	public void get(long tms, Polar3D_F32 current, Polar3D_F32 way, Polar3D_F32 path , Polar3D_F32 control);
 
 }

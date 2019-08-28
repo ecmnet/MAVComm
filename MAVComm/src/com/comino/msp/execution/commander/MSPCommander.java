@@ -47,6 +47,7 @@ import org.mavlink.messages.lquac.msg_msp_command;
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVMSPController;
 import com.comino.msp.execution.autopilot.AutoPilotBase;
+import com.comino.msp.execution.autopilot.BreakingPilot;
 import com.comino.msp.execution.autopilot.CollisonPreventionPilot;
 import com.comino.msp.execution.autopilot.LVH2DPilot;
 import com.comino.msp.execution.control.listener.IMAVLinkListener;
@@ -77,7 +78,9 @@ public class MSPCommander {
 		System.out.println("Commander initialized");
 
 //		autopilot = AutoPilotBase.getInstance(CollisonPreventionPilot.class,control,config);
-		autopilot = AutoPilotBase.getInstance(LVH2DPilot.class,control,config);
+//		autopilot = AutoPilotBase.getInstance(LVH2DPilot.class,control,config);
+
+		autopilot = AutoPilotBase.getInstance(BreakingPilot.class,control,config);
 
 		this.map = autopilot.getMap2D();
 	}
@@ -144,10 +147,10 @@ public class MSPCommander {
 					setGlobalOrigin(cmd.param1 / 1e7f, cmd.param2 / 1e7f, cmd.param3 / 1e3f );
 					break;
 				case MSP_CMD.MSP_CMD_AUTOMODE:
-					autopilot.setMode((int)(cmd.param2),cmd.param3,(int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE);
+					autopilot.setMode((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE,(int)(cmd.param2),cmd.param3);
 					break;
 				case MSP_CMD.MSP_CMD_OFFBOARD_SETLOCALVEL:
-					autopilot.setCurrentLocalSpeed((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE,cmd.param2, cmd.param3, cmd.param4, cmd.param5);
+					autopilot.setSpeed((int)(cmd.param1)==MSP_COMPONENT_CTRL.ENABLE,cmd.param2, cmd.param3, cmd.param4, cmd.param5);
 					break;
 				case MSP_CMD.MSP_CMD_MICROSLAM:
 					switch((int)cmd.param1) {

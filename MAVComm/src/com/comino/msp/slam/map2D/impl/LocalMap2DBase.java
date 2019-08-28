@@ -38,6 +38,7 @@ import com.comino.msp.model.DataModel;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
+import com.comino.msp.utils.struct.Polar3D_F32;
 
 import georegression.struct.point.Point3D_F64;
 
@@ -58,8 +59,6 @@ public abstract class LocalMap2DBase implements ILocalMap {
 
 	protected int map_dimension;
 	protected int window_dimension;
-
-	protected Point3D_F64 nearestObstaclePoition = new Point3D_F64();
 
 	protected DataModel model = null;
 
@@ -137,9 +136,6 @@ public abstract class LocalMap2DBase implements ILocalMap {
 		return is_loaded;
 	}
 
-	public Point3D_F64 getNearestObstaclePosition() {
-		 return nearestObstaclePoition;
-	}
 
 	/******************************************************************************************************/
 
@@ -159,10 +155,9 @@ public abstract class LocalMap2DBase implements ILocalMap {
 		is_loaded = false;
 	}
 
-	// TODO: Limit nearest distance to flight direction
-	public float nearestDistance(float lpos_x, float lpos_y, float anglexy) {
+	public void nearestObstacle(Polar3D_F32 result) {
 
-		float distance = Float.MAX_VALUE, d; float angle = 0; //float a=0;
+		float distance = Float.MAX_VALUE, d;
 		int center = window_dimension/2;
 
 		for (int y = 0; y < window_dimension; y++) {
@@ -170,16 +165,13 @@ public abstract class LocalMap2DBase implements ILocalMap {
 				if(window[x][y] <= threshold)
 					continue;
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
-				angle = window_angles[x][y];
-				if(d < distance && Math.abs(angle - anglexy)< Math.PI/4) {
-					distance = d; //a = Math.abs(angle - anglexy);
-					nearestObstaclePoition.set(((x-center)*cell_size_mm - cell_size_mm/2f)/1000f+lpos_x,
-							                   ((y-center)*cell_size_mm - cell_size_mm/2f)/1000f+lpos_y, 0);
+				if(d < distance ) {
+					result.angle_xy = window_angles[x][y];
+					distance = d;
 				}
 			}
 		}
-	//	System.out.println(MSPMathUtils.fromRad(a)+" - "+ MSPMathUtils.fromRad(anglexy));
-		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
+		result.value = (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
 	}
 
 	/******************************************************************************************************/

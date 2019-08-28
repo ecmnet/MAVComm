@@ -183,9 +183,13 @@ public class MSPMathUtils {
 	}
 
 	public static float normAngle(float angle) {
-		if(angle >  Math.PI) return angle - PI2;
-		if(angle < -Math.PI) return angle + PI2;
+		if(angle >  (float)Math.PI) return angle - PI2;
+		if(angle < -(float)Math.PI) return angle + PI2;
 		return angle;
+	}
+
+	public static float normAngleDiff(float angle1, float angle2) {
+		return normAngle(Math.abs(angle1 - angle2));
 	}
 
 	private static class Reference {

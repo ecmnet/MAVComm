@@ -3,11 +3,15 @@ package com.comino.msp.execution.autopilot;
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
+import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
+import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
+import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.control.StatusManager;
+import com.comino.msp.execution.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -15,18 +19,20 @@ import com.comino.msp.model.segment.LogMessage;
 import com.comino.msp.model.segment.Status;
 import com.comino.msp.slam.map2D.ILocalMap;
 import com.comino.msp.slam.map2D.filter.ILocalMapFilter;
+import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
 import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.impl.LocalMap2DRaycast;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
+import georegression.struct.point.Vector4D_F32;
 
 
 public abstract class AutoPilotBase implements Runnable {
 
 	protected static final int   CERTAINITY_THRESHOLD      	= 3;
-	protected static final float WINDOWSIZE       			= 2.0f;
+	protected static final float WINDOWSIZE       			= 4.0f;
 
 	private static AutoPilotBase  autopilot    = null;
 
@@ -77,6 +83,8 @@ public abstract class AutoPilotBase implements Runnable {
 
 		this.mapForget = config.getBoolProperty("autopilot_forget_map", "false");
 		System.out.println(instanceName+": Map forget enabled: "+mapForget);
+		if(mapForget)
+			registerMapFilter(new DenoiseMapFilter(800,800));
 
 		this.flowCheck = config.getBoolProperty("autopilot_flow_check", "true") & !model.sys.isStatus(Status.MSP_SITL);
 		System.out.println(instanceName+": FlowCheck enabled: "+flowCheck);
@@ -93,7 +101,11 @@ public abstract class AutoPilotBase implements Runnable {
 			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
 					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
 					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+
+			this.takeoffCompleted();
+
 			control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
+
 
 		});
 
@@ -102,9 +114,12 @@ public abstract class AutoPilotBase implements Runnable {
 			offboard.stop();
 		});
 
+	}
 
+	protected void takeoffCompleted() {
 
 	}
+
 
 	protected void start() {
 		isRunning = true;
@@ -118,9 +133,134 @@ public abstract class AutoPilotBase implements Runnable {
 		isRunning = false;
 	}
 
-	public void setMode(int mode, float param, boolean enable) {
+
+
+	@Override
+	public abstract void run();
+
+	/*******************************************************************************/
+	// Command dispatching
+
+
+	public void setMode(boolean enable, int mode, float param) {
+
 		model.sys.setAutopilotMode(mode, enable);
+
+		switch(mode) {
+		case MSP_AUTOCONTROL_MODE.ABORT:
+			abort();
+			break;
+		case MSP_AUTOCONTROL_ACTION.SAVE_MAP2D:
+			saveMap2D();
+			break;
+		case MSP_AUTOCONTROL_ACTION.LOAD_MAP2D:
+			loadMap2D();
+			break;
+		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE1:
+			setXObstacleForSITL();
+			break;
+		case MSP_AUTOCONTROL_ACTION.DEBUG_MODE2:
+			setYObstacleForSITL();
+			break;
+		case MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER:
+			offboardPosHold(enable);
+			break;
+		case MSP_AUTOCONTROL_ACTION.APPLY_MAP_FILTER:
+			//	applyMapFilter();
+			break;
+		}
 	}
+
+
+	/*******************************************************************************/
+	// Standard setpoint setting
+
+
+	public void setSpeed(boolean enable, float p, float r, float h, float y) {
+
+		if(enable)
+			offboard.setTarget(p,r,h,y,OffboardManager.MODE_BODY_SPEED);
+		else
+			offboard.setCurrentAsTarget();
+	}
+
+
+	public void setTarget(float x, float y, float z, float yaw) {
+		Vector4D_F32 target = new Vector4D_F32(x,y,z,yaw);
+		offboard.setTarget(target);
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
+
+	}
+
+	public void moveto(float x, float y, float z, float yaw) {
+		final Vector4D_F32 target = new Vector4D_F32(x,y,z,yaw);
+		if(flowCheck && !model.sys.isSensorAvailable(Status.MSP_PIX4FLOW_AVAILABILITY)) {
+			logger.writeLocalMsg("[msp] Autopilot: Aborting. No Flow available.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
+			return;
+		}
+		offboard.registerActionListener( (m,d) -> {
+			offboard.finalize();
+			logger.writeLocalMsg("[msp] Autopilot: Target reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+		});
+		offboard.setTarget(target);
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
+
+
+	}
+
+	/*******************************************************************************/
+	// Standard actions
+
+	public void registerMapFilter(ILocalMapFilter filter) {
+		System.out.println("registering MapFilter "+filter.getClass().getSimpleName());
+		this.mapFilter = filter;
+	}
+
+
+	public void offboardPosHold(boolean enable) {
+		if(enable) {
+			offboard.start(OffboardManager.MODE_LOITER);
+			if(!model.sys.isStatus(Status.MSP_LANDED) && !model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
+			}
+		} else {
+			if(model.sys.nav_state==Status.NAVIGATION_STATE_OFFBOARD) {
+				model.sys.autopilot = 0;
+				control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+						MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+						MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+			}
+			offboard.stop();
+		}
+	}
+
+
+	public void abort() {
+		clearAutopilotActions();
+		model.sys.autopilot &= 0b11000000000000000000000000000001;
+		if(model.sys.isStatus(Status.MSP_RC_ATTACHED)) {
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_POSCTL, 0 );
+			offboard.stop();
+		} else {
+			offboard.start(OffboardManager.MODE_LOITER);
+		}
+	}
+
+
+
+	protected void clearAutopilotActions() {
+		model.sys.autopilot &= 0b11000000000000000111111111111111;
+		offboard.removeActionListener();
+		control.sendMAVLinkMessage(new msg_msp_micro_slam(2,1));
+	}
+
+
+	/*******************************************************************************/
+	// Map management
 
 	public void resetMap() {
 		logger.writeLocalMsg("[msp] reset local map",MAV_SEVERITY.MAV_SEVERITY_NOTICE);
@@ -147,31 +287,6 @@ public abstract class AutoPilotBase implements Runnable {
 	public ILocalMap getMap2D() {
 		return map;
 	}
-
-	public void setTarget(float x, float y, float z, float yaw) {
-
-	}
-
-	public void moveto(float x, float y, float z, float yaw) {
-
-	}
-
-	public void setCurrentLocalSpeed(boolean enable, float p, float r, float h, float y) {
-
-		if(enable) {
-			offboard.setTarget(p,r,h,y,OffboardManager.MODE_BODY_SPEED);
-		} else {
-			offboard.setCurrentAsTarget();
-		}
-	}
-
-	public void registerMapFilter(ILocalMapFilter filter) {
-		System.out.println("registering MapFilter "+filter.getClass().getSimpleName());
-		this.mapFilter = filter;
-	}
-
-	@Override
-	public abstract void run();
 
 
 	/*******************************************************************************/
@@ -208,14 +323,14 @@ public abstract class AutoPilotBase implements Runnable {
 		Vector3D_F32   pos          = new Vector3D_F32();
 		System.err.println("SITL -> set example obstacle map");
 
-		pos.y = 1.5f + model.state.l_y;
+		pos.y = 2.25f + model.state.l_y;
 		pos.z =  model.state.l_z;
 		for(int i = 0; i < 40;i++) {
 			pos.x = -1.25f + i *0.05f + model.state.l_x;
 			map.update(pos); map.update(pos); map.update(pos);
 		}
 
-		pos.y = 2.75f + model.state.l_y;
+		pos.y = 3.75f + model.state.l_y;
 		pos.z =  model.state.l_z;
 		for(int i = 0; i < 30;i++) {
 			pos.x = -1.25f + i *0.05f + model.state.l_x;
@@ -266,8 +381,8 @@ public abstract class AutoPilotBase implements Runnable {
 
 		for(int j=0; j< 30; j++) {
 
-			dotx = (float)((Math.random()*10-5f));
-			doty = (float)((Math.random()*10-5f));
+			dotx = (float)((Math.random()*15-5f));
+			doty = (float)((Math.random()*15-5f));
 
 			MSPMathUtils.rotateRad(r, dotx, doty, (float)Math.random() * 6.28f);
 

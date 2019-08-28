@@ -6,21 +6,23 @@ import com.comino.msp.utils.MSPMathUtils;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 
-public class Polar3D_F32 {
+public class Polar4D_F32 {
 
 	public float angle_xy = 0;
 	public float angle_xz = 0;
 	public float value    = 0;
+	public float yaw      = 0;
 
-	public Polar3D_F32() {
+	public Polar4D_F32() {
 		super();
 	}
 
-	public Polar3D_F32(float angle_xy, float angle_xz, float length) {
+	public Polar4D_F32(float angle_xy, float angle_xz, float length, float yaw) {
 		super();
 		this.angle_xy = angle_xy;
 		this.angle_xz = angle_xz;
 		this.value = length;
+		this.yaw   = yaw;
 	}
 
 
@@ -29,14 +31,15 @@ public class Polar3D_F32 {
 		angle_xy = 0;
 		angle_xz = 0;
 		value    = 0;
+		yaw      = 0;
 	}
 
 
-    public void set(Polar3D_F32 t) {
-    	this.angle_xy = t.angle_xy;
-    	this.angle_xz = t.angle_xz;
-    	this.value = t.value;
-    }
+//	public void set(float angle_xy, float angle_xz, float length) {
+//		this.angle_xy = MSPMathUtils.normAngle(angle_xy);
+//		this.angle_xz = MSPMathUtils.normAngle(angle_xz);
+//		this.value    = length;
+//	}
 
 	public void set(float vx, float vy, float vz) {
 		this.value    = (float)Math.sqrt((vx)*(vx) + (vy)*(vy) + (vz)*(vz));
@@ -47,9 +50,19 @@ public class Polar3D_F32 {
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
 	}
 
+	public void set(float vx, float vy, float vz, float yaw) {
+		set(vx,vy,vz);
+		this.yaw = yaw;
+	}
+
 
 	public void set(Vector3D_F32 t) {
 		set(t.x,t.y,t.z);
+	}
+
+	public void set(Vector4D_F32 t) {
+		set(t.x,t.y,t.z);
+		this.yaw = t.w;
 	}
 
 	public void set(Vector4D_F32 t, Vector4D_F32 c) {
@@ -59,6 +72,7 @@ public class Polar3D_F32 {
 
 		this.angle_xy = MSPMathUtils.normAngle(this.angle_xy);
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
+		this.yaw      = MSPMathUtils.normAngle(t.w - c.w );
 
 	}
 
@@ -69,6 +83,8 @@ public class Polar3D_F32 {
 
 		this.angle_xy = MSPMathUtils.normAngle(this.angle_xy);
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
+
+		this.yaw      = 0;
 	}
 
 	public void get(Vector3D_F32 t) {
@@ -77,51 +93,17 @@ public class Polar3D_F32 {
 	}
 
 	public void get(Vector4D_F32 t) {
-		t.setX((float)(Math.cos(angle_xy) * Math.cos(angle_xz)) * value);
-		t.setY((float)(Math.sin(angle_xy) * Math.cos(angle_xz)) * value);
-		t.setZ((float)(Math.sin(angle_xz) * value));
-	}
-
-	public void get(Vector4D_F32 t, float yaw) {
 		t.set((float)( Math.cos(angle_xy) * Math.cos(angle_xz)) * value,
 			  (float)(Math.sin(angle_xy)* Math.cos(angle_xz)) * value,
 			  (float)Math.sin(angle_xz) * value,
 			  yaw);
 	}
 
-	public float getX() {
-		return (float)(Math.cos(angle_xy) * Math.cos(angle_xz)) * value;
-	}
-
-	public float getY() {
-		return (float)(Math.sin(angle_xy) * Math.cos(angle_xz)) * value;
-	}
-
-	public float getZ() {
-		return  (float)Math.sin(angle_xz) * value;
-	}
-
 
 	public String toString() {
-		return "XY="+MSPMathUtils.fromRad(angle_xy)+" XZ="+MSPMathUtils.fromRad(angle_xz)+" L="+value;
+		return "XY="+MSPMathUtils.fromRad(angle_xy)+" XZ="+MSPMathUtils.fromRad(angle_xz)+" L="+value+" Yaw="+MSPMathUtils.fromRad(yaw);
 	}
-
-	public static void main(String[] args) {
-
-		Vector3D_F32 current = new Vector3D_F32();
-		Vector3D_F32 target  = new Vector3D_F32(1,1,1);
-		Vector3D_F32 result  = new Vector3D_F32();
-
-		Polar3D_F32 p = new Polar3D_F32();
-		p.set(target, current);
-
-		p.get(result);
-
-		System.out.println(target);
-		System.out.println(p);
-		System.out.println(result);
-	}
-
+	
 	private float getDirection(float dy, float dx) {
 
 		if((dx > 0 && dy > 0) || (dx > 0 && dy < 0))
@@ -132,5 +114,22 @@ public class Polar3D_F32 {
 		return 0;
 	}
 
+	public static void main(String[] args) {
+
+		Vector3D_F32 current = new Vector3D_F32();
+		Vector3D_F32 target  = new Vector3D_F32(1,1,1);
+		Vector3D_F32 result  = new Vector3D_F32();
+
+		Polar4D_F32 p = new Polar4D_F32();
+		p.set(target, current);
+
+		p.get(result);
+
+		System.out.println(target);
+		System.out.println(p);
+		System.out.println(result);
+	}
+
+	
 
 }

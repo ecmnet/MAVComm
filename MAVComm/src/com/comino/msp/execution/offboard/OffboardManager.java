@@ -33,6 +33,9 @@
 
 package com.comino.msp.execution.offboard;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -58,7 +61,7 @@ import georegression.struct.point.Vector4D_F32;
 public class OffboardManager implements Runnable {
 
 	private static final float MAX_SPEED					= 1.00f;          	// Default Max speed in m/s
-	private static final float MAX_TURN_SPEED               = 0.2f;   	        // Max speed that allow turning before start
+	private static final float MAX_TURN_SPEED               = 0.2f;   	        // Max speed that allow turning before start in m/s
 
 	private static final int   RC_DEADBAND             		= 20;				// RC XY deadband for safety check
 	private static final int   RC_LAND_CHANNEL				= 8;                // RC channel 8 landing
@@ -70,12 +73,15 @@ public class OffboardManager implements Runnable {
 	public static final int MODE_LOITER	 		   			= 0;
 	public static final int MODE_BODY_SPEED                 = 1;
 	public static final int MODE_SPEED_POSITION	 	    	= 2;
+	public static final int MODE_TRAJECTORY_POSITION	 	= 3;
 
 	private MSPLogger 				 logger					= null;
 	private DataModel 				 model					= null;
 	private IMAVController         	 control      			= null;
-	private IOffboardTargetAction    action_listener     	= null;		// CB target reached
-	private IOffboardExternalControl ext_control_listener   = null;		// CB external angle+speed control in MODE_SPEED_POSITION
+
+	private IOffboardTargetAction        action_listener     	    = null;		// CB target reached
+	private IOffboardExternalControl     ext_control_listener       = null;		// CB external angle+speed control in MODE_SPEED_POSITION
+	private IOffboardExternalConstraints ext_constraints_listener   = null;		// CB Constrains in MODE_SPEED_POSITION
 
 	private boolean					enabled					= false;
 	private int						mode					= 0;
@@ -140,36 +146,8 @@ public class OffboardManager implements Runnable {
 		enabled = false;
 	}
 
-	public void setTarget(Vector3D_F32 t) {
-		//	mode = MODE_LOITER;
-		target.set(t.x,t.y,t.z,Float.NaN);
-		target.w = MSP3DUtils.getXYDirection(target, current);
-		valid_setpoint = true;
-		new_setpoint = true;
-		already_fired = false;
-		setpoint_tms = System.currentTimeMillis();
-	}
-
-	public void setTarget(Vector3D_F32 t, float w) {
-		//	mode = MODE_LOITER;
-		target.set(t.x,t.y,t.z,w);
-		valid_setpoint = true;
-		new_setpoint = true;
-		already_fired = false;
-		setpoint_tms = System.currentTimeMillis();
-	}
 
 	public void setTarget(Vector4D_F32 t) {
-		//	mode = MODE_LOITER;
-		target.set(t);
-		valid_setpoint = true;
-		new_setpoint = true;
-		already_fired = false;
-		setpoint_tms = System.currentTimeMillis();
-	}
-
-	public void setTarget(Vector4D_F32 t, int mode) {
-		this.mode = mode;
 		target.set(t);
 		valid_setpoint = true;
 		new_setpoint = true;
@@ -223,6 +201,10 @@ public class OffboardManager implements Runnable {
 		this.ext_control_listener = control_listener;
 	}
 
+	public void registerExternalConstraintsListener(IOffboardExternalConstraints constraints) {
+		this.ext_constraints_listener = constraints;
+	}
+
 	public void removeExternalControlListener() {
 		// consider current setpoint as new to set the start position at
 		this.new_setpoint = true;
@@ -243,6 +225,8 @@ public class OffboardManager implements Runnable {
 
 	@Override
 	public void run() {
+
+	//	float max_speed = 0;
 
 		long tms, sleep_tms = 0;
 		long watch_tms = System.currentTimeMillis();
@@ -295,10 +279,17 @@ public class OffboardManager implements Runnable {
 
 			case MODE_BODY_SPEED:
 
+
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
 					target.set(0,0,0,0);
 				}
+
+				//TODO:
+				// - Send control in local NED (rotate BODY speeds to local NED speeds)
+				// - Determine planned path angle and other Polar-Info
+				// - call CB Constraints for breaking and emergency stop
+
 				sendSpeedControlToVehice(target,MAV_FRAME.MAV_FRAME_BODY_NED);
 
 				if((System.currentTimeMillis()- setpoint_tms) > 1000)
@@ -311,11 +302,9 @@ public class OffboardManager implements Runnable {
 
 				// TODO:
 				// - Switch to Loiter mode only if no new setpoint after certain timeout or empty queue
-				// - Setpoint-Queue
 				//   Calculate yaw limit depending on the estimated flight time to next WP
 				// - yaw speed control to be added
 				// - add distance to WP target to KeyFigures/Datamodel
-				// - eventually PID controller for Z
 				// - Control setpoint changes during flight (speed limit)
 
 				// see:
@@ -340,74 +329,71 @@ public class OffboardManager implements Runnable {
 					path.clear();
 
 
+				// target reached?
 				if(path.value < acceptance_radius_pos && valid_setpoint ) {
 					ctl.clear();
-					fireAction(model, path.value);
+					fireAction(model, way.value);
 					mode = MODE_LOITER;
 					continue;
 				}
 
+				// external speed control via CB ?
 				if(ext_control_listener!=null) {
 
-					ext_control_listener.determine(cur.value, path , ctl);
-					ctl.angle_xz =  path.angle_xz; // TODO: Check if this is valid for trajectories
+					// external speed control from e.g. path planner or VFH
+					ext_control_listener.determine(System.currentTimeMillis(), cur, way , path, ctl);
 
+					// TODO: Speed limiting due to direction change necessary?
+
+					// get Cartesian speeds from polar with yaw_rate = 0
 					ctl.get(control_speed);
-					constraint_speed(control_speed);
 
-					if(Float.isNaN(ctl.yaw))
-						sendSpeedControlToVehice(control_speed,current.w);
-					else
-						sendSpeedControlToVehice(control_speed,ctl.yaw);
+					// constraints
+					checkAbsoluteSpeeds(control_speed);
+
+					sendSpeedControlToVehice(control_speed,path.angle_xy);
 
 				}
 				else {
+
 
 					// get angles from direct path planned
 					ctl.angle_xy =  path.angle_xy;
 					ctl.angle_xz =  path.angle_xz;
 
-					// determine speed depending on the distance
+					// determine speed depending on the distance, Note: break_radius is half the distance to WP
 					if(way.value < break_radius) {
-						// determine target speed
+						// determine target speed (acceleration)
 						ctl.value = TrajMathLib.computeSpeedFromDistance(5f, 1f, max_speed, way.value);
 						// if target speed < current speed, use current speed
 						if(cur.value > ctl.value) ctl.value = cur.value;
 					}
 					else {
-						// determine speed
+						// determine speed (breaking)
 						ctl.value = TrajMathLib.computeSpeedFromDistance(1.5f, 1f, max_speed, path.value);
 						// if target speed > current speed, use current speed
 						if(cur.value < ctl.value) ctl.value = cur.value;
 					}
 
-
-					// if vehicle is not moving and turn angle > 180° => turn before moveing
-					if(Math.abs(ctl.angle_xy - current.w) > Math.PI && cur.value < MAX_TURN_SPEED && break_radius < 2f)
+					// if vehicle is not moving and turn angle > 180° => turn before moving
+					if(MSPMathUtils.normAngleDiff(ctl.angle_xy,current.w) > Math.PI && cur.value < MAX_TURN_SPEED && break_radius < 2f)
 						ctl.value = 0;
 
+					// check external constraints
+					if(ext_constraints_listener!=null)
+						ext_constraints_listener.get(System.currentTimeMillis(), cur, way , path, ctl);
 
-					// Collision detection 2nd level: Absolute speed constraint if collision risk detected
-					// Experimental: Risk is if min_distance of detector < 1.5m; at 0.3m set speed to 0
-					// Should be only in derection of flight (+/-75 degree)
-					// Put that into constraint speed
-					//				if(!Float.isNaN(model.slam.dm) && model.slam.dm < 1.5f && model.slam.dm > 0) {
-					//					logger.writeLocalMsg("[msp] Offboard: Collision risk. Speed reduced.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-					//					ctl[IOffboardExternalControl.SPEED] = ctl[IOffboardExternalControl.SPEED] * (model.slam.dm - 0.3f);
-					//					if(ctl[IOffboardExternalControl.SPEED]<0)
-					//						ctl[IOffboardExternalControl.SPEED] = 0;
-					//				}
-
-					// get kartesian from polar coordinates
+					// get Cartesian speeds from polar
 					ctl.get(control_speed);
-					constraint_speed(control_speed);
+
+					// constraints
+					checkAbsoluteSpeeds(control_speed);
 
 					sendSpeedControlToVehice(control_speed,ctl.angle_xy);
-
 				}
 
 				//	System.out.println(ctl+ "/ "+path);
-				toModel(control_speed.norm(),target,current);
+				toModel(ctl.value,target,current);
 
 				break;
 
@@ -421,7 +407,7 @@ public class OffboardManager implements Runnable {
 		model.sys.autopilot = 0;
 	}
 
-	private void constraint_speed(Vector3D_F32 s) {
+	private void checkAbsoluteSpeeds(Vector3D_F32 s) {
 		if(s.x >  max_speed )  s.x =  max_speed;
 		if(s.y >  max_speed )  s.y =  max_speed;
 		if(s.z >  max_speed )  s.z =  max_speed;
