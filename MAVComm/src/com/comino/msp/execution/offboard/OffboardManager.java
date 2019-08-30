@@ -56,59 +56,60 @@ import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 1.00f;          	      // Default Max speed in m/s
-	private static final float MAX_YAW_SPEED                = MSPMathUtils.toRad(45); // Max YawSpeed rad/s
-	private static final float MAX_TURN_SPEED               = 0.2f;   	              // Max speed that allow turning before start in m/s
+	private static final float MAX_SPEED					=		 1.00f;          	      // Default Max speed in m/s
+	private static final float MAX_YAW_SPEED                		= MSPMathUtils.toRad(45); // Max YawSpeed rad/s
+	private static final float MAX_TURN_SPEED               		= 0.2f;   	              // Max speed that allow turning before start in m/s
 
-	private static final int   RC_DEADBAND             		= 20;				      // RC XY deadband for safety check
-	private static final int   RC_LAND_CHANNEL				= 8;                      // RC channel 8 landing
-	private static final int   RC_LAND_THRESHOLD            = 1600;		              // RC channel 8 landing threshold
+	private static final int   RC_DEADBAND             				= 20;				      // RC XY deadband for safety check
+	private static final int   RC_LAND_CHANNEL						= 8;                      // RC channel 8 landing
+	private static final int   RC_LAND_THRESHOLD            		= 1600;		              // RC channel 8 landing threshold
 
-	private static final int UPDATE_RATE                 	= 50;
-	private static final int SETPOINT_TIMEOUT_MS         	= 15000;
+	private static final int UPDATE_RATE                 			= 50;
+	private static final int SETPOINT_TIMEOUT_MS         			= 15000;
 
-	private static final float YAW_P						= 0.05f;                  // P factor for yaw speed control
+	private static final float YAW_P								= 0.05f;                  // P factor for yaw speed control
 
 
-	public static final int MODE_LOITER	 		   			= 0;
-	public static final int MODE_LOCAL_SPEED                = 1;
-	public static final int MODE_SPEED_POSITION	 	    	= 2;
-	public static final int MODE_TRAJECTORY_POSITION	 	= 3;
+	public static final int MODE_LOITER	 		   					= 0;
+	public static final int MODE_LOCAL_SPEED                		= 1;
+	public static final int MODE_SPEED_POSITION	 	    			= 2;
+	public static final int MODE_TRAJECTORY_POSITION	 			= 3;
 
-	private MSPLogger 				 logger					= null;
-	private DataModel 				 model					= null;
-	private IMAVController         	 control      			= null;
+	private MSPLogger 				 logger							= null;
+	private DataModel 				 model							= null;
+	private IMAVController         	 control      			       	= null;
 
 	private IOffboardTargetAction        action_listener     	    = null;		// CB target reached
 	private IOffboardExternalControl     ext_control_listener       = null;		// CB external angle+speed control in MODE_SPEED_POSITION
 	private IOffboardExternalConstraints ext_constraints_listener   = null;		// CB Constrains in MODE_SPEED_POSITION
 
-	private final msg_set_position_target_local_ned pos_cmd   = new msg_set_position_target_local_ned(1,2);
-	private final msg_set_position_target_local_ned speed_cmd = new msg_set_position_target_local_ned(1,2);
+	private boolean					enabled					  		= false;
+	private int						mode					  		= 0;
 
-	private boolean					enabled					= false;
-	private int						mode					= 0;
-	private final Vector4D_F32		target					= new Vector4D_F32();
-	private final Vector4D_F32		current					= new Vector4D_F32();
-	private final Vector4D_F32      start                   = new Vector4D_F32();
-	private final Vector4D_F32		control_speed			= new Vector4D_F32();
+	private final Vector4D_F32		target					  		= new Vector4D_F32();
+	private final Vector4D_F32		current					  		= new Vector4D_F32();
+	private final Vector4D_F32      start                     		= new Vector4D_F32();
+	private final Vector4D_F32		control_speed			  		= new Vector4D_F32();
+
+	private final msg_set_position_target_local_ned pos_cmd   		= new msg_set_position_target_local_ned(1,2);
+	private final msg_set_position_target_local_ned speed_cmd 		= new msg_set_position_target_local_ned(1,2);
 
 
-	private float	 	acceptance_radius_pos				= 0.2f;
-	private float       max_speed							= MAX_SPEED;
-	private float		break_radius					    = MAX_SPEED;
-	private boolean    	already_fired			    		= false;
-	private boolean    	valid_setpoint                   	= false;
-	private boolean    	new_setpoint                   	 	= false;
+	private float	 	acceptance_radius_pos						= 0.2f;
+	private float       max_speed									= MAX_SPEED;
+	private float		break_radius					    		= MAX_SPEED;
+	private boolean    	already_fired			    				= false;
+	private boolean    	valid_setpoint                   			= false;
+	private boolean    	new_setpoint                   	 			= false;
 
-	private long        setpoint_tms                        = 0;
+	private long        setpoint_tms                        		= 0;
 
 	public OffboardManager(IMAVController control) {
 		this.control        = control;
 		this.model          = control.getCurrentModel();
 		this.logger         = MSPLogger.getInstance();
 
-		MSPConfig config		= MSPConfig.getInstance();
+		MSPConfig config	= MSPConfig.getInstance();
 
 		max_speed = config.getFloatProperty("AP2D_MAX_SPEED", String.valueOf(MAX_SPEED));
 		System.out.println("Offboard: speed constraints: "+max_speed+" m/s ");
@@ -278,15 +279,16 @@ public class OffboardManager implements Runnable {
 			switch(mode) {
 
 			case MODE_LOITER:
+
 				if(!valid_setpoint)
 					setCurrentAsTarget();
-				sendPositionControlToVehice(target);
+				sendPositionControlToVehice(target, MAV_FRAME.MAV_FRAME_LOCAL_NED);
 				watch_tms = System.currentTimeMillis();
 				toModel(control_speed.norm(),target,current);
 				break;
 
-			case MODE_LOCAL_SPEED:
 
+			case MODE_LOCAL_SPEED:
 
 				if(!valid_setpoint) {
 					watch_tms = System.currentTimeMillis();
@@ -304,12 +306,17 @@ public class OffboardManager implements Runnable {
 
 				// check external constraints
 				if(ext_constraints_listener!=null)
-					ext_constraints_listener.get(System.currentTimeMillis(), cur, way , path, ctl);
+					ext_constraints_listener.get(tms, cur, way , path, ctl);
 
 				ctl.get(control_speed);
+
+				// manual yaw control
 				control_speed.w = target.w;
 
-				sendSpeedControlToVehice(control_speed);
+			    //  Automatic yaw control simple P controller for yaw
+				// control_speed.w = MSPMathUtils.normAngle(ctl.angle_xy - current.w) / (UPDATE_RATE / 1000f) * YAW_P;
+
+				sendSpeedControlToVehice(control_speed, MAV_FRAME.MAV_FRAME_LOCAL_NED);
 
 				if((System.currentTimeMillis()- setpoint_tms) > 1000)
 					valid_setpoint = false;
@@ -359,19 +366,20 @@ public class OffboardManager implements Runnable {
 				if(ext_control_listener!=null) {
 
 					// external speed control from e.g. path planner or VFH
-					ext_control_listener.determine(System.currentTimeMillis(), cur, way , path, ctl);
+					ext_control_listener.determine(tms, cur, way , path, ctl);
 
 					// TODO: Speed limiting due to direction change necessary?
 
 					// get Cartesian speeds from polar with yaw_rate = 0
 					ctl.get(control_speed);
-					control_speed.w = path.angle_xy;
 
-					sendSpeedControlToVehice(control_speed);
+				//  simple P controller for yaw
+					control_speed.w = MSPMathUtils.normAngle(path.angle_xy - current.w) / (UPDATE_RATE / 1000f) * YAW_P;
+
+					sendSpeedControlToVehice(control_speed, MAV_FRAME.MAV_FRAME_LOCAL_NED);
 
 				}
 				else {
-
 
 					// get angles from direct path planned
 					ctl.angle_xy =  path.angle_xy;
@@ -397,7 +405,7 @@ public class OffboardManager implements Runnable {
 
 					// check external constraints
 					if(ext_constraints_listener!=null)
-						ext_constraints_listener.get(System.currentTimeMillis(), cur, way , path, ctl);
+						ext_constraints_listener.get(tms, cur, way , path, ctl);
 
 //					System.out.println(MSPMathUtils.fromRad(cur.angle_xy)+" / "+MSPMathUtils.fromRad(cur.angle_xy)+
 //							" --> "+MSPMathUtils.fromRad(MSPMathUtils.normAngle(ctl.angle_xy - current.w)));
@@ -408,7 +416,7 @@ public class OffboardManager implements Runnable {
 					// get Cartesian speeds from polar
 					ctl.get(control_speed);
 
-					sendSpeedControlToVehice(control_speed);
+					sendSpeedControlToVehice(control_speed, MAV_FRAME.MAV_FRAME_LOCAL_NED);
 				}
 
 				//	System.out.println(ctl+ "/ "+path);
@@ -427,7 +435,7 @@ public class OffboardManager implements Runnable {
 	}
 
 
-	private void sendPositionControlToVehice(Vector4D_F32 target) {
+	private void sendPositionControlToVehice(Vector4D_F32 target, int frame) {
 
 		pos_cmd.target_component = 1;
 		pos_cmd.target_system    = 1;
@@ -443,13 +451,13 @@ public class OffboardManager implements Runnable {
 		if(target.z==Float.MAX_VALUE) pos_cmd.type_mask = pos_cmd.type_mask | 0b000000000000100;
 		if(target.w==Float.MAX_VALUE) pos_cmd.type_mask = pos_cmd.type_mask | 0b000010000000000;
 
-		pos_cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
+		pos_cmd.coordinate_frame = frame;
 
 		if(!control.sendMAVLinkMessage(pos_cmd))
 			enabled = false;
 	}
 
-	private void sendSpeedControlToVehice(Vector4D_F32 target) {
+	private void sendSpeedControlToVehice(Vector4D_F32 target, int frame) {
 
 		speed_cmd.target_component = 1;
 		speed_cmd.target_system    = 1;
@@ -469,7 +477,7 @@ public class OffboardManager implements Runnable {
 		speed_cmd.vz       = target.z;
 		speed_cmd.yaw_rate = target.w;
 
-		speed_cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
+		speed_cmd.coordinate_frame = frame;
 
 		if(!control.sendMAVLinkMessage(speed_cmd))
 			enabled = false;
