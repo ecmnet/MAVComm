@@ -23,6 +23,7 @@ import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
 import com.comino.msp.slam.map2D.impl.LocalMap2DArray;
 import com.comino.msp.slam.map2D.impl.LocalMap2DRaycast;
 import com.comino.msp.slam.map2D.store.LocaMap2DStorage;
+import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
 
 import georegression.struct.point.Vector3D_F32;
@@ -47,7 +48,10 @@ public abstract class AutoPilotBase implements Runnable {
 
 	protected boolean              isRunning   = false;
 
-	protected ILocalMapFilter mapFilter = null;
+	protected ILocalMapFilter        mapFilter = null;
+
+	private final Vector4D_F32       body_speed = new Vector4D_F32();
+	private final Vector4D_F32       ned_speed  = new Vector4D_F32();
 
 
 
@@ -178,8 +182,11 @@ public abstract class AutoPilotBase implements Runnable {
 
 	public void setSpeed(boolean enable, float p, float r, float h, float y) {
 
-		if(enable)
-			offboard.setTarget(p,r,h,y,OffboardManager.MODE_BODY_SPEED);
+		if(enable) {
+			body_speed.set(p*2f,r*2f,h,y);
+			MSP3DUtils.rotateXY(body_speed, ned_speed, -model.attitude.y);
+			offboard.setTarget(ned_speed,OffboardManager.MODE_LOCAL_SPEED);
+		}
 		else
 			offboard.setCurrentAsTarget();
 	}

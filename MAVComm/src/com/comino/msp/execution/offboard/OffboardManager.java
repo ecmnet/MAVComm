@@ -33,9 +33,6 @@
 
 package com.comino.msp.execution.offboard;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_FRAME;
 import org.mavlink.messages.MAV_MODE_FLAG;
@@ -55,23 +52,26 @@ import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
 import com.comino.msp.utils.struct.Polar3D_F32;
 
-import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 
 public class OffboardManager implements Runnable {
 
-	private static final float MAX_SPEED					= 1.00f;          	// Default Max speed in m/s
-	private static final float MAX_TURN_SPEED               = 0.2f;   	        // Max speed that allow turning before start in m/s
+	private static final float MAX_SPEED					= 1.00f;          	      // Default Max speed in m/s
+	private static final float MAX_YAW_SPEED                = MSPMathUtils.toRad(45); // Max YawSpeed rad/s
+	private static final float MAX_TURN_SPEED               = 0.2f;   	              // Max speed that allow turning before start in m/s
 
-	private static final int   RC_DEADBAND             		= 20;				// RC XY deadband for safety check
-	private static final int   RC_LAND_CHANNEL				= 8;                // RC channel 8 landing
-	private static final int   RC_LAND_THRESHOLD            = 1600;		        // RC channel 8 landing threshold
+	private static final int   RC_DEADBAND             		= 20;				      // RC XY deadband for safety check
+	private static final int   RC_LAND_CHANNEL				= 8;                      // RC channel 8 landing
+	private static final int   RC_LAND_THRESHOLD            = 1600;		              // RC channel 8 landing threshold
 
 	private static final int UPDATE_RATE                 	= 50;
 	private static final int SETPOINT_TIMEOUT_MS         	= 15000;
 
+	private static final float YAW_P						= 0.05f;                  // P factor for yaw speed control
+
+
 	public static final int MODE_LOITER	 		   			= 0;
-	public static final int MODE_BODY_SPEED                 = 1;
+	public static final int MODE_LOCAL_SPEED                = 1;
 	public static final int MODE_SPEED_POSITION	 	    	= 2;
 	public static final int MODE_TRAJECTORY_POSITION	 	= 3;
 
@@ -83,12 +83,15 @@ public class OffboardManager implements Runnable {
 	private IOffboardExternalControl     ext_control_listener       = null;		// CB external angle+speed control in MODE_SPEED_POSITION
 	private IOffboardExternalConstraints ext_constraints_listener   = null;		// CB Constrains in MODE_SPEED_POSITION
 
+	private final msg_set_position_target_local_ned pos_cmd   = new msg_set_position_target_local_ned(1,2);
+	private final msg_set_position_target_local_ned speed_cmd = new msg_set_position_target_local_ned(1,2);
+
 	private boolean					enabled					= false;
 	private int						mode					= 0;
 	private final Vector4D_F32		target					= new Vector4D_F32();
 	private final Vector4D_F32		current					= new Vector4D_F32();
 	private final Vector4D_F32      start                   = new Vector4D_F32();
-	private final Vector3D_F32		control_speed			= new Vector3D_F32();
+	private final Vector4D_F32		control_speed			= new Vector4D_F32();
 
 
 	private float	 	acceptance_radius_pos				= 0.2f;
@@ -153,6 +156,11 @@ public class OffboardManager implements Runnable {
 		new_setpoint = true;
 		already_fired = false;
 		setpoint_tms = System.currentTimeMillis();
+	}
+
+	public void setTarget(Vector4D_F32 t, int mode) {
+		this.mode = mode;
+		setTarget(t);
 	}
 
 	public void setTarget(float x, float y, float z, float yaw, int mode) {
@@ -277,7 +285,7 @@ public class OffboardManager implements Runnable {
 				toModel(control_speed.norm(),target,current);
 				break;
 
-			case MODE_BODY_SPEED:
+			case MODE_LOCAL_SPEED:
 
 
 				if(!valid_setpoint) {
@@ -286,11 +294,22 @@ public class OffboardManager implements Runnable {
 				}
 
 				//TODO:
-				// - Send control in local NED (rotate BODY speeds to local NED speeds)
 				// - Determine planned path angle and other Polar-Info
 				// - call CB Constraints for breaking and emergency stop
 
-				sendSpeedControlToVehice(target,MAV_FRAME.MAV_FRAME_BODY_NED);
+
+				cur.set(model.state.l_vx, model.state.l_vy, model.state.l_vz );
+				ctl.set(target.x, target.y, target.z);
+				path.angle_xy = ctl.angle_xy;
+
+				// check external constraints
+				if(ext_constraints_listener!=null)
+					ext_constraints_listener.get(System.currentTimeMillis(), cur, way , path, ctl);
+
+				ctl.get(control_speed);
+				control_speed.w = target.w;
+
+				sendSpeedControlToVehice(control_speed);
 
 				if((System.currentTimeMillis()- setpoint_tms) > 1000)
 					valid_setpoint = false;
@@ -303,7 +322,6 @@ public class OffboardManager implements Runnable {
 				// TODO:
 				// - Switch to Loiter mode only if no new setpoint after certain timeout or empty queue
 				//   Calculate yaw limit depending on the estimated flight time to next WP
-				// - yaw speed control to be added
 				// - add distance to WP target to KeyFigures/Datamodel
 				// - Control setpoint changes during flight (speed limit)
 
@@ -347,11 +365,9 @@ public class OffboardManager implements Runnable {
 
 					// get Cartesian speeds from polar with yaw_rate = 0
 					ctl.get(control_speed);
+					control_speed.w = path.angle_xy;
 
-					// constraints
-					checkAbsoluteSpeeds(control_speed);
-
-					sendSpeedControlToVehice(control_speed,path.angle_xy);
+					sendSpeedControlToVehice(control_speed);
 
 				}
 				else {
@@ -383,13 +399,16 @@ public class OffboardManager implements Runnable {
 					if(ext_constraints_listener!=null)
 						ext_constraints_listener.get(System.currentTimeMillis(), cur, way , path, ctl);
 
+//					System.out.println(MSPMathUtils.fromRad(cur.angle_xy)+" / "+MSPMathUtils.fromRad(cur.angle_xy)+
+//							" --> "+MSPMathUtils.fromRad(MSPMathUtils.normAngle(ctl.angle_xy - current.w)));
+
+					//  simple P controller for yaw
+					control_speed.w = MSPMathUtils.normAngle(ctl.angle_xy - current.w) / (UPDATE_RATE / 1000f) * YAW_P;
+
 					// get Cartesian speeds from polar
 					ctl.get(control_speed);
 
-					// constraints
-					checkAbsoluteSpeeds(control_speed);
-
-					sendSpeedControlToVehice(control_speed,ctl.angle_xy);
+					sendSpeedControlToVehice(control_speed);
 				}
 
 				//	System.out.println(ctl+ "/ "+path);
@@ -407,84 +426,67 @@ public class OffboardManager implements Runnable {
 		model.sys.autopilot = 0;
 	}
 
-	private void checkAbsoluteSpeeds(Vector3D_F32 s) {
+
+	private void sendPositionControlToVehice(Vector4D_F32 target) {
+
+		pos_cmd.target_component = 1;
+		pos_cmd.target_system    = 1;
+		pos_cmd.type_mask        = 0b000101111111000;
+
+		pos_cmd.x   = target.x;
+		pos_cmd.y   = target.y;
+		pos_cmd.z   = target.z;
+		pos_cmd.yaw = Float.isNaN(target.w)? model.attitude.y : MSPMathUtils.normAngle(target.w);
+
+		if(target.x==Float.MAX_VALUE) pos_cmd.type_mask = pos_cmd.type_mask | 0b000000000000001;
+		if(target.y==Float.MAX_VALUE) pos_cmd.type_mask = pos_cmd.type_mask | 0b000000000000010;
+		if(target.z==Float.MAX_VALUE) pos_cmd.type_mask = pos_cmd.type_mask | 0b000000000000100;
+		if(target.w==Float.MAX_VALUE) pos_cmd.type_mask = pos_cmd.type_mask | 0b000010000000000;
+
+		pos_cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
+
+		if(!control.sendMAVLinkMessage(pos_cmd))
+			enabled = false;
+	}
+
+	private void sendSpeedControlToVehice(Vector4D_F32 target) {
+
+		speed_cmd.target_component = 1;
+		speed_cmd.target_system    = 1;
+		speed_cmd.type_mask        = 0b000011111000111;
+
+
+		if(target.x==Float.MAX_VALUE) speed_cmd.type_mask = speed_cmd.type_mask | 0b000000000001000;
+		if(target.y==Float.MAX_VALUE) speed_cmd.type_mask = speed_cmd.type_mask | 0b000000000010000;
+		if(target.z==Float.MAX_VALUE) speed_cmd.type_mask = speed_cmd.type_mask | 0b000000000100000;
+		if(target.w==Float.MAX_VALUE) speed_cmd.type_mask = speed_cmd.type_mask | 0b000100000000000;
+
+		// constraints
+		checkAbsoluteSpeeds(target);
+
+		speed_cmd.vx       = target.x;
+		speed_cmd.vy       = target.y;
+		speed_cmd.vz       = target.z;
+		speed_cmd.yaw_rate = target.w;
+
+		speed_cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
+
+		if(!control.sendMAVLinkMessage(speed_cmd))
+			enabled = false;
+	}
+
+	private void checkAbsoluteSpeeds(Vector4D_F32 s) {
+
 		if(s.x >  max_speed )  s.x =  max_speed;
 		if(s.y >  max_speed )  s.y =  max_speed;
 		if(s.z >  max_speed )  s.z =  max_speed;
 		if(s.x < -max_speed )  s.x = -max_speed;
 		if(s.y < -max_speed )  s.y = -max_speed;
 		if(s.z < -max_speed )  s.z = -max_speed;
+
+		if(s.w >   MAX_YAW_SPEED )  s.w =   MAX_YAW_SPEED;
+		if(s.w <  -MAX_YAW_SPEED )  s.w =  -MAX_YAW_SPEED;
 	}
-
-	private void sendPositionControlToVehice(Vector4D_F32 target) {
-
-		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
-		cmd.target_component = 1;
-		cmd.target_system    = 1;
-		cmd.type_mask        = 0b000101111111000;
-
-		cmd.x   = target.x;
-		cmd.y   = target.y;
-		cmd.z   = target.z;
-		cmd.yaw = Float.isNaN(target.w)? model.attitude.y : MSPMathUtils.normAngle(target.w);
-
-		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000001;
-		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000010;
-		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000000100;
-		if(target.w==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000010000000000;
-
-		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
-
-		if(!control.sendMAVLinkMessage(cmd))
-			enabled = false;
-	}
-
-	private void sendSpeedControlToVehice(Vector4D_F32 target, int frame) {
-
-		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
-		cmd.target_component = 1;
-		cmd.target_system    = 1;
-		cmd.type_mask        = 0b000011111000111;
-
-		cmd.vx       = target.x;
-		cmd.vy       = target.y;
-		cmd.vz       = target.z;
-		cmd.yaw_rate = target.w;
-
-		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000001000;
-		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000010000;
-		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
-		if(target.w==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000100000000000;
-
-		cmd.coordinate_frame = frame;
-
-		if(!control.sendMAVLinkMessage(cmd))
-			enabled = false;
-	}
-
-	private void sendSpeedControlToVehice(Vector3D_F32 target, float yaw) {
-
-		msg_set_position_target_local_ned cmd = new msg_set_position_target_local_ned(1,2);
-		cmd.target_component = 1;
-		cmd.target_system    = 1;
-		cmd.type_mask        = 0b00000111000111;
-
-		cmd.vx       = target.x;
-		cmd.vy       = target.y;
-		cmd.vz       = target.z;
-		cmd.yaw      = MSPMathUtils.normAngle(yaw);
-
-		if(target.x==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000001000;
-		if(target.y==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000010000;
-		if(target.z==Float.MAX_VALUE) cmd.type_mask = cmd.type_mask | 0b000000000100000;
-
-		cmd.coordinate_frame = MAV_FRAME.MAV_FRAME_LOCAL_NED;
-
-		if(!control.sendMAVLinkMessage(cmd))
-			enabled = false;
-	}
-
-
 
 	private void fireAction(DataModel model,float delta) {
 		if(action_listener!=null && !already_fired) {

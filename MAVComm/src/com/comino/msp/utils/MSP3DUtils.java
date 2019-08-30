@@ -57,6 +57,11 @@ public class MSP3DUtils {
 		float dx = t.getX() - c.getX();
 		float dy = t.getY() - c.getY();
 
+		if(dx == 0 && dy >= 0)
+			return  (float)Math.PI/2;
+		if(dx == 0 && dy < 0)
+			return -(float)Math.PI/2;
+
 		if((dx >= 0 && dy > 0) || (dx >= 0 && dy < 0))
 			return (float)Math.atan(dy/dx);
 		if((dx < 0 && dy >= 0) || (dx < 0 && dy < 0))
@@ -134,6 +139,13 @@ public class MSP3DUtils {
 			return (float)(Math.atan(dy/dx)+Math.PI);
 
 		return Float.NaN;
+	}
+
+	public static void rotateXY(Vector4D_F32 in, Vector4D_F32 out, float angle) {
+		out.x =  in.x * (float)Math.cos(angle) + in.y * (float)Math.sin(angle);
+		out.y = -in.x * (float)Math.sin(angle) + in.y * (float)Math.cos(angle);
+		out.z = in.z;
+		out.w = in.w;
 	}
 
 

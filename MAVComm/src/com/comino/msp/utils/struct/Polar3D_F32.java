@@ -41,7 +41,11 @@ public class Polar3D_F32 {
 	public void set(float vx, float vy, float vz) {
 		this.value    = (float)Math.sqrt((vx)*(vx) + (vy)*(vy) + (vz)*(vz));
 		this.angle_xy = getDirection(vy, vx);
-		this.angle_xz = (float)Math.asin((vz)/this.value);
+
+		if(this.value !=0)
+		  this.angle_xz = (float)Math.asin((vz)/this.value);
+		else
+		  this.angle_xz = 0;
 
 		this.angle_xy = MSPMathUtils.normAngle(this.angle_xy);
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);

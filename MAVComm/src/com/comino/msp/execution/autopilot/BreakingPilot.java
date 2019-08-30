@@ -60,7 +60,7 @@ public class BreakingPilot extends AutoPilotBase {
 				}
 
 				ctl.value = Math.min(ctl.value,  speedStep * ( obstacle.value ) );
-				if(ctl.value < 0.3) ctl.value = 0.3f;
+				if(ctl.value < 0.0 || ( tooClose && isStopped)) ctl.value = 0.0f;
 
 			}
 		});
@@ -100,6 +100,7 @@ public class BreakingPilot extends AutoPilotBase {
 
 			if(obstacle.value > OBSTACLE_MINDISTANCE_1MS+ROBOT_RADIUS || relAngle > maxAngle) {
 				tooClose = false;
+				isStopped = false;
 			}
 
 
