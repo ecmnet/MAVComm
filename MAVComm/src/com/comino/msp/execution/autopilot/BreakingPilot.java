@@ -1,27 +1,15 @@
 package com.comino.msp.execution.autopilot;
 
-import org.mavlink.messages.MAV_CMD;
-import org.mavlink.messages.MAV_MODE_FLAG;
 import org.mavlink.messages.MAV_SEVERITY;
-import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
 import org.mavlink.messages.lquac.msg_msp_micro_slam;
 
 import com.comino.libs.TrajMathLib;
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
-import com.comino.mav.mavlink.MAV_CUST_MODE;
-import com.comino.msp.execution.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.offboard.OffboardManager;
-import com.comino.msp.model.segment.Status;
-import com.comino.msp.slam.map2D.filter.impl.DenoiseMapFilter;
-import com.comino.msp.slam.vfh.LocalVFH2D;
-import com.comino.msp.utils.MSP3DUtils;
 import com.comino.msp.utils.MSPMathUtils;
 import com.comino.msp.utils.struct.Polar3D_F32;
-
-import georegression.struct.point.Vector3D_F32;
-import georegression.struct.point.Vector4D_F32;
 
 public class BreakingPilot extends AutoPilotBase {
 
@@ -30,10 +18,13 @@ public class BreakingPilot extends AutoPilotBase {
 
 	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
 	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
+	private static final float MIN_BREAKING_SPEED           = 0.2f;
+	private static final float BREAKING_ACCELERATION       	= 3f;
 
-	private float 				speedStep     = 0;
 	private boolean             tooClose      = false;
 	private boolean             isStopped     = false;
+
+	private float				breakingAcceleration = 0;
 
 	final private Polar3D_F32   obstacle      = new Polar3D_F32();
 	final private Polar3D_F32   plannedPath   = new Polar3D_F32();
@@ -45,22 +36,28 @@ public class BreakingPilot extends AutoPilotBase {
 		obstacle.value = Float.POSITIVE_INFINITY;
 
 		// calculate speed constraints considering the distance to obstacles
-		offboard.registerExternalConstraintsListener((tms, current, way, path, ctl) -> {
+		offboard.registerExternalConstraintsListener((delta_sec, speed, path, ctl) -> {
 
 			plannedPath.set(path);
 
 			if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP)) {
-				if(Float.isInfinite(obstacle.value)) {
-					speedStep = 0;
+
+				if(Float.isInfinite(obstacle.value) || ctl.value < MIN_BREAKING_SPEED ) {
 					return;
 				}
 
-				if(speedStep == 0) {
-					speedStep = 1.4f / ( obstacle.value );
-				}
+//				if( ctl.value > ctl.value * ( obstacle.value - OBSTACLE_MINDISTANCE_0MS ) / OBSTACLE_MINDISTANCE_1MS + MIN_BREAKING_SPEED) {
+//					ctl.value = ctl.value - BREAKING_ACCELERATION * delta_sec;
+//				}
 
-				ctl.value = Math.min(ctl.value,  speedStep * ( obstacle.value ) );
-				if(ctl.value < 0.0 || ( tooClose && isStopped)) ctl.value = 0.0f;
+				breakingAcceleration = BREAKING_ACCELERATION * ( obstacle.value - OBSTACLE_MINDISTANCE_0MS ) / OBSTACLE_MINDISTANCE_1MS;
+
+
+				if(obstacle.value < TrajMathLib.getAvoidanceDistance(ctl.value, OBSTACLE_MINDISTANCE_0MS, OBSTACLE_MINDISTANCE_1MS))
+				   ctl.value = Math.min(ctl.value, ctl.value - breakingAcceleration * delta_sec);
+
+
+				if(ctl.value < MIN_BREAKING_SPEED || ( tooClose && isStopped)) ctl.value = MIN_BREAKING_SPEED;
 
 			}
 		});

@@ -33,7 +33,7 @@ import georegression.struct.point.Vector4D_F32;
 public abstract class AutoPilotBase implements Runnable {
 
 	protected static final int   CERTAINITY_THRESHOLD      	= 3;
-	protected static final float WINDOWSIZE       			= 4.0f;
+	protected static final float WINDOWSIZE       			= 3.0f;
 
 	private static AutoPilotBase  autopilot    = null;
 
@@ -47,6 +47,8 @@ public abstract class AutoPilotBase implements Runnable {
 	protected boolean               flowCheck  = false;
 
 	protected boolean              isRunning   = false;
+
+	protected final Vector4D_F32       takeoff = new Vector4D_F32();
 
 	protected ILocalMapFilter        mapFilter = null;
 
@@ -107,6 +109,7 @@ public abstract class AutoPilotBase implements Runnable {
 					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 
 			this.takeoffCompleted();
+			this.takeoff.set(model.target_state.l_x,model.target_state.l_y,model.target_state.l_z,model.target_state.h);
 
 			control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 
@@ -153,6 +156,9 @@ public abstract class AutoPilotBase implements Runnable {
 		switch(mode) {
 		case MSP_AUTOCONTROL_MODE.ABORT:
 			abort();
+			break;
+		case MSP_AUTOCONTROL_ACTION.RTL:
+			returnToLand();
 			break;
 		case MSP_AUTOCONTROL_ACTION.SAVE_MAP2D:
 			saveMap2D();
@@ -255,6 +261,21 @@ public abstract class AutoPilotBase implements Runnable {
 		} else {
 			offboard.start(OffboardManager.MODE_LOITER);
 		}
+	}
+
+	public void returnToLand() {
+
+		logger.writeLocalMsg("[msp] Autopilot: Return to launch.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
+
+		offboard.registerActionListener((m,d) -> {
+			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
+		});
+
+		offboard.setTarget(takeoff);
+		offboard.start(OffboardManager.MODE_SPEED_POSITION);
 	}
 
 

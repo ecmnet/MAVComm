@@ -37,6 +37,6 @@ import com.comino.msp.utils.struct.Polar3D_F32;
 
 public interface IOffboardExternalControl {
 
-	public void determine(long tms, Polar3D_F32 current, Polar3D_F32 way, Polar3D_F32 path , Polar3D_F32 control);
+	public void determine(long tms, Polar3D_F32 current, Polar3D_F32 path , Polar3D_F32 control);
 
 }

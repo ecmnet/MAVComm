@@ -139,37 +139,37 @@ public class LVH2DPilot extends AutoPilotBase {
 		isAvoiding = false;
 	}
 
-	@Override
-	public void setMode(boolean enable, int mode, float param) {
-		switch(mode) {
-		case MSP_AUTOCONTROL_ACTION.RTL:
-			if(enable)
-				returnToLand(3000);
-			break;
-//		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
-//			return_along_path(enable);
+//	@Override
+//	public void setMode(boolean enable, int mode, float param) {
+//		switch(mode) {
+//		case MSP_AUTOCONTROL_ACTION.RTL:
+//			if(enable)
+//				returnToLand();
 //			break;
-		}
-		super.setMode(enable, mode, param);
-	}
+////		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
+////			return_along_path(enable);
+////			break;
+//		}
+//		super.setMode(enable, mode, param);
+//	}
 
-	public void returnToLand(int delay_ms) {
-
-		final Vector4D_F32 target = new Vector4D_F32(0,0,model.state.l_z,0);
-		logger.writeLocalMsg("[msp] Autopilot: Return to land.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-
-		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
-		isAvoiding = false;
-
-		offboard.registerActionListener((m,d) -> {
-			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
-		    offboard.finalize();
-		});
-
-		offboard.setTarget(target);
-		offboard.start(OffboardManager.MODE_SPEED_POSITION);
-	}
+//	public void returnToLand(int delay_ms) {
+//
+//		final Vector4D_F32 target = new Vector4D_F32(0,0,model.state.l_z,0);
+//		logger.writeLocalMsg("[msp] Autopilot: Return to land.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+//
+//		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
+//		isAvoiding = false;
+//
+//		offboard.registerActionListener((m,d) -> {
+//			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
+//		    offboard.finalize();
+//		});
+//
+//		offboard.setTarget(target);
+//		offboard.start(OffboardManager.MODE_SPEED_POSITION);
+//	}
 
 	public void stop_at_position() {
 		offboard.setCurrentAsTarget();
@@ -200,7 +200,7 @@ public class LVH2DPilot extends AutoPilotBase {
 		offboard.setTarget(projected);
 
 		// determine velocity setpoint via callback
-		offboard.registerExternalControlListener((tms, current, way, path, ctl) -> {
+		offboard.registerExternalControlListener((tms, current, path, ctl) -> {
 
 			if(!model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
 				offboard.setCurrentAsTarget();
