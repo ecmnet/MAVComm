@@ -50,7 +50,7 @@ public class ExecutorService {
 	private static ScheduledThreadPoolExecutor high_pool = null;
 
 	public static void create() {
-		low_pool  = new ScheduledThreadPoolExecutor(5);
+		low_pool  = new ScheduledThreadPoolExecutor(10);
 		low_pool.setThreadFactory(new DaemonThreadFactory(Thread.NORM_PRIORITY-2,"LowPool"));
 		low_pool.allowCoreThreadTimeOut(false);
 		low_pool.setRemoveOnCancelPolicy(true);

@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2017,2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2017,2019 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -146,13 +146,10 @@ public class StatusManager implements Runnable {
 	public void run() {
 
 
-		checkTimeouts();
-
 		status_current.set(model.sys);
 
 		if(status_old.isEqual(status_current))
 			return;
-
 
 		if (status_current.isStatus(Status.MSP_ARMED))
 			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
@@ -160,6 +157,9 @@ public class StatusManager implements Runnable {
 
 		if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
 			t_armed_start = System.currentTimeMillis();
+
+//		if(status_old.nav_state!=status_current.nav_state)
+//			System.out.println(status_old.nav_state+" -> "+status_current.nav_state);
 
 		try {
 
@@ -190,35 +190,29 @@ public class StatusManager implements Runnable {
 					break;
 				case TYPE_PX4_NAVSTATE:
 
-					if(status_current.nav_state != status_old.nav_state) {
-						//     	System.out.println("Check: "+entry.state +" => "+entry.mask+" ("+status_current.nav_state+" vs "+status_old.nav_state+")");
-						switch(entry.state) {
-						case EDGE_BOTH:
-							if((status_current.nav_state != entry.mask && status_old.nav_state == entry.mask ) ||
-									(status_current.nav_state == entry.mask && status_old.nav_state != entry.mask )
-									) {
-								update_callback(entry.listener, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-								// System.out.println("Trigger:"+status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
-							}
-							break;
-						case EDGE_RISING:
-							if(status_current.nav_state == entry.mask && status_old.nav_state!=entry.mask) {
-								update_callback(entry.listener, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-								// System.out.println(status_old.nav_state+" -> "+status_current.nav_state+" Mask="+entry.mask);
-							}
-							break;
-						case EDGE_FALLING:
-
-							if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
-								update_callback(entry.listener, status_current);
-								entry.last_triggered = System.currentTimeMillis();
-								 // System.out.println(status_old.nav_state+" -> "+status_current.nav_state+" Mask="+entry.mask);
-							}
-							break;
+					switch(entry.state) {
+					case EDGE_BOTH:
+						if((status_current.nav_state != entry.mask && status_old.nav_state == entry.mask ) ||
+								(status_current.nav_state == entry.mask && status_old.nav_state != entry.mask )) {
+							update_callback(entry.listener, status_current);
+							entry.last_triggered = System.currentTimeMillis();
 						}
+						break;
+					case EDGE_RISING:
+						if(status_current.nav_state == entry.mask && status_old.nav_state!=entry.mask) {
+							update_callback(entry.listener, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+						break;
+					case EDGE_FALLING:
+
+						if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
+							update_callback(entry.listener, status_current);
+							entry.last_triggered = System.currentTimeMillis();
+						}
+						break;
 					}
+
 					break;
 				case TYPE_RESERVED:
 
@@ -263,6 +257,8 @@ public class StatusManager implements Runnable {
 		}
 
 		status_old.set(status_current);
+
+		checkTimeouts();
 	}
 
 	private void update_callback(final IMSPStatusChangedListener listener, final Status current ) {
@@ -318,7 +314,7 @@ public class StatusManager implements Runnable {
 
 		if (checkTimeOut(model.sys.tms, TIMEOUT_CONNECTED) && model.sys.isStatus(Status.MSP_CONNECTED)) {
 			model.sys.setStatus(Status.MSP_CONNECTED, false);
-		//	model.sys.setStatus(Status.MSP_ACTIVE, false);
+			//	model.sys.setStatus(Status.MSP_ACTIVE, false);
 			model.sys.tms = model.sys.getSynchronizedPX4Time_us();
 		}
 	}
