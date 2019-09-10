@@ -37,7 +37,7 @@ import com.comino.msp.model.segment.Status;
 
 public interface IMSPStatusChangedListener {
 
-   public void update(Status oldStatus, Status newStatus);
+   public void update(Status newStatus);
 
 
 }

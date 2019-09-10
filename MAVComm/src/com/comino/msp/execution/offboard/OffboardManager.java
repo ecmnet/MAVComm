@@ -116,10 +116,10 @@ public class OffboardManager implements Runnable {
 		System.out.println("Offboard: speed constraints: "+max_speed+" m/s ");
 
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE,
-				Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_FALLING, (o,n) -> {
+				Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_FALLING, (n) -> {
 					valid_setpoint = false;
 				});
-		control.getStatusManager().addListener(Status.MSP_ARMED, (o,n) -> {
+		control.getStatusManager().addListener(Status.MSP_ARMED, (n) -> {
 			model.slam.clear();
 			model.slam.tms = model.sys.getSynchronizedPX4Time_us();
 
@@ -249,7 +249,7 @@ public class OffboardManager implements Runnable {
 
 		already_fired = false; if(!new_setpoint) valid_setpoint = false;
 
-		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_INFO);
+		logger.writeLocalMsg("[msp] OffboardUpdater started",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_ACTION.OFFBOARD_UPDATER, true);
 
 		tms = System.currentTimeMillis(); last_update_tms = tms;
@@ -422,7 +422,6 @@ public class OffboardManager implements Runnable {
 					sendSpeedControlToVehice(control_speed, MAV_FRAME.MAV_FRAME_LOCAL_NED);
 				}
 
-				//	System.out.println(ctl+ "/ "+path);
 				toModel(ctl.value,target,current);
 
 				break;

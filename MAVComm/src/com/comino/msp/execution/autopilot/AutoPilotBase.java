@@ -2,6 +2,7 @@ package com.comino.msp.execution.autopilot;
 
 import org.mavlink.messages.MAV_CMD;
 import org.mavlink.messages.MAV_MODE_FLAG;
+import org.mavlink.messages.MAV_RESULT;
 import org.mavlink.messages.MAV_SEVERITY;
 import org.mavlink.messages.MSP_AUTOCONTROL_ACTION;
 import org.mavlink.messages.MSP_AUTOCONTROL_MODE;
@@ -98,27 +99,40 @@ public abstract class AutoPilotBase implements Runnable {
 		// Auto-Takeoff: Switch to Offboard and enable ObstacleAvoidance as soon as takeoff completed
 		//
 		// TODO: Landing during takeoff switches to offboard mode here => should directly land instead
-		//       Update: 		works in SITL, but not on vehicle (timing?)
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (o,n) -> {
+		//       Update: 		After takeoff the mode is set to POSCTL, even if AUTOLAND was triggered
+
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_AUTO_TAKEOFF, StatusManager.EDGE_FALLING, (n) -> {
+
 			if(n.nav_state == Status.NAVIGATION_STATE_AUTO_LAND)
 				return;
+
 			offboard.setCurrentSetPointAsTarget();
 			offboard.start(OffboardManager.MODE_LOITER);
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
-					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
-					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 
-			this.takeoffCompleted();
-			this.takeoff.set(model.target_state.l_x,model.target_state.l_y,model.target_state.l_z,model.target_state.h);
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE, (cmd, result) -> {
+				if(result != MAV_RESULT.MAV_RESULT_ACCEPTED) {
+					offboard.stop();
+					control.writeLogMessage(new LogMessage("[msp] Switching to offboard failed ("+result+").", MAV_SEVERITY.MAV_SEVERITY_WARNING));
+				}
+			}, MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+			   MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_OFFBOARD, 0 );
 
 			control.writeLogMessage(new LogMessage("[msp] Auto-takeoff completed.", MAV_SEVERITY.MAV_SEVERITY_NOTICE));
 
+		});
 
+		// takeoff completed action
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_RISING, (n) -> {
+			this.takeoffCompleted();
+			this.takeoff.set(model.target_state.l_x,model.target_state.l_y,model.target_state.l_z,model.target_state.h);
 		});
 
 		// Stop offboard updater as soon as landed
-		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (o,n) -> {
+		control.getStatusManager().addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_LANDED, StatusManager.EDGE_RISING, (n) -> {
 			offboard.stop();
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_DO_SET_MODE,
+					MAV_MODE_FLAG.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED | MAV_MODE_FLAG.MAV_MODE_FLAG_SAFETY_ARMED,
+					MAV_CUST_MODE.PX4_CUSTOM_MAIN_MODE_MANUAL, 0 );
 		});
 
 	}
@@ -267,11 +281,11 @@ public abstract class AutoPilotBase implements Runnable {
 
 		logger.writeLocalMsg("[msp] Autopilot: Return to launch.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 
-		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
+		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.COLLISION_PREVENTION, true);
 
 		offboard.registerActionListener((m,d) -> {
 			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
+			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 1.0f, 0, 0, 0.05f );
 		});
 
 		offboard.setTarget(takeoff);

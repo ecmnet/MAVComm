@@ -101,7 +101,7 @@ public class MAVProxyController implements IMAVMSPController, Runnable {
 		model.sys.setStatus(Status.MSP_SITL, mode == MAVController.MODE_NORMAL);
 		model.sys.setStatus(Status.MSP_PROXY, true);
 
-		status_manager.addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_CONNECTED, StatusManager.EDGE_RISING, (a,b) -> {
+		status_manager.addListener(StatusManager.TYPE_PX4_STATUS, Status.MSP_CONNECTED, StatusManager.EDGE_RISING, (a) -> {
 			model.sys.setStatus(Status.MSP_ACTIVE, true);
 			System.out.println("Connection to device established...");
 		});

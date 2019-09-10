@@ -84,21 +84,21 @@ public class Status extends Segment {
 	public static final  int NAVIGATION_STATE_MANUAL 				= 0;		// Manual mode
 	public static final  int NAVIGATION_STATE_ALTCTL 				= 1;		// Altitude control mode
 	public static final  int NAVIGATION_STATE_POSCTL 				= 2;		// Position control mode
-	public static final  int NAVIGATION_STATE_AUTO_MISSION 		= 3;		// Auto mission mode
-	public static final  int NAVIGATION_STATE_AUTO_LOITER 		= 4;		// Auto loiter mode
-	public static final  int NAVIGATION_STATE_AUTO_RTL 			= 5;		// Auto return to launch mode
+	public static final  int NAVIGATION_STATE_AUTO_MISSION 		    = 3;		// Auto mission mode
+	public static final  int NAVIGATION_STATE_AUTO_LOITER 		    = 4;		// Auto loiter mode
+	public static final  int NAVIGATION_STATE_AUTO_RTL 			    = 5;		// Auto return to launch mode
 	public static final  int NAVIGATION_STATE_AUTO_RCRECOVER 		= 6;		// RC recover mode
 	public static final  int NAVIGATION_STATE_AUTO_RTGS 			= 7;		// Auto return to groundstation on data link loss
-	public static final  int NAVIGATION_STATE_AUTO_LANDENGFAIL 	= 8;	 	// Auto land on engine failure
-	public static final  int NAVIGATION_STATE_AUTO_LANDGPSFAIL 	= 9;		// Auto land on gps failure (e.g. open loop loiter down)
-	public static final  int NAVIGATION_STATE_ACRO 				= 10	;	// Acro mode
+	public static final  int NAVIGATION_STATE_AUTO_LANDENGFAIL 	    = 8;	 	// Auto land on engine failure
+	public static final  int NAVIGATION_STATE_AUTO_LANDGPSFAIL 	    = 9;		// Auto land on gps failure (e.g. open loop loiter down)
+	public static final  int NAVIGATION_STATE_ACRO 				    = 10	;	// Acro mode
 	public static final  int NAVIGATION_STATE_UNUSED 				= 11	;	// Free slot
-	public static final  int NAVIGATION_STATE_DESCEND 			= 12	;	// Descend mode (no position control)
-	public static final  int NAVIGATION_STATE_TERMINATION 		= 13	;	// Termination mode
-	public static final  int NAVIGATION_STATE_OFFBOARD 			= 14;
-	public static final  int NAVIGATION_STATE_STAB 				= 15;	// Stabilized mode
+	public static final  int NAVIGATION_STATE_DESCEND 			    = 12	;	// Descend mode (no position control)
+	public static final  int NAVIGATION_STATE_TERMINATION 		    = 13	;	// Termination mode
+	public static final  int NAVIGATION_STATE_OFFBOARD 			    = 14;
+	public static final  int NAVIGATION_STATE_STAB 				    = 15;	// Stabilized mode
 	public static final  int NAVIGATION_STATE_RATTITUDE 			= 16	;	// Rattitude (aka "flip") mode
-	public static final  int NAVIGATION_STATE_AUTO_TAKEOFF 		= 17;	// Takeoff
+	public static final  int NAVIGATION_STATE_AUTO_TAKEOFF 		    = 17;	// Takeoff
 	public static final  int NAVIGATION_STATE_AUTO_LAND 			= 18	;	// Land
  	public static final  int NAVIGATION_STATE_AUTO_FOLLOW_TARGET 	= 19;	// Auto Follow
 	public static final  int NAVIGATION_STATE_AUTO_PRECLAND 		= 20	; 	// Precision land with landing target
@@ -139,7 +139,7 @@ public class Status extends Segment {
 		load_m     = s.load_m;
 		drops_p    = s.drops_p;
 		imu_temp   = s.imu_temp;
-		
+
 		px4_status = s.px4_status;
 		nav_state  = s.nav_state;
 		autopilot  = s.autopilot;
@@ -247,7 +247,7 @@ public class Status extends Segment {
 	public void clear() {
 		load_m	  	  = 0;
 		load_p	  	  = 0;
-		imu_temp	      = 0;
+		imu_temp	  = 0;
 		drops_p   	  = 0;
 		error1        = 0;
 		t_armed_ms    = 0;

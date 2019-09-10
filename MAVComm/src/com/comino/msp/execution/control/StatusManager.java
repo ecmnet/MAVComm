@@ -170,19 +170,19 @@ public class StatusManager implements Runnable {
 					switch(entry.state) {
 					case EDGE_BOTH:
 						if(status_current.isStatusChanged(status_old, entry.mask)) {
-							entry.listener.update(status_old, status_current);
+							update_callback(entry.listener, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
 					case EDGE_RISING:
 						if(status_current.isStatusChanged(status_old, entry.mask, true)) {
-							entry.listener.update(status_old, status_current);
+							update_callback(entry.listener, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
 					case EDGE_FALLING:
 						if(status_current.isStatusChanged(status_old, entry.mask, false)) {
-							entry.listener.update(status_old, status_current);
+							update_callback(entry.listener, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
@@ -197,24 +197,24 @@ public class StatusManager implements Runnable {
 							if((status_current.nav_state != entry.mask && status_old.nav_state == entry.mask ) ||
 									(status_current.nav_state == entry.mask && status_old.nav_state != entry.mask )
 									) {
-								entry.listener.update(status_old, status_current);
+								update_callback(entry.listener, status_current);
 								entry.last_triggered = System.currentTimeMillis();
-								//		System.out.println("Trigger:"+status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
+								// System.out.println("Trigger:"+status_current.nav_state+" vs "+status_old.nav_state+" => B "+entry.mask);
 							}
 							break;
 						case EDGE_RISING:
-							if(status_current.nav_state != entry.mask && status_old.nav_state!=entry.mask) {
-								entry.listener.update(status_old, status_current);
+							if(status_current.nav_state == entry.mask && status_old.nav_state!=entry.mask) {
+								update_callback(entry.listener, status_current);
 								entry.last_triggered = System.currentTimeMillis();
-								//		System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => R "+entry.mask);
+								// System.out.println(status_old.nav_state+" -> "+status_current.nav_state+" Mask="+entry.mask);
 							}
 							break;
 						case EDGE_FALLING:
 
 							if(status_current.nav_state != entry.mask && status_old.nav_state==entry.mask) {
-								entry.listener.update(status_old, status_current);
+								update_callback(entry.listener, status_current);
 								entry.last_triggered = System.currentTimeMillis();
-								//	System.out.println(status_current.nav_state+" vs "+status_old.nav_state+" => F "+entry.mask);
+								 // System.out.println(status_old.nav_state+" -> "+status_current.nav_state+" Mask="+entry.mask);
 							}
 							break;
 						}
@@ -230,20 +230,20 @@ public class StatusManager implements Runnable {
 					switch(entry.state) {
 					case EDGE_BOTH:
 						if(status_current.isSensorChanged(status_old, entry.mask)) {
-							entry.listener.update(status_old, status_current);
+							update_callback(entry.listener, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
 					case EDGE_RISING:
 						if(status_current.isSensorChanged(status_old, entry.mask, true)) {
-							entry.listener.update(status_old, status_current);
+							update_callback(entry.listener, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
 					case EDGE_FALLING:
 
 						if(status_current.isSensorChanged(status_old, entry.mask, false)) {
-							entry.listener.update(status_old, status_current);
+							update_callback(entry.listener, status_current);
 							entry.last_triggered = System.currentTimeMillis();
 						}
 						break;
@@ -252,8 +252,7 @@ public class StatusManager implements Runnable {
 
 				case TYPE_MSP_AUTOPILOT:
 					if(status_current.isAutopilotModeChanged(status_old, entry.mask)) {
-
-						entry.listener.update(status_old, status_current);
+						update_callback(entry.listener, status_current);
 						entry.last_triggered = System.currentTimeMillis();
 					}
 					break;
@@ -262,8 +261,17 @@ public class StatusManager implements Runnable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		status_old.set(status_current);
 
+		status_old.set(status_current);
+	}
+
+	private void update_callback(final IMSPStatusChangedListener listener, final Status current ) {
+
+		ExecutorService.get().execute(() -> {
+
+			listener.update(current);
+
+		});
 
 	}
 

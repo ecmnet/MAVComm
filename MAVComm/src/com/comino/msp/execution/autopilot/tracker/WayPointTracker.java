@@ -70,14 +70,14 @@ public class WayPointTracker implements Runnable {
 		this.model = control.getCurrentModel();
 		System.out.println("WaypointTracker initialized (max. duration: "+MAX_WAYPOINTS*RATE_MS / 1000 +" seconds)");
 
-		control.getStatusManager().addListener(Status.MSP_LANDED, (o,n) -> {
+		control.getStatusManager().addListener(Status.MSP_LANDED, (n) -> {
 			if(n.isStatus(Status.MSP_LANDED))
 				stop();
 			else
 				start();
 		});
 
-		control.getStatusManager().addListener(Status.MSP_CONNECTED, (o,n) -> {
+		control.getStatusManager().addListener(Status.MSP_CONNECTED, (n) -> {
 			if(!n.isStatus(Status.MSP_LANDED)) {
 				start();
 			}

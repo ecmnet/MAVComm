@@ -207,7 +207,7 @@ public class MAVSimController extends MAVController implements IMAVController {
 
 			if(!old.isEqual(model.sys)) {
 				for(IMSPStatusChangedListener listener : modeListener) {
-					listener.update(old, model.sys);
+					listener.update(model.sys);
 				}
 			}
 
