@@ -137,6 +137,7 @@ public class BreakingPilot extends AutoPilotBase {
 
 	protected void takeoffCompleted() {
 		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP,true);
+		super.takeoffCompleted();
 	}
 
 
