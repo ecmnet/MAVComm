@@ -45,7 +45,6 @@ import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.control.StatusManager;
-import com.comino.msp.execution.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
@@ -157,7 +156,7 @@ public abstract class AutoPilotBase implements Runnable {
 		// takeoff completed action
 		control.getStatusManager().addListener(StatusManager.TYPE_PX4_NAVSTATE, Status.NAVIGATION_STATE_OFFBOARD, StatusManager.EDGE_RISING, (n) -> {
 			this.takeoffCompleted();
-			this.takeoff.set(model.target_state.l_x,model.target_state.l_y,model.target_state.l_z,model.target_state.h);
+			this.takeoff.set(model.target_state.l_x,model.target_state.l_y,model.target_state.l_z,0);
 		});
 
 		// Stop offboard updater as soon as landed and set in manual mode
