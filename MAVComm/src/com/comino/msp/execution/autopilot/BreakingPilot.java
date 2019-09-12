@@ -52,12 +52,12 @@ public class BreakingPilot extends AutoPilotBase {
 	private static final float OBSTACLE_MINDISTANCE_0MS  	= 0.5f;
 	private static final float OBSTACLE_MINDISTANCE_1MS  	= 1.5f;
 	private static final float MIN_BREAKING_SPEED           = 0.2f;
-	private static final float BREAKING_ACCELERATION       	= 3f;
+	private static final float BREAKING_ACCELERATION       	= 0.5f;
 
 	private boolean             tooClose      = false;
 	private boolean             isStopped     = false;
 
-	private float				breakingAcceleration = 0;
+	private float				max_speed_obstacle = 0;
 
 	final private Polar3D_F32   obstacle      = new Polar3D_F32();
 	final private Polar3D_F32   plannedPath   = new Polar3D_F32();
@@ -79,15 +79,10 @@ public class BreakingPilot extends AutoPilotBase {
 					return;
 				}
 
-//				if( ctl.value > ctl.value * ( obstacle.value - OBSTACLE_MINDISTANCE_0MS ) / OBSTACLE_MINDISTANCE_1MS + MIN_BREAKING_SPEED) {
-//					ctl.value = ctl.value - BREAKING_ACCELERATION * delta_sec;
-//				}
 
-				breakingAcceleration = BREAKING_ACCELERATION * ( obstacle.value - OBSTACLE_MINDISTANCE_0MS ) / OBSTACLE_MINDISTANCE_1MS;
-
-
-				if(obstacle.value < TrajMathLib.getAvoidanceDistance(ctl.value, OBSTACLE_MINDISTANCE_0MS, OBSTACLE_MINDISTANCE_1MS))
-				   ctl.value = Math.min(ctl.value, ctl.value - breakingAcceleration * delta_sec);
+				max_speed_obstacle = ( 0.5f - 0.3f) / ( OBSTACLE_MINDISTANCE_1MS - OBSTACLE_MINDISTANCE_0MS) * obstacle.value;
+				if(ctl.value > max_speed_obstacle && tooClose )
+					ctl.value = ctl.value - BREAKING_ACCELERATION * delta_sec;
 
 
 				if(ctl.value < MIN_BREAKING_SPEED || ( tooClose && isStopped)) ctl.value = MIN_BREAKING_SPEED;
