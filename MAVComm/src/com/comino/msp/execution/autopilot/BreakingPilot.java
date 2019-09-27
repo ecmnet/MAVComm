@@ -58,6 +58,7 @@ public class BreakingPilot extends AutoPilotBase {
 	private boolean             isStopped     = false;
 
 	private float				max_speed_obstacle = 0;
+	private float               relAngle = 0;
 
 	final private Polar3D_F32   obstacle      = new Polar3D_F32();
 	final private Polar3D_F32   plannedPath   = new Polar3D_F32();
@@ -76,8 +77,13 @@ public class BreakingPilot extends AutoPilotBase {
 			if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP)) {
 
 				if(Float.isInfinite(obstacle.value) || ctl.value < MIN_BREAKING_SPEED ) {
-					return;
+					return false;
 				}
+
+				float obs_sec = (float)Math.cos(relAngle) * obstacle.value / speed.value;
+                if(obs_sec < 0)
+                	return false;
+
 
 
 				max_speed_obstacle = ( 0.5f - 0.3f) / ( OBSTACLE_MINDISTANCE_1MS - OBSTACLE_MINDISTANCE_0MS) * obstacle.value;
@@ -86,8 +92,10 @@ public class BreakingPilot extends AutoPilotBase {
 
 
 				if(ctl.value < MIN_BREAKING_SPEED || ( tooClose && isStopped)) ctl.value = MIN_BREAKING_SPEED;
+				return true;
 
 			}
+			return false;
 		});
 
 		start();
@@ -96,7 +104,7 @@ public class BreakingPilot extends AutoPilotBase {
 	public void run() {
 
 		msg_msp_micro_slam slam = new msg_msp_micro_slam(2,1);
-		float relAngle = 0; final float maxAngle = (float)Math.PI/2;
+		final float maxAngle = (float)Math.PI/2;
 
 		while(isRunning) {
 
@@ -110,20 +118,20 @@ public class BreakingPilot extends AutoPilotBase {
 //			System.out.println("PATH: "+MSPMathUtils.fromRad(plannedPath.angle_xy)+"°  OBSTACLE:"+MSPMathUtils.fromRad(obstacle.angle_xy)+"° Difference: "+
 //					MSPMathUtils.fromRad(relAngle)+"°  rel.Distance: "+obstacle.value);
 
-			if(obstacle.value < OBSTACLE_MINDISTANCE_1MS  && !tooClose && relAngle < maxAngle) {
+			if(obstacle.value < OBSTACLE_MINDISTANCE_1MS  && !tooClose && Math.abs(Math.cos(relAngle)) > 0.2f ) {
 				tooClose = true;
 				logger.writeLocalMsg("[msp] Collision warning. Breaking.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			}
 
 
-			if(obstacle.value < OBSTACLE_MINDISTANCE_0MS && !isStopped && relAngle < maxAngle) {
+			if(obstacle.value < OBSTACLE_MINDISTANCE_0MS && !isStopped && Math.abs(Math.cos(relAngle)) > 0.2f) {
 				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_STOP))
 					stop_at_position();
 				isStopped = true;
 			}
 
 
-			if(obstacle.value > OBSTACLE_MINDISTANCE_1MS+ROBOT_RADIUS || relAngle > maxAngle) {
+			if(obstacle.value > OBSTACLE_MINDISTANCE_1MS+ROBOT_RADIUS || Math.abs(Math.cos(relAngle)) < 0.2f) {
 				tooClose = false;
 				isStopped = false;
 			}

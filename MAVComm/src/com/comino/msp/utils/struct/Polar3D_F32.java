@@ -81,7 +81,7 @@ public class Polar3D_F32 {
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
 	}
 
-	public void contraint(float max_x, float max_y, float max_z) {
+	public void constraint(float max_x, float max_y, float max_z) {
 		get();
 		v.x = Math.max(v.x, max_x);
 		v.y = Math.max(v.y, max_x);

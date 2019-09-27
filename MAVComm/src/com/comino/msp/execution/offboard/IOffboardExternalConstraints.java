@@ -37,6 +37,6 @@ import com.comino.msp.utils.struct.Polar3D_F32;
 
 public interface IOffboardExternalConstraints {
 
-	public void get(float delta_sec, Polar3D_F32 speed, Polar3D_F32 path , Polar3D_F32 control);
+	public boolean get(float delta_sec, Polar3D_F32 speed, Polar3D_F32 path , Polar3D_F32 control);
 
 }

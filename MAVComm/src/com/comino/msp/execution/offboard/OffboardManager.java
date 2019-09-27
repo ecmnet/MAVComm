@@ -59,6 +59,7 @@ public class OffboardManager implements Runnable {
 	private static final int UPDATE_RATE                 			= 100;					  // offboard update rate in ms
 
 	private static final float MAX_SPEED					        = 1.00f;          	      // Default Max speed in m/s
+	private static final float MIN_SPEED					        = 0.10f;          	      // Default Min speed in m/s
 	private static final float MAX_YAW_SPEED                		= MSPMathUtils.toRad(30); // Max YawSpeed rad/s
 	private static final float MAX_TURN_SPEED               		= 0.2f;   	              // Max speed that allow turning before start in m/s
 	private static final float MAX_ACCELERATION		                = 0.3f;                   // Max acceleration in m/s2
@@ -251,7 +252,10 @@ public class OffboardManager implements Runnable {
 		long watch_tms = System.currentTimeMillis();
 
 		float delta_sec  = 0;
-		float speed_incr = 0.1f;
+		float speed_incr = 0;
+		float eta_sec    = 0;
+
+		boolean isBreaking = false;
 
 		Polar3D_F32 path = new Polar3D_F32(); // planned direct path
 		Polar3D_F32 spd  = new Polar3D_F32(); // current speed
@@ -337,19 +341,22 @@ public class OffboardManager implements Runnable {
 
 				// a new setpoint was provided
 				if(new_setpoint) {
-					new_setpoint = false; ctl.clear();
+					new_setpoint = false; isBreaking = false;
 					start.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
-					path.set(target, current);
+					ctl.set(spd);
 				}
 
 				watch_tms = System.currentTimeMillis();
 
 				spd.set(model.state.l_vx, model.state.l_vy, model.state.l_vz );
 
+
 				if(valid_setpoint)
 					path.set(target, current);
 				else
 					path.clear();
+
+				eta_sec = (path.value - acceptance_radius_pos ) / spd.value;
 
 				// target reached?
 				if(path.value < acceptance_radius_pos && valid_setpoint ) {
@@ -377,31 +384,32 @@ public class OffboardManager implements Runnable {
 					ctl.angle_xy =  path.angle_xy;
 					ctl.angle_xz =  path.angle_xz;
 
-					speed_incr = MAX_ACCELERATION * delta_sec;
-
-					if(path.value < TrajMathLib.getAvoidanceDistance(spd.value, 0 , BREAKING_MINDISTANCE_1MS))  {
-						speed_incr = - 2 * MAX_ACCELERATION * delta_sec;
+                    // start breaking 1.5 secs before reaching the goal
+					if(eta_sec < 1.5 )  {
+						isBreaking = true;
 					}
 
+					if(isBreaking) {
+						speed_incr = - spd.value / (2 * eta_sec ) * delta_sec;
+					} else
+						speed_incr = MAX_ACCELERATION * delta_sec;
+
 					// check external constraints
-					if(ext_constraints_listener!=null)
-						ext_constraints_listener.get(delta_sec, spd, path, ctl);
+					if(ext_constraints_listener!=null) {
+						if(ext_constraints_listener.get(delta_sec, spd, path, ctl))
+							speed_incr = 0;
+					}
 
-//					System.out.println(ctl.value);
+				//	System.out.println(eta_sec);
 
-
-					ctl.value = Math.min(ctl.value + speed_incr, MAX_SPEED);
-					if(ctl.value < 0.1f) ctl.value = 0.1f;
+					ctl.value = MSPMathUtils.constraint(ctl.value + speed_incr, MAX_SPEED, MIN_SPEED);
 
 
 				}
 
-				// TODO: acceleration contraints
-
-				// if vehicle is not moving and turn angle > 180° => turn before moving
+				// if vehicle is not moving and turn angle > 90° => turn before moving
 				if( Math.abs(MSPMathUtils.normAngle(ctl.angle_xy - current.w)) > Math.PI/2 && ctl.value < MAX_TURN_SPEED)
 					ctl.value = 0;
-
 
 				//  simple P controller for yaw;
 				cmd.w = MSPMathUtils.normAngle(path.angle_xy - current.w) / (UPDATE_RATE / 1000f) * YAW_PV;
