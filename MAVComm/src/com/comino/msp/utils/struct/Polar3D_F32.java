@@ -12,6 +12,8 @@ public class Polar3D_F32 {
 	public float angle_xz = 0;
 	public float value    = 0;
 
+	private Vector3D_F32 v = new Vector3D_F32();
+
 	public Polar3D_F32() {
 		super();
 	}
@@ -56,6 +58,10 @@ public class Polar3D_F32 {
 		set(t.x,t.y,t.z);
 	}
 
+	public void set() {
+		set(v);
+	}
+
 	public void set(Vector4D_F32 t, Vector4D_F32 c) {
 		this.value    = (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 		this.angle_xy = getDirection(t.y-c.y, t.x-c.x);
@@ -75,22 +81,33 @@ public class Polar3D_F32 {
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
 	}
 
+	public void contraint(float max_x, float max_y, float max_z) {
+		get();
+		v.x = Math.max(v.x, max_x);
+		v.y = Math.max(v.y, max_x);
+		v.z = Math.max(v.z, max_x);
+		set();
+	}
+
 	public void get(Vector3D_F32 t) {
-		t.set((float)( Math.cos(angle_xy) * Math.cos(angle_xz)), (float)(Math.sin(angle_xy)* Math.cos(angle_xz)),(float)Math.sin(angle_xz));
-		t.scale(value);
+		get(); t.set(v);
+	}
+
+	public Vector3D_F32 get() {
+		v.set((float)( Math.cos(angle_xy) * Math.cos(angle_xz)), (float)(Math.sin(angle_xy)* Math.cos(angle_xz)),(float)Math.sin(angle_xz));
+		v.scale(value);
+		return v;
 	}
 
 	public void get(Vector4D_F32 t) {
-		t.setX((float)(Math.cos(angle_xy) * Math.cos(angle_xz)) * value);
-		t.setY((float)(Math.sin(angle_xy) * Math.cos(angle_xz)) * value);
-		t.setZ((float)(Math.sin(angle_xz) * value));
+		get();
+		t.setX(v.x);
+		t.setY(v.y);
+		t.setZ(v.z);
 	}
 
 	public void get(Vector4D_F32 t, float yaw) {
-		t.set((float)( Math.cos(angle_xy) * Math.cos(angle_xz)) * value,
-			  (float)(Math.sin(angle_xy)* Math.cos(angle_xz)) * value,
-			  (float)Math.sin(angle_xz) * value,
-			  yaw);
+		get(t); t.w = yaw;
 	}
 
 	public float getX() {
