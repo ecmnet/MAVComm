@@ -37,6 +37,10 @@ import com.comino.msp.utils.struct.Polar3D_F32;
 
 public interface IOffboardExternalControl {
 
-	public void determine(float delta_sec, Polar3D_F32 current, Polar3D_F32 path , Polar3D_F32 control);
+	public boolean determineSpeedAnDirection(float delta_sec, float ela_sec, float eta_sec, Polar3D_F32 spd, Polar3D_F32 path , Polar3D_F32 ctl);
+
+	public void reset();
+
+	public void initialize( Polar3D_F32 spd, Polar3D_F32 path);
 
 }

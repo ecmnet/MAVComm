@@ -45,6 +45,8 @@ import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
 import com.comino.msp.execution.control.StatusManager;
+import com.comino.msp.execution.offboard.control.DefaultControlListener;
+import com.comino.msp.execution.offboard.control.TimebasedControlListener;
 import com.comino.msp.log.MSPLogger;
 import com.comino.msp.model.DataModel;
 import com.comino.msp.model.segment.Status;
@@ -54,16 +56,13 @@ import com.comino.msp.utils.struct.Polar3D_F32;
 
 import georegression.struct.point.Vector4D_F32;
 
-public class OffboardManager implements Runnable {
+public class OffboardManager implements Runnable, IOffboardExternalConstraints {
 
-	private static final int UPDATE_RATE                 			= 100;					  // offboard update rate in ms
+	private static final int UPDATE_RATE                 			= 50;					  // offboard update rate in ms
 
-	private static final float MAX_SPEED					        = 1.00f;          	      // Default Max speed in m/s
-	private static final float MIN_SPEED					        = 0.10f;          	      // Default Min speed in m/s
 	private static final float MAX_YAW_SPEED                		= MSPMathUtils.toRad(30); // Max YawSpeed rad/s
 	private static final float MAX_TURN_SPEED               		= 0.2f;   	              // Max speed that allow turning before start in m/s
-	private static final float MAX_ACCELERATION		                = 0.3f;                   // Max acceleration in m/s2
-	private static final float BREAKING_MINDISTANCE_1MS  	        = 1.5f;
+
 
 	private static final int   RC_DEADBAND             				= 20;				      // RC XY deadband for safety check
 	private static final int   RC_LAND_CHANNEL						= 8;                      // RC channel 8 landing
@@ -106,14 +105,15 @@ public class OffboardManager implements Runnable {
 	private final msg_set_position_target_local_ned pos_cmd   		= new msg_set_position_target_local_ned(1,2);
 	private final msg_set_position_target_local_ned speed_cmd 		= new msg_set_position_target_local_ned(1,2);
 
+	private float      max_speed                                    = 1.0f;
 
-	private float	 	acceptance_radius_pos						= 0.2f;
-	private float       max_speed									= MAX_SPEED;
+	private float	 	acceptance_radius_pos						= 0.15f;
 	private boolean    	already_fired			    				= false;
 	private boolean    	valid_setpoint                   			= false;
 	private boolean    	new_setpoint                   	 			= false;
 
 	private long        setpoint_tms                        		= 0;
+	private long        trajectory_start_tms                        = 0;
 	private long	    last_update_tms                             = 0;
 
 	public OffboardManager(IMAVController control) {
@@ -121,10 +121,11 @@ public class OffboardManager implements Runnable {
 		this.model          = control.getCurrentModel();
 		this.logger         = MSPLogger.getInstance();
 
-		MSPConfig config	= MSPConfig.getInstance();
+		this.ext_constraints_listener = this;
+		this.ext_control_listener  = new DefaultControlListener();
+	//	this.ext_control_listener  = new TimebasedControlListener();
 
-		max_speed = config.getFloatProperty("AP2D_MAX_SPEED", String.valueOf(MAX_SPEED));
-		System.out.println("Autopilot: maximum speed: "+max_speed+" m/s ");
+		MSPConfig config	= MSPConfig.getInstance();
 
 		acceptance_radius_pos = config.getFloatProperty("AP2D_ACCEPT_RAD", String.valueOf(acceptance_radius_pos));
 		System.out.println("Autopilot: acceptance radius: "+acceptance_radius_pos+" m");
@@ -212,7 +213,6 @@ public class OffboardManager implements Runnable {
 	public void finalize() {
 		mode = MODE_LOITER;
 		this.action_listener      = null;
-		this.ext_control_listener = null;
 		toModel(0,target,current);
 	}
 
@@ -228,11 +228,11 @@ public class OffboardManager implements Runnable {
 		this.ext_constraints_listener = constraints;
 	}
 
-	public void removeExternalControlListener() {
-		// consider current setpoint as new to set the start position at
-		this.new_setpoint = true;
-		this.ext_control_listener = null;
-	}
+//	public void removeExternalControlListener() {
+//		// consider current setpoint as new to set the start position at
+//		this.new_setpoint = true;
+//		this.ext_control_listener = null;
+//	}
 
 	public void registerActionListener(IOffboardTargetAction listener) {
 		this.action_listener = listener;
@@ -252,10 +252,13 @@ public class OffboardManager implements Runnable {
 		long watch_tms = System.currentTimeMillis();
 
 		float delta_sec  = 0;
-		float speed_incr = 0;
 		float eta_sec    = 0;
+		float ela_sec    = 0;
 
-		boolean isBreaking = false;
+		//		float speed_incr = 0;
+		//		float acc_incr = 0;
+		//
+		//		boolean isBreaking     = false;
 
 		Polar3D_F32 path = new Polar3D_F32(); // planned direct path
 		Polar3D_F32 spd  = new Polar3D_F32(); // current speed
@@ -285,6 +288,8 @@ public class OffboardManager implements Runnable {
 					logger.writeLocalMsg("[msp] Offboard: Setpoint not reached. Loitering.",MAV_SEVERITY.MAV_SEVERITY_WARNING);
 			}
 
+			spd.set(model.state.l_vx, model.state.l_vy, model.state.l_vz );
+
 			delta_sec = (System.currentTimeMillis() - last_update_tms ) / 1000.0f;
 
 			last_update_tms = System.currentTimeMillis();
@@ -307,7 +312,6 @@ public class OffboardManager implements Runnable {
 					setCurrentAsTarget();
 				}
 
-				spd.set(model.state.l_vx, model.state.l_vy, model.state.l_vz );
 				ctl.set(target.x, target.y, target.z);
 				path.angle_xy = ctl.angle_xy;
 
@@ -338,17 +342,20 @@ public class OffboardManager implements Runnable {
 
 			case MODE_SPEED_POSITION:
 
-
 				// a new setpoint was provided
 				if(new_setpoint) {
-					new_setpoint = false; isBreaking = false;
+					path.set(target, current);
+					ext_control_listener.initialize(spd, path);
+					trajectory_start_tms = 0; ela_sec = 0;
+					new_setpoint = false;
 					start.set(model.state.l_x, model.state.l_y, model.state.l_z,model.attitude.y);
 					ctl.set(spd);
 				}
 
 				watch_tms = System.currentTimeMillis();
 
-				spd.set(model.state.l_vx, model.state.l_vy, model.state.l_vz );
+				if(trajectory_start_tms > 0)
+					ela_sec = (System.currentTimeMillis() - trajectory_start_tms) / 1000f;
 
 
 				if(valid_setpoint)
@@ -360,7 +367,7 @@ public class OffboardManager implements Runnable {
 
 				// target reached?
 				if(path.value < acceptance_radius_pos && valid_setpoint ) {
-
+					trajectory_start_tms = 0;
 					if(Float.isNaN(target.w)) {
 						path.clear();
 						ctl.clear();
@@ -374,45 +381,24 @@ public class OffboardManager implements Runnable {
 
 
 				// external speed control via control callback ?
-				if(ext_control_listener!=null) {
-
-					ext_control_listener.determine(delta_sec, spd, path, ctl);
-				}
-				else {
-
-					// get angles from remaining path planned
-					ctl.angle_xy =  path.angle_xy;
-					ctl.angle_xz =  path.angle_xz;
-
-                    // start breaking 1.5 secs before reaching the goal
-					if(eta_sec < 1.5 )  {
-						isBreaking = true;
-					}
-
-					if(isBreaking) {
-						speed_incr = - spd.value / (2 * eta_sec ) * delta_sec;
-					} else
-						speed_incr = MAX_ACCELERATION * delta_sec;
-
-					// check external constraints
-					if(ext_constraints_listener!=null) {
-						if(ext_constraints_listener.get(delta_sec, spd, path, ctl))
-							speed_incr = 0;
-					}
-
-				//	System.out.println(eta_sec);
-
-					ctl.value = MSPMathUtils.constraint(ctl.value + speed_incr, MAX_SPEED, MIN_SPEED);
+				ext_control_listener.determineSpeedAnDirection(delta_sec, ela_sec, eta_sec, spd, path, ctl);
 
 
+				// check external constraints
+				ext_constraints_listener.get(delta_sec, spd, path, ctl);
+
+
+				// if vehicle is not moving or close to target and turn angle > 60° => turn before moving
+				if( Math.abs(MSPMathUtils.normAngle(ctl.angle_xy - current.w)) > Math.PI/3 && ( ctl.value < MAX_TURN_SPEED || eta_sec < 2.0f ) ) {
+					ctl.value = 0.01f;
 				}
 
-				// if vehicle is not moving and turn angle > 90° => turn before moving
-				if( Math.abs(MSPMathUtils.normAngle(ctl.angle_xy - current.w)) > Math.PI/2 && ctl.value < MAX_TURN_SPEED)
-					ctl.value = 0;
+				if(ctl.value > 0 && trajectory_start_tms == 0)
+					trajectory_start_tms = System.currentTimeMillis();
+
 
 				//  simple P controller for yaw;
-				cmd.w = MSPMathUtils.normAngle(path.angle_xy - current.w) / (UPDATE_RATE / 1000f) * YAW_PV;
+				cmd.w = MSPMathUtils.normAngle(path.angle_xy - current.w) / delta_sec * YAW_PV;
 
 				// get Cartesian speeds from polar
 				ctl.get(cmd);
@@ -449,7 +435,7 @@ public class OffboardManager implements Runnable {
 			try { Thread.sleep(UPDATE_RATE); 	} catch (InterruptedException e) { }
 		}
 
-		action_listener = null; ext_control_listener = null; model.sys.autopilot = 0;
+		action_listener = null; model.sys.autopilot = 0;
 		logger.writeLocalMsg("[msp] OffboardUpdater stopped",MAV_SEVERITY.MAV_SEVERITY_DEBUG);
 		already_fired = false; valid_setpoint = false;
 	}
@@ -555,6 +541,11 @@ public class OffboardManager implements Runnable {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean get(float delta_sec, Polar3D_F32 speed, Polar3D_F32 path, Polar3D_F32 control) {
+		return false;
 	}
 
 }

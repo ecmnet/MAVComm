@@ -11,6 +11,7 @@ import com.comino.libs.TrajMathLib;
 import com.comino.main.MSPConfig;
 import com.comino.mav.control.IMAVController;
 import com.comino.mav.mavlink.MAV_CUST_MODE;
+import com.comino.msp.execution.offboard.IOffboardExternalControl;
 import com.comino.msp.execution.offboard.IOffboardTargetAction;
 import com.comino.msp.execution.offboard.OffboardManager;
 import com.comino.msp.model.segment.Status;
@@ -88,7 +89,6 @@ public class LVH2DPilot extends AutoPilotBase {
 
 			if(obstacle.value > (min_distance + ROBOT_RADIUS) && isAvoiding) {
 				if(model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
-					offboard.removeExternalControlListener();
 					isAvoiding = false;
 					logger.writeLocalMsg("[msp] Avoidance cleared.",MAV_SEVERITY.MAV_SEVERITY_INFO);
 				}
@@ -139,37 +139,37 @@ public class LVH2DPilot extends AutoPilotBase {
 		isAvoiding = false;
 	}
 
-//	@Override
-//	public void setMode(boolean enable, int mode, float param) {
-//		switch(mode) {
-//		case MSP_AUTOCONTROL_ACTION.RTL:
-//			if(enable)
-//				returnToLand();
-//			break;
-////		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
-////			return_along_path(enable);
-////			break;
-//		}
-//		super.setMode(enable, mode, param);
-//	}
+	//	@Override
+	//	public void setMode(boolean enable, int mode, float param) {
+	//		switch(mode) {
+	//		case MSP_AUTOCONTROL_ACTION.RTL:
+	//			if(enable)
+	//				returnToLand();
+	//			break;
+	////		case MSP_AUTOCONTROL_ACTION.WAYPOINT_MODE:
+	////			return_along_path(enable);
+	////			break;
+	//		}
+	//		super.setMode(enable, mode, param);
+	//	}
 
-//	public void returnToLand(int delay_ms) {
-//
-//		final Vector4D_F32 target = new Vector4D_F32(0,0,model.state.l_z,0);
-//		logger.writeLocalMsg("[msp] Autopilot: Return to land.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-//
-//		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
-//		isAvoiding = false;
-//
-//		offboard.registerActionListener((m,d) -> {
-//			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
-//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
-//		    offboard.finalize();
-//		});
-//
-//		offboard.setTarget(target);
-//		offboard.start(OffboardManager.MODE_SPEED_POSITION);
-//	}
+	//	public void returnToLand(int delay_ms) {
+	//
+	//		final Vector4D_F32 target = new Vector4D_F32(0,0,model.state.l_z,0);
+	//		logger.writeLocalMsg("[msp] Autopilot: Return to land.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+	//
+	//		model.sys.setAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE, true);
+	//		isAvoiding = false;
+	//
+	//		offboard.registerActionListener((m,d) -> {
+	//			logger.writeLocalMsg("[msp] Autopilot: Home reached.",MAV_SEVERITY.MAV_SEVERITY_INFO);
+	//			control.sendMAVLinkCmd(MAV_CMD.MAV_CMD_NAV_LAND, 5, 0, 0, 0.05f );
+	//		    offboard.finalize();
+	//		});
+	//
+	//		offboard.setTarget(target);
+	//		offboard.start(OffboardManager.MODE_SPEED_POSITION);
+	//	}
 
 	public void stop_at_position() {
 		offboard.setCurrentAsTarget();
@@ -187,7 +187,7 @@ public class LVH2DPilot extends AutoPilotBase {
 	public void obstacleAvoidance() {
 
 
-	//	System.out.println("NT="+nearestTarget);
+		//	System.out.println("NT="+nearestTarget);
 
 		lvfh.init(model.state.getXYSpeed());
 
@@ -200,21 +200,38 @@ public class LVH2DPilot extends AutoPilotBase {
 		offboard.setTarget(projected);
 
 		// determine velocity setpoint via callback
-		offboard.registerExternalControlListener((tms, current, path, ctl) -> {
+		offboard.registerExternalControlListener(new IOffboardExternalControl() {
 
-			if(!model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
-				offboard.setCurrentAsTarget();
+			public boolean determineSpeedAnDirection(float delta_sec, float ela_sec, float eta_sec, Polar3D_F32 spd, Polar3D_F32 path, Polar3D_F32 ctl) {
+
+				if(!model.sys.isAutopilotMode(MSP_AUTOCONTROL_MODE.OBSTACLE_AVOIDANCE)) {
+					offboard.setCurrentAsTarget();
+				}
+
+				try {
+					lvfh.select(path.angle_xy+(float)Math.PI, spd.value , path.value * 1000f);
+					ctl.angle_xy =  lvfh.getSelectedDirection()-(float)Math.PI;
+					ctl.value = lvfh.getSelectedSpeed();
+					return true;
+
+				} catch(Exception e) {
+					logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
+					offboard.setCurrentAsTarget();
+					return false;
+				}
 			}
 
-			try {
-				lvfh.select(path.angle_xy+(float)Math.PI, current.value , path.value * 1000f);
-				ctl.angle_xy =  lvfh.getSelectedDirection()-(float)Math.PI;
-				ctl.value = lvfh.getSelectedSpeed();
+			@Override
+			public void reset() {
 
-			} catch(Exception e) {
-				logger.writeLocalMsg("Obstacle Avoidance: No path found", MAV_SEVERITY.MAV_SEVERITY_WARNING);
-				offboard.setCurrentAsTarget();
 			}
+
+			@Override
+			public void initialize(Polar3D_F32 spd, Polar3D_F32 path) {
+               lvfh.reset(); lvfh.init(spd.value);
+			}
+
+
 		});
 
 		offboard.start(OffboardManager.MODE_SPEED_POSITION);
