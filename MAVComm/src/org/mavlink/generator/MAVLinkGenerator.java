@@ -66,7 +66,7 @@ public class MAVLinkGenerator {
 
 	protected String target = "target";
 
-	public static int[] MAVLINK_MESSAGE_CRCS = new int[9999];
+	public static int[] MAVLINK_MESSAGE_CRCS = new int[10500];
 
 	/**
 	 * Main class for the generator.
@@ -253,6 +253,10 @@ public class MAVLinkGenerator {
 		PrintWriter writer = null;
 		String forToString = "";
 		for (MAVLinkMessage message : mavlink.getMessages().values()) {
+
+			if(message.getId()>9998)
+				continue;
+
 			String className = "msg_" + message.getName().toLowerCase();
 			String filename = directory + className + ".java";
 			imports = imports + "import " + packageName + "." + className + ";\n";
@@ -379,7 +383,7 @@ public class MAVLinkGenerator {
 				int extra_crc = MAVLinkCRC.crc_calculate(MAVLinkCRC.stringToByte(extraCrcBuffer));
 				int magicNumber = (extra_crc & 0x00FF) ^ ((extra_crc >> 8 & 0x00FF));
 
-				MAVLINK_MESSAGE_CRCS[message.getId()] = magicNumber;
+				  MAVLINK_MESSAGE_CRCS[message.getId()] = magicNumber;
 
 				writer.print("/**\n");
 				writer.print(" * Decode message with raw data\n");
@@ -664,6 +668,10 @@ public class MAVLinkGenerator {
 			}
 			writer.print("    switch(msgid) {\n");
 			for (MAVLinkMessage message : mavlink.getMessages().values()) {
+
+				if(message.getId() > 9998)
+					continue;
+
 				String msgClassName = "msg_" + message.getName().toLowerCase();
 				String id = MAVLINK_MSG + "_ID_" + message.getName();
 				writer.print("  case " + id + ":\n");
@@ -771,11 +779,11 @@ public class MAVLinkGenerator {
 			}
 			writer.print("  public static char[] MAVLINK_MESSAGE_CRCS = {\n");
 			for (int i = 0; i < MAVLINK_MESSAGE_CRCS.length; i++) {
-				if (i % 25 == 0)
-					writer.print("\n          ");
+//				if (i % 25 == 0)
+//					writer.print("\n ");
 				writer.print(MAVLINK_MESSAGE_CRCS[i]);
 				if (i != MAVLINK_MESSAGE_CRCS.length - 1)
-					writer.print(", ");
+					writer.print(",");
 			}
 			writer.print("};\n}");
 		}
