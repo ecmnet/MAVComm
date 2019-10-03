@@ -68,7 +68,7 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public int type;
   /**
-   * Autopilot type / class.
+   * Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.
    */
   public int autopilot;
   /**
@@ -120,7 +120,7 @@ public class msg_high_latency2 extends MAVLinkMessage {
    */
   public int climb_rate;
   /**
-   * Battery (percentage, -1 for DNU)
+   * Battery level (-1 if field not provided).
    */
   public int battery;
   /**

@@ -24,7 +24,7 @@ public class msg_scaled_imu2 extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_SCALED_IMU2;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 22;
+    payload_length = 24;
 }
 
   /**
@@ -67,6 +67,10 @@ public class msg_scaled_imu2 extends MAVLinkMessage {
    * Z Magnetic field
    */
   public int zmag;
+  /**
+   * Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).
+   */
+  public int temperature;
 /**
  * Decode message with raw data
  */
@@ -81,12 +85,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   xmag = (int)dis.readShort();
   ymag = (int)dis.readShort();
   zmag = (int)dis.readShort();
+  temperature = (int)dis.readShort();
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+22];
+  byte[] buffer = new byte[12+24];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -108,15 +113,16 @@ public byte[] encode() throws IOException {
   dos.writeShort(xmag&0x00FFFF);
   dos.writeShort(ymag&0x00FFFF);
   dos.writeShort(zmag&0x00FFFF);
+  dos.writeShort(temperature&0x00FFFF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 22);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 24);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[32] = crcl;
-  buffer[33] = crch;
+  buffer[34] = crcl;
+  buffer[35] = crch;
   dos.close();
   return buffer;
 }
@@ -131,5 +137,6 @@ return "MAVLINK_MSG_ID_SCALED_IMU2 : " +   "  time_boot_ms="+time_boot_ms
 +  "  xmag="+xmag
 +  "  ymag="+ymag
 +  "  zmag="+zmag
++  "  temperature="+temperature
 ;}
 }

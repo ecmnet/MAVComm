@@ -24,7 +24,7 @@ public class msg_odometry extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_ODOMETRY;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 231;
+    payload_length = 232;
 }
 
   /**
@@ -91,6 +91,10 @@ public class msg_odometry extends MAVLinkMessage {
    * Estimate reset counter. This should be incremented when the estimate resets in any of the dimensions (position, velocity, attitude, angular speed). This is designed to be used when e.g an external SLAM system detects a loop-closure and the estimate jumps.
    */
   public int reset_counter;
+  /**
+   * Type of estimator that is providing the odometry.
+   */
+  public int estimator_type;
 /**
  * Decode message with raw data
  */
@@ -117,12 +121,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   frame_id = (int)dis.readUnsignedByte()&0x00FF;
   child_frame_id = (int)dis.readUnsignedByte()&0x00FF;
   reset_counter = (int)dis.readUnsignedByte()&0x00FF;
+  estimator_type = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+231];
+  byte[] buffer = new byte[12+232];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -156,15 +161,16 @@ public byte[] encode() throws IOException {
   dos.writeByte(frame_id&0x00FF);
   dos.writeByte(child_frame_id&0x00FF);
   dos.writeByte(reset_counter&0x00FF);
+  dos.writeByte(estimator_type&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 231);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 232);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[241] = crcl;
-  buffer[242] = crch;
+  buffer[242] = crcl;
+  buffer[243] = crch;
   dos.close();
   return buffer;
 }
@@ -228,5 +234,6 @@ return "MAVLINK_MSG_ID_ODOMETRY : " +   "  time_usec="+time_usec
 +  "  frame_id="+frame_id
 +  "  child_frame_id="+child_frame_id
 +  "  reset_counter="+reset_counter
++  "  estimator_type="+estimator_type
 ;}
 }

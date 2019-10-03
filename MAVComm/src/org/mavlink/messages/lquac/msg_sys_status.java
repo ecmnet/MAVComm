@@ -44,11 +44,11 @@ public class msg_sys_status extends MAVLinkMessage {
    */
   public int load;
   /**
-   * Battery voltage
+   * Battery voltage, UINT16_MAX: Voltage not sent by autopilot
    */
   public int voltage_battery;
   /**
-   * Battery current, -1: autopilot does not measure the current
+   * Battery current, -1: Current not sent by autopilot
    */
   public int current_battery;
   /**
@@ -76,7 +76,7 @@ public class msg_sys_status extends MAVLinkMessage {
    */
   public int errors_count4;
   /**
-   * Remaining battery energy, -1: autopilot estimate the remaining battery
+   * Battery energy remaining, -1: Battery remaining energy not sent by autopilot
    */
   public int battery_remaining;
 /**

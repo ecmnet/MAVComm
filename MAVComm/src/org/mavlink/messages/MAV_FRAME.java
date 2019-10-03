@@ -88,4 +88,12 @@ public interface MAV_FRAME {
      * Odometry local coordinate frame of data given by an estimator running onboard the vehicle, Z-up (x: east, y: noth, z: up).
      */
     public final static int MAV_FRAME_ESTIM_ENU = 19;
+    /**
+     * Forward, Right, Down coordinate frame. This is a local frame with Z-down and arbitrary F/R alignment (i.e. not aligned with NED/earth frame).
+     */
+    public final static int MAV_FRAME_LOCAL_FRD = 20;
+    /**
+     * Forward, Left, Up coordinate frame. This is a local frame with Z-up and arbitrary F/L alignment (i.e. not aligned with ENU/earth frame).
+     */
+    public final static int MAV_FRAME_LOCAL_FLU = 21;
 }

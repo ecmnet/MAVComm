@@ -24,11 +24,11 @@ public class msg_tunnel extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_TUNNEL;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 132;
+    payload_length = 133;
 }
 
   /**
-   * A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum, and the entry possibly to https://github.com/mavlink/mavlink/tunnel-message-payload-types.xml. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.
+   * A code that identifies the content of the payload (0 for unknown, which is the default). If this code is less than 32768, it is a 'registered' payload type and the corresponding code should be added to the MAV_TUNNEL_PAYLOAD_TYPE enum. Software creators can register blocks of types as needed. Codes greater than 32767 are considered local experiments and should not be checked in to any widely distributed codebase.
    */
   public int payload_type;
   /**
@@ -40,7 +40,11 @@ public class msg_tunnel extends MAVLinkMessage {
    */
   public int target_component;
   /**
-   * Variable length payload. The payload length is defined by the remaining message length when subtracting the header and other fields. The entire content of this block is opaque unless you understand the encoding specified by payload_type.
+   * Length of the data transported in payload
+   */
+  public int payload_length;
+  /**
+   * Variable length payload. The payload length is defined by payload_length. The entire content of this block is opaque unless you understand the encoding specified by payload_type.
    */
   public int[] payload = new int[128];
 /**
@@ -50,6 +54,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   payload_type = (int)dis.readUnsignedShort()&0x00FFFF;
   target_system = (int)dis.readUnsignedByte()&0x00FF;
   target_component = (int)dis.readUnsignedByte()&0x00FF;
+  payload_length = (int)dis.readUnsignedByte()&0x00FF;
   for (int i=0; i<128; i++) {
     payload[i] = (int)dis.readUnsignedByte()&0x00FF;
   }
@@ -58,7 +63,7 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+132];
+  byte[] buffer = new byte[12+133];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -73,18 +78,19 @@ public byte[] encode() throws IOException {
   dos.writeShort(payload_type&0x00FFFF);
   dos.writeByte(target_system&0x00FF);
   dos.writeByte(target_component&0x00FF);
+  dos.writeByte(payload_length&0x00FF);
   for (int i=0; i<128; i++) {
     dos.writeByte(payload[i]&0x00FF);
   }
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 132);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 133);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[142] = crcl;
-  buffer[143] = crch;
+  buffer[143] = crcl;
+  buffer[144] = crch;
   dos.close();
   return buffer;
 }
@@ -92,6 +98,7 @@ public String toString() {
 return "MAVLINK_MSG_ID_TUNNEL : " +   "  payload_type="+payload_type
 +  "  target_system="+target_system
 +  "  target_component="+target_component
++  "  payload_length="+payload_length
 +  "  payload[0]="+payload[0]
 +  "  payload[1]="+payload[1]
 +  "  payload[2]="+payload[2]

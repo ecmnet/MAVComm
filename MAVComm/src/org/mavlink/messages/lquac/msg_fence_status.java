@@ -24,7 +24,7 @@ public class msg_fence_status extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_FENCE_STATUS;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 8;
+    payload_length = 9;
 }
 
   /**
@@ -43,6 +43,10 @@ public class msg_fence_status extends MAVLinkMessage {
    * Last breach type.
    */
   public int breach_type;
+  /**
+   * Active action to prevent fence breach
+   */
+  public int breach_mitigation;
 /**
  * Decode message with raw data
  */
@@ -51,12 +55,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   breach_count = (int)dis.readUnsignedShort()&0x00FFFF;
   breach_status = (int)dis.readUnsignedByte()&0x00FF;
   breach_type = (int)dis.readUnsignedByte()&0x00FF;
+  breach_mitigation = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+8];
+  byte[] buffer = new byte[12+9];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -72,15 +77,16 @@ public byte[] encode() throws IOException {
   dos.writeShort(breach_count&0x00FFFF);
   dos.writeByte(breach_status&0x00FF);
   dos.writeByte(breach_type&0x00FF);
+  dos.writeByte(breach_mitigation&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 8);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 9);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[18] = crcl;
-  buffer[19] = crch;
+  buffer[19] = crcl;
+  buffer[20] = crch;
   dos.close();
   return buffer;
 }
@@ -89,5 +95,6 @@ return "MAVLINK_MSG_ID_FENCE_STATUS : " +   "  breach_time="+breach_time
 +  "  breach_count="+breach_count
 +  "  breach_status="+breach_status
 +  "  breach_type="+breach_type
++  "  breach_mitigation="+breach_mitigation
 ;}
 }

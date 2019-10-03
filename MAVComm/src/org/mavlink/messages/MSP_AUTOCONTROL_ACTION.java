@@ -35,7 +35,7 @@ public interface MSP_AUTOCONTROL_ACTION {
     /**
      * Load a map corresponding to the global position
      */
-    public final static int LOAD_MAP2D = 22;
+    public final static int LOAD_MAP2D = 23;
     /**
      * Applies a map filter to the current map
      */

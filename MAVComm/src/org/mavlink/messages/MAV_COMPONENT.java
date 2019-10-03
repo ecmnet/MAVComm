@@ -19,6 +19,306 @@ public interface MAV_COMPONENT {
      */
     public final static int MAV_COMP_ID_AUTOPILOT1 = 1;
     /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER1 = 25;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER2 = 26;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER3 = 27;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER4 = 28;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER5 = 29;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER6 = 30;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER7 = 31;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER8 = 32;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER9 = 33;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER10 = 34;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER11 = 35;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER12 = 36;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER13 = 37;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER14 = 38;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER15 = 39;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USE16 = 40;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER17 = 41;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER18 = 42;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER19 = 43;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER20 = 44;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER21 = 45;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER22 = 46;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER23 = 47;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER24 = 48;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER25 = 49;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER26 = 50;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER27 = 51;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER28 = 52;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER29 = 53;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER30 = 54;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER31 = 55;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER32 = 56;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER33 = 57;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER34 = 58;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER35 = 59;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER36 = 60;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER37 = 61;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER38 = 62;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER39 = 63;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER40 = 64;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER41 = 65;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER42 = 66;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER43 = 67;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER44 = 68;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER45 = 69;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER46 = 70;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER47 = 71;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER48 = 72;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER49 = 73;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER50 = 74;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER51 = 75;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER52 = 76;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER53 = 77;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER54 = 78;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER55 = 79;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER56 = 80;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER57 = 81;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER58 = 82;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER59 = 83;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER60 = 84;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER61 = 85;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER62 = 86;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER63 = 87;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER64 = 88;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER65 = 89;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER66 = 90;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER67 = 91;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER68 = 92;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER69 = 93;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER70 = 94;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER71 = 95;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER72 = 96;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER73 = 97;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER74 = 98;
+    /**
+     * Id for a component on privately managed MAVLink network. Can be used for any purpose but may not be published by components outside of the private network.
+     */
+    public final static int MAV_COMP_ID_USER75 = 99;
+    /**
      * Camera #1.
      */
     public final static int MAV_COMP_ID_CAMERA = 100;
@@ -99,7 +399,7 @@ public interface MAV_COMPONENT {
      */
     public final static int MAV_COMP_ID_SERVO14 = 153;
     /**
-     * Gimbal component.
+     * Gimbal #1.
      */
     public final static int MAV_COMP_ID_GIMBAL = 154;
     /**
@@ -126,6 +426,26 @@ public interface MAV_COMPONENT {
      * FLARM collision alert component.
      */
     public final static int MAV_COMP_ID_FLARM = 160;
+    /**
+     * Gimbal #2.
+     */
+    public final static int MAV_COMP_ID_GIMBAL2 = 171;
+    /**
+     * Gimbal #3.
+     */
+    public final static int MAV_COMP_ID_GIMBAL3 = 172;
+    /**
+     * Gimbal #4
+     */
+    public final static int MAV_COMP_ID_GIMBAL4 = 173;
+    /**
+     * Gimbal #5.
+     */
+    public final static int MAV_COMP_ID_GIMBAL5 = 174;
+    /**
+     * Gimbal #6.
+     */
+    public final static int MAV_COMP_ID_GIMBAL6 = 175;
     /**
      * Component that can generate/supply a mission flight plan (e.g. GCS or developer API).
      */
@@ -170,6 +490,10 @@ public interface MAV_COMPONENT {
      * Component to bridge to UART (i.e. from UDP).
      */
     public final static int MAV_COMP_ID_UART_BRIDGE = 241;
+    /**
+     * Component handling TUNNEL messages (e.g. vendor specific GUI of a component).
+     */
+    public final static int MAV_COMP_ID_TUNNEL_NODE = 242;
     /**
      * Component for handling system messages (e.g. to ARM, takeoff, etc.).
      */

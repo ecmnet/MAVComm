@@ -17,7 +17,11 @@ public interface SET_FOCUS_TYPE {
      */
     public final static int FOCUS_TYPE_CONTINUOUS = 1;
     /**
-     * Zoom value as proportion of full camera range (a value between 0.0 and 100.0)
+     * Focus value as proportion of full camera focus range (a value between 0.0 and 100.0)
      */
     public final static int FOCUS_TYPE_RANGE = 2;
+    /**
+     * Focus value in metres. Note that there is no message to get the valid focus range of the camera, so this can type can only be used for cameras where the range is known (implying that this cannot reliably be used in a GCS for an arbitrary camera).
+     */
+    public final static int FOCUS_TYPE_METERS = 3;
 }

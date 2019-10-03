@@ -24,7 +24,7 @@ public class msg_highres_imu extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_HIGHRES_IMU;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 62;
+    payload_length = 63;
 }
 
   /**
@@ -87,6 +87,10 @@ public class msg_highres_imu extends MAVLinkMessage {
    * Bitmap for fields that have updated since last message, bit 0 = xacc, bit 12: temperature
    */
   public int fields_updated;
+  /**
+   * Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)
+   */
+  public int id;
 /**
  * Decode message with raw data
  */
@@ -106,12 +110,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   pressure_alt = (float)dis.readFloat();
   temperature = (float)dis.readFloat();
   fields_updated = (int)dis.readUnsignedShort()&0x00FFFF;
+  id = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+62];
+  byte[] buffer = new byte[12+63];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -138,15 +143,16 @@ public byte[] encode() throws IOException {
   dos.writeFloat(pressure_alt);
   dos.writeFloat(temperature);
   dos.writeShort(fields_updated&0x00FFFF);
+  dos.writeByte(id&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 62);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 63);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[72] = crcl;
-  buffer[73] = crch;
+  buffer[73] = crcl;
+  buffer[74] = crch;
   dos.close();
   return buffer;
 }
@@ -166,5 +172,6 @@ return "MAVLINK_MSG_ID_HIGHRES_IMU : " +   "  time_usec="+time_usec
 +  "  pressure_alt="+pressure_alt
 +  "  temperature="+temperature
 +  "  fields_updated="+fields_updated
++  "  id="+id
 ;}
 }

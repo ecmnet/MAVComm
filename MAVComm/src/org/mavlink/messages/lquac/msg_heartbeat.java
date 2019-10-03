@@ -32,11 +32,11 @@ public class msg_heartbeat extends MAVLinkMessage {
    */
   public long custom_mode;
   /**
-   * Type of the system (quadrotor, helicopter, etc.). Components use the same type as their associated system.
+   * Vehicle or component type. For a flight controller component the vehicle type (quadrotor, helicopter, etc.). For other components the component type (e.g. camera, gimbal, etc.). This should be used in preference to component id for identifying the component type.
    */
   public int type;
   /**
-   * Autopilot type / class.
+   * Autopilot type / class. Use MAV_AUTOPILOT_INVALID for components that are not flight controllers.
    */
   public int autopilot;
   /**

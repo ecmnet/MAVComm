@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_message_interval
- * The interval between messages for a particular MAVLink message ID. This interface replaces DATA_STREAM
+ * The interval between messages for a particular MAVLink message ID. This message is the response to the MAV_CMD_GET_MESSAGE_INTERVAL command. This interface replaces DATA_STREAM.
  **/
 public class msg_message_interval extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_MESSAGE_INTERVAL = 244;

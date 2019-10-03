@@ -12,7 +12,7 @@ import org.mavlink.io.LittleEndianDataInputStream;
 import org.mavlink.io.LittleEndianDataOutputStream;
 /**
  * Class msg_raw_imu
- * The RAW IMU readings for the usual 9DOF sensor setup. This message should always contain the true raw values without any scaling to allow data capture and system debugging.
+ * The RAW IMU readings for a 9DOF sensor, which is identified by the id (default IMU1). This message should always contain the true raw values without any scaling to allow data capture and system debugging.
  **/
 public class msg_raw_imu extends MAVLinkMessage {
   public static final int MAVLINK_MSG_ID_RAW_IMU = 27;
@@ -24,7 +24,7 @@ public class msg_raw_imu extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_RAW_IMU;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 26;
+    payload_length = 29;
 }
 
   /**
@@ -67,6 +67,14 @@ public class msg_raw_imu extends MAVLinkMessage {
    * Z Magnetic field (raw)
    */
   public int zmag;
+  /**
+   * Temperature, 0: IMU does not provide temperature values. If the IMU is at 0C it must send 1 (0.01C).
+   */
+  public int temperature;
+  /**
+   * Id. Ids are numbered from 0 and map to IMUs numbered from 1 (e.g. IMU1 will have a message with id=0)
+   */
+  public int id;
 /**
  * Decode message with raw data
  */
@@ -81,12 +89,14 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   xmag = (int)dis.readShort();
   ymag = (int)dis.readShort();
   zmag = (int)dis.readShort();
+  temperature = (int)dis.readShort();
+  id = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+26];
+  byte[] buffer = new byte[12+29];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -108,15 +118,17 @@ public byte[] encode() throws IOException {
   dos.writeShort(xmag&0x00FFFF);
   dos.writeShort(ymag&0x00FFFF);
   dos.writeShort(zmag&0x00FFFF);
+  dos.writeShort(temperature&0x00FFFF);
+  dos.writeByte(id&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 26);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 29);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[36] = crcl;
-  buffer[37] = crch;
+  buffer[39] = crcl;
+  buffer[40] = crch;
   dos.close();
   return buffer;
 }
@@ -131,5 +143,7 @@ return "MAVLINK_MSG_ID_RAW_IMU : " +   "  time_usec="+time_usec
 +  "  xmag="+xmag
 +  "  ymag="+ymag
 +  "  zmag="+zmag
++  "  temperature="+temperature
++  "  id="+id
 ;}
 }

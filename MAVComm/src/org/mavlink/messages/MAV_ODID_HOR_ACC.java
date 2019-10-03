@@ -13,35 +13,35 @@ public interface MAV_ODID_HOR_ACC {
      */
     public final static int MAV_ODID_HOR_ACC_UNKNOWN = 0;
     /**
-     * The horizontal accuracy is smaller than 10 Nautical Miles.
+     * The horizontal accuracy is smaller than 10 Nautical Miles. 18.52 km.
      */
     public final static int MAV_ODID_HOR_ACC_10NM = 1;
     /**
-     * The horizontal accuracy is smaller than 4 Nautical Miles.
+     * The horizontal accuracy is smaller than 4 Nautical Miles. 7.408 km.
      */
     public final static int MAV_ODID_HOR_ACC_4NM = 2;
     /**
-     * The horizontal accuracy is smaller than 2 Nautical Miles.
+     * The horizontal accuracy is smaller than 2 Nautical Miles. 3.704 km.
      */
     public final static int MAV_ODID_HOR_ACC_2NM = 3;
     /**
-     * The horizontal accuracy is smaller than 1 Nautical Miles.
+     * The horizontal accuracy is smaller than 1 Nautical Miles. 1.852 km.
      */
     public final static int MAV_ODID_HOR_ACC_1NM = 4;
     /**
-     * The horizontal accuracy is smaller than 0.5 Nautical Miles.
+     * The horizontal accuracy is smaller than 0.5 Nautical Miles. 926 m.
      */
     public final static int MAV_ODID_HOR_ACC_0_5NM = 5;
     /**
-     * The horizontal accuracy is smaller than 0.3 Nautical Miles.
+     * The horizontal accuracy is smaller than 0.3 Nautical Miles. 555.6 m.
      */
     public final static int MAV_ODID_HOR_ACC_0_3NM = 6;
     /**
-     * The horizontal accuracy is smaller than 0.1 Nautical Miles.
+     * The horizontal accuracy is smaller than 0.1 Nautical Miles. 185.2 m.
      */
     public final static int MAV_ODID_HOR_ACC_0_1NM = 7;
     /**
-     * The horizontal accuracy is smaller than 0.05 Nautical Miles.
+     * The horizontal accuracy is smaller than 0.05 Nautical Miles. 92.6 m.
      */
     public final static int MAV_ODID_HOR_ACC_0_05NM = 8;
     /**

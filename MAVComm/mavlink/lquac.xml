@@ -57,6 +57,11 @@
                   <param index="4">Vel.Z   (set to NAN to ignore)</param>
                   <param index="5">Vel Yaw (set to NAN to ignore)</param>
               </entry>
+              <entry value="79" name="SET_OPTICAL_TARGET">
+                  <description>Sets video target (default is center) as LPOS targer</description>
+                  <param index="1">X Pos in video (optional)</param>
+                  <param index="2">Y-Pos in video (optional)</param>
+              </entry>
             </enum>
 
             <enum name="MSP_COMPONENT_CTRL">
@@ -114,7 +119,7 @@
               <entry value="21" name="SAVE_MAP2D">
                   <description>Saves a map corresponding to the global position</description>
               </entry>
-              <entry value="22" name="LOAD_MAP2D">
+              <entry value="23" name="LOAD_MAP2D">
                   <description>Load a map corresponding to the global position</description>
               </entry>
               <entry value="30" name="APPLY_MAP_FILTER">

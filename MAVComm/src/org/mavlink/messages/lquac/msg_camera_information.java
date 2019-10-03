@@ -76,7 +76,7 @@ public class msg_camera_information extends MAVLinkMessage {
    */
   public int lens_id;
   /**
-   * Camera definition URI (if any, otherwise only basic functions will be available).
+   * Camera definition URI (if any, otherwise only basic functions will be available). HTTP- (http://) and MAVLink FTP- (mavlinkftp://) formatted URIs are allowed (and both must be supported by any GCS that implements the Camera Protocol).
    */
   public char[] cam_definition_uri = new char[140];
   public void setCam_definition_uri(String tmp) {

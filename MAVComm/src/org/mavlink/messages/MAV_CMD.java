@@ -833,7 +833,7 @@ public interface MAV_CMD {
     /**
      * Arms / Disarms a component
      * PARAM 1 : 0: disarm, 1: arm
-     * PARAM 2 : 0: only arm-disarm when landed, 21196: enforce arming/disarming even in-air (during flight)
+     * PARAM 2 : 0: arm-disarm unless prevented by safety checks (i.e. when landed), 21196: force arming/disarming (e.g. allow arming to override preflight checks and disarming in flight)
      */
     public final static int MAV_CMD_COMPONENT_ARM_DISARM = 400;
     /**
@@ -854,12 +854,12 @@ public interface MAV_CMD {
      */
     public final static int MAV_CMD_START_RX_PAIR = 500;
     /**
-     * Request the interval between messages for a particular MAVLink message ID
+     * Request the interval between messages for a particular MAVLink message ID. The receiver should ACK the command and then emit its response in a MESSAGE_INTERVAL message.
      * PARAM 1 : The MAVLink message ID
      */
     public final static int MAV_CMD_GET_MESSAGE_INTERVAL = 510;
     /**
-     * Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM
+     * Set the interval between messages for a particular MAVLink message ID. This interface replaces REQUEST_DATA_STREAM.
      * PARAM 1 : The MAVLink message ID
      * PARAM 2 : The interval between two messages. Set to -1 to disable and 0 to request default rate.
      */

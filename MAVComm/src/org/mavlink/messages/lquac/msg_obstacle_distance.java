@@ -24,7 +24,7 @@ public class msg_obstacle_distance extends MAVLinkMessage {
     messageType = MAVLINK_MSG_ID_OBSTACLE_DISTANCE;
     this.sysId = sysId;
     this.componentId = componentId;
-    payload_length = 166;
+    payload_length = 167;
 }
 
   /**
@@ -32,7 +32,7 @@ public class msg_obstacle_distance extends MAVLinkMessage {
    */
   public long time_usec;
   /**
-   * Distance of obstacles around the UAV with index 0 corresponding to local forward + angle_offset. A value of 0 means that the obstacle is right in front of the sensor. A value of max_distance +1 means no obstacle is present. A value of UINT16_MAX for unknown/not used. In a array element, one unit corresponds to 1cm.
+   * Distance of obstacles around the vehicle with index 0 corresponding to North + angle_offset, unless otherwise specified in the frame. A value of 0 is valid and means that the obstacle is practically touching the sensor. A value of max_distance +1 means no obstacle is present. A value of UINT16_MAX for unknown/not used. In a array element, one unit corresponds to 1cm.
    */
   public int[] distances = new int[72];
   /**
@@ -48,17 +48,21 @@ public class msg_obstacle_distance extends MAVLinkMessage {
    */
   public int sensor_type;
   /**
-   * Angular width in degrees of each array element. (Ignored if increment_f greater than 0).
+   * Angular width in degrees of each array element. Increment direction is clockwise. This field is ignored if increment_f is non-zero.
    */
   public int increment;
   /**
-   * Angular width in degrees of each array element as a float. If greater than 0 then this value is used instead of the uint8_t increment field.
+   * Angular width in degrees of each array element as a float. If non-zero then this value is used instead of the uint8_t increment field. Positive is clockwise direction, negative is counter-clockwise.
    */
   public float increment_f;
   /**
-   * Relative angle offset of the 0-index element in the distances array. Value of 0 corresponds to forward. Positive values are offsets to the right.
+   * Relative angle offset of the 0-index element in the distances array. Value of 0 corresponds to forward. Positive is clockwise direction, negative is counter-clockwise.
    */
   public float angle_offset;
+  /**
+   * Coordinate frame of reference for the yaw rotation and offset of the sensor data. Defaults to MAV_FRAME_GLOBAL, which is North aligned. For body-mounted sensors use MAV_FRAME_BODY_FRD, which is vehicle front aligned.
+   */
+  public int frame;
 /**
  * Decode message with raw data
  */
@@ -73,12 +77,13 @@ public void decode(LittleEndianDataInputStream dis) throws IOException {
   increment = (int)dis.readUnsignedByte()&0x00FF;
   increment_f = (float)dis.readFloat();
   angle_offset = (float)dis.readFloat();
+  frame = (int)dis.readUnsignedByte()&0x00FF;
 }
 /**
  * Encode message with raw data and other informations
  */
 public byte[] encode() throws IOException {
-  byte[] buffer = new byte[12+166];
+  byte[] buffer = new byte[12+167];
    LittleEndianDataOutputStream dos = new LittleEndianDataOutputStream(new ByteArrayOutputStream());
   dos.writeByte((byte)0xFD);
   dos.writeByte(payload_length & 0x00FF);
@@ -100,15 +105,16 @@ public byte[] encode() throws IOException {
   dos.writeByte(increment&0x00FF);
   dos.writeFloat(increment_f);
   dos.writeFloat(angle_offset);
+  dos.writeByte(frame&0x00FF);
   dos.flush();
   byte[] tmp = dos.toByteArray();
   for (int b=0; b<tmp.length; b++) buffer[b]=tmp[b];
-  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 166);
+  int crc = MAVLinkCRC.crc_calculate_encode(buffer, 167);
   crc = MAVLinkCRC.crc_accumulate((byte) IMAVLinkCRC.MAVLINK_MESSAGE_CRCS[messageType], crc);
   byte crcl = (byte) (crc & 0x00FF);
   byte crch = (byte) ((crc >> 8) & 0x00FF);
-  buffer[176] = crcl;
-  buffer[177] = crch;
+  buffer[177] = crcl;
+  buffer[178] = crch;
   dos.close();
   return buffer;
 }
@@ -192,5 +198,6 @@ return "MAVLINK_MSG_ID_OBSTACLE_DISTANCE : " +   "  time_usec="+time_usec
 +  "  increment="+increment
 +  "  increment_f="+increment_f
 +  "  angle_offset="+angle_offset
++  "  frame="+frame
 ;}
 }

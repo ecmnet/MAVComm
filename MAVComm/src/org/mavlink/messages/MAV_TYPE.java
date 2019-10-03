@@ -5,11 +5,11 @@
 package org.mavlink.messages;
 /**
  * Interface MAV_TYPE
- * MAVLINK system type. All components in a system should report this type in their HEARTBEAT.
+ * MAVLINK component type reported in HEARTBEAT message. Flight controllers must report the type of the vehicle on which they are mounted (e.g. MAV_TYPE_OCTOROTOR). All other components must report a value appropriate for their type (e.g. a camera must use MAV_TYPE_CAMERA).
  **/
 public interface MAV_TYPE {
     /**
-     * Generic micro air vehicle.
+     * Generic micro air vehicle
      */
     public final static int MAV_TYPE_GENERIC = 0;
     /**
@@ -113,11 +113,11 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_VTOL_RESERVED5 = 25;
     /**
-     * Gimbal (standalone)
+     * Gimbal
      */
     public final static int MAV_TYPE_GIMBAL = 26;
     /**
-     * ADSB system (standalone)
+     * ADSB system
      */
     public final static int MAV_TYPE_ADSB = 27;
     /**
@@ -129,7 +129,7 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_DODECAROTOR = 29;
     /**
-     * Camera (standalone)
+     * Camera
      */
     public final static int MAV_TYPE_CAMERA = 30;
     /**
@@ -137,7 +137,11 @@ public interface MAV_TYPE {
      */
     public final static int MAV_TYPE_CHARGING_STATION = 31;
     /**
-     * FLARM collision avoidance system (standalone)
+     * FLARM collision avoidance system
      */
     public final static int MAV_TYPE_FLARM = 32;
+    /**
+     * Servo
+     */
+    public final static int MAV_TYPE_SERVO = 33;
 }

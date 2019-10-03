@@ -67,4 +67,10 @@ public interface MSP_CMD {
      * PARAM 5 : Vel Yaw (set to NAN to ignore)
      */
     public final static int MSP_CMD_OFFBOARD_SETLOCALVEL = 78;
+    /**
+     * Sets video target (default is center) as LPOS targer
+     * PARAM 1 : X Pos in video (optional)
+     * PARAM 2 : Y-Pos in video (optional)
+     */
+    public final static int SET_OPTICAL_TARGET = 79;
 }
