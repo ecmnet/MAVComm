@@ -148,11 +148,11 @@ public class StatusManager implements Runnable {
 
 		status_current.set(model.sys);
 
-		if(status_old.isEqual(status_current))
-			return;
-
 		if (status_current.isStatus(Status.MSP_ARMED))
 			model.sys.t_armed_ms = System.currentTimeMillis() - t_armed_start;
+
+		if(status_old.isEqual(status_current))
+			return;
 
 
 		if(status_current.isStatusChanged(status_old, 1<<Status.MSP_ARMED) && status_current.isStatus(Status.MSP_ARMED))
