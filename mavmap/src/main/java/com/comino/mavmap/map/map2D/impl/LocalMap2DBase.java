@@ -115,10 +115,10 @@ public abstract class LocalMap2DBase implements ILocalMap {
 	}
 
 	public void reset() {
-		for (int y = 0; y < map_dimension; y++) {
+		BoofConcurrency.loopFor(0, map_dimension, y -> {
 			for (int x = 0; x < map_dimension; x++)
 				map[x][y] = 0;
-		}
+		});
 		is_loaded = false;
 	}
 
