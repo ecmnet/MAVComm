@@ -6,6 +6,8 @@ import com.comino.mavmap.struct.Polar3D_F32;
 import com.comino.mavmap.utils.MSP3DUtils;
 import com.comino.mavutils.MSPMathUtils;
 
+import boofcv.concurrency.BoofConcurrency;
+
 public abstract class LocalMap2DBase implements ILocalMap {
 
 	protected int threshold = 0;
@@ -148,8 +150,8 @@ public abstract class LocalMap2DBase implements ILocalMap {
 	}
 
 	public void toDataModel(boolean debug) {
-//		//TODO: Only transfer changes
-		for (int y = 0; y < map_dimension; y++) {
+
+		BoofConcurrency.loopFor(0, map_dimension, y -> {
 			for (int x = 0; x < map_dimension; x++) {
 				if (map[x][y] > threshold)
 					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
@@ -158,9 +160,8 @@ public abstract class LocalMap2DBase implements ILocalMap {
 					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
 							(y * cell_size_mm - center_y_mm) / 1000f, 0, false);
 			}
-		}
-		if (debug)
-			System.out.println(model.grid);
+		});
+
 	}
 
 /******************************************************************************************************/
