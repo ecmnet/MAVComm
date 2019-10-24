@@ -115,10 +115,12 @@ public abstract class LocalMap2DBase implements ILocalMap {
 	}
 
 	public void reset() {
-		BoofConcurrency.loopFor(0, map_dimension, y -> {
+	//	BoofConcurrency.loopFor(0, map_dimension, y -> {
+		for (int y = 0; y < map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++)
 				map[x][y] = 0;
-		});
+		}
+		//);
 		is_loaded = false;
 	}
 
@@ -151,7 +153,8 @@ public abstract class LocalMap2DBase implements ILocalMap {
 
 	public void toDataModel(boolean debug) {
 
-		BoofConcurrency.loopFor(0, map_dimension, y -> {
+	//	BoofConcurrency.loopFor(0, map_dimension, y -> {
+		for (int y = 0; y < map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
 				if (map[x][y] > threshold)
 					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
@@ -160,7 +163,8 @@ public abstract class LocalMap2DBase implements ILocalMap {
 					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
 							(y * cell_size_mm - center_y_mm) / 1000f, 0, false);
 			}
-		});
+		}
+	//		);
 
 	}
 
