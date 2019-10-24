@@ -24,11 +24,11 @@ public class DenoiseMapFilter implements ILocalMapFilter {
 
 	@Override
 	public void apply(short[][] input) {
-		long tms = System.currentTimeMillis();
+	//	long tms = System.currentTimeMillis();
 		MSPArrayUtils.convertToGrayF32(input, map_in);
 		blurrer.process(map_in, map_out);
 		MSPArrayUtils.convertFromGrayF32(input, map_out);
-		System.out.println("Filter application in "+(System.currentTimeMillis()-tms)+"ms");
+	//	System.out.println("Filter application in "+(System.currentTimeMillis()-tms)+"ms");
 
 	}
 
