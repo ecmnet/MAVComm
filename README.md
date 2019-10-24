@@ -4,6 +4,8 @@
 
 [![Build Status](https://travis-ci.org/ecmnet/MAVComm.svg?branch=master)](https://travis-ci.org/ecmnet/MAVComm) 
 
+(Deprecated)
+
 This Java based tool enables companions to be connected to PixHawk and serves as MAVLink proxy for QGC / MAVGC. Additionally MAVcomm can serve as central hub for distributed high-level flight control. 
 
 It also provides a MAVLink parser and a flat data model to https://github.com/ecmnet/MAVGCL and to the visual odometry https://github.com/ecmnet/MAVSlam.
