@@ -6,12 +6,14 @@ import java.util.List;
 import com.comino.mavcom.model.DataModel;
 
 import georegression.geometry.ConvertRotation3D_F32;
+import georegression.geometry.ConvertRotation3D_F64;
 import georegression.struct.EulerType;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector3D_F64;
 import georegression.struct.point.Vector4D_F32;
 import georegression.struct.se.Se3_F32;
+import georegression.struct.se.Se3_F64;
 
 public class MSP3DUtils {
 
@@ -105,13 +107,31 @@ public class MSP3DUtils {
 	public static void convertModelToSe3_F32(DataModel model, Se3_F32 state) {
 		convertToSe3_F32(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.r, model.attitude.p, model.attitude.y, state);
 	}
+
+	public static void convertModelToSe3_F64(DataModel model, Se3_F64 state) {
+		convertToSe3_F64(model.state.l_x, model.state.l_y, model.state.l_z, model.attitude.r, model.attitude.p, model.attitude.y, state);
+	}
+
+	public static void convertModelRotationToSe3_F64(DataModel model, Se3_F64 state) {
+		ConvertRotation3D_F64.eulerToMatrix(EulerType.XYZ,model.attitude.r, model.attitude.p, model.attitude.y, state.R);
+	}
+
 	public static void convertModelXYToSe3_F32(DataModel model, Se3_F32 state) {
 		convertToSe3_F32(model.state.l_x, model.state.l_y, model.state.l_z, 0, 0, model.attitude.y, state);
 	}
 
+	public static void convertModelXYToSe3_F64(DataModel model, Se3_F64 state) {
+		convertToSe3_F64(model.state.l_x, model.state.l_y, model.state.l_z, 0, 0, model.attitude.y, state);
+	}
+
 	public static void convertToSe3_F32(float x, float y, float z, float r, float p, float yw, Se3_F32 state) {
 		state.setTranslation(x, y, z);
-		ConvertRotation3D_F32.eulerToMatrix(EulerType.XYZ, r, p, y, state.getRotation());
+		ConvertRotation3D_F32.eulerToMatrix(EulerType.XYZ, r, p, yw, state.getRotation());
+	}
+
+	public static void convertToSe3_F64(float x, float y, float z, float r, float p, float yw, Se3_F64 state) {
+		state.setTranslation(x, y, z);
+		ConvertRotation3D_F64.eulerToMatrix(EulerType.XYZ, r, p, yw, state.getRotation());
 	}
 
 	public static float ConvertSe3_F32ToYaw(Se3_F32 state) {
