@@ -23,7 +23,7 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
+        <dependency>
 			<groupId>org.boofcv</groupId>
 			<artifactId>boofcv-core</artifactId>
 			<version>0.34</version>
@@ -41,6 +41,11 @@
 		<dependency>
 			<groupId>com.comino</groupId>
 			<artifactId>mavutils</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.comino</groupId>
+			<artifactId>mavodometry</artifactId>
 			<version>0.0.1</version>
 		</dependency>
   </dependencies>

@@ -1,9 +1,9 @@
 package com.comino.mavmap.map.map2D.impl;
 
 import com.comino.mavcom.model.DataModel;
+import com.comino.mavcom.utils.MSP3DUtils;
 import com.comino.mavmap.map.map2D.ILocalMap;
 import com.comino.mavmap.struct.Polar3D_F32;
-import com.comino.mavmap.utils.MSP3DUtils;
 import com.comino.mavutils.MSPMathUtils;
 
 import boofcv.concurrency.BoofConcurrency;
