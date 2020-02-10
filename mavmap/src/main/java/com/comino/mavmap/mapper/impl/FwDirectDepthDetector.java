@@ -43,7 +43,7 @@ import com.comino.mavcom.mavlink.IMAVLinkListener;
 import com.comino.mavcom.model.DataModel;
 import com.comino.mavcom.utils.MSP3DUtils;
 import com.comino.mavmap.map.map2D.ILocalMap;
-import com.comino.mavodometry.estimators.IMapper;
+import com.comino.mavodometry.estimators.IMAVDetector;
 import com.comino.mavodometry.librealsense.r200.vio.odometry.MAVDepthVisualOdometry;
 import com.comino.mavodometry.video.IVisualStreamHandler;
 
@@ -55,7 +55,7 @@ import georegression.struct.point.Point3D_F64;
 import georegression.struct.se.Se3_F64;
 import georegression.transform.se.SePointOps_F64;
 
-public class FwDirectDepthDetector implements IMapper {
+public class FwDirectDepthDetector implements IMAVDetector {
 
 	private static final float MIN_ALTITUDE                = 0.3f;
 	private static final float COLLISION_WARNING_DISTANCE  = 1f;
