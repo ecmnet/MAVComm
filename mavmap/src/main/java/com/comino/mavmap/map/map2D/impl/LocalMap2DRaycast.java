@@ -127,10 +127,10 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		int y3 = 0;
 
 
-//      // if point already at max value: do not update
+		//      // if point already at max value: do not update
 		// => This is not true as clearing needs to take place (e.g. other angle)
-//		if(map[x2][y2] >= MAX_CERTAINITY)
-//			return true;
+		//		if(map[x2][y2] >= MAX_CERTAINITY)
+		//			return true;
 
 		// project line to end of map in order to clear data behind the obstacle
 		// Question: really needed? We have forgetMap instead?
@@ -145,7 +145,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		else {
 
 			float m = dy/dx;
-			if(dy > 0 )	{
+			if(dx > 0 )	{
 				if(m < 1f && m > -1f) {
 					x3 = map_dimension -1;  y3 = (int)(y2 + m * (map_dimension-1));
 				} else {
@@ -162,7 +162,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 			}
 		}
 
-        // remove hidden obstacles
+		// remove hidden obstacles
 		drawBresenhamLine(x2,y2,x3,y3,0);
 
 		drawBresenhamLine(x1,y1,x2,y2,value);
@@ -260,8 +260,11 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 	private boolean clear_map_point(int x,int y) {
 		if(x >=0 && y>=0 && x < map.length && y < map.length) {
-			map[x][y] = 0;
-			model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+			if(map[x][y] > threshold) {
+				map[x][y] = 0;
+				model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
+			}
+
 			return true;
 		}
 		return false;
