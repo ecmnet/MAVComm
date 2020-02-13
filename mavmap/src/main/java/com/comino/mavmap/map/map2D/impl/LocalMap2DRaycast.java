@@ -46,7 +46,7 @@ import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
-	private static final int  MAX_CERTAINITY     = 80;
+	private static final int  MAX_CERTAINITY     = 200;
 	private static final int  CERTAINITY_INCR    = 20;
 
 
@@ -126,12 +126,15 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		int x3 = 0;
 		int y3 = 0;
 
+		if(get(x2,y2)>= MAX_CERTAINITY)
+			return false;
+
 		float dx = (int)(x2-x1); float dy = (int)(y2-y1);
 
 		if(dx == 0) {
 			x3 = x2;
 			if(dy >= 0)
-				y3 = map_dimension - 1;
+				y3 = map_dimension - 2;
 			else
 				y3 = 0;
 
@@ -139,7 +142,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		if(dy == 0) {
 			y3 = y2;
 			if(dx >= 0)
-				x3 = map_dimension - 1;
+				x3 = map_dimension - 2;
 			else
 				x3 = 0;
 
@@ -151,13 +154,13 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 				if(m < 1f) {
 
-					x3 = map_dimension - 1;
-					y3 = (int)(y2 + m * (map_dimension-1));
+					x3 = map_dimension - 2;
+					y3 = (int)(y2 + m * (map_dimension-2));
 
 				} else {
 
-					y3 = map_dimension - 1;
-					x3 = (int)(x2 + (map_dimension-1) / m);
+					y3 = map_dimension - 2;
+					x3 = (int)(x2 + (map_dimension-2) / m);
 
 				}
 
@@ -166,13 +169,13 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 				if(m > -1f) {
 
-					x3 = map_dimension - 1;
-					y3 = (int)(y2 + m * (map_dimension-1));
+					x3 = map_dimension - 2;
+					y3 = (int)(y2 + m * (map_dimension-2));
 
 				} else {
 
 					y3 = 0;
-					x3 = (int)(x2 + (map_dimension-1) / m);
+					x3 = (int)(x2 + (map_dimension-2) / m);
 
 				}
 
@@ -182,12 +185,12 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
                if(m > -1f) {
 
 					x3 = 0;
-					y3 = (int)(y2 + m * (map_dimension-1));
+					y3 = (int)(y2 + m * (map_dimension-2));
 
 				} else {
 
-					y3 = map_dimension - 1;
-					x3 = (int)(x2 + (map_dimension-1) / m);
+					y3 = map_dimension - 2;
+					x3 = (int)(x2 + (map_dimension-2) / m);
 
 				}
 
@@ -198,12 +201,12 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
                if(m < 1f) {
 
 					x3 = 0;
-					y3 = (int)(y2 + m * (map_dimension-1));
+					y3 = (int)(y2 + m * (map_dimension-2));
 
 				} else {
 
 					y3 = 0;
-					x3 = (int)(x2 + (map_dimension-1) / m);
+					x3 = (int)(x2 + (map_dimension-2) / m);
 
 				}
 
@@ -217,7 +220,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 
 		// remove hidden obstacles
-		drawBresenhamLine(x2,y2,x3,y3,0);
+		drawBresenhamLine(x2,y2,x3,y3,value);
 		drawBresenhamLine(x1,y1,x2,y2,value);
 
 		return true;
@@ -292,7 +295,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		if (xm< 0 || xm >= map.length || ym < 0 || ym >= map.length)
 			return;
 
-		if(value > 0)
+		if(value != 0)
 			set_map_point(xm,ym,value);
 		else
 			clear_map_point(xm,ym);
@@ -303,8 +306,11 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		if(x >=0 && y>=0 && x < map.length && y < map.length) {
 			if(map[x][y]<MAX_CERTAINITY) {
 				map[x][y] +=dr;
+				if(map[x][y]<0) map[x][y] =0;
 				if(map[x][y] > threshold)
 					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
+				if(map[x][y] == 0)
+					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
 				return true;
 			}
 		}
