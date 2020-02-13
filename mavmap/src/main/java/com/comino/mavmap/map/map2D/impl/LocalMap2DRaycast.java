@@ -126,45 +126,98 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		int x3 = 0;
 		int y3 = 0;
 
+		float dx = (int)(x2-x1); float dy = (int)(y2-y1);
 
-		//      // if point already at max value: do not update
+		if(dx == 0) {
+			x3 = x2;
+			if(dy >= 0)
+				y3 = map_dimension - 1;
+			else
+				y3 = 0;
+
+		} else
+		if(dy == 0) {
+			y3 = y2;
+			if(dx >= 0)
+				x3 = map_dimension - 1;
+			else
+				x3 = 0;
+
+		} else {
+
+			float m = dy/dx;
+
+			if(dx > 0 && dy > 0) {
+
+				if(m < 1f) {
+
+					x3 = map_dimension - 1;
+					y3 = (int)(y2 + m * (map_dimension-1));
+
+				} else {
+
+					y3 = map_dimension - 1;
+					x3 = (int)(x2 + (map_dimension-1) / m);
+
+				}
+
+			} else
+			if(dx > 0 && dy < 0) {
+
+				if(m > -1f) {
+
+					x3 = map_dimension - 1;
+					y3 = (int)(y2 + m * (map_dimension-1));
+
+				} else {
+
+					y3 = 0;
+					x3 = (int)(x2 + (map_dimension-1) / m);
+
+				}
+
+			} else
+			if(dx < 0 && dy > 0) {
+
+               if(m > -1f) {
+
+					x3 = 0;
+					y3 = (int)(y2 + m * (map_dimension-1));
+
+				} else {
+
+					y3 = map_dimension - 1;
+					x3 = (int)(x2 + (map_dimension-1) / m);
+
+				}
+
+
+			} else
+			if(dx < 0 && dy < 0) {
+
+               if(m < 1f) {
+
+					x3 = 0;
+					y3 = (int)(y2 + m * (map_dimension-1));
+
+				} else {
+
+					y3 = 0;
+					x3 = (int)(x2 + (map_dimension-1) / m);
+
+				}
+
+			}
+		}
+
+	    // if point already at max value: do not update
 		// => This is not true as clearing needs to take place (e.g. other angle)
 		//		if(map[x2][y2] >= MAX_CERTAINITY)
 		//			return true;
 
-		// project line to end of map in order to clear data behind the obstacle
-		// Question: really needed? We have forgetMap instead?
-		float dx = (float)(x2-x1); float dy = (float)(y2-y1);
-
-		if(dx == 0) {
-			x3 = x2; y3 = map_dimension - 1;
-		}
-		else if( dy == 0) {
-			x3 = map_dimension -1; y3 = y2;
-		}
-		else {
-
-			float m = dy/dx;
-			if(dx > 0 )	{
-				if(m < 1f && m > -1f) {
-					x3 = map_dimension -1;  y3 = (int)(y2 + m * (map_dimension-1));
-				} else {
-					x3 = (int)(x2 + (map_dimension-1) / m); y3 = map_dimension - 1;
-				}
-			}
-			else {
-
-				if(m < 1f && m > -1f) {
-					x3 = 0; y3 = (int)(y2 - m * (map_dimension-1));
-				} else {
-					x3 = (int)(x2 - (map_dimension-1) / m);  y3 =0;
-				}
-			}
-		}
 
 		// remove hidden obstacles
 		drawBresenhamLine(x2,y2,x3,y3,0);
-
 		drawBresenhamLine(x1,y1,x2,y2,value);
 
 		return true;
