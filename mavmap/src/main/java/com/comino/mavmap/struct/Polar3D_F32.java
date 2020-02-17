@@ -42,6 +42,11 @@ public class Polar3D_F32 {
     }
 
 	public void set(float vx, float vy, float vz) {
+
+		if(Float.isNaN(vx)) vx = 0;
+		if(Float.isNaN(vy)) vy = 0;
+		if(Float.isNaN(vz)) vz = 0;
+
 		this.value    = (float)Math.sqrt((vx)*(vx) + (vy)*(vy) + (vz)*(vz));
 		this.angle_xy = getDirection(vy, vx);
 
@@ -64,6 +69,11 @@ public class Polar3D_F32 {
 	}
 
 	public void set(Vector4D_F32 t, Vector4D_F32 c) {
+
+		if(Float.isNaN(t.x)) t.x = c.x;
+		if(Float.isNaN(t.y)) t.y = c.y;
+		if(Float.isNaN(t.z)) t.z = c.z;
+
 		this.value    = (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 		this.angle_xy = getDirection(t.y-c.y, t.x-c.x);
 		this.angle_xz = (float)Math.asin((t.z-c.z)/this.value);
@@ -74,6 +84,11 @@ public class Polar3D_F32 {
 	}
 
 	public void set(Vector3D_F32 t, Vector3D_F32 c) {
+
+		if(Float.isNaN(t.x)) t.x = c.x;
+		if(Float.isNaN(t.y)) t.y = c.y;
+		if(Float.isNaN(t.z)) t.z = c.z;
+
 		this.value    = (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 		this.angle_xy = getDirection(t.y-c.y, t.x-c.x);
 		this.angle_xz = (float)Math.asin((t.z-c.z)/this.value);
@@ -146,7 +161,9 @@ public class Polar3D_F32 {
 
 	private float getDirection(float dy, float dx) {
 
-		if(dx == 0 && dy >= 0)
+		if(dx == 0 && dy == 0)
+			return 0;
+		if(dx == 0 && dy > 0)
 			return  (float)Math.PI/2;
 		if(dx == 0 && dy < 0)
 			return -(float)Math.PI/2;
