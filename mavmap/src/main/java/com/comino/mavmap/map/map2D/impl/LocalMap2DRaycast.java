@@ -123,6 +123,18 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		int y1 = (int)Math.floor((ypos1*1000f+center_y_mm)/cell_size_mm);
 		int x2 = (int)Math.floor((xpos2*1000f+center_x_mm)/cell_size_mm);
 		int y2 = (int)Math.floor((ypos2*1000f+center_y_mm)/cell_size_mm);
+
+		return set(x1,y1,x2,y2,value);
+	}
+
+
+	@Override
+	public GrayU16 getMap() {
+		return MSPArrayUtils.convertToGrayU16(map, null);
+	}
+
+	private boolean set(int x1, int y1, int x2, int y2, int value) {
+
 		int x3 = 0;
 		int y3 = 0;
 
@@ -139,156 +151,134 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 				y3 = 0;
 
 		} else
-		if(dy == 0) {
-			y3 = y2;
-			if(dx >= 0)
-				x3 = map_dimension - 2;
-			else
-				x3 = 0;
-
-		} else {
-
-			float m = dy/dx;
-
-			if(dx > 0 && dy > 0) {
-
-				if(m < 1f) {
-
+			if(dy == 0) {
+				y3 = y2;
+				if(dx >= 0)
 					x3 = map_dimension - 2;
-					y3 = (int)(y2 + m * (map_dimension-2));
-
-				} else {
-
-					y3 = map_dimension - 2;
-					x3 = (int)(x2 + (map_dimension-2) / m);
-
-				}
-
-			} else
-			if(dx > 0 && dy < 0) {
-
-				if(m > -1f) {
-
-					x3 = map_dimension - 2;
-					y3 = (int)(y2 + m * (map_dimension-2));
-
-				} else {
-
-					y3 = 0;
-					x3 = (int)(x2 + (map_dimension-2) / m);
-
-				}
-
-			} else
-			if(dx < 0 && dy > 0) {
-
-               if(m > -1f) {
-
+				else
 					x3 = 0;
-					y3 = (int)(y2 + m * (map_dimension-2));
 
-				} else {
+			} else {
 
-					y3 = map_dimension - 2;
-					x3 = (int)(x2 + (map_dimension-2) / m);
+				float m = dy/dx;
 
-				}
+				if(dx > 0 && dy > 0) {
+
+					if(m < 1f) {
+
+						x3 = map_dimension - 2;
+						y3 = (int)(y2 + m * (map_dimension-2));
+
+					} else {
+
+						y3 = map_dimension - 2;
+						x3 = (int)(x2 + (map_dimension-2) / m);
+
+					}
+
+				} else
+					if(dx > 0 && dy < 0) {
+
+						if(m > -1f) {
+
+							x3 = map_dimension - 2;
+							y3 = (int)(y2 + m * (map_dimension-2));
+
+						} else {
+
+							y3 = 0;
+							x3 = (int)(x2 + (map_dimension-2) / m);
+
+						}
+
+					} else
+						if(dx < 0 && dy > 0) {
+
+							if(m > -1f) {
+
+								x3 = 0;
+								y3 = (int)(y2 + m * (map_dimension-2));
+
+							} else {
+
+								y3 = map_dimension - 2;
+								x3 = (int)(x2 + (map_dimension-2) / m);
+
+							}
 
 
-			} else
-			if(dx < 0 && dy < 0) {
+						} else
+							if(dx < 0 && dy < 0) {
 
-               if(m < 1f) {
+								if(m < 1f) {
 
-					x3 = 0;
-					y3 = (int)(y2 + m * (map_dimension-2));
+									x3 = 0;
+									y3 = (int)(y2 + m * (map_dimension-2));
 
-				} else {
+								} else {
 
-					y3 = 0;
-					x3 = (int)(x2 + (map_dimension-2) / m);
+									y3 = 0;
+									x3 = (int)(x2 + (map_dimension-2) / m);
 
-				}
+								}
 
+							}
 			}
-		}
-
-	    // if point already at max value: do not update
-		// => This is not true as clearing needs to take place (e.g. other angle)
-		//		if(map[x2][y2] >= MAX_CERTAINITY)
-		//			return true;
 
 
 		// remove hidden obstacles
-		drawBresenhamLine(x2,y2,x3,y3,value);
-		drawBresenhamLine(x1,y1,x2,y2,value);
+		drawLine(x2,y2,x3,y3,value);
+		drawLine(x1,y1,x2,y2,value);
 
 		return true;
 	}
 
 
-	@Override
-	public GrayU16 getMap() {
-		return MSPArrayUtils.convertToGrayU16(map, null);
-	}
+	private void drawLine(int x1, int y1, int x2, int y2, int value) {
+        // delta of exact value and rounded value of the dependent variable
+        int d = 0;
 
-	private void drawBresenhamLine( int x1, int y1, int x2, int y2, int value)
-	{
-		int xIncrement = 1,
-				yIncrement = 1,
-				dy = 2*(y2-y1),
-				dx = 2*(x1-x2),
-				tmp;
+        int dx = Math.abs(x2 - x1);
+        int dy = Math.abs(y2 - y1);
 
-		if ( x1 > x2 ) {      // Spiegeln an Y-Achse
-			xIncrement = -1;
-			dx = -dx;
-		}
+        int dx2 = 2 * dx; // slope scaling factors to
+        int dy2 = 2 * dy; // avoid floating point
 
-		if ( y1 > y2 ) {      // Spiegeln an X-Achse
-			yIncrement= -1;
-			dy= -dy;
-		}
+        int ix = x1 < x2 ? 1 : -1; // increment direction
+        int iy = y1 < y2 ? 1 : -1;
 
-		int e = 2*dy + dx;
-		int x = x1;           // Startpunkte setzen
-		int y = y1;
+        int x = x1;
+        int y = y1;
 
-		if ( dy < -dx )       // Steigung < 1
-		{
-			while( x != (x2+1) )
-			{
-				e += dy;
-				if ( e > 0)
-				{
-					e += dx;
-					y += yIncrement;
-				}
-				draw_into_map(x,y,0);
-				x += xIncrement;
-			}
-		}
-		else // ( dy >= -dx )   Steigung >=1
-		{
-			tmp = -dx;
-			dx = -dy;
-			dy = tmp;
+        if (dx >= dy) {
+            while (true) {
+            	draw_into_map(x,y,-value);
+                if (x == x2)
+                    break;
+                x += ix;
+                d += dy2;
+                if (d > dx) {
+                    y += iy;
+                    d -= dx2;
+                }
+            }
+        } else {
+            while (true) {
+            	draw_into_map(x,y,-value);
+                if (y == y2)
+                    break;
+                y += iy;
+                d += dx2;
+                if (d > dy) {
+                    x += ix;
+                    d -= dy2;
+                }
+            }
+        }
+        draw_into_map(x,y,value);
+    }
 
-			e = 2*dy + dx;
 
-			while( y != (y2+1) )
-			{
-				e += dy;
-				if( e > 0 ) {
-					e += dx;
-					x += xIncrement;
-				}
-				draw_into_map(x,y,0);
-				y += yIncrement;
-			}
-		}
-		draw_into_map(x,y,value);
-	}
 
 	private void draw_into_map(int xm, int ym, int value) {
 
