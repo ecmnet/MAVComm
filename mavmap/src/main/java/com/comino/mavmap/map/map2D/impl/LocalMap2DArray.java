@@ -92,7 +92,7 @@ public class LocalMap2DArray extends LocalMap2DBase implements ILocalMap {
 		System.out.println(" and filter radius  "+FILTER_SIZE_PX*cell_size_mm+"mm");
 	}
 
-	public void 	setLocalPosition(Vector3D_F32 point) {
+	public void setLocalPosition(Vector3D_F32 point) {
 		local_x_mm = point.x *1000f + center_x_mm;;
 		local_y_mm = point.y *1000f + center_y_mm;;
 	}

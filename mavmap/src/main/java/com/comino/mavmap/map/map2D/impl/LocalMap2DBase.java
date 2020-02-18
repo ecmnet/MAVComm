@@ -206,8 +206,14 @@ public abstract class LocalMap2DBase implements ILocalMap {
 				if(Math.abs(local_x_mm - x * cell_size_mm)<cell_size_mm &&
 						Math.abs(local_y_mm - y * cell_size_mm)<cell_size_mm)
 					b.append("o ");
-				else if(map[x][y]>0) {
+				else if(map[x][y]==10) {
 					b.append("X ");
+				}
+				else if(map[x][y]<0) {
+					b.append("- ");
+				}
+				else if(map[x][y]>10) {
+					b.append("+ ");
 				}
 				else
 					b.append(". ");
