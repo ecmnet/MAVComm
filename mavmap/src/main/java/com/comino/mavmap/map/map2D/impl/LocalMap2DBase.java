@@ -136,6 +136,7 @@ public abstract class LocalMap2DBase implements ILocalMap {
 				d = (float)Math.sqrt((x - center)*(x - center) + (y - center)*(y - center));
 				if(d < distance ) {
 					   result.angle_xy = window_angles[x][y];
+					   result.angle_xz = 0;
 					   distance = d;
 				}
 			}
