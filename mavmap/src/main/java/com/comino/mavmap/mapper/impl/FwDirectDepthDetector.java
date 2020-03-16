@@ -144,12 +144,6 @@ public class FwDirectDepthDetector implements IMAVDetector {
 			}
 		}
 
-		if(current_min_distance<COLLISION_WARNING_DISTANCE)
-			model.slam.dm = (float)current_min_distance;
-		else
-			model.slam.dm = Float.NaN;
-		model.slam.tms = model.sys.getSynchronizedPX4Time_us();
-
 	}
 
 
