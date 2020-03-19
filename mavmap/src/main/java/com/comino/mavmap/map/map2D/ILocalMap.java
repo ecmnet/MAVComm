@@ -41,9 +41,6 @@ import com.comino.mavmap.struct.Polar3D_F32;
 import com.comino.mavodometry.estimators.IMAVMapper;
 
 import boofcv.struct.image.GrayU16;
-import georegression.struct.point.Point3D_F64;
-import georegression.struct.point.Vector3D_F32;
-import georegression.struct.point.Vector4D_F64;
 
 public interface ILocalMap extends IMAVMapper {
 

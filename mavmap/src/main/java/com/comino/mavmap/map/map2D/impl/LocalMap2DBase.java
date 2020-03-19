@@ -6,8 +6,6 @@ import com.comino.mavmap.map.map2D.ILocalMap;
 import com.comino.mavmap.struct.Polar3D_F32;
 import com.comino.mavutils.MSPMathUtils;
 
-import boofcv.concurrency.BoofConcurrency;
-
 public abstract class LocalMap2DBase implements ILocalMap {
 
 	protected int threshold = 0;

@@ -1,6 +1,5 @@
 package com.comino.mavmap.utils;
 
-import boofcv.io.image.ConvertBufferedImage;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.image.GrayU16;
 import boofcv.struct.image.GrayU8;
