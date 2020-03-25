@@ -160,6 +160,7 @@ public class LocaMap2DStorage {
 			try {
 				FileInputStream fs = new FileInputStream(f);
 				gson.fromJson(new BufferedReader(new InputStreamReader(fs)), map.getClass());
+				map.init();
 				return true;
 			} catch (Exception e) {
 				System.err.println(fn+" reading error ");

@@ -45,9 +45,10 @@ public abstract class LocalMap2DBase implements ILocalMap {
 				new_y = y + py - center;
 
 				if (new_x < map_dimension && new_y < map_dimension && new_x >= 0 && new_y >= 0)
-					window[x][y] = map[new_x][new_y];
+					// Note: swap XY to reflect LPOS
+					window[y][x] = map[new_x][new_y];
 				else
-					window[x][y] = Short.MAX_VALUE;
+					window[y][x] = Short.MAX_VALUE;
 			}
 		}
 	}
@@ -59,16 +60,10 @@ public abstract class LocalMap2DBase implements ILocalMap {
 
 		for (int y = 0; y < window_dimension; y++) {
 			for (int x = 0; x < window_dimension; x++) {
-				window_angles[x][y] = MSP3DUtils.getXYDirection(x-center, y-center);
-			//	System.out.println("["+x+","+y+"]"+window_angles[x][y]);
+				// xy exchanged to rotate by 90 degree
+				window_angles[y][x] = MSP3DUtils.getXYDirection(x-center, y-center);
 			}
 		}
-
-//		System.out.println(MSPMathUtils.fromRad(window_angles[center][window_dimension-1]));
-//		System.out.println(MSPMathUtils.fromRad(window_angles[window_dimension-1][center]));
-//		System.out.println(MSPMathUtils.fromRad(window_angles[window_dimension-1][window_dimension-1]));
-//		System.out.println(MSPMathUtils.fromRad(window_angles[0][0]));
-
 	}
 
 	/******************************************************************************************************/
@@ -112,13 +107,19 @@ public abstract class LocalMap2DBase implements ILocalMap {
 		return -1;
 	}
 
+	public void init() {
+			for (int y = 0; y < window_dimension; y++) {
+				for (int x = 0; x < window_dimension; x++)
+					window[x][y] =  0;
+			}
+			initWindowAngles();
+		}
+
 	public void reset() {
-	//	BoofConcurrency.loopFor(0, map_dimension, y -> {
 		for (int y = 0; y < map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++)
 				map[x][y] = 0;
 		}
-		//);
 		is_loaded = false;
 	}
 
@@ -152,7 +153,6 @@ public abstract class LocalMap2DBase implements ILocalMap {
 
 	public void toDataModel(boolean debug) {
 
-	//	BoofConcurrency.loopFor(0, map_dimension, y -> {
 		for (int y = 0; y < map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
 				if (map[x][y] > threshold)
@@ -163,21 +163,23 @@ public abstract class LocalMap2DBase implements ILocalMap {
 							(y * cell_size_mm - center_y_mm) / 1000f, 0, false);
 			}
 		}
-	//		);
-
 	}
 
 /******************************************************************************************************/
 
 	public String windowToString() {
 		StringBuilder b = new StringBuilder();
-		for(int y=0; y<window.length; y++) {
+		for(int y=window.length-1; y>=0; y--) {
 			for(int x=0; x<window.length; x++) {
+				if(x == window_dimension/2 && y == window_dimension/2)
+					b.append("O   ");
+				else
 				if(window[x][y]>0) {
-					b.append("X ");
+					b.append(String.format("%-3.0f ", MSPMathUtils.fromRad(window_angles[x][y])));
+//				b.append("X   ");
 				}
 				else
-					b.append(". ");
+					b.append(".   ");
 			}
 			b.append("\n");
 		}
@@ -187,9 +189,10 @@ public abstract class LocalMap2DBase implements ILocalMap {
 
 	public String anglesToString() {
 		StringBuilder b = new StringBuilder();
-		for(int y=0; y<window.length; y++) {
+		for(int y=window.length-1; y>=0; y--) {
 			for(int x=0; x<window.length; x++) {
-				b.append(MSPMathUtils.fromRad(window_angles[x][y]));
+			//	b.append(MSPMathUtils.fromRad(window_angles[x][y]));
+				b.append(window_angles[x][y]);
 				b.append(" ");
 			}
 			b.append("\n");

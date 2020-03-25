@@ -65,6 +65,8 @@ public interface ILocalMap extends IMAVMapper {
 
 	public void reset();
 
+	public void init();
+
 	public void setDataModel(DataModel model);
 
 	public void toDataModel(boolean debug);
@@ -72,6 +74,8 @@ public interface ILocalMap extends IMAVMapper {
 	public void setIsLoaded( boolean loaded);
 
 	public boolean isLoaded();
+
+	public String windowToString();
 
 
 }
