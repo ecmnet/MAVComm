@@ -13,10 +13,12 @@ public class Polar3D_F32 {
 	public float angle_xz = 0;
 	public float value    = 0;
 
+	public boolean isValid = false;
+
 	private Vector3D_F32 v = new Vector3D_F32();
 
 	public Polar3D_F32() {
-		super();
+		super(); clear();
 	}
 
 	public Polar3D_F32(float angle_xy, float angle_xz, float length) {
@@ -28,10 +30,10 @@ public class Polar3D_F32 {
 
 
 	public void clear() {
-
 		angle_xy = 0;
 		angle_xz = 0;
-		value    = 0;
+		value    = Float.POSITIVE_INFINITY;
+		isValid  = false;
 	}
 
 
@@ -39,6 +41,7 @@ public class Polar3D_F32 {
     	this.angle_xy = t.angle_xy;
     	this.angle_xz = t.angle_xz;
     	this.value = t.value;
+    	this.isValid = t.isValid;
     }
 
 	public void set(float vx, float vy, float vz) {
@@ -59,6 +62,10 @@ public class Polar3D_F32 {
 		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
 	}
 
+	public boolean isValid() {
+		return Float.isFinite(value) && isValid;
+	}
+
 
 	public void set(Vector3D_F32 t) {
 		set(t.x,t.y,t.z);
@@ -66,6 +73,10 @@ public class Polar3D_F32 {
 
 	public void set() {
 		set(v);
+	}
+
+	public void setValidity(boolean valid) {
+		isValid = valid;
 	}
 
 	public void set(Vector4D_F32 t, Vector4D_F32 c) {

@@ -47,6 +47,8 @@ public interface ILocalMap extends IMAVMapper {
 
 	public void nearestObstacle(Polar3D_F32 result);
 
+	public float getMaxDistanceInDirection(float direction);
+
 	public void processWindow(float lpos_x, float lpos_y);
 
 	public int getWindowValue(int x, int y);

@@ -145,6 +145,17 @@ public abstract class LocalMap2DBase implements ILocalMap {
 		//System.out.println(result);
 	}
 
+	public float getMaxDistanceInDirection(float direction) {
+
+		float distance = Float.MAX_VALUE;
+		int center = window_dimension/2;
+
+
+
+		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
+
+	}
+
 	/******************************************************************************************************/
 
 	public void setDataModel(DataModel model) {
