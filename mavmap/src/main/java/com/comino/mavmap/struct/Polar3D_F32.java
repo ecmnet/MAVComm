@@ -4,6 +4,7 @@ package com.comino.mavmap.struct;
 
 import com.comino.mavutils.MSPMathUtils;
 
+import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Vector3D_F32;
 import georegression.struct.point.Vector4D_F32;
 
@@ -71,6 +72,10 @@ public class Polar3D_F32 {
 		set(t.x,t.y,t.z);
 	}
 
+	public void set(Point3D_F64 t) {
+		set((float)t.x,(float)t.y,(float)t.z);
+	}
+
 	public void set() {
 		set(v);
 	}
@@ -87,6 +92,21 @@ public class Polar3D_F32 {
 
 		this.value    = (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
 		this.angle_xy = getDirection(t.y-c.y, t.x-c.x);
+		this.angle_xz = (float)Math.asin((t.z-c.z)/this.value);
+
+		this.angle_xy = MSPMathUtils.normAngle(this.angle_xy);
+		this.angle_xz = MSPMathUtils.normAngle(this.angle_xz);
+
+	}
+
+	public void set(Point3D_F64 t, Vector4D_F32 c) {
+
+		if(Double.isNaN(t.x)) t.x = c.x;
+		if(Double.isNaN(t.y)) t.y = c.y;
+		if(Double.isNaN(t.z)) t.z = c.z;
+
+		this.value    = (float)Math.sqrt((t.x-c.x)*(t.x-c.x) + (t.y-c.y)*(t.y-c.y) + (t.z-c.z)*(t.z-c.z));
+		this.angle_xy = getDirection((float)t.y-c.y, (float)t.x-c.x);
 		this.angle_xz = (float)Math.asin((t.z-c.z)/this.value);
 
 		this.angle_xy = MSPMathUtils.normAngle(this.angle_xy);
