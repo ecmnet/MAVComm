@@ -47,7 +47,8 @@ import georegression.struct.point.Vector4D_F64;
 public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 	private static final int  MAX_CERTAINITY     = 500;
-	private static final int  CERTAINITY_INCR    = 20;
+	private static final int  CERTAINITY_INCR    =  5;
+	private static final int  CERTAINITY_DECR    = -1;
 
 
 	public LocalMap2DRaycast() {
@@ -100,16 +101,16 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 	}
 
 	public boolean update(Point3D_F64 point, Vector4D_F64 pos) {
-		return set(pos.x,pos.y, point.x,point.y,CERTAINITY_INCR) ;
+		return set(pos.x,pos.y, point.x,point.y) ;
 	}
 
 
 	public boolean update(float lpos_x, float lpos_y, Vector3D_F32 point) {
-		return set(lpos_x,lpos_y, point.x,point.y,CERTAINITY_INCR) ;
+		return set(lpos_x,lpos_y, point.x,point.y) ;
 	}
 
 	public boolean update(float lpos_x, float lpos_y, Point3D_F64 point) {
-		return set(lpos_x,lpos_y, point.x,point.y,CERTAINITY_INCR) ;
+		return set(lpos_x,lpos_y, point.x,point.y) ;
 	}
 
 	public boolean merge(LocalMap2DRaycast m, float weight) {
@@ -117,14 +118,14 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 	}
 
 
-	public boolean set(double xpos1, double ypos1, double xpos2, double ypos2, int value) {
+	public boolean set(double xpos1, double ypos1, double xpos2, double ypos2) {
 
 		int x1 = (int)Math.floor((xpos1*1000f+center_x_mm)/cell_size_mm);
 		int y1 = (int)Math.floor((ypos1*1000f+center_y_mm)/cell_size_mm);
 		int x2 = (int)Math.floor((xpos2*1000f+center_x_mm)/cell_size_mm);
 		int y2 = (int)Math.floor((ypos2*1000f+center_y_mm)/cell_size_mm);
 
-		return set(x1,y1,x2,y2,value);
+		return set(x1,y1,x2,y2);
 	}
 
 
@@ -133,7 +134,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		return MSPArrayUtils.convertToGrayU16(map, null);
 	}
 
-	private boolean set(int x1, int y1, int x2, int y2, int value) {
+	private boolean set(int x1, int y1, int x2, int y2) {
 
 		int x3 = -1;
 		int y3 = -1;
@@ -227,15 +228,15 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 		// remove hidden obstacles
 
-	//	drawLine(x2,y2,x3,y3,0);
-		drawLine(x1,y1,x2,y2,value);
+	//	drawLine(x2,y2,x3,y3);
+		drawLine(x1,y1,x2,y2);
 
 
 		return true;
 	}
 
 
-	private void drawLine(int x1, int y1, int x2, int y2, int value) {
+	private void drawLine(int x1, int y1, int x2, int y2) {
 		// delta of exact value and rounded value of the dependent variable
 		int d = 0;
 
@@ -253,7 +254,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 		if (dx >= dy) {
 			while (true) {
-				draw_into_map(x,y,0);
+				draw_into_map(x,y,CERTAINITY_DECR);
 				if (x == x2)
 					break;
 				x += ix;
@@ -265,7 +266,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 			}
 		} else {
 			while (true) {
-				draw_into_map(x,y,0);
+				draw_into_map(x,y,CERTAINITY_DECR);
 				if (y == y2)
 					break;
 				y += iy;
@@ -276,7 +277,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 				}
 			}
 		}
-		draw_into_map(x,y,value);
+		draw_into_map(x,y,CERTAINITY_INCR);
 	}
 
 
@@ -325,7 +326,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 	//  map.set(10, 10, 15, 13, 10);
 
-	    map.set(20, 20, 17, 30, 10);
+	    map.set(20, 20, 17, 30);
 
 
 		System.out.println(map);
