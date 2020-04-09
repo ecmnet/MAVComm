@@ -87,17 +87,6 @@ public class FwDirectDepthDetector implements IMAVDetector {
 		this.min_altitude = config.getFloatProperty("map_min_altitude", String.valueOf(MIN_ALTITUDE));
 		System.out.println("[col] Min.altitude set to "+min_altitude);
 
-		control.registerListener(msg_msp_command.class, new IMAVLinkListener() {
-			@Override
-			public void received(Object o) {
-				msg_msp_command cmd = (msg_msp_command)o;
-				switch(cmd.command) {
-				case MSP_CMD.MSP_TRANSFER_MICROSLAM:
-					model.grid.invalidateTransfer();
-					break;
-				}
-			}
-		});
 
 		if(streamer !=null)
 			streamer.registerOverlayListener(ctx -> {

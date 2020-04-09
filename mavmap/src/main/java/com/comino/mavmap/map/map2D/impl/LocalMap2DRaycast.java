@@ -47,8 +47,9 @@ import georegression.struct.point.Vector4D_F64;
 public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 	private static final int  MAX_CERTAINITY     = 500;
-	private static final int  CERTAINITY_INCR    =  5;
-	private static final int  CERTAINITY_DECR    = -1;
+	private static final int  HYSTERESIS         =  10;
+	private static final int  CERTAINITY_INCR    =  30;
+	private static final int  CERTAINITY_DECR    = -10;
 
 
 	public LocalMap2DRaycast() {
@@ -136,94 +137,94 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 	private boolean set(int x1, int y1, int x2, int y2) {
 
-		int x3 = -1;
-		int y3 = -1;
-		float m=0;
+//		int x3 = -1;
+//		int y3 = -1;
+//		float m=0;
 
 //		if(get(x2,y2)>= MAX_CERTAINITY)
 //			return false;
 
-		float dx = (int)(x2-x1); float dy = (int)(y2-y1);
+//		float dx = (int)(x2-x1); float dy = (int)(y2-y1);
 
 //		System.out.println("dx="+dx+"/dy="+dy);
-		if(dx == 0) {
-			x3 = x2;
-			if(dy >= 0)
-				y3 = map_dimension - 2;
-			else
-				y3 = 0;
-
-		} else
-			if(dy == 0) {
-				y3 = y2;
-				if(dx >= 0)
-					x3 = map_dimension - 2;
-				else
-					x3 = 0;
-
-			} else {
-
-				 m = dy/dx;
-
-				if(dx > 0 && dy > 0) {
-
-
-					if(m < 1f) {
-
-						x3 = map_dimension - 1;
-						y3 = (int)(y1 + (map_dimension-y1) * m);
-
-					} else {
-						y3 = map_dimension - 1;
-						x3 = (int)(x1 + (map_dimension-x1) / m);
-
-					}
-
-				}
-				else
-					if(dx > 0 && dy < 0) {
-
-						if(m < -1f) {
-
-							x3 = map_dimension - 1;
-							y3 = (int)(y1 + (map_dimension-y1) * m);
-
-						} else {
-							x3 = map_dimension - 1;
-							y3 = (int)(y1 + (map_dimension-y1) * m);
-
-						}
-
-
-
-					} else
-						if(dx < 0 && dy > 0) {
-
-							if(m < -1f) {
-
-								x3 = 0;
-								y3 = (int)(y1 - (map_dimension-y1) * m);
-
-							} else {
-								x3 = 0;
-								y3 = (int)(y1 - (map_dimension-y1) * m);
-
-							}
-
-
-						}
-						else
-
-							if(m < 1f) {
-								x3 =0;
-								y3 = (int)(y1 - (map_dimension-y1) * m);
-
-							} else {
-								y3 = 0;
-								x3 = (int)(x1 - (map_dimension-x1) / m);
-
-							}
-			}
+//		if(dx == 0) {
+//			x3 = x2;
+//			if(dy >= 0)
+//				y3 = map_dimension - 2;
+//			else
+//				y3 = 0;
+//
+//		} else
+//			if(dy == 0) {
+//				y3 = y2;
+//				if(dx >= 0)
+//					x3 = map_dimension - 2;
+//				else
+//					x3 = 0;
+//
+//			} else {
+//
+//				 m = dy/dx;
+//
+//				if(dx > 0 && dy > 0) {
+//
+//
+//					if(m < 1f) {
+//
+//						x3 = map_dimension - 1;
+//						y3 = (int)(y1 + (map_dimension-y1) * m);
+//
+//					} else {
+//						y3 = map_dimension - 1;
+//						x3 = (int)(x1 + (map_dimension-x1) / m);
+//
+//					}
+//
+//				}
+//				else
+//					if(dx > 0 && dy < 0) {
+//
+//						if(m < -1f) {
+//
+//							x3 = map_dimension - 1;
+//							y3 = (int)(y1 + (map_dimension-y1) * m);
+//
+//						} else {
+//							x3 = map_dimension - 1;
+//							y3 = (int)(y1 + (map_dimension-y1) * m);
+//
+//						}
+//
+//
+//
+//					} else
+//						if(dx < 0 && dy > 0) {
+//
+//							if(m < -1f) {
+//
+//								x3 = 0;
+//								y3 = (int)(y1 - (map_dimension-y1) * m);
+//
+//							} else {
+//								x3 = 0;
+//								y3 = (int)(y1 - (map_dimension-y1) * m);
+//
+//							}
+//
+//
+//						}
+//						else
+//
+//							if(m < 1f) {
+//								x3 =0;
+//								y3 = (int)(y1 - (map_dimension-y1) * m);
+//
+//							} else {
+//								y3 = 0;
+//								x3 = (int)(x1 - (map_dimension-x1) / m);
+//
+//							}
+//			}
 
 
 		// remove hidden obstacles
@@ -299,9 +300,9 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 				map[x][y] += (short)dr;
 				if(map[x][y]<0) map[x][y] =0;
 				if(map[x][y]>MAX_CERTAINITY) map[x][y] = MAX_CERTAINITY;
-				if(map[x][y] > threshold)
+				if(map[x][y] > threshold+HYSTERESIS)
 					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
-				if(map[x][y] < threshold)
+				if(map[x][y] < threshold-HYSTERESIS)
 					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
 				return true;
 		}
@@ -335,19 +336,29 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
 	}
 
+	long tms;
+
 	@Override
 	public void applyMapFilter(ILocalMapFilter filter) {
+
+		if((System.currentTimeMillis() - tms) < 250)
+			return;
 
 		filter.apply(map);
 
 		for (int y = 0; y <map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
+				if(map[x][y] == 0)
+				  continue;
+
 				if(map[x][y] > threshold)
 					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, true);
 				else
 					model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, 0, false);
 			}
 		}
+
+		tms = System.currentTimeMillis();
 
 	}
 }
