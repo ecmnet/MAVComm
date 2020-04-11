@@ -46,6 +46,8 @@ import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
+	private static final int  FILTER_CYCLE_MS    = 500;
+
 	private static final int  MAX_CERTAINITY     = 500;
 	private static final int  HYSTERESIS         =  10;
 	private static final int  CERTAINITY_INCR    =  30;
@@ -341,7 +343,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 	@Override
 	public void applyMapFilter(ILocalMapFilter filter) {
 
-		if((System.currentTimeMillis() - tms) < 250)
+		if((System.currentTimeMillis() - tms) < FILTER_CYCLE_MS)
 			return;
 
 		filter.apply(map);
