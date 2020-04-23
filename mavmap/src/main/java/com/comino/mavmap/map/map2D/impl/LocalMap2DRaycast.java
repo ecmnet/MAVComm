@@ -46,7 +46,7 @@ import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
-	private static final int  FILTER_CYCLE_MS    = 500;
+	private static final int  FILTER_CYCLE_MS    = 1000;
 
 	private static final int  MAX_CERTAINITY     = 500;
 	private static final int  HYSTERESIS         =  10;
