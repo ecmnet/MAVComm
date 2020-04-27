@@ -11,6 +11,7 @@ public abstract class LocalMap2DBase implements ILocalMap {
 	protected int threshold = 0;
 
 	protected short[][] map;
+	protected short[][] level;
 	protected short[][] window;
 	protected float[][] window_angles;
 
@@ -168,10 +169,10 @@ public abstract class LocalMap2DBase implements ILocalMap {
 			for (int x = 0; x < map_dimension; x++) {
 				if (map[x][y] > threshold)
 					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
-							(y * cell_size_mm - center_y_mm) / 1000f, 0, true);
+							(y * cell_size_mm - center_y_mm) / 1000f, -level[x][y]/1000f, true);
 				else
 					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
-							(y * cell_size_mm - center_y_mm) / 1000f, 0, false);
+							(y * cell_size_mm - center_y_mm) / 1000f, -level[x][y]/1000f, false);
 			}
 		}
 	}
