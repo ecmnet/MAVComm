@@ -46,12 +46,12 @@ import georegression.struct.point.Vector4D_F64;
 
 public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 
-	private static final int  FILTER_CYCLE_MS    = 1000;
+	private static final int  FILTER_CYCLE_MS    	= 1000;
 
-	private static final int  MAX_CERTAINITY     = 500;
-	private static final int  HYSTERESIS         =  10;
-	private static final int  CERTAINITY_INCR    =  30;
-	private static final int  CERTAINITY_DECR    = -10;
+	private static final int  MAX_CERTAINITY     	= 1500;
+	private static final int  HYSTERESIS         	=   10;
+	private static final int  CERTAINITY_INCR    	=   30;
+	private static final int  CERTAINITY_DECR    	=  -10;
 
 
 	public LocalMap2DRaycast() {
@@ -130,7 +130,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 		int y2 = (int)Math.floor((ypos2*1000f+center_y_mm)/cell_size_mm);
 
 		// just a test: use vehicle lpos-z directly here
-		//return set(x1,y1,x2,y2,(int)(-model.state.l_z*1000));
+	//	return set(x1,y1,x2,y2,(int)(-model.state.l_z*1000));
 		return set(x1,y1,x2,y2,0);
 	}
 
@@ -207,10 +207,15 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 	}
 
 	private boolean set_map_point(int x,int y, int z, int dr) {
-		if(x >=0 && y>=0 && x < map.length && y < map.length) {
+
 			map[x][y] += (short)dr;
-			if(map[x][y]<0) map[x][y] =0;
-			if(map[x][y]>MAX_CERTAINITY) map[x][y] = MAX_CERTAINITY;
+
+			if(map[x][y]<0) {
+				map[x][y] =0; level[x][y] = 0; }
+
+			if(map[x][y]>MAX_CERTAINITY)
+				map[x][y] = MAX_CERTAINITY;
+
 			if(map[x][y] > threshold+HYSTERESIS) {
 				level[x][y] = (short)z;
 				model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f,
@@ -222,12 +227,10 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 						-level[x][y]/1000f, false);
 			}
 			return true;
-		}
-		return false;
+
 	}
 
 	private boolean clear_map_point(int x,int y, int z) {
-		if(x >=0 && y>=0 && x < map.length && y < map.length) {
 			if(map[x][y] > threshold) {
 				map[x][y] = 0; level[x][y] = (short)z;
 				model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f,
@@ -235,26 +238,9 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 			}
 
 			return true;
-		}
-		return false;
 	}
 
-	public static void main(String[] args) {
-		LocalMap2DRaycast map = new LocalMap2DRaycast(40,1,2,1);
-
-
-		//  map.set(10, 10, 15, 13, 10);
-
-		map.set(20, 20, 17, 30);
-
-
-		System.out.println(map);
-
-
-
-	}
-
-	long tms;
+	private long tms;
 
 	@Override
 	public void applyMapFilter(ILocalMapFilter filter) {
