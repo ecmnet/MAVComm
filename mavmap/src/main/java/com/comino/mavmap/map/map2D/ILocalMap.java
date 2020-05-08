@@ -36,8 +36,8 @@ package com.comino.mavmap.map.map2D;
 
 
 import com.comino.mavcom.model.DataModel;
+import com.comino.mavcom.struct.Polar3D_F32;
 import com.comino.mavmap.map.map2D.filter.ILocalMapFilter;
-import com.comino.mavmap.struct.Polar3D_F32;
 import com.comino.mavodometry.estimators.IMAVMapper;
 
 import boofcv.struct.image.GrayU16;

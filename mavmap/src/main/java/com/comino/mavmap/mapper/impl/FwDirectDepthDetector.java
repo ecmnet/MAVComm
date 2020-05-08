@@ -34,12 +34,8 @@
 package com.comino.mavmap.mapper.impl;
 
 
-import org.mavlink.messages.MSP_CMD;
-import org.mavlink.messages.lquac.msg_msp_command;
-
 import com.comino.mavcom.config.MSPConfig;
 import com.comino.mavcom.control.IMAVMSPController;
-import com.comino.mavcom.mavlink.IMAVLinkListener;
 import com.comino.mavcom.model.DataModel;
 import com.comino.mavcom.utils.MSP3DUtils;
 import com.comino.mavmap.map.map2D.ILocalMap;

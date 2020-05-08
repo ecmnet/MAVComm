@@ -1,9 +1,9 @@
 package com.comino.mavmap.map.map2D.impl;
 
 import com.comino.mavcom.model.DataModel;
+import com.comino.mavcom.struct.Polar3D_F32;
 import com.comino.mavcom.utils.MSP3DUtils;
 import com.comino.mavmap.map.map2D.ILocalMap;
-import com.comino.mavmap.struct.Polar3D_F32;
 import com.comino.mavutils.MSPMathUtils;
 
 public abstract class LocalMap2DBase implements ILocalMap {
@@ -49,7 +49,7 @@ public abstract class LocalMap2DBase implements ILocalMap {
 					// Note: swap XY to reflect LPOS
 					window[y][x] = map[new_x][new_y];
 				else
-					window[y][x] = Short.MAX_VALUE;
+					window[y][x] = 0;//Short.MAX_VALUE;
 			}
 		}
 	}

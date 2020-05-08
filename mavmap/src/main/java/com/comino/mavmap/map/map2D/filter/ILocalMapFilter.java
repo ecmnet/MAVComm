@@ -1,7 +1,5 @@
 package com.comino.mavmap.map.map2D.filter;
 
-import com.comino.mavcom.model.DataModel;
-
 /****************************************************************************
 *
 *   Copyright (c) 2018 Eike Mansfeld ecm@gmx.de. All rights reserved.
