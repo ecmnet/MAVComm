@@ -1,0 +1,6 @@
+- put all the mathematics into separate class with static functions
+  * Functions will contain different ways to implement a Kalman or EKF
+- Then have different styles of kalman filter call those functions
+- Explicit computation of S inverse and using solve for example
+
+- abstracted interfaces in abst package with wrappers around low level code
