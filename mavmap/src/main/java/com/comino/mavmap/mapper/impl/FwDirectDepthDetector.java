@@ -100,7 +100,7 @@ public class FwDirectDepthDetector implements IMAVDetector {
 		//		if((model.hud.ar < min_altitude || map.isLoaded()))
 		//			return;
 
-		model.grid.tms = model.sys.getSynchronizedPX4Time_us();
+		model.grid.tms = DataModel.getSynchronizedPX4Time_us();
 
 		current_min_distance = Double.MAX_VALUE;
 		for(int x = 10;x < gray.getWidth()-10;x = x + 2) {
