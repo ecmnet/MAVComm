@@ -85,7 +85,7 @@ public class FwDirectDepthDetector implements IMAVDetector {
 
 
 		if(streamer !=null)
-			streamer.registerOverlayListener(ctx -> {
+			streamer.registerOverlayListener((ctx,tms) -> {
 				if(current_min_distance<Double.MAX_VALUE)
 					ctx.drawString(String.format("Min.distance %.1fm",current_min_distance), 10, 50);
 			});

@@ -61,17 +61,11 @@ public interface ILocalMap extends IMAVMapper {
 
 	public GrayU16 getMap();
 
-	public void applyMapFilter(ILocalMapFilter filter);
-
 	public short[][] get();
 
 	public void reset();
 
 	public void init();
-
-	public void setDataModel(DataModel model);
-
-	public void toDataModel(boolean debug);
 
 	public void setIsLoaded( boolean loaded);
 

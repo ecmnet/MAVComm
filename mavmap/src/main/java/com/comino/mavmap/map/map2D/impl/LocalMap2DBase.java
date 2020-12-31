@@ -114,12 +114,25 @@ public abstract class LocalMap2DBase implements ILocalMap {
 					window[x][y] =  0;
 			}
 			initWindowAngles();
+			
+			for (int y = 0; y < map_dimension; y++) {
+				for (int x = 0; x < map_dimension; x++) {
+					if(map[x][y]>0) {
+					   model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f,
+								-level[x][y]/1000f, true);
+					}
+				}
+			}
 		}
 
 	public void reset() {
 		for (int y = 0; y < map_dimension; y++) {
 			for (int x = 0; x < map_dimension; x++) {
-				map[x][y] = 0; level[x][y] = 0;
+				if(map[x][y]>0) {
+				   map[x][y] = 0; level[x][y] = 0;
+				   model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f,
+							-level[x][y]/1000f, false);
+				}
 			}
 		}
 		is_loaded = false;
@@ -157,28 +170,6 @@ public abstract class LocalMap2DBase implements ILocalMap {
 		return (distance * cell_size_mm + cell_size_mm/2) / 1000.0f;
 
 	}
-
-	/******************************************************************************************************/
-
-	public void setDataModel(DataModel model) {
-		this.model = model;
-	}
-
-	public void toDataModel(boolean debug) {
-
-		for (int y = 0; y < map_dimension; y++) {
-			for (int x = 0; x < map_dimension; x++) {
-				if (map[x][y] > threshold)
-					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
-							(y * cell_size_mm - center_y_mm) / 1000f, -level[x][y]/1000f, true);
-				else
-					model.grid.setBlock((x * cell_size_mm - center_x_mm) / 1000f,
-							(y * cell_size_mm - center_y_mm) / 1000f, -level[x][y]/1000f, false);
-			}
-		}
-	}
-
-/******************************************************************************************************/
 
 	public String windowToString() {
 		StringBuilder b = new StringBuilder();

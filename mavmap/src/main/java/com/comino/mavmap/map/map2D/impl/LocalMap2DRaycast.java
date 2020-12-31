@@ -221,7 +221,7 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 				model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f,
 						-level[x][y]/1000f, true);
 			}
-			if(map[x][y] < threshold-HYSTERESIS) {
+			if(map[x][y] < threshold-HYSTERESIS && map[x][y] > 0) {
 				level[x][y] = (short)z;
 				model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f,
 						-level[x][y]/1000f, false);
@@ -240,32 +240,5 @@ public class LocalMap2DRaycast extends LocalMap2DBase implements ILocalMap {
 			return true;
 	}
 
-	private long tms;
-
-	@Override
-	public void applyMapFilter(ILocalMapFilter filter) {
-
-		if((System.currentTimeMillis() - tms) < FILTER_CYCLE_MS)
-			return;
-
-
-		filter.apply(map);
-
-		for (int y = 0; y <map_dimension; y++) {
-			for (int x = 0; x < map_dimension; x++) {
-				if(map[x][y] == 0)
-					continue;
-
-					if(map[x][y] > threshold)
-						model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, -level[x][y]/1000f, true);
-					else
-						model.grid.setBlock((x*cell_size_mm-center_x_mm)/1000f,(y*cell_size_mm-center_y_mm)/1000f, -level[x][y]/1000f, false);
-
-			}
-		}
-
-
-		tms = System.currentTimeMillis();
-
-	}
+	
 }
