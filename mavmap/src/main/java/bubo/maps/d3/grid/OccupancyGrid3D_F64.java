@@ -48,6 +48,7 @@ public interface OccupancyGrid3D_F64 extends OccupancyGrid3D {
 	 * @return The cell's value.
 	 */
 	public double get(int x, int y, int z);
+	
 
 	/**
 	 * Checks to see if the provided value is within the valid range.
@@ -84,10 +85,28 @@ public interface OccupancyGrid3D_F64 extends OccupancyGrid3D {
 	 * @return Iterator for map cells
 	 */
 	public Iterator<CellProbability_F64> iteratorKnown();
+	
+	/**
+	 * Returns an iterator, which will iterate through all maps cells which are not assigned a value of unknown and
+	 * are added since the timestamp tms
+	 * @return Iterator for map cells
+	 */
+	public Iterator<CellProbability_F64> iteratorKnown(long tms);
+	
+	
+	/**
+	 * Returns an iterator, which will iterate through all maps cells which are not assigned a value of unknown and
+	 * fullfil the filter criteria for the z axis
+	 * @return Iterator for map cells
+	 */
+	public Iterator<CellProbability_F64> iteratorKnown(Comparable<Integer> zfilter);
+
 
 	/**
 	 * Creates a copy of this map
 	 * @return copy of the map
 	 */
 	public OccupancyGrid3D_F64 copy();
+	
+	public int size();
 }

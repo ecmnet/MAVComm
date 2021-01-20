@@ -89,6 +89,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			info = (MapLeaf)leaf.userData;
 		}
 		info.probability = value;
+		info.tms = System.currentTimeMillis();
 	}
 
 	@Override
@@ -118,7 +119,17 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 	@Override
 	public Iterator<CellProbability_F64> iteratorKnown() {
-		return new OctIterator();
+		return new OctIterator(0);
+	}
+
+	@Override
+	public Iterator<CellProbability_F64> iteratorKnown(long tms) {
+		return new OctIterator(tms);
+	}
+
+	@Override
+	public Iterator<CellProbability_F64> iteratorKnown(Comparable<Integer> zfilter) {
+		return new OctIterator(zfilter);
 	}
 
 	@Override
@@ -176,6 +187,10 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		return construct;
 	}
 
+	public int size() {
+		return construct.getAllNodes().size();
+	}
+
 	/**
 	 * Returns all grid cells which have been assigned values as {@link bubo.construct.Octree_I32} nodes.
 	 * @return List of all occupied cells
@@ -191,12 +206,20 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	private class OctIterator implements Iterator<CellProbability_F64> {
 
 		FastQueue<Octree_I32> nodes = construct.getAllNodes();
+		long tms;
 		int index;
+		Comparable<Integer> zfilter = null;
 
 		Octree_I32 next;
 		CellProbability_F64 storage = new CellProbability_F64();
 
-		public OctIterator() {
+		public OctIterator(long tms) {
+			this.tms = tms;
+			searchNext();
+		}
+
+		public OctIterator(Comparable<Integer> zfilter) {
+			this.zfilter = zfilter;
 			searchNext();
 		}
 
@@ -212,6 +235,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			MapLeaf info = prev.getUserData();
 			storage.set( prev.space.p0 );
 			storage.probability = info.probability;
+			storage.tms         = info.tms;
 
 			return storage;
 		}
@@ -220,11 +244,18 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			next = null;
 			while( index < nodes.size() ) {
 				Octree_I32 o = nodes.get(index++);
-				if( o.isSmallest() ) {
+				if( o.isSmallest()) {
 					MapLeaf info = o.getUserData();
-					if (info != null && info.probability != 0.5f) {
-						next = o;
-						break;
+					if(zfilter==null) {
+						if (info != null && info.probability != 0.5f && info.tms > tms) {
+							next = o;
+							break;
+						}
+					} else {
+						if (info != null && info.probability > 0.5f && info.tms > tms && zfilter.compareTo(o.space.p0.z) == 0) {
+							next = o;
+							break;
+						}
 					}
 				}
 			}

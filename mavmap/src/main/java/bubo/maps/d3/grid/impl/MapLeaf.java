@@ -26,11 +26,14 @@ package bubo.maps.d3.grid.impl;
  */
 public class MapLeaf {
 	public double probability;
+	public long   tms;
 
-	public MapLeaf(double probability) {
+	public MapLeaf(double probability, long tms) {
 		this.probability = probability;
+		this.tms = tms;
 	}
 
 	public MapLeaf() {
+		
 	}
 }

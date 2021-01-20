@@ -27,8 +27,23 @@ import georegression.struct.point.Point3D_I32;
  */
 public class CellProbability_F64 extends Point3D_I32 {
 	public double probability;
+	public long   tms;
+
+	public CellProbability_F64(CellProbability_F64 p) {
+		super(p);
+		this.probability = p.probability;
+		this.tms = 0;
+	}
+
+	public CellProbability_F64() {
+		super();
+	}
 
 	public double getProbability() {
 		return probability;
+	}
+	
+	public long getTms() {
+		return tms;
 	}
 }
