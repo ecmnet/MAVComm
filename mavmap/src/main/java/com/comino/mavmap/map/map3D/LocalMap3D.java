@@ -41,8 +41,6 @@ import bubo.maps.d3.grid.impl.OctreeGridMap_F64;
 import georegression.geometry.UtilPoint3D_F64;
 import georegression.struct.GeoTuple3D_F32;
 import georegression.struct.GeoTuple3D_F64;
-import georegression.struct.point.Point3D_F32;
-import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Point3D_I32;
 import georegression.struct.point.Vector3D_F64;
 import georegression.struct.se.Se3_F64;
@@ -68,6 +66,10 @@ public class LocalMap3D {
 	private Point3D_I32                  mapo   = new Point3D_I32();
 
 	public LocalMap3D() {
+		this(false);
+	}
+	
+	public LocalMap3D(boolean forget) {
 		// TODO: Make it customizable and transfer to MACGCL
 		this.info = new Map3DSpacialInfo(0.10f,20.0f,20.0f,5.0f);
 		this.map  = new OctreeGridMap_F64(info.getDimension().x,info.getDimension().y,info.getDimension().z); 

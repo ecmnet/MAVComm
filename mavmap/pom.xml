@@ -43,10 +43,5 @@
 			<artifactId>mavutils</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		<dependency>
-			<groupId>com.comino</groupId>
-			<artifactId>mavodometry</artifactId>
-			<version>0.0.1</version>
-		</dependency>
   </dependencies>
 </project>

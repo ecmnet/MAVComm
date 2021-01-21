@@ -1,0 +1,22 @@
+<project name="PMAVLink generator" basedir=".">
+
+	<property name="target.dir" value="target" />
+	<property name="deploy_mavgcl.dir" value="/Users/ecmnet/PixHawk/java/MAVGCL/MAVGCL/lib" />
+
+
+	<target name="mvn">
+		    <exec dir="." executable="sh">
+		        <arg line="-c '/usr/local/Cellar/maven/3.6.3_1/bin/mvn clean install'" />
+		    </exec>
+		</target>
+
+	<target name="DeployMAVGCL"  depends="mvn" description="Deploy libs to MAVGCL">
+		<copy todir="${deploy_mavgcl.dir}">
+			<fileset dir="${target.dir}">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
+
+</project>
