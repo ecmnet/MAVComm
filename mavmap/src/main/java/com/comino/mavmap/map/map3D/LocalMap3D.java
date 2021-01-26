@@ -34,6 +34,10 @@
 package com.comino.mavmap.map.map3D;
 
 import java.util.Iterator;
+import java.util.concurrent.TimeUnit;
+
+import com.comino.mavmap.utils.UtilPoint3D_I32;
+import com.comino.mavutils.legacy.ExecutorService;
 
 import bubo.maps.d3.grid.CellProbability_F64;
 import bubo.maps.d3.grid.OccupancyGrid3D_F64;
@@ -41,6 +45,7 @@ import bubo.maps.d3.grid.impl.OctreeGridMap_F64;
 import georegression.geometry.UtilPoint3D_F64;
 import georegression.struct.GeoTuple3D_F32;
 import georegression.struct.GeoTuple3D_F64;
+import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Point3D_I32;
 import georegression.struct.point.Vector3D_F64;
 import georegression.struct.se.Se3_F64;
@@ -64,30 +69,35 @@ public class LocalMap3D {
 	private Se3_F64                      ptm    = new Se3_F64();
 	private Point3D_I32                  mapp   = new Point3D_I32();
 	private Point3D_I32                  mapo   = new Point3D_I32();
+	
+	private Point3D_F64              indicator  = new Point3D_F64();
+
+	private boolean                      forget = false;          
 
 	public LocalMap3D() {
-		this(false);
+		this(true);
 	}
-	
+
 	public LocalMap3D(boolean forget) {
 		// TODO: Make it customizable and transfer to MACGCL
 		this.info = new Map3DSpacialInfo(0.10f,20.0f,20.0f,5.0f);
 		this.map  = new OctreeGridMap_F64(info.getDimension().x,info.getDimension().y,info.getDimension().z); 
+		this.forget = forget;
 	}
 
-	
+
 	public void update(GeoTuple3D_F32<?> p ) {
 		tmp.reset();
 		ptm.reset(); ptm.T.set(p.x, p.y, p.z);
 		update(tmp,ptm,1);	
 	}
-	
+
 	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o ) {
 		tmp.reset(); tmp.T.set(p.x,p.y,p.z);
 		ptm.reset(); ptm.T.set(o.x,o.y,o.z);
 		update(tmp,ptm,1);	
 	}
-	
+
 	/**
 	 * Updates map with an observation using raycasting from observation to observer
 	 * @param pos_ned 			observer pos in world coordinates
@@ -107,18 +117,18 @@ public class LocalMap3D {
 		interp.setTransforms(observation_ned, pos_ned);
 
 		double steps = UtilPoint3D_F64.distance(pos_ned.T.x, pos_ned.T.y, pos_ned.T.z, 
-			   observation_ned.T.x, observation_ned.T.y, observation_ned.T.z) / info.getCellSize()+1;
+				observation_ned.T.x, observation_ned.T.y, observation_ned.T.z) / info.getCellSize()+1;
 
 		for(int i=1; i <= steps; i++ ) {
 			interp.interpolate(i / steps , tmp);
 			info.globalToMap(tmp.T, mapp);
-			if(map.get(mapp.x, mapp.y, mapp.z) == probability) {
+			if(map.get(mapp.x, mapp.y, mapp.z) != 0.5f) {
 				map.set(mapp.x, mapp.y, mapp.z, 0);
 			}
 		} 
 		map.set(mapo.x, mapo.y, mapo.z, probability);
 	}
-	
+
 	public void setMapPoint(int h, double probability) {
 		info.decodeMapPoint(h, mapo);
 		setMapPoint(mapo,probability);
@@ -146,11 +156,63 @@ public class LocalMap3D {
 		return map.iteratorKnown();
 	}
 
+	/**
+	 * Find closest occupied cell in the map
+	 */
+	
+	public boolean findClosestPoint(Point3D_I32 p, Point3D_I32 closest) {
+		
+		if(closest == null)
+			return false;
+
+		float minDist = Float.MAX_VALUE;
+		Iterator<CellProbability_F64> i = map.iteratorKnown();
+		while(i.hasNext()) {
+			CellProbability_F64 pr = i.next();
+			if(pr.probability <= 0.5)
+				continue;
+			float d = UtilPoint3D_I32.distanceSq(pr, p);
+			if( d < minDist) {
+				minDist = d;
+				closest.set(pr);
+			}	
+		}
+		return minDist < Float.MAX_VALUE;
+	}
+	
+	/**
+	 * Returns the indicator position; NaN if not visible
+	 * @return
+	 */
+	
+	public Point3D_F64 getIndicator() {
+		return indicator;
+	}
+	
+	/**
+	 *  Sets the indicator to a position in 3D space. Set NaN to hide it.
+	 */
+	
+	public void setIndicator(float x, float y, float z) {
+		indicator.set(x,y,z);
+	}
+	
+	/**
+	 * Returns an Interator over known cells that were changed shortly
+	 * @param since
+	 * @return Iterator
+	 */
+
 	public Iterator<CellProbability_F64> getLatestMapItems(long since) {
 		return map.iteratorKnown(since);
 	}
-	
-	
+
+
+	/**
+	 * Returns an Interator over known cells that are within a given Z range
+	 * @param Z range in m
+	 * @return Iterator
+	 */
 	public Iterator<CellProbability_F64> getMapLevelItems(float from, float to) {
 		Comparable<Integer> zfilter = new ZFilter(from,to);
 		return map.iteratorKnown(zfilter);
@@ -162,10 +224,13 @@ public class LocalMap3D {
 	public Map3DSpacialInfo getMapInfo() {
 		return info;
 	}
-	
+
+	/**
+	 * Clear Map and remove indicator
+	 */
 	public void clear() {
 		this.map.clear();
-	//	this.map  = new OctreeGridMap_F64(info.getDimension().x,info.getDimension().y,info.getDimension().z); 
+		setIndicator(Float.NaN, Float.NaN, Float.NaN);
 	}
 
 	/**
@@ -175,15 +240,15 @@ public class LocalMap3D {
 	public int size() {
 		return map.size();
 	}
-	
-	
+
+
 	private class ZFilter implements Comparable<Integer> {
-		
+
 		int from;
 		int to;
-		
+
 		public ZFilter(float from,float to) {
-			
+
 			this.from = (int)(from * info.getBlocksPerM());
 			this.to   = (int)(to   * info.getBlocksPerM());
 		}
@@ -191,11 +256,11 @@ public class LocalMap3D {
 		@Override
 		public int compareTo(Integer z) {
 			if( from < z &&  to > z) return 0; else return 1;
-			
+
 		}
-		
+
 	}
-	
+
 	public static void main(String[] args) {
 
 		LocalMap3D map = new LocalMap3D();
@@ -206,7 +271,7 @@ public class LocalMap3D {
 		Point3D_I32 mpt  = new Point3D_I32();
 
 
-		Vector3D_F64 p  = new Vector3D_F64(1.72,3.2,1.17);
+		Vector3D_F64 p  = new Vector3D_F64(0.055,-0.055,1);
 		Vector3D_F64 pt = new Vector3D_F64();
 		Vector3D_F64 ph = new Vector3D_F64();
 
