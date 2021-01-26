@@ -119,7 +119,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 	@Override
 	public Iterator<CellProbability_F64> iteratorKnown() {
-		return new OctIterator(0);
+		return new OctIterator();
 	}
 
 	@Override
@@ -212,6 +212,11 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		Octree_I32 next;
 		CellProbability_F64 storage = new CellProbability_F64();
+		
+		public OctIterator() {
+			this.tms = 0;
+			searchNext();
+		}
 
 		public OctIterator(long tms) {
 			this.tms = tms;
