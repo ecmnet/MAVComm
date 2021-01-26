@@ -52,9 +52,9 @@ public class Map3DSpacialInfo {
 	 * Convert from global coordinates into map cell coordinates.
 	 */
 	public void globalToMap(GeoTuple3D_F64<?> global, Point3D_I32 map) {
-		map.x =   (int)((global.x + cellSize2) * blocks_per_m) + center.x;
-		map.y =   (int)((global.y + cellSize2) * blocks_per_m) + center.y;
-		map.z =   (int)((cellSize2 - global.z) * blocks_per_m) + center.z;
+		map.x =   (int)((global.x - cellSize2)   * blocks_per_m + 0.5) + center.x;
+		map.y =   (int)((global.y - cellSize2)   * blocks_per_m + 0.5) + center.y;
+		map.z =   (int)((- cellSize2 - global.z) * blocks_per_m + 0.5) + center.z;
 	}
 
 
@@ -62,9 +62,19 @@ public class Map3DSpacialInfo {
 	 * Convert from map cell coordinates into global coordinates
 	 */
 	public void mapToGlobal(Point3D_I32 map, GeoTuple3D_F64<?> global) {
-		global.x =   (map.x - center.x ) * cellSize  ;
-		global.y =   (map.y - center.y ) * cellSize  ;
-		global.z = - (map.z - center.z ) * cellSize  ;
+		global.x =   (map.x - center.x ) * cellSize +cellSize2 ;
+		global.y =   (map.y - center.y ) * cellSize +cellSize2  ;
+		global.z = - (map.z - center.z ) * cellSize +cellSize2  ;
+	}
+	
+	/**
+	 * Rounds to map grid
+	 */
+	
+	public void roundToMap(GeoTuple3D_F64<?> global) {
+		global.x =  (int)((global.x - cellSize2) * blocks_per_m +0.5)   * cellSize + cellSize2 ;
+		global.y =  (int)((global.y - cellSize2) * blocks_per_m +0.5)   * cellSize + cellSize2 ;
+		global.z = -((int)((- cellSize2 - global.z) * blocks_per_m+0.5) * cellSize + cellSize2 );
 	}
 
 	
