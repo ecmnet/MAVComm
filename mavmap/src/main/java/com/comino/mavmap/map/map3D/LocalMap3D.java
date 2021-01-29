@@ -75,12 +75,12 @@ public class LocalMap3D {
 	private boolean                      forget = false;          
 
 	public LocalMap3D() {
-		this(true);
+		this(new Map3DSpacialInfo(0.10f,20.0f,20.0f,5.0f),true);
 	}
 
-	public LocalMap3D(boolean forget) {
+	public LocalMap3D(Map3DSpacialInfo info,boolean forget) {
 		// TODO: Make it customizable and transfer to MACGCL
-		this.info = new Map3DSpacialInfo(0.10f,20.0f,20.0f,5.0f);
+		this.info = info;
 		this.map  = new OctreeGridMap_F64(info.getDimension().x,info.getDimension().y,info.getDimension().z); 
 		this.forget = forget;
 	}

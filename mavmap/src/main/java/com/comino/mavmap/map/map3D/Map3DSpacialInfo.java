@@ -10,13 +10,13 @@ import georegression.struct.point.Point3D_I32;
 public class Map3DSpacialInfo {
 
 	// size of a grid cell in global units
-	private final double cellSize;
+	private final float  cellSize;
 	private final int    blocks_per_m;
 	private final Point3D_I32 dimension;
 	private final Point3D_I32 center;
 	private final Point3D_F64 bl;
 
-	private double cellSize2;
+	private float cellSize2;
 	
 	private final int dimensionxy;
 	private final int dimensionxyz;
@@ -28,8 +28,8 @@ public class Map3DSpacialInfo {
 	public Map3DSpacialInfo(double cellSize, Point3D_F64 bottomLeft) {
 		this.dimension    = new Point3D_I32();
 		this.bl           = bottomLeft;	
-		this.cellSize     = cellSize;
-		this.cellSize2    = cellSize / 2;
+		this.cellSize     = (float)cellSize;
+		this.cellSize2    = (float)cellSize / 2;
 		this.blocks_per_m = (int)(1/cellSize + 0.5f);
 		this.dimension.set((int)((bl.x) / cellSize  ) + 1, (int)((bl.y) / cellSize  ) + 1, (int)((bl.z) / cellSize  ) + 1);
 		this.dimensionxy  = dimension.x * dimension.y;
@@ -100,7 +100,7 @@ public class Map3DSpacialInfo {
 		return dimension;
 	}
 	
-	public double getCellSize() {
+	public float getCellSize() {
 		return cellSize;
 	}
 	
