@@ -90,6 +90,7 @@ public class Map3DSpacialInfo {
 	
 	/**
 	 *  Encode integer based map point 
+	 *  Note: negative values remove the point
 	 */
 	public long encodeMapPoint(Point3D_I32 p, double probability ) {
 		return (int)(p.x) + (int)(p.y) * dimension.x + (int)(p.z) * dimensionxy + (int)(100 * probability) * dimensionxyz;

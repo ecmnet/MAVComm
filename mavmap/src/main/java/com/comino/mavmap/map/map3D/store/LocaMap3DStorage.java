@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.comino.mavcom.config.MSPConfig;
-import com.comino.mavmap.map.map3D.LocalMap3D;
+import com.comino.mavmap.map.map3D.impl.octree.LocalMap3D;
 import com.comino.mavutils.MSPMathUtils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

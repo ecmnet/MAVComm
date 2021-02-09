@@ -81,6 +81,9 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		temp.set(x,y,z);
 
 		Octree_I32 leaf = construct.addLeaf(temp);
+		if(leaf == null)
+			return;
+		
 		MapLeaf info;
 		if( leaf.userData == null ) {
 			info = this.info.grow();
@@ -188,7 +191,8 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	}
 
 	public int size() {
-		return construct.getAllNodes().size();
+		return info.size();
+	//	return construct.getAllNodes().size();
 	}
 
 	/**

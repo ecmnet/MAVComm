@@ -31,11 +31,12 @@
  *
  ****************************************************************************/
 
-package com.comino.mavmap.map.map3D;
+package com.comino.mavmap.map.map3D.impl.octree;
 
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
+import com.comino.mavmap.map.map3D.Map3DSpacialInfo;
 import com.comino.mavmap.utils.UtilPoint3D_I32;
 import com.comino.mavutils.legacy.ExecutorService;
 
@@ -69,7 +70,7 @@ public class LocalMap3D {
 	private Se3_F64                      ptm    = new Se3_F64();
 	private Point3D_I32                  mapp   = new Point3D_I32();
 	private Point3D_I32                  mapo   = new Point3D_I32();
-	
+
 	private Point3D_F64              indicator  = new Point3D_F64();
 
 	private boolean                      forget = false;          
@@ -122,7 +123,7 @@ public class LocalMap3D {
 		for(int i=1; i <= steps; i++ ) {
 			interp.interpolate(i / steps , tmp);
 			info.globalToMap(tmp.T, mapp);
-			if(map.get(mapp.x, mapp.y, mapp.z) != 0.5f) {
+			if(map.get(mapp.x, mapp.y, mapp.z) > 0) {
 				map.set(mapp.x, mapp.y, mapp.z, 0);
 			}
 		} 
@@ -159,9 +160,9 @@ public class LocalMap3D {
 	/**
 	 * Find closest occupied cell in the map
 	 */
-	
+
 	public boolean findClosestPoint(Point3D_I32 p, Point3D_I32 closest) {
-		
+
 		if(closest == null)
 			return false;
 
@@ -179,24 +180,24 @@ public class LocalMap3D {
 		}
 		return minDist < Float.MAX_VALUE;
 	}
-	
+
 	/**
 	 * Returns the indicator position; NaN if not visible
 	 * @return
 	 */
-	
+
 	public Point3D_F64 getIndicator() {
 		return indicator;
 	}
-	
+
 	/**
 	 *  Sets the indicator to a position in 3D space. Set NaN to hide it.
 	 */
-	
+
 	public void setIndicator(float x, float y, float z) {
 		indicator.set(x,y,z);
 	}
-	
+
 	/**
 	 * Returns an Interator over known cells that were changed shortly
 	 * @param since
