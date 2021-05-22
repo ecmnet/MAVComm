@@ -34,11 +34,9 @@
 package com.comino.mavmap.map.map3D.impl.octree;
 
 import java.util.Iterator;
-import java.util.concurrent.TimeUnit;
 
 import com.comino.mavmap.map.map3D.Map3DSpacialInfo;
 import com.comino.mavmap.utils.UtilPoint3D_I32;
-import com.comino.mavutils.legacy.ExecutorService;
 
 import bubo.maps.d3.grid.CellProbability_F64;
 import bubo.maps.d3.grid.OccupancyGrid3D_F64;
@@ -97,6 +95,12 @@ public class LocalMap3D {
 		tmp.reset(); tmp.T.set(p.x,p.y,p.z);
 		ptm.reset(); ptm.T.set(o.x,o.y,o.z);
 		update(tmp,ptm,1);	
+	}
+	
+	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o, double prob) {
+		tmp.reset(); tmp.T.set(p.x,p.y,p.z);
+		ptm.reset(); ptm.T.set(o.x,o.y,o.z);
+		update(tmp,ptm,prob);	
 	}
 
 	/**

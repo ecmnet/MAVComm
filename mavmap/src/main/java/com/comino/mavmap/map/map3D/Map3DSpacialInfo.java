@@ -101,6 +101,10 @@ public class Map3DSpacialInfo {
 		return dimension;
 	}
 	
+	public int getDimensionXY() {
+		return dimensionxy;
+	}
+	
 	public float getCellSize() {
 		return cellSize;
 	}

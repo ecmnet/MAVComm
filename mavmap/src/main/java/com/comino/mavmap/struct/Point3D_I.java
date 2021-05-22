@@ -13,6 +13,10 @@ public class Point3D_I extends Point3D_I32 {
 	public Point3D_I() {
 		super();
 	}
+	
+	public Point3D_I(int x, int y, int z) {
+		super(x,y,z);
+	}
 
 	public Point3D_I add(Point3D_I32 a) {
 		this.x += a.x;
@@ -26,6 +30,21 @@ public class Point3D_I extends Point3D_I32 {
 		this.y += c;
 		this.z += c;
 		return this;
+	}
+	
+	public Point3D_I diff(Point3D_I32 a) {
+		this.x -= a.x;
+		this.y -= a.y;
+		this.z -= a.z;
+		return this;
+	}
+	
+	public void add(int index, int c) {
+		switch(index) {
+		case 0: this.x += c;
+		case 1: this.y += c;
+		case 2: this.z += c;
+		}
 	}
 
 	public int get(int index) {
@@ -48,6 +67,20 @@ public class Point3D_I extends Point3D_I32 {
 
 	public Point3D_I copy() {
 		return new Point3D_I(this);
+	}
+	
+	public Point3D_I min(Point3D_I32 a) {
+		this.x = Math.min(x, a.x);
+		this.y = Math.min(y, a.y);;
+		this.z = Math.min(z, a.z);;
+		return this;
+	}
+	
+	public Point3D_I max(Point3D_I32 a) {
+		this.x = Math.max(x, a.x);
+		this.y = Math.max(y, a.y);;
+		this.z = Math.max(z, a.z);;
+		return this;
 	}
 
 }
