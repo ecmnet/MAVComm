@@ -87,19 +87,19 @@ public class LocalMap3D {
 
 	public void update(GeoTuple3D_F32<?> p ) {
 		tmp.reset();
-		ptm.reset(); ptm.T.set(p.x, p.y, p.z);
+		ptm.reset(); ptm.T.setTo(p.x, p.y, p.z);
 		update(tmp,ptm,1);	
 	}
 
 	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o ) {
-		tmp.reset(); tmp.T.set(p.x,p.y,p.z);
-		ptm.reset(); ptm.T.set(o.x,o.y,o.z);
+		tmp.reset(); tmp.T.setTo(p.x,p.y,p.z);
+		ptm.reset(); ptm.T.setTo(o.x,o.y,o.z);
 		update(tmp,ptm,1);	
 	}
 	
 	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o, double prob) {
-		tmp.reset(); tmp.T.set(p.x,p.y,p.z);
-		ptm.reset(); ptm.T.set(o.x,o.y,o.z);
+		tmp.reset(); tmp.T.setTo(p.x,p.y,p.z);
+		ptm.reset(); ptm.T.setTo(o.x,o.y,o.z);
 		update(tmp,ptm,prob);	
 	}
 
@@ -117,7 +117,7 @@ public class LocalMap3D {
 		if(!map.isInBounds(mapo.x, mapo.y, mapo.z)) 
 			return;
 
-		mapp.set(mapo);
+		mapp.setTo(mapo);
 
 		interp.setTransforms(observation_ned, pos_ned);
 
@@ -179,7 +179,7 @@ public class LocalMap3D {
 			float d = UtilPoint3D_I32.distanceSq(pr, p);
 			if( d < minDist) {
 				minDist = d;
-				closest.set(pr);
+				closest.setTo(pr);
 			}	
 		}
 		return minDist < Float.MAX_VALUE;
@@ -199,7 +199,7 @@ public class LocalMap3D {
 	 */
 
 	public void setIndicator(float x, float y, float z) {
-		indicator.set(x,y,z);
+		indicator.setTo(x,y,z);
 	}
 
 	/**

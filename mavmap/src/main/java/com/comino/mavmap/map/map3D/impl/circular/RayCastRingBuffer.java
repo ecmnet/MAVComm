@@ -88,13 +88,13 @@ public class RayCastRingBuffer {
 	}
 
 	public void getUpdatedMinMax(Point3D_I min, Point3D_I max) {
-		min.set(updated_min);
-		max.set(updated_max);
+		min.setTo(updated_min);
+		max.setTo(updated_max);
 	}
 
 	public void clearUpdatedMinMax() {
-		updated_max.set(occupancy_buffer.getOffset());
-		updated_min.set(updated_max.x + N  - 1,updated_max.y + N  - 1, updated_max.z + N  - 1 );
+		updated_max.setTo(occupancy_buffer.getOffset());
+		updated_min.setTo(updated_max.x + N  - 1,updated_max.y + N  - 1, updated_max.z + N  - 1 );
 	}
 
 	public void setOffset(Point3D_I off) {

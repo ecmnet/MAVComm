@@ -99,7 +99,7 @@ public final class MultivariateGaussianDM {
 	}
 
 	public void set(MultivariateGaussianDM distribution) {
-		x.set(distribution.getMean());
-		P.set(distribution.getCovariance());
+		x.setTo(distribution.getMean());
+		P.setTo(distribution.getCovariance());
 	}
 }

@@ -2,14 +2,11 @@ package com.comino.mavmap.utils;
 
 
 
-import javax.annotation.Nullable;
+import java.util.List;
 
 import georegression.struct.point.Point3D_I32;
+import georegression.struct.shapes.Box3D_F32;
 import georegression.struct.shapes.Box3D_I32;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  *
@@ -87,7 +84,7 @@ public class UtilPoint3D_I32 {
 				maxZ = p.z;
 		}
 
-		bounding.p0.set(minX,minY,minZ);
-		bounding.p1.set(maxX, maxY, maxZ);
+		bounding.p0.setTo(minX,minY,minZ);
+		bounding.p1.setTo(maxX, maxY, maxZ);
 	}
 }

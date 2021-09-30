@@ -31,7 +31,7 @@ public class Map3DSpacialInfo {
 		this.cellSize     = (float)cellSize;
 		this.cellSize2    = (float)cellSize / 2;
 		this.blocks_per_m = (int)(1/cellSize + 0.5f);
-		this.dimension.set((int)((bl.x) / cellSize  ) + 1, (int)((bl.y) / cellSize  ) + 1, (int)((bl.z) / cellSize  ) + 1);
+		this.dimension.setTo((int)((bl.x) / cellSize  ) + 1, (int)((bl.y) / cellSize  ) + 1, (int)((bl.z) / cellSize  ) + 1);
 		this.dimensionxy  = dimension.x * dimension.y;
 		this.dimensionxyz = dimensionxy * dimension.z;
 		this.center       = new Point3D_I32(dimension.x/2,dimension.y/2,0);

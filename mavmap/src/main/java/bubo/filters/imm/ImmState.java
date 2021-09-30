@@ -106,7 +106,7 @@ public class ImmState {
 
 		// compute the covariance
 		for (ImmHypothesis h : hypotheses) {
-			d.set(h.getState().getMean());
+			d.setTo(h.getState().getMean());
 			CommonOps_DDRM.add(d, -1, x_ret, d);
 
 			CommonOps_DDRM.multTransB(d, d, outer);

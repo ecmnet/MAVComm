@@ -46,7 +46,7 @@ public class Extrinsic2D implements ExtrinsicParameters {
 	}
 
 	public void setTransformToParent(double x, double y, double yaw) {
-		tranToParent.set(x, y, yaw);
+		tranToParent.setTo(x, y, yaw);
 	}
 
 	/**

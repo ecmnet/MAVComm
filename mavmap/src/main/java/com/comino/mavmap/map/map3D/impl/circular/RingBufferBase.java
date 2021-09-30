@@ -65,7 +65,7 @@ public class RingBufferBase {
 	}
 
 	public void setOffset(Point3D_I p) {
-		this.offset.set(p);
+		this.offset.setTo(p);
 	}
 
 	public Point3D_I getOffset() {
@@ -100,7 +100,7 @@ public class RingBufferBase {
 	private void setXSlice(int slice_idx, byte data) {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				idx.set(slice_idx, i, j);
+				idx.setTo(slice_idx, i, j);
 				this.at(idx,data);
 			}
 		}
@@ -109,7 +109,7 @@ public class RingBufferBase {
 	private void setYSlice(int slice_idx, byte data) {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				idx.set(i, slice_idx, j);
+				idx.setTo(i, slice_idx, j);
 				this.at(idx,data);
 			}
 		}
@@ -118,7 +118,7 @@ public class RingBufferBase {
 	private void setZSlice(int slice_idx, byte data) {
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				idx.set(i, j, slice_idx);
+				idx.setTo(i, j, slice_idx);
 				this.at(idx, data);
 			}
 		}
@@ -137,12 +137,12 @@ public class RingBufferBase {
 	}
 
 	public void at(Point3D_I coord, byte data) {	
-		idx.set(coord.x & MASK, coord.y & MASK, coord.z & MASK);
+		idx.setTo(coord.x & MASK, coord.y & MASK, coord.z & MASK);
 		buffer[ N * N * idx.x + N * idx.y + idx.z] = data;	
 	}
 	
 	public void at_add(Point3D_I coord, byte data) {	
-		idx.set(coord.x & MASK, coord.y & MASK, coord.z & MASK);
+		idx.setTo(coord.x & MASK, coord.y & MASK, coord.z & MASK);
 		int i =  N * N * idx.x + N * idx.y + idx.z;
 		int d = buffer[i] + data;
 		if(d < -127) d = -127; if(d > 127) d = 127;
@@ -150,22 +150,22 @@ public class RingBufferBase {
 	}
 	
 	public void at_and(Point3D_I coord, byte data) {	
-		idx.set(coord.x & MASK, coord.y & MASK, coord.z & MASK);
+		idx.setTo(coord.x & MASK, coord.y & MASK, coord.z & MASK);
 		buffer[ N * N * idx.x + N * idx.y + idx.z] &= data;	
 	}
 	
 	public void at_or(Point3D_I coord, byte data) {	
-		idx.set(coord.x & MASK, coord.y & MASK, coord.z & MASK);
+		idx.setTo(coord.x & MASK, coord.y & MASK, coord.z & MASK);
 		buffer[ N * N * idx.x + N * idx.y + idx.z] |= data;	
 	}
 
 	public byte at(Point3D_I coord) {	
-		idx.set(coord.x & MASK, coord.y & MASK, coord.z & MASK);
+		idx.setTo(coord.x & MASK, coord.y & MASK, coord.z & MASK);
 		return buffer[ N * N * idx.x + N * idx.y + idx.z];	
 	}
 
 	public void getVolumeCenter(Point3D_I center) {
-		center.set(N_2, N_2, N_2);
+		center.setTo(N_2, N_2, N_2);
 		center.add(offset);
 	}
 	

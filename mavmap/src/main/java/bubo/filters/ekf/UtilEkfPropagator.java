@@ -45,20 +45,20 @@ public class UtilEkfPropagator {
 		DMatrixRMaj F = new DMatrixRMaj(N, N);
 
 		prop.predict(initX, null, T);
-		a.set(prop.getPredictedState());
+		a.setTo(prop.getPredictedState());
 
 		for (int i = 0; i < N; i++) {
 			b.set(i, 0, initX.get(i, 0) + delta);
 
 			prop.predict(b, null, T);
-			b.set(prop.getPredictedState());
+			b.setTo(prop.getPredictedState());
 			CommonOps_DDRM.add(b, -1, a, b);
 
 
 			for (int j = 0; j < N; j++) {
 				F.set(j, i, b.get(j, 0) / delta);
 			}
-			b.set(initX);
+			b.setTo(initX);
 		}
 
 		return F;

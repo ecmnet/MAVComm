@@ -26,7 +26,10 @@ import bubo.maps.d3.grid.OccupancyGrid3D_F64;
 import georegression.metric.Intersection3D_I32;
 import georegression.struct.point.Point3D_I32;
 import georegression.struct.shapes.Box3D_I32;
-import org.ddogleg.struct.FastQueue;
+
+import org.ddogleg.struct.DogArray;
+import org.ddogleg.struct.FastArray;
+
 
 import java.util.Iterator;
 import java.util.List;
@@ -53,7 +56,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	ConstructOctreeLeaf_I32 construct;
 
 	// storage for map info which is placed in each leaf
-	FastQueue<MapLeaf> info = new FastQueue<MapLeaf>(MapLeaf.class,true);
+	DogArray<MapLeaf> info = new DogArray<MapLeaf>(MapLeaf::new);
 
 	// used to temporarily store a point's value when looking things up
 	Point3D_I32 temp = new Point3D_I32();
@@ -78,7 +81,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 	@Override
 	public void set(int x, int y, int z, double value) {
-		temp.set(x,y,z);
+		temp.setTo(x,y,z);
 
 		Octree_I32 leaf = construct.addLeaf(temp);
 		if(leaf == null)
@@ -97,7 +100,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 	@Override
 	public double get(int x, int y, int z) {
-		temp.set(x,y,z);
+		temp.setTo(x,y,z);
 		Octree_I32 node = construct.getTree().findDeepest(temp);
 		if( node == null || node.userData == null )
 			return defaultValue;
@@ -156,13 +159,13 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 	@Override
 	public boolean isInBounds(int x, int y, int z) {
-		temp.set(x,y,z);
-		return Intersection3D_I32.contained(region,temp);
+		temp.setTo(x,y,z);
+		return Intersection3D_I32.contains(region,temp);
 	}
 
 	@Override
 	public boolean isDefault(int x, int y, int z) {
-		temp.set(x,y,z);
+		temp.setTo(x,y,z);
 		Octree_I32 node = construct.getTree().findDeepest(temp);
 		if( node != null && node.isLeaf() && node.isSmallest() ) {
 			MapLeaf info = node.getUserData();
@@ -209,7 +212,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	 */
 	private class OctIterator implements Iterator<CellProbability_F64> {
 
-		FastQueue<Octree_I32> nodes = construct.getAllNodes();
+		DogArray<Octree_I32> nodes = construct.getAllNodes();
 		long tms;
 		int index;
 		Comparable<Integer> zfilter = null;
@@ -242,7 +245,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			Octree_I32 prev = next;
 			searchNext();
 			MapLeaf info = prev.getUserData();
-			storage.set( prev.space.p0 );
+			storage.setTo( prev.space.p0 );
 			storage.probability = info.probability;
 			storage.tms         = info.tms;
 

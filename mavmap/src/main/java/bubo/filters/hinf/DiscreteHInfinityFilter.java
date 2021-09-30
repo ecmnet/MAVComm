@@ -137,7 +137,7 @@ public class DiscreteHInfinityFilter<Control> implements KalmanFilterInterface<C
 		DMatrixRMaj Q = predictor.getPlantNoise();
 
 		CommonOps_DDRM.mult(F, x, temp0_m_1);
-		x.set(temp0_m_1);
+		x.setTo(temp0_m_1);
 
 		if (control != null) {
 			DMatrixRMaj G = predictor.getControlTransition();
@@ -181,7 +181,7 @@ public class DiscreteHInfinityFilter<Control> implements KalmanFilterInterface<C
 		CommonOps_DDRM.mult(temp0_m_n, R_inv, K);
 
 		// innovation
-		innovation.set(y);
+		innovation.setTo(y);
 		CommonOps_DDRM.multAdd(-1, H, x, innovation);
 
 		// update the state
@@ -189,7 +189,7 @@ public class DiscreteHInfinityFilter<Control> implements KalmanFilterInterface<C
 		CommonOps_DDRM.add(x, temp0_m_1, x);
 
 		// update the covariance
-		P.set(PD_inv);
+		P.setTo(PD_inv);
 	}
 
 	public KalmanProjector getProjector() {

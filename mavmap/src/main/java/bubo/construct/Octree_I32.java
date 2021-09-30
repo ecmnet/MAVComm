@@ -58,7 +58,7 @@ public class Octree_I32 extends Octree<Octree_I32,Point3D_I32>{
 
 	@Override
 	public boolean contained(Point3D_I32 point) {
-		return Intersection3D_I32.contained(space, point);
+		return Intersection3D_I32.contains(space, point);
 	}
 
 	/**

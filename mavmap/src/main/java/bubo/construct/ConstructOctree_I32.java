@@ -40,7 +40,7 @@ public abstract class ConstructOctree_I32 extends ConstructOctree<Octree_I32,Poi
 	 */
 	public void initialize(Box3D_I32 cube) {
 		reset();
-		tree.space.set(cube);
+		tree.space.setTo(cube);
 	}
 
 	@Override
@@ -61,11 +61,11 @@ public abstract class ConstructOctree_I32 extends ConstructOctree<Octree_I32,Poi
 	public static void setChildSpace(Box3D_I32 parentSpace, Point3D_I32 parentDivider, int index,
 									 Box3D_I32 childSpace) {
 
-		childSpace.p0.set(parentSpace.p0);
-		childSpace.p1.set(parentSpace.p1);
+		childSpace.p0.setTo(parentSpace.p0);
+		childSpace.p1.setTo(parentSpace.p1);
 
 		if( index == 0 ) {
-			childSpace.p1.set(parentDivider);
+			childSpace.p1.setTo(parentDivider);
 		} else if (index == 1) {
 			childSpace.p0.y = parentDivider.y;
 			childSpace.p1.x = parentDivider.x;
@@ -91,7 +91,7 @@ public abstract class ConstructOctree_I32 extends ConstructOctree<Octree_I32,Poi
 			childSpace.p0.z = parentDivider.z;
 			childSpace.p1.y = parentDivider.y;
 		} else if (index == 7) {
-			childSpace.p0.set(parentDivider);
+			childSpace.p0.setTo(parentDivider);
 		}
 	}
 

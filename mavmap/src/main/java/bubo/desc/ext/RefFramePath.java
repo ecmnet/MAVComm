@@ -128,7 +128,7 @@ public class RefFramePath {
 		SpecialEuclidean nodeTran = ((Extrinsic2D) n.comp.getExtrinsic()).getTransformToParent();
 
 		if (n.forward) {
-			result.set(nodeTran);
+			result.setTo(nodeTran);
 		} else {
 			nodeTran.invert(result);
 		}

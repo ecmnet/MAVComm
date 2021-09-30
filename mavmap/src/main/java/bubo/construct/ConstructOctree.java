@@ -19,7 +19,10 @@
 package bubo.construct;
 
 import georegression.struct.GeoTuple;
-import org.ddogleg.struct.FastQueue;
+import org.ddogleg.struct.DogArray;
+import org.ddogleg.struct.Factory;
+
+import bubo.construct.Octree.Info;
 
 import java.lang.reflect.Array;
 import java.util.List;
@@ -38,9 +41,9 @@ public abstract class ConstructOctree< O extends Octree, P extends GeoTuple> {
 	protected O tree;
 
 	// save references to all data structures declared to create the tree
-	protected FastQueue<Octree.Info<P>> storageInfo = new FastQueue<Octree_F64.Info<P>>((Class)Octree.Info.class, true);
+	protected DogArray<Octree.Info<P>> storageInfo = new DogArray<Octree_F64.Info<P>>(Octree.Info::new);
 	// Contains all nodes in the tree
-	protected FastQueue<O> storageNodes;
+	protected DogArray<O> storageNodes;
 	protected Stack<O[]> storageChildren = new Stack<O[]>();
 
 	protected Class<O> octreeType;
@@ -49,9 +52,26 @@ public abstract class ConstructOctree< O extends Octree, P extends GeoTuple> {
 	 */
 	public ConstructOctree( Class<O> octreeType ) {
 		this.octreeType = octreeType;
-		storageNodes = new FastQueue<O>(octreeType, true);
+		storageNodes = new DogArray<O>(octreeType,new FactoryClass<>(octreeType));
 
 		this.tree = storageNodes.grow();
+	}
+	
+	public class FactoryClass<T> implements Factory<T> {
+		Class type;
+
+		public FactoryClass(Class type) {
+			this.type = type;
+		}
+
+		@Override
+		public T newInstance() {
+			try {
+				return (T)type.newInstance();
+			} catch (InstantiationException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	/**
@@ -135,7 +155,7 @@ public abstract class ConstructOctree< O extends Octree, P extends GeoTuple> {
 	 */
 	protected O checkAddChild(O node, int index, Octree.Info info) {
 		O child = checkAddChild(node, index);
-		child.points.add(info);
+		((Octree.Info)child.points.grow()).setTo(info);
 		return child;
 	}
 
@@ -188,14 +208,14 @@ public abstract class ConstructOctree< O extends Octree, P extends GeoTuple> {
 	/**
 	 * List of all nodes in use
 	 */
-	public FastQueue<O> getAllNodes() {
+	public DogArray<O> getAllNodes() {
 		return storageNodes;
 	}
 
 	/**
 	 * List of all points and associated data passed to the tree
 	 */
-	public FastQueue<Octree.Info<P>> getAllPoints() {
+	public DogArray<Octree.Info<P>> getAllPoints() {
 		return storageInfo;
 	}
 

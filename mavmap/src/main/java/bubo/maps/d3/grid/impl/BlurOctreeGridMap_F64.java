@@ -22,7 +22,7 @@ import bubo.construct.Octree_I32;
 import bubo.maps.UtilMaps;
 import georegression.struct.point.Point3D_I32;
 import georegression.struct.shapes.Box3D_I32;
-import org.ddogleg.struct.FastQueue;
+import org.ddogleg.struct.DogArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,7 @@ public class BlurOctreeGridMap_F64 {
 	protected Box3D_I32 box = new Box3D_I32();
 
 	// stores information on the computed sum for convolution
-	protected FastQueue<SumData> convData = new FastQueue<SumData>(SumData.class,true);
+	protected DogArray<SumData> convData = new DogArray<SumData>(SumData::new);
 
 	/**
 	 * Applies the kernel to the map while taking advantage of its sparsity.
@@ -83,7 +83,7 @@ public class BlurOctreeGridMap_F64 {
 	 * have been assigned a value other than 'defaultValue'
 	 */
 	protected void createBlurredCells(OctreeGridMap_F64 input, Kernel3D_F64 kernel, OctreeGridMap_F64 blurred) {
-		FastQueue<Octree_I32> list = input.getConstruct().getAllNodes();
+		DogArray<Octree_I32> list = input.getConstruct().getAllNodes();
 
 		int radius = kernel.radius;
 		for (int i = 0; i < list.size; i++) {
@@ -92,12 +92,12 @@ public class BlurOctreeGridMap_F64 {
 				continue;
 
 			// set the box around it
-			box.p0.set(o.space.p0);
+			box.p0.setTo(o.space.p0);
 			box.p0.x -= radius;
 			box.p0.y -= radius;
 			box.p0.z -= radius;
 
-			box.p1.set(o.space.p0);
+			box.p1.setTo(o.space.p0);
 			box.p1.x += radius + 1;
 			box.p1.y += radius + 1;
 			box.p1.z += radius + 1;
@@ -148,7 +148,7 @@ public class BlurOctreeGridMap_F64 {
 	 * account that all cells which did not contribute to the convolution will have a value of 'defaultValue'
 	 */
 	protected static void computeProbability(OctreeGridMap_F64 blurred) {
-		FastQueue<Octree_I32> list = blurred.getConstruct().getAllNodes();
+		DogArray<Octree_I32> list = blurred.getConstruct().getAllNodes();
 		for (int i = 0; i < list.size; i++) {
 			Octree_I32 o = list.get(i);
 			if ( o.userData == null || !o.isLeaf() || !o.isSmallest())

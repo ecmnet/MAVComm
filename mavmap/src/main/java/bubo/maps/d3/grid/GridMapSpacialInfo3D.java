@@ -45,7 +45,7 @@ public class GridMapSpacialInfo3D {
 
 	public GridMapSpacialInfo3D(double cellSize, Se3_F64 mapToCanonical) {
 		this.cellSize = cellSize;
-		this.mapToCanonical.set(mapToCanonical);
+		this.mapToCanonical.setTo(mapToCanonical);
 	}
 
 	public GridMapSpacialInfo3D() {

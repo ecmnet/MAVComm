@@ -120,7 +120,7 @@ public class ExtendedKalmanFilter<Control> extends DKFCommon implements KalmanFi
 		DMatrixRMaj P = state.getCovariance();
 
 		// update the state estimate
-		x.set(predictor.getPredictedState());
+		x.setTo(predictor.getPredictedState());
 
 		_predictCovariance(F, Q, P);
 	}
@@ -140,7 +140,7 @@ public class ExtendedKalmanFilter<Control> extends DKFCommon implements KalmanFi
 		DMatrixRMaj R = meas.getCovariance();
 
 		// compute the residual
-		y.set(z);
+		y.setTo(z);
 		subtractEquals(y, projector.getProjected());
 
 		_updateCovariance(H, x, P, R);

@@ -56,7 +56,7 @@ public class ConstructOctreeNumPoints_F64 extends ConstructOctree_F64 {
 		info.userData = data;
 
 		Octree_F64 node = tree;
-		tree.points.add(info);
+		tree.points.grow().setTo(info);
 
 		while (true) {
 			if (node.isLeaf()) {

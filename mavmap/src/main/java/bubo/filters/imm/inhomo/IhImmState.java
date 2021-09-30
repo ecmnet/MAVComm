@@ -97,7 +97,7 @@ public class IhImmState {
 			DMatrixRMaj x_j_orig = h.getState().getMean();
 			DMatrixRMaj x_j = converter.convertOutput(true, x_j_orig, i);
 
-			d.set(x_j);
+			d.setTo(x_j);
 			CommonOps_DDRM.add(d, -1, x_ret, d);
 
 			CommonOps_DDRM.multTransB(d, d, outer);

@@ -40,7 +40,7 @@ public abstract class ConstructOctree_F64 extends ConstructOctree<Octree_F64,Poi
 	 */
 	public void initialize(Box3D_F64 cube) {
 		reset();
-		tree.space.set(cube);
+		tree.space.setTo(cube);
 	}
 
 	@Override
@@ -61,7 +61,7 @@ public abstract class ConstructOctree_F64 extends ConstructOctree<Octree_F64,Poi
 	public static void setChildSpace(Box3D_F64 parentSpace, Point3D_F64 parentDivider, int index,
 									 Box3D_F64 childSpace) {
 
-		childSpace.p0.set(parentSpace.p0);
+		childSpace.p0.setTo(parentSpace.p0);
 
 		// no change for index 0
 		if (index == 1) {

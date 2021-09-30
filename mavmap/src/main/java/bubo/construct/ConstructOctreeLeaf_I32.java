@@ -54,8 +54,9 @@ public class ConstructOctreeLeaf_I32 extends ConstructOctree_I32 {
 		info.userData = data;
 
 		Octree_I32 leaf = addLeaf(point);
-		if( leaf != null )
-			leaf.points.add(info);
+		if( leaf != null ) {
+			leaf.points.grow().setTo(info);
+		}
 
 		return leaf;
 	}
@@ -125,7 +126,7 @@ public class ConstructOctreeLeaf_I32 extends ConstructOctree_I32 {
 			// add all children which are contained inside the region
 			for (int i = 0; i < 8; i++) {
 				Octree_I32 child = checkAddChild(node, i);
-				if( child != null && Intersection3D_I32.intersect(region,child.space)) {
+				if( child != null && Intersection3D_I32.intersects(region,child.space)) {
 					open.add(child);
 				}
 			}
@@ -169,7 +170,7 @@ public class ConstructOctreeLeaf_I32 extends ConstructOctree_I32 {
 			// add all children which are contained inside the region
 			for (int i = 0; i < 8; i++) {
 				Octree_I32 child = node.children[i];
-				if( child != null && Intersection3D_I32.intersect(region,child.space)) {
+				if( child != null && Intersection3D_I32.intersects(region,child.space)) {
 					open.add(child);
 				}
 			}

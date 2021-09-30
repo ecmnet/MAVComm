@@ -100,7 +100,7 @@ public class KalmanFilter<Control> extends DKFCommon implements KalmanFilterInte
 
 		// predict the state
 		mult(F, x, a);
-		x.set(a);
+		x.setTo(a);
 		// note: this could be made slightly more efficient at the cost of NASTY bugs by swapping
 		// the references for x and a
 
