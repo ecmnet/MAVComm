@@ -81,17 +81,24 @@ public interface OccupancyGrid3D_F64 extends OccupancyGrid3D {
 	public void setDefaultValue(double value);
 
 	/**
-	 * Returns an iterator, which will iterate through all maps cells which are not assigned a value of unknown.
+	 * Returns an iterator, which will iterate through all maps cells 
 	 * @return Iterator for map cells
 	 */
-	public Iterator<CellProbability_F64> iteratorKnown();
+	public Iterator<CellProbability_F64> iterator();
 	
 	/**
-	 * Returns an iterator, which will iterate through all maps cells which are not assigned a value of unknown and
+	 * Returns an iterator, which will iterate through all maps cells and
 	 * are added since the timestamp tms
 	 * @return Iterator for map cells
 	 */
-	public Iterator<CellProbability_F64> iteratorKnown(long tms);
+	public Iterator<CellProbability_F64> iterator(long tms);
+	
+	/**
+	 * Returns an iterator, which will iterate through all maps cells which are unknown and
+	 * are added since the timestamp tms
+	 * @return Iterator for map cells
+	 */
+	public Iterator<CellProbability_F64> iteratorUnKnown(long tms);
 	
 	
 	/**
@@ -99,7 +106,7 @@ public interface OccupancyGrid3D_F64 extends OccupancyGrid3D {
 	 * fullfil the filter criteria for the z axis
 	 * @return Iterator for map cells
 	 */
-	public Iterator<CellProbability_F64> iteratorKnown(Comparable<Integer> zfilter);
+	public Iterator<CellProbability_F64> iterator(Comparable<Integer> zfilter);
 
 
 	/**

@@ -116,6 +116,8 @@ public class LocalMap3D {
 		info.globalToMap(observation_ned.T, mapo);
 		if(!map.isInBounds(mapo.x, mapo.y, mapo.z)) 
 			return;
+		
+		
 
 		mapp.setTo(mapo);
 
@@ -127,8 +129,8 @@ public class LocalMap3D {
 		for(int i=1; i <= steps; i++ ) {
 			interp.interpolate(i / steps , tmp);
 			info.globalToMap(tmp.T, mapp);
-			if(map.get(mapp.x, mapp.y, mapp.z) > 0) {
-				map.set(mapp.x, mapp.y, mapp.z, 0);
+			if(map.get(mapp.x, mapp.y, mapp.z) > 0.5) {
+				map.set(mapp.x, mapp.y, mapp.z, 0.5);
 			}
 		} 
 		map.set(mapo.x, mapo.y, mapo.z, probability);
@@ -158,7 +160,7 @@ public class LocalMap3D {
 	 * @return	Iterator of all known positions
 	 */
 	public Iterator<CellProbability_F64> getMapItems() {
-		return map.iteratorKnown();
+		return map.iterator();
 	}
 
 	/**
@@ -171,7 +173,7 @@ public class LocalMap3D {
 			return false;
 
 		float minDist = Float.MAX_VALUE;
-		Iterator<CellProbability_F64> i = map.iteratorKnown();
+		Iterator<CellProbability_F64> i = map.iterator();
 		while(i.hasNext()) {
 			CellProbability_F64 pr = i.next();
 			if(pr.probability <= 0.5)
@@ -209,7 +211,7 @@ public class LocalMap3D {
 	 */
 
 	public Iterator<CellProbability_F64> getLatestMapItems(long since) {
-		return map.iteratorKnown(since);
+		return map.iterator(since);
 	}
 
 
@@ -220,7 +222,7 @@ public class LocalMap3D {
 	 */
 	public Iterator<CellProbability_F64> getMapLevelItems(float from, float to) {
 		Comparable<Integer> zfilter = new ZFilter(from,to);
-		return map.iteratorKnown(zfilter);
+		return map.iterator(zfilter);
 	}
 
 	/**

@@ -86,7 +86,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		Octree_I32 leaf = construct.addLeaf(temp);
 		if(leaf == null)
 			return;
-		
+
 		MapLeaf info;
 		if( leaf.userData == null ) {
 			info = this.info.grow();
@@ -124,25 +124,30 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	}
 
 	@Override
-	public Iterator<CellProbability_F64> iteratorKnown() {
-		return new OctIterator();
+	public Iterator<CellProbability_F64> iterator() {
+		return new MapIterator();
 	}
 
 	@Override
-	public Iterator<CellProbability_F64> iteratorKnown(long tms) {
-		return new OctIterator(tms);
+	public Iterator<CellProbability_F64> iterator(long tms) {
+		return new MapIterator(tms);
+	}
+	
+	@Override
+	public Iterator<CellProbability_F64> iteratorUnKnown(long tms) {
+		return new UnKnownIterator(tms);
 	}
 
 	@Override
-	public Iterator<CellProbability_F64> iteratorKnown(Comparable<Integer> zfilter) {
-		return new OctIterator(zfilter);
+	public Iterator<CellProbability_F64> iterator(Comparable<Integer> zfilter) {
+		return new MapIterator(zfilter);
 	}
 
 	@Override
 	public OccupancyGrid3D_F64 copy() {
 		OccupancyGrid3D_F64 ret = new OctreeGridMap_F64(getSizeX(),getSizeY(),getSizeZ());
 
-		Iterator<CellProbability_F64> iter = iteratorKnown();
+		Iterator<CellProbability_F64> iter = iterator();
 		while( iter.hasNext() ) {
 			CellProbability_F64 p = iter.next();
 			ret.set(p.x,p.y,p.z,p.probability);
@@ -195,7 +200,32 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 	public int size() {
 		return info.size();
-	//	return construct.getAllNodes().size();
+		//	return construct.getAllNodes().size();
+	}
+
+	public void remove(Octree_I32 o) {
+
+		if(o.parent==null)
+			return;
+
+		construct.getAllNodes().remove(o);
+		info.remove(o.getUserData());
+
+		Octree_I32 p = o.parent;
+
+		int count_children=0; int index=0;
+		for(int i=0;i<p.children.length;i++) {
+			if(p.children[i]==o)
+				index = i;
+			if(p.children[i]!=null)
+				count_children++;
+		}
+
+		p.children[index] = null;
+		if(count_children > 1) {
+			return;
+		}
+		remove(p);	
 	}
 
 	/**
@@ -210,7 +240,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	 * Iterator which will go through all the map cells.  This is defined as nodes in the graph which are
 	 * the smallest size possible and have been assigned a probability
 	 */
-	private class OctIterator implements Iterator<CellProbability_F64> {
+	private class MapIterator implements Iterator<CellProbability_F64> {
 
 		DogArray<Octree_I32> nodes = construct.getAllNodes();
 		long tms;
@@ -219,18 +249,18 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		Octree_I32 next;
 		CellProbability_F64 storage = new CellProbability_F64();
-		
-		public OctIterator() {
+
+		public MapIterator() {
 			this.tms = 0;
 			searchNext();
 		}
 
-		public OctIterator(long tms) {
+		public MapIterator(long tms) {
 			this.tms = tms;
 			searchNext();
 		}
 
-		public OctIterator(Comparable<Integer> zfilter) {
+		public MapIterator(Comparable<Integer> zfilter) {
 			this.zfilter = zfilter;
 			searchNext();
 		}
@@ -259,7 +289,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 				if( o.isSmallest()) {
 					MapLeaf info = o.getUserData();
 					if(zfilter==null) {
-						if (info != null && info.probability != 0.5f && info.tms > tms) {
+						if (info != null && info.tms > tms) {
 							next = o;
 							break;
 						}
@@ -268,6 +298,62 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 							next = o;
 							break;
 						}
+					}
+				}
+			}
+		}
+
+		@Override
+		public void remove() {
+			throw new RuntimeException("Remove is not supported");
+		}
+	}
+
+	private class UnKnownIterator implements Iterator<CellProbability_F64> {
+
+		DogArray<Octree_I32> nodes = construct.getAllNodes();
+		long tms;
+		int index;
+
+		Octree_I32 next;
+		CellProbability_F64 storage = new CellProbability_F64();
+
+		public UnKnownIterator() {
+			this.tms = 0;
+			searchNext();
+		}
+
+		public UnKnownIterator(long tms) {
+			this.tms = tms;
+			searchNext();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return next != null;
+		}
+
+		@Override
+		public CellProbability_F64 next() {
+			Octree_I32 prev = next;
+			searchNext();
+			MapLeaf info = prev.getUserData();
+			storage.setTo( prev.space.p0 );
+			storage.probability = info.probability;
+			storage.tms         = info.tms;
+
+			return storage;
+		}
+
+		protected void searchNext() {
+			next = null;
+			while( index < nodes.size() ) {
+				Octree_I32 o = nodes.get(index++);
+				if( o.isSmallest()) {
+					MapLeaf info = o.getUserData();
+					if (info != null && info.probability == 0.5 && info.tms > tms) {
+						next = o;
+						break;
 					}
 				}
 			}
