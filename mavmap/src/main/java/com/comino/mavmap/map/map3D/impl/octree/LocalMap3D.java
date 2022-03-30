@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- *   Copyright (c) 2021 Eike Mansfeld ecm@gmx.de. All rights reserved.
+ *   Copyright (c) 2022 Eike Mansfeld ecm@gmx.de. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -34,12 +34,14 @@
 package com.comino.mavmap.map.map3D.impl.octree;
 
 import java.util.Iterator;
+import java.util.List;
 
 import com.comino.mavmap.map.map3D.Map3DSpacialInfo;
 import com.comino.mavmap.utils.UtilPoint3D_I32;
 
+import bubo.construct.Octree_I32;
 import bubo.maps.d3.grid.CellProbability_F64;
-import bubo.maps.d3.grid.OccupancyGrid3D_F64;
+import bubo.maps.d3.grid.impl.MapLeaf;
 import bubo.maps.d3.grid.impl.OctreeGridMap_F64;
 import georegression.geometry.UtilPoint3D_F64;
 import georegression.struct.GeoTuple3D_F32;
@@ -57,10 +59,11 @@ import georegression.transform.se.InterpolateLinearSe3_F64;
  */
 public class LocalMap3D {
 
-	private static final int MAX_SIZE = 100000;
+	private static final int MAX_SIZE      = 100000;
+	private static final int MIN_UPDATE_MS = 200;
 
 
-	private OccupancyGrid3D_F64    map;
+	private OctreeGridMap_F64            map;
 	private final Map3DSpacialInfo       info;
 
 	private InterpolateLinearSe3_F64     interp = new InterpolateLinearSe3_F64();
@@ -78,7 +81,6 @@ public class LocalMap3D {
 	}
 
 	public LocalMap3D(Map3DSpacialInfo info,boolean forget) {
-		// TODO: Make it customizable and transfer to MACGCL
 		this.info = info;
 		this.map  = new OctreeGridMap_F64(info.getDimension().x,info.getDimension().y,info.getDimension().z); 
 		this.forget = forget;
@@ -96,7 +98,7 @@ public class LocalMap3D {
 		ptm.reset(); ptm.T.setTo(o.x,o.y,o.z);
 		update(tmp,ptm,1);	
 	}
-	
+
 	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o, double prob) {
 		tmp.reset(); tmp.T.setTo(p.x,p.y,p.z);
 		ptm.reset(); ptm.T.setTo(o.x,o.y,o.z);
@@ -110,16 +112,22 @@ public class LocalMap3D {
 	 */
 	public void update(Se3_F64 pos_ned, Se3_F64 observation_ned, double probability) {
 
+		MapLeaf p;;
+
 		if(map.size()>MAX_SIZE)
 			return;
 
 		info.globalToMap(observation_ned.T, mapo);
 		if(!map.isInBounds(mapo.x, mapo.y, mapo.z)) 
 			return;
-		
-		
 
 		mapp.setTo(mapo);
+
+		p = map.getUserData(mapp.x, mapp.y, mapp.z);
+		
+		// Do not update the ray within MIN_UPDATE_MS time if already set 
+		if(p.probability==probability && (p.tms - System.currentTimeMillis()) < MIN_UPDATE_MS)
+			return;
 
 		interp.setTransforms(observation_ned, pos_ned);
 
@@ -129,10 +137,12 @@ public class LocalMap3D {
 		for(int i=1; i <= steps; i++ ) {
 			interp.interpolate(i / steps , tmp);
 			info.globalToMap(tmp.T, mapp);
-			if(map.get(mapp.x, mapp.y, mapp.z) > 0.5) {
-				map.set(mapp.x, mapp.y, mapp.z, 0.5);
+			p = map.getUserData(mapp.x, mapp.y, mapp.z);
+			if(p.probability > map.getDefaultValue()) {
+				map.set(mapp.x, mapp.y, mapp.z, 0);
 			}
 		} 
+
 		map.set(mapo.x, mapo.y, mapo.z, probability);
 	}
 
@@ -148,11 +158,11 @@ public class LocalMap3D {
 	 */
 
 	public void setMapPoint(Point3D_I32 p, double probability) {
-		if(probability < 0.5f) {
-			if(map.get(p.x, p.y, p.z) != 0.5f)
+		if(probability < map.getDefaultValue()) {
+			if(map.get(p.x, p.y, p.z) != map.getDefaultValue())
 				map.set(p.x, p.y, p.z, probability);
 		}
-		else if(probability > 0.5f)
+		else if(probability > map.getDefaultValue())
 			map.set(p.x, p.y, p.z, probability);
 	}
 
@@ -264,6 +274,45 @@ public class LocalMap3D {
 		public int compareTo(Integer z) {
 			if( from < z &&  to > z) return 0; else return 1;
 
+		}
+
+	}
+
+	public  void forget(long older_than) {
+		
+		if(!forget)
+			return;
+
+//		System.out.println("--->"+map.getGridCells().size());
+//				if(map.getGridCells().isEmpty())
+//					return;
+//		
+//				List<Octree_I32> delete = new ArrayList<Octree_I32>();
+//				
+//				map.getGridCells().forEach((node) -> {
+//					MapLeaf leaf = (MapLeaf)node.getUserData();
+//					if(leaf.probability == 0.5)
+//						delete.add(node);
+//				});
+//		
+//				if(!delete.isEmpty()) {
+//					System.out.println("to be deleted: "+ delete.size()+" of "+map.getGridCells().size() );
+//					delete.forEach((node) -> map.remove(node));
+//				}
+//				delete.clear();
+//		
+		List<Octree_I32> allNodes = map.getConstruct().getAllNodes().toList();
+		for (int i = 0; i < allNodes.size(); i++) {
+			Octree_I32 n = allNodes.get(i);
+			if(n.userData != null ) {
+				MapLeaf leaf = (MapLeaf)n.getUserData();
+				if(leaf != null && leaf.tms <= older_than) {
+					if(leaf.probability != map.getDefaultValue()) {
+						leaf.probability = map.getDefaultValue();
+						leaf.tms = System.currentTimeMillis();
+					}
+				}
+			}
 		}
 
 	}

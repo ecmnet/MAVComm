@@ -10,16 +10,16 @@ import georegression.struct.point.Point3D_I32;
 public class Map3DSpacialInfo {
 
 	// size of a grid cell in global units
-	private final float  cellSize;
-	private final int    blocks_per_m;
+	private float  cellSize;
+	private int    blocks_per_m;
 	private final Point3D_I32 dimension;
 	private final Point3D_I32 center;
 	private final Point3D_F64 bl;
 
 	private float cellSize2;
 	
-	private final int dimensionxy;
-	private final int dimensionxyz;
+	private int dimensionxy;
+	private int dimensionxyz;
 
 	/**
 	 * @param cellSize   Size of a map cell
@@ -47,6 +47,25 @@ public class Map3DSpacialInfo {
 	public Map3DSpacialInfo(double cellSize, double bl_x, double bl_y, double bl_z) {
 		this(cellSize,new Point3D_F64(bl_x, bl_y, bl_z));
 	}
+	
+	public void adjustResolution(double cellsize) {
+		double adjustment = cellsize / this.cellSize;
+
+		this.bl.x          = this.bl.x * adjustment;
+		this.bl.y          = this.bl.y * adjustment;
+		this.bl.z          = this.bl.z * adjustment;
+		
+		this.cellSize     = (float)cellsize;
+		this.cellSize2    = (float)cellsize / 2;
+		this.blocks_per_m = (int)(1/cellSize + 0.5f);
+		
+		this.dimension.setTo((int)((bl.x) / cellSize  ) + 1, (int)((bl.y) / cellSize  ) + 1, (int)((bl.z) / cellSize  ) + 1);
+		this.dimensionxy  = dimension.x * dimension.y;
+		this.dimensionxyz = dimensionxy * dimension.z;
+		this.center.setTo(dimension.x/2,dimension.y/2,0);
+		System.out.println("Map Dimension adjusted "+dimension+" BlockSize "+blocks_per_m);
+		
+	}
 
 	/**
 	 * Convert from global coordinates into map cell coordinates.
@@ -63,8 +82,8 @@ public class Map3DSpacialInfo {
 	 */
 	public void mapToGlobal(Point3D_I32 map, GeoTuple3D_F64<?> global) {
 		global.x =   (map.x - center.x ) * cellSize +cellSize2 ;
-		global.y =   (map.y - center.y ) * cellSize +cellSize2  ;
-		global.z = - (map.z - center.z ) * cellSize +cellSize2  ;
+		global.y =   (map.y - center.y ) * cellSize +cellSize2 ;
+		global.z = - (map.z - center.z ) * cellSize +cellSize2 ;
 	}
 	
 	/**
