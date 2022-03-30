@@ -126,11 +126,11 @@ public class LocalMap3D {
 		p = map.getUserData(mapp.x, mapp.y, mapp.z);
 		
 		// Do not update the ray within MIN_UPDATE_MS time if already set 
-		if(p.probability==probability && (p.tms - System.currentTimeMillis()) < MIN_UPDATE_MS)
+		if(p!=null && p.probability==probability && (p.tms - System.currentTimeMillis()) < MIN_UPDATE_MS)
 			return;
 
+		// do ray casting 
 		interp.setTransforms(observation_ned, pos_ned);
-
 		double steps = UtilPoint3D_F64.distance(pos_ned.T.x, pos_ned.T.y, pos_ned.T.z, 
 				observation_ned.T.x, observation_ned.T.y, observation_ned.T.z) / info.getCellSize()+1;
 
@@ -138,7 +138,7 @@ public class LocalMap3D {
 			interp.interpolate(i / steps , tmp);
 			info.globalToMap(tmp.T, mapp);
 			p = map.getUserData(mapp.x, mapp.y, mapp.z);
-			if(p.probability > map.getDefaultValue()) {
+			if(p!=null && p.probability > map.getDefaultValue()) {
 				map.set(mapp.x, mapp.y, mapp.z, 0);
 			}
 		} 
@@ -283,6 +283,10 @@ public class LocalMap3D {
 		if(!forget)
 			return;
 
+		// TODO: Takes too long (stopping the depth estimation, 
+		// maybe limit the nodes to be deleted to a certain number
+		//
+		
 //		System.out.println("--->"+map.getGridCells().size());
 //				if(map.getGridCells().isEmpty())
 //					return;
@@ -291,7 +295,7 @@ public class LocalMap3D {
 //				
 //				map.getGridCells().forEach((node) -> {
 //					MapLeaf leaf = (MapLeaf)node.getUserData();
-//					if(leaf.probability == 0.5)
+//					if(leaf.probability == map.getDefaultValue())
 //						delete.add(node);
 //				});
 //		
