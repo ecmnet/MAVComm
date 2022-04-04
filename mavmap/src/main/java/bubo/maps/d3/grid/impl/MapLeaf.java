@@ -25,8 +25,8 @@ package bubo.maps.d3.grid.impl;
  * @author Peter Abeles
  */
 public class MapLeaf {
-	public double probability;
-	public long   tms;
+	public double   probability;
+	public long     tms;
 
 	public MapLeaf(double probability, long tms) {
 		this.probability = probability;

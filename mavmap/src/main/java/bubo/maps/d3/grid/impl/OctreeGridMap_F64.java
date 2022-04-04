@@ -213,11 +213,13 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		//	return construct.getAllNodes().size();
 	}
 
+	
 	public void remove(Octree_I32 o) {
 
 		if(o.parent==null)
 			return;
 
+		
 		construct.getAllNodes().remove(o);
 		info.remove(o.getUserData());
 
@@ -236,6 +238,10 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			return;
 		}
 		remove(p);	
+	}
+	
+	public List<Octree_I32> getAllNodes() {
+		return construct.getAllNodes().toList();
 	}
 
 	/**

@@ -33,6 +33,7 @@
 
 package com.comino.mavmap.map.map3D.impl.octree;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -59,8 +60,8 @@ import georegression.transform.se.InterpolateLinearSe3_F64;
  */
 public class LocalMap3D {
 
-	private static final int MAX_SIZE      = 100000;
-	private static final int MIN_UPDATE_MS = 200;
+	private static final int MAX_SIZE      = 100000;     // Max size of the map in count of nodes
+	private static final int MAX_REMOVE    = 3;          // Max count of nodes to be removed in one shot; 0 disables remove
 
 
 	private OctreeGridMap_F64            map;
@@ -93,6 +94,12 @@ public class LocalMap3D {
 		update(tmp,ptm,1);	
 	}
 
+	public void update(GeoTuple3D_F64<?> p ) {
+		tmp.reset();
+		ptm.reset(); ptm.T.setTo(p.x, p.y, p.z);
+		update(tmp,ptm,1);	
+	}
+
 	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o ) {
 		tmp.reset(); tmp.T.setTo(p.x,p.y,p.z);
 		ptm.reset(); ptm.T.setTo(o.x,o.y,o.z);
@@ -103,6 +110,11 @@ public class LocalMap3D {
 		tmp.reset(); tmp.T.setTo(p.x,p.y,p.z);
 		ptm.reset(); ptm.T.setTo(o.x,o.y,o.z);
 		update(tmp,ptm,prob);	
+	}
+
+	public double check(GeoTuple3D_F64<?> p) {
+		info.globalToMap(p, mapo);
+		return map.get(mapo.x,mapo.y,mapo.z);
 	}
 
 	/**
@@ -124,10 +136,10 @@ public class LocalMap3D {
 		mapp.setTo(mapo);
 
 		p = map.getUserData(mapp.x, mapp.y, mapp.z);
-		
+
 		// Do not update the ray within MIN_UPDATE_MS time if already set 
-		if(p!=null && p.probability==probability && (p.tms - System.currentTimeMillis()) < MIN_UPDATE_MS)
-			return;
+		//		if(p!=null && p.probability==probability && (p.tms - System.currentTimeMillis()) < MIN_UPDATE_MS)
+		//			return;
 
 		// do ray casting 
 		interp.setTransforms(observation_ned, pos_ned);
@@ -278,39 +290,30 @@ public class LocalMap3D {
 
 	}
 
-	public  void forget(long older_than) {
-		
+	public void forget(long older_than) {
+
 		if(!forget)
 			return;
 
-		// TODO: Takes too long (stopping the depth estimation, 
-		// maybe limit the nodes to be deleted to a certain number
-		//
-		
-//		System.out.println("--->"+map.getGridCells().size());
-//				if(map.getGridCells().isEmpty())
-//					return;
-//		
-//				List<Octree_I32> delete = new ArrayList<Octree_I32>();
-//				
-//				map.getGridCells().forEach((node) -> {
-//					MapLeaf leaf = (MapLeaf)node.getUserData();
-//					if(leaf.probability == map.getDefaultValue())
-//						delete.add(node);
-//				});
-//		
-//				if(!delete.isEmpty()) {
-//					System.out.println("to be deleted: "+ delete.size()+" of "+map.getGridCells().size() );
-//					delete.forEach((node) -> map.remove(node));
-//				}
-//				delete.clear();
-//		
-		List<Octree_I32> allNodes = map.getConstruct().getAllNodes().toList();
-		for (int i = 0; i < allNodes.size(); i++) {
-			Octree_I32 n = allNodes.get(i);
+		List<Octree_I32> nodes = map.getAllNodes();
+		int max = MAX_REMOVE;
+		if(max > 0) {
+			for(int k=0;k< nodes.size();k++) {
+				Octree_I32 n = nodes.get(k);
+				if(n.isLeaf() && n.isSmallest() && ((MapLeaf)n.getUserData()).probability == map.getDefaultValue() ) {
+					map.remove(n);
+					if(--max < 0)
+						break;
+				}
+			}	
+		}
+
+		//	List<Octree_I32> allNodes = map.getConstruct().getAllNodes().toList();
+		for (int i = 0; i < nodes.size(); i++) {
+			Octree_I32 n = nodes.get(i);
 			if(n.userData != null ) {
 				MapLeaf leaf = (MapLeaf)n.getUserData();
-				if(leaf != null && leaf.tms <= older_than) {
+				if(leaf != null && leaf.tms <= older_than && leaf.tms > 0) {
 					if(leaf.probability != map.getDefaultValue()) {
 						leaf.probability = map.getDefaultValue();
 						leaf.tms = System.currentTimeMillis();
