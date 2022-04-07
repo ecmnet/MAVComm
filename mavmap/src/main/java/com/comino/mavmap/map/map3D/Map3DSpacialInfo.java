@@ -2,6 +2,7 @@
 
 package com.comino.mavmap.map.map3D;
 
+import bubo.maps.d3.grid.CellProbability_F64;
 import georegression.struct.GeoTuple3D_F64;
 import georegression.struct.point.Point3D_F64;
 import georegression.struct.point.Point3D_I32;
@@ -81,9 +82,9 @@ public class Map3DSpacialInfo {
 	 * Convert from map cell coordinates into global coordinates
 	 */
 	public void mapToGlobal(Point3D_I32 map, GeoTuple3D_F64<?> global) {
-		global.x =   (map.x - center.x ) * cellSize +cellSize2 ;
-		global.y =   (map.y - center.y ) * cellSize +cellSize2 ;
-		global.z = - (map.z - center.z ) * cellSize +cellSize2 ;
+		global.x =   (map.x - center.x ) * cellSize + cellSize2 ;
+		global.y =   (map.y - center.y ) * cellSize + cellSize2 ;
+		global.z = - (map.z - center.z ) * cellSize + cellSize2 ;
 	}
 	
 	/**
@@ -104,12 +105,23 @@ public class Map3DSpacialInfo {
 		p.y = (int)( mpi / dimension.x % dimension.y);
 		p.z = (int)( mpi / dimensionxy % dimension.z);
 		
-		return (double)((int)(mpi / dimensionxyz) / 100f);
+		return (double)((long)(mpi / dimensionxyz) / 100.0);
+	}
+	
+	public void decodeMapPoint(long mpi, CellProbability_F64 p) {
+
+		p.x = (int)( mpi % dimension.x);
+		p.y = (int)( mpi / dimension.x % dimension.y);
+		p.z = (int)( mpi / dimensionxy % dimension.z);
+		
+		p.probability = (double)((long)(mpi / dimensionxyz) / 100.0);
+		p.tms = System.currentTimeMillis();
+	
 	}
 	
 	public double decodeMapPoint(long mpi) {
 		
-		return (double)((int)(mpi / dimensionxyz) / 100f);
+		return (double)((long)(mpi / dimensionxyz) / 100.0);
 	}
 	
 
@@ -123,7 +135,7 @@ public class Map3DSpacialInfo {
 	 */
 	
 	public long encodeMapPoint(Point3D_I32 p, double probability ) {
-		return (int)(p.x) + (int)(p.y) * dimension.x + (int)(p.z) * dimensionxy + (int)(100 * probability) * dimensionxyz;
+		return (long)(p.x) + (long)(p.y) * dimension.x + (long)(p.z) * dimensionxy + (long)(100.0 * probability) * dimensionxyz;
 	}
 	
 	

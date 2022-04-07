@@ -96,7 +96,24 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		}
 		info.probability = value;
 		info.tms = System.currentTimeMillis();
-//		System.out.println("S: "+info.probability+"/"+info.tms+"->"+temp);
+	}
+	
+	public void set(int x, int y, int z, double value, long tms) {
+		temp.setTo(x,y,z);
+
+		Octree_I32 leaf = construct.addLeaf(temp);
+		if(leaf == null)
+			return;
+
+		MapLeaf info;
+		if( leaf.userData == null ) {
+			info = this.info.grow();
+			leaf.userData = info;
+		} else {
+			info = (MapLeaf)leaf.userData;
+		}
+		info.probability = value;
+		info.tms = tms;
 	}
 
 	@Override
@@ -215,13 +232,19 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 	
 	public void remove(Octree_I32 o) {
+		
+		// TODO: Leads to artefacts => to be tested
 
-		if(o.parent==null)
+		if(o.parent==null )
 			return;
 
+		if(!construct.getAllNodes().remove(o))
+			return;
 		
-		construct.getAllNodes().remove(o);
-		info.remove(o.getUserData());
+		o.points.reset();
+		
+		if(o.getUserData() != null)
+		  info.remove(o.getUserData());
 
 		Octree_I32 p = o.parent;
 
@@ -237,7 +260,8 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		if(count_children > 1) {
 			return;
 		}
-		remove(p);	
+		if(p.getUserData() == null)
+		  remove(p);	
 	}
 	
 	public List<Octree_I32> getAllNodes() {
@@ -293,7 +317,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			Octree_I32 prev = next;
 			searchNext();
 			MapLeaf info = prev.getUserData();
-		//	System.out.println("T: "+info.probability+"/"+info.tms+"->"+prev.space.p0);
+			//System.out.println("T: "+info.probability+"/"+info.tms+"->"+prev.space.p0);
 			storage.setTo( prev.space.p0 );
 			storage.probability = info.probability;
 			storage.tms         = info.tms;
