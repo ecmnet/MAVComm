@@ -189,6 +189,7 @@ public class LocalMap3D {
 	}
 
 	public void setMapPoint(Point3D_I32 p, double probability, long tms) {
+		
 		if(probability < map.getDefaultValue()) {
 			if(map.get(p.x, p.y, p.z) != map.getDefaultValue())
 				map.set(p.x, p.y, p.z, probability,tms);

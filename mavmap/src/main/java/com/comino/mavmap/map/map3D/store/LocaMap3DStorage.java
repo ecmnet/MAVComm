@@ -149,7 +149,7 @@ public class LocaMap3DStorage {
 	}
 
 	private boolean read(String fn) {
-		long tms = System.currentTimeMillis();
+		
 		Point3D_I32 mappo = new Point3D_I32(); double prob =0;
 		File f = new File(base_path+fn);
 		if(f.exists()) {
@@ -161,7 +161,7 @@ public class LocaMap3DStorage {
 				for(int i=0;i<data.length;i++) {
 					prob = map.getMapInfo().decodeMapPoint(data[i], mappo);
 					if(prob> 0.5)
-					  map.setMapPoint(mappo, 1, tms);
+					  map.setMapPoint(mappo, 1, System.currentTimeMillis());
 				}
 				return true;
 			} catch (Exception e) {
