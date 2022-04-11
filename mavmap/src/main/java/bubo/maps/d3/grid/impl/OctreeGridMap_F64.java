@@ -48,6 +48,8 @@ import java.util.List;
  * @author Peter Abeles
  */
 public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
+	
+	private static final long TMS_UPDATE_MIN = 500;
 
 	// value of cells with no information
 	double defaultValue = 0.5;
@@ -94,10 +96,12 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		} else {
 			info = (MapLeaf)leaf.userData;
 		}
-		info.probability = value;
-		info.tms = System.currentTimeMillis();
+		if(info.tms < (System.currentTimeMillis() - TMS_UPDATE_MIN) || info.probability != value) {
+			info.tms = System.currentTimeMillis();
+			info.probability = value;
+		}
 	}
-	
+
 	public void set(int x, int y, int z, double value, long tms) {
 		temp.setTo(x,y,z);
 
@@ -112,8 +116,10 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		} else {
 			info = (MapLeaf)leaf.userData;
 		}
-		info.probability = value;
-		info.tms = tms;
+		if(info.tms < (tms - TMS_UPDATE_MIN) || info.probability != value) {
+			info.tms = tms;
+			info.probability = value;
+		} 
 	}
 
 	@Override
@@ -125,7 +131,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		else
 			return ((MapLeaf)node.userData).probability;
 	}
-	
+
 	public MapLeaf getUserData(int x, int y, int z) {
 		temp.setTo(x,y,z);
 		Octree_I32 node = construct.getTree().findDeepest(temp);
@@ -159,7 +165,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	public Iterator<CellProbability_F64> iterator(long tms) {
 		return new MapIterator(tms);
 	}
-	
+
 	@Override
 	public Iterator<CellProbability_F64> iteratorUnKnown(long tms) {
 		return new UnKnownIterator(tms);
@@ -230,9 +236,9 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		//	return construct.getAllNodes().size();
 	}
 
-	
+
 	public void remove(Octree_I32 o) {
-		
+
 		// TODO: Leads to artefacts => to be tested
 
 		if(o.parent==null )
@@ -240,11 +246,11 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		if(!construct.getAllNodes().remove(o))
 			return;
-		
+
 		o.points.reset();
-		
+
 		if(o.getUserData() != null)
-		  info.remove(o.getUserData());
+			info.remove(o.getUserData());
 
 		Octree_I32 p = o.parent;
 
@@ -261,9 +267,9 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			return;
 		}
 		if(p.getUserData() == null)
-		  remove(p);	
+			remove(p);	
 	}
-	
+
 	public List<Octree_I32> getAllNodes() {
 		return construct.getAllNodes().toList();
 	}
@@ -289,7 +295,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 		CellProbability_F64 storage = new CellProbability_F64();
 
 		Octree_I32 next;
-		
+
 
 		public MapIterator() {
 			this.tms = 0;
@@ -313,7 +319,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		@Override
 		public CellProbability_F64 next() {
-			
+
 			Octree_I32 prev = next;
 			searchNext();
 			MapLeaf info = prev.getUserData();

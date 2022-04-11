@@ -140,7 +140,7 @@ public class LocalMap3D {
 
 		mapp.setTo(mapo);
 
-		//	p = map.getUserData(mapp.x, mapp.y, mapp.z);
+		//p = map.getUserData(mapp.x, mapp.y, mapp.z);
 
 		// Do not update the ray within MIN_UPDATE_MS time if already set 
 		//		if(p!=null && p.probability==probability && (p.tms - System.currentTimeMillis()) < MIN_UPDATE_MS)
@@ -189,7 +189,7 @@ public class LocalMap3D {
 	}
 
 	public void setMapPoint(Point3D_I32 p, double probability, long tms) {
-		
+
 		if(probability < map.getDefaultValue()) {
 			if(map.get(p.x, p.y, p.z) != map.getDefaultValue())
 				map.set(p.x, p.y, p.z, probability,tms);
@@ -322,30 +322,30 @@ public class LocalMap3D {
 			return;
 
 		List<Octree_I32> nodes = map.getAllNodes();
-		
+
 		// REMOVE does not work properly
 
-//		int max = MAX_REMOVE;
-//		if(max > 0) {
-//
-//			delete.clear();
-//			for(int k=0;k< nodes.size();k++) {
-//				Octree_I32 n = nodes.get(k);
-//				if(n.isLeaf() && n.isSmallest() && ((MapLeaf)n.getUserData()).probability == map.getDefaultValue() ) {
-//					delete.add(n);
-//					if(--max < 0)
-//						break;
+//				int max = MAX_REMOVE;
+//				if(max > 0) {
+//		
+//					delete.clear();
+//					for(int k=0;k< nodes.size();k++) {
+//						Octree_I32 n = nodes.get(k);
+//						if(n.isLeaf() && n.isSmallest() && ((MapLeaf)n.getUserData()).probability == map.getDefaultValue() ) {
+//							delete.add(n);
+//							if(--max < 0)
+//								break;
+//						}
+//					}	
+//					if(delete.size()>0) {
+//						delete.forEach((p) -> map.remove(p));
+//					}
 //				}
-//			}	
-//			if(delete.size()>0) {
-//				delete.forEach((p) -> map.remove(p));
-//			}
-//		}
 
 		for (int i = 0; i < nodes.size(); i++) {
 			Octree_I32 n = nodes.get(i);
 			if(n.userData != null && n.isLeaf()) {
-				MapLeaf leaf = (MapLeaf)n.getUserData();
+				MapLeaf leaf = n.getUserData();
 				if(leaf != null && leaf.tms <= older_than && leaf.tms > 0) {
 					if(leaf.probability != map.getDefaultValue()) {
 						leaf.probability = map.getDefaultValue();
