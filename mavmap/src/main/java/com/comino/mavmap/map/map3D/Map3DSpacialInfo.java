@@ -9,6 +9,7 @@ import georegression.struct.point.Point3D_I32;
 
 
 public class Map3DSpacialInfo {
+	
 
 	// size of a grid cell in global units
 	private float  cellSize;
@@ -35,7 +36,7 @@ public class Map3DSpacialInfo {
 		this.dimension.setTo((int)((bl.x) / cellSize  ) + 1, (int)((bl.y) / cellSize  ) + 1, (int)((bl.z) / cellSize  ) + 1);
 		this.dimensionxy  = dimension.x * dimension.y;
 		this.dimensionxyz = dimensionxy * dimension.z;
-		this.center       = new Point3D_I32(dimension.x/2,dimension.y/2,0);
+		this.center       = new Point3D_I32(dimension.x/2,dimension.y/2,dimension.z/2);
 		System.out.println("Map Dimension is "+dimension+" BlockSize "+blocks_per_m);
 		
 	}
@@ -63,7 +64,7 @@ public class Map3DSpacialInfo {
 		this.dimension.setTo((int)((bl.x) / cellSize  ) + 1, (int)((bl.y) / cellSize  ) + 1, (int)((bl.z) / cellSize  ) + 1);
 		this.dimensionxy  = dimension.x * dimension.y;
 		this.dimensionxyz = dimensionxy * dimension.z;
-		this.center.setTo(dimension.x/2,dimension.y/2,0);
+		this.center.setTo(dimension.x/2,dimension.y/2,dimension.z/2);
 		System.out.println("Map Dimension adjusted "+dimension+" BlockSize "+blocks_per_m);
 		
 	}
@@ -72,9 +73,9 @@ public class Map3DSpacialInfo {
 	 * Convert from global coordinates into map cell coordinates.
 	 */
 	public void globalToMap(GeoTuple3D_F64<?> global, Point3D_I32 map) {
-		map.x =   (int)((global.x - cellSize2)   * blocks_per_m + 0.5) + center.x;
-		map.y =   (int)((global.y - cellSize2)   * blocks_per_m + 0.5) + center.y;
-		map.z =   (int)((- cellSize2 - global.z) * blocks_per_m + 0.5) + center.z;
+		map.x =   (int)((global.x - cellSize2) * blocks_per_m + 0.5) + center.x;
+		map.y =   (int)((global.y - cellSize2) * blocks_per_m + 0.5) + center.y;
+		map.z =   (int)((global.z - cellSize2) * blocks_per_m + 0.5) + center.z;
 	}
 
 
@@ -84,7 +85,7 @@ public class Map3DSpacialInfo {
 	public void mapToGlobal(Point3D_I32 map, GeoTuple3D_F64<?> global) {
 		global.x =   (map.x - center.x ) * cellSize + cellSize2 ;
 		global.y =   (map.y - center.y ) * cellSize + cellSize2 ;
-		global.z = - (map.z - center.z ) * cellSize + cellSize2 ;
+		global.z =   (map.z - center.z ) * cellSize + cellSize2 ;
 	}
 	
 	/**
@@ -94,7 +95,7 @@ public class Map3DSpacialInfo {
 	public void roundToMap(GeoTuple3D_F64<?> global) {
 		global.x =  (int)((global.x - cellSize2) * blocks_per_m +0.5)   * cellSize + cellSize2 ;
 		global.y =  (int)((global.y - cellSize2) * blocks_per_m +0.5)   * cellSize + cellSize2 ;
-		global.z = -((int)((- cellSize2 - global.z) * blocks_per_m+0.5) * cellSize + cellSize2 );
+		global.z =  (int)((global.z - cellSize2) * blocks_per_m +0.5)   * cellSize + cellSize2 ;
 	}
 
 	
@@ -105,7 +106,7 @@ public class Map3DSpacialInfo {
 		p.y = (int)( mpi / dimension.x % dimension.y);
 		p.z = (int)( mpi / dimensionxy % dimension.z);
 		
-		return (double)((long)(mpi / dimensionxyz) / 100.0);
+		return (double)((long)(mpi / dimensionxyz - 100) / 100.0);
 	}
 	
 	public void decodeMapPoint(long mpi, CellProbability_F64 p) {
@@ -114,14 +115,14 @@ public class Map3DSpacialInfo {
 		p.y = (int)( mpi / dimension.x % dimension.y);
 		p.z = (int)( mpi / dimensionxy % dimension.z);
 		
-		p.probability = (double)((long)(mpi / dimensionxyz) / 100.0);
+		p.probability = (double)((long)(mpi / dimensionxyz - 100) / 100.0);
 		p.tms = System.currentTimeMillis();
 	
 	}
 	
 	public double decodeMapPoint(long mpi) {
 		
-		return (double)((long)(mpi / dimensionxyz) / 100.0);
+		return (double)((long)(mpi / dimensionxyz - 100) / 100.0);
 	}
 	
 
@@ -134,7 +135,7 @@ public class Map3DSpacialInfo {
 	 */
 	
 	public long encodeMapPoint(Point3D_I32 p, double probability ) {
-		return (long)(p.x) + (long)(p.y) * dimension.x + (long)(p.z) * dimensionxy + (long)(100.0 * probability) * dimensionxyz;
+		return (int)(p.x) + (int)(p.y) * dimension.x + (int)(p.z) * dimensionxy + (short)(100+100.0 * probability) * dimensionxyz;
 	}
 	
 	

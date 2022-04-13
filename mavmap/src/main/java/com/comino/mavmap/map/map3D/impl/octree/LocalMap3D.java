@@ -140,11 +140,9 @@ public class LocalMap3D {
 
 		mapp.setTo(mapo);
 
-		//p = map.getUserData(mapp.x, mapp.y, mapp.z);
-
-		// Do not update the ray within MIN_UPDATE_MS time if already set 
-		//		if(p!=null && p.probability==probability && (p.tms - System.currentTimeMillis()) < MIN_UPDATE_MS)
-		//			return;
+//		p = map.getUserData(mapp.x, mapp.y, mapp.z);
+//		if(p!=null && p.tms > (tms - 500) && p.probability == probability)
+//			return;
 
 		// do ray casting 
 		interp.setTransforms(observation_ned, pos_ned);
@@ -331,7 +329,9 @@ public class LocalMap3D {
 //					delete.clear();
 //					for(int k=0;k< nodes.size();k++) {
 //						Octree_I32 n = nodes.get(k);
-//						if(n.isLeaf() && n.isSmallest() && ((MapLeaf)n.getUserData()).probability == map.getDefaultValue() ) {
+//						if(n!=null && n.isLeaf() && n.isSmallest() && 
+//								((MapLeaf)n.getUserData()).probability == map.getDefaultValue() &&
+//								((MapLeaf)n.getUserData()).tms < (System.currentTimeMillis() - 10000)) {
 //							delete.add(n);
 //							if(--max < 0)
 //								break;
@@ -368,13 +368,15 @@ public class LocalMap3D {
 		Point3D_I32 mpt  = new Point3D_I32();
 
 
-		Vector3D_F64 p  = new Vector3D_F64(0.055,-0.055,1);
+		Vector3D_F64 p  = new Vector3D_F64(- 0.20, -0.30, 1);
 		Vector3D_F64 pt = new Vector3D_F64();
 		Vector3D_F64 ph = new Vector3D_F64();
 
-		System.out.println(p);
+		System.out.print(p);
 
 		info.globalToMap(p,mp);
+		info.mapToGlobal(mp, pt);
+		System.out.println(" --> "+pt);
 		System.out.println(mp);
 
 		long h = info.encodeMapPoint(mp,0.75);
@@ -382,10 +384,9 @@ public class LocalMap3D {
 		System.out.println(info.decodeMapPoint(h, mpt));
 		System.out.println(mpt);
 
-		info.mapToGlobal(mp, pt);
 		info.mapToGlobal(mpt, ph);
 
-		System.out.println(pt);
+		
 		System.out.println(ph);
 
 

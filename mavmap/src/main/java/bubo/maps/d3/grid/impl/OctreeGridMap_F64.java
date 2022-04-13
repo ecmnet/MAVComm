@@ -289,8 +289,8 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	private class MapIterator  implements Iterator<CellProbability_F64> {
 
 		DogArray<Octree_I32> nodes = construct.getAllNodes();
-		long tms;
-		int index;
+		long tms = 0;
+		int index = 0;
 		Comparable<Integer> zfilter = null;
 		CellProbability_F64 storage = new CellProbability_F64();
 
@@ -319,7 +319,6 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		@Override
 		public CellProbability_F64 next() {
-
 			Octree_I32 prev = next;
 			searchNext();
 			MapLeaf info = prev.getUserData();
@@ -332,7 +331,8 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		protected void searchNext() {
 			next = null;
-			while( index < nodes.size() ) {
+			try {
+			while( index < nodes.size()) {
 				Octree_I32 o = nodes.get(index++);
 				if( o.isSmallest()) {
 					MapLeaf info = o.getUserData();
@@ -348,6 +348,10 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 						}
 					}
 				}
+			}
+			} catch(Exception e) {
+				e.printStackTrace();
+				System.out.println("Index"+index);
 			}
 		}
 
