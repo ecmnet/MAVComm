@@ -88,10 +88,18 @@ public interface OccupancyGrid3D_F64 extends OccupancyGrid3D {
 	
 	/**
 	 * Returns an iterator, which will iterate through all maps cells and
-	 * are added since the timestamp tms
+	 * are added since the timestamp tms and > threshold or <= default
+	 * @return Iterator for map cells
+	 */
+	public Iterator<CellProbability_F64> iterator(long tms, double threshold);
+	
+	/**
+	 * Returns an iterator, which will iterate through all maps cells and
+	 * are added since the timestamp tms 
 	 * @return Iterator for map cells
 	 */
 	public Iterator<CellProbability_F64> iterator(long tms);
+	
 	
 	/**
 	 * Returns an iterator, which will iterate through all maps cells which are unknown and

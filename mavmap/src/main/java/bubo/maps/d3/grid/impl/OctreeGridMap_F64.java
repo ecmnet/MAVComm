@@ -162,6 +162,11 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	}
 
 	@Override
+	public Iterator<CellProbability_F64> iterator(long tms, double threshold) {
+		return new MapIterator(tms, threshold);
+	}
+	
+	@Override
 	public Iterator<CellProbability_F64> iterator(long tms) {
 		return new MapIterator(tms);
 	}
@@ -248,26 +253,29 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			return;
 
 		o.points.reset();
+	
 
 		if(o.getUserData() != null)
 			info.remove(o.getUserData());
 
 		Octree_I32 p = o.parent;
+	
 
-		int count_children=0; int index=0;
+//		int count_children=0; 
+		int index=0;
 		for(int i=0;i<p.children.length;i++) {
-			if(p.children[i]==o)
+			if(p.children[i]==o && p.parent != null)
 				index = i;
-			if(p.children[i]!=null)
-				count_children++;
+//			if(p.children[i]!=null)
+//				count_children++;
 		}
 
 		p.children[index] = null;
-		if(count_children > 1) {
-			return;
-		}
-		if(p.getUserData() == null)
-			remove(p);	
+//		if(count_children > 1) {
+//			return;
+//		}
+//		if(p.getUserData() == null)
+//			remove(p);	
 	}
 
 	public List<Octree_I32> getAllNodes() {
@@ -290,6 +298,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		DogArray<Octree_I32> nodes = construct.getAllNodes();
 		long tms = 0;
+		double threshold = defaultValue;
 		int index = 0;
 		Comparable<Integer> zfilter = null;
 		CellProbability_F64 storage = new CellProbability_F64();
@@ -302,8 +311,15 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			searchNext();
 		}
 
+		public MapIterator(long tms, double threshold) {
+			this.tms = tms;
+			this.threshold = threshold;
+			searchNext();
+		}
+		
 		public MapIterator(long tms) {
 			this.tms = tms;
+			this.threshold = defaultValue;
 			searchNext();
 		}
 
@@ -337,12 +353,13 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 				if( o.isSmallest()) {
 					MapLeaf info = o.getUserData();
 					if(zfilter==null) {
-						if (info != null && info.tms >= tms) {
+						if (info != null && info.tms >= tms && (info.probability > threshold || info.probability <= defaultValue)) {
 							next = o;
 							break;
 						}
 					} else {
-						if (info != null && info.tms >= tms && zfilter.compareTo(o.space.p0.z) == 0) {
+						if (info != null && info.tms >= tms && zfilter.compareTo(o.space.p0.z) == 0 && 
+								      (info.probability > threshold || info.probability <= defaultValue)) {
 							next = o;
 							break;
 						}

@@ -63,6 +63,9 @@ public class LocalMap3D {
 
 	private static final int MAX_SIZE      = 100000;     // Max size of the map in count of nodes
 	private static final int MAX_REMOVE    = 5;          // Max count of nodes to be removed in one shot; 0 disables remove
+	
+	private static final double PROBABILITY_INCREMENT  = 0.2;
+	private static final double PROBABILITY_THRESHOLD  = 0.9;
 
 
 	private OctreeGridMap_F64            map;
@@ -105,7 +108,7 @@ public class LocalMap3D {
 	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o ) {
 		tmp.reset(); tmp.T.setTo(p.x,p.y,p.z);
 		ptm.reset(); ptm.T.setTo(o.x,o.y,o.z);
-		update(tmp,ptm,1);	
+		update(tmp,ptm);	
 	}
 
 	public void update(GeoTuple3D_F64<?> p, GeoTuple3D_F64<?> o, double prob) {
@@ -159,6 +162,52 @@ public class LocalMap3D {
 		} 
 
 		map.set(mapo.x, mapo.y, mapo.z, probability, tms);
+	}
+	
+	public void update(Se3_F64 pos_ned, Se3_F64 observation_ned) {
+
+		MapLeaf p;;
+
+		if(map.size()>MAX_SIZE)
+			return;
+
+		info.globalToMap(observation_ned.T, mapo);
+		if(!map.isInBounds(mapo.x, mapo.y, mapo.z))  {
+			return;
+		}
+
+		long tms = System.currentTimeMillis();
+
+		mapp.setTo(mapo);
+
+//		p = map.getUserData(mapp.x, mapp.y, mapp.z);
+//		if(p!=null && p.tms > (tms - 500) && p.probability == probability)
+//			return;
+
+		// do ray casting 
+		interp.setTransforms(observation_ned, pos_ned);
+		double steps = UtilPoint3D_F64.distance(pos_ned.T.x, pos_ned.T.y, pos_ned.T.z, 
+				observation_ned.T.x, observation_ned.T.y, observation_ned.T.z) / info.getCellSize()+1;
+
+		for(int i=1; i <= steps; i++ ) {
+			interp.interpolate(i / steps , tmp);
+			info.globalToMap(tmp.T, mapp);
+			p = map.getUserData(mapp.x, mapp.y, mapp.z);
+			if(p!=null && p.probability > map.getDefaultValue()) {
+				map.set(mapp.x, mapp.y, mapp.z, 0, tms);
+			}
+		} 
+
+		p = map.getUserData(mapo.x, mapo.y, mapo.z);
+		
+		if(p!=null) {
+		  if(p.probability <= PROBABILITY_THRESHOLD)
+		    map.set(mapo.x, mapo.y, mapo.z, p.probability+PROBABILITY_INCREMENT, tms);
+		  else
+		    map.set(mapo.x, mapo.y, mapo.z, 1.0, tms); 
+		}
+		else
+		  map.set(mapo.x, mapo.y, mapo.z, map.getDefaultValue()+PROBABILITY_INCREMENT, tms);
 	}
 
 	public void setMapPoint(int h, double probability) {
@@ -251,7 +300,11 @@ public class LocalMap3D {
 	 */
 
 	public Iterator<CellProbability_F64> getLatestMapItems(long since) {
-		return map.iterator(since);
+		return map.iterator(since, PROBABILITY_THRESHOLD);
+	}
+	
+	public Iterator<CellProbability_F64> getLatestMapItems(long since, double threshold) {
+		return map.iterator(since, threshold);
 	}
 
 
@@ -329,7 +382,7 @@ public class LocalMap3D {
 //					delete.clear();
 //					for(int k=0;k< nodes.size();k++) {
 //						Octree_I32 n = nodes.get(k);
-//						if(n!=null && n.isLeaf() && n.isSmallest() && 
+//						if(n!=null && n.isLeaf() && n.isSmallest() && n.getUserData() != null &&
 //								((MapLeaf)n.getUserData()).probability == map.getDefaultValue() &&
 //								((MapLeaf)n.getUserData()).tms < (System.currentTimeMillis() - 10000)) {
 //							delete.add(n);
