@@ -73,6 +73,7 @@ public abstract class ConstructOctree< O extends Octree, P extends GeoTuple> {
 			}
 		}
 	}
+	
 
 	/**
 	 * Discards the existing tree structure and recycles its data.  All reference to external data not owned

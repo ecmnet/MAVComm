@@ -64,8 +64,9 @@ public class LocalMap3D {
 	private static final int MAX_SIZE      = 100000;     // Max size of the map in count of nodes
 	private static final int MAX_REMOVE    = 5;          // Max count of nodes to be removed in one shot; 0 disables remove
 	
-	private static final double PROBABILITY_INCREMENT  = 0.2;
-	private static final double PROBABILITY_THRESHOLD  = 0.9;
+	private static final double PROBABILITY_STEP       = 0.10;
+	
+	public  static final double PROBABILITY_THRESHOLD  = 0.95;
 
 
 	private OctreeGridMap_F64            map;
@@ -139,7 +140,7 @@ public class LocalMap3D {
 			return;
 		}
 
-		long tms = System.currentTimeMillis();
+		long tms =  System.currentTimeMillis();
 
 		mapp.setTo(mapo);
 
@@ -156,7 +157,7 @@ public class LocalMap3D {
 			interp.interpolate(i / steps , tmp);
 			info.globalToMap(tmp.T, mapp);
 			p = map.getUserData(mapp.x, mapp.y, mapp.z);
-			if(p!=null && p.probability > map.getDefaultValue()) {
+			if(p!=null && p.probability > map.getDefaultValue() && !mapo.equals(mapp)) {
 				map.set(mapp.x, mapp.y, mapp.z, 0, tms);
 			}
 		} 
@@ -166,7 +167,7 @@ public class LocalMap3D {
 	
 	public void update(Se3_F64 pos_ned, Se3_F64 observation_ned) {
 
-		MapLeaf p;;
+		MapLeaf p; MapLeaf pt;
 
 		if(map.size()>MAX_SIZE)
 			return;
@@ -176,9 +177,15 @@ public class LocalMap3D {
 			return;
 		}
 
-		long tms = System.currentTimeMillis();
+		long tms =  System.currentTimeMillis();
 
 		mapp.setTo(mapo);
+		pt = map.getUserData(mapo.x, mapo.y, mapo.z);
+		if(pt!=null && (tms - pt.tms) < 20) {
+			 if(pt.probability <= PROBABILITY_THRESHOLD)
+				    map.set(mapo.x, mapo.y, mapo.z, pt.probability+PROBABILITY_STEP, tms);	
+			return;
+		}
 
 //		p = map.getUserData(mapp.x, mapp.y, mapp.z);
 //		if(p!=null && p.tms > (tms - 500) && p.probability == probability)
@@ -193,21 +200,21 @@ public class LocalMap3D {
 			interp.interpolate(i / steps , tmp);
 			info.globalToMap(tmp.T, mapp);
 			p = map.getUserData(mapp.x, mapp.y, mapp.z);
-			if(p!=null && p.probability > map.getDefaultValue()) {
-				map.set(mapp.x, mapp.y, mapp.z, 0, tms);
+			if(p!=null && p.probability > PROBABILITY_STEP && !mapo.equals(mapp)) {				
+				map.set(mapp.x, mapp.y, mapp.z, p.probability-PROBABILITY_STEP, tms);
 			}
 		} 
 
-		p = map.getUserData(mapo.x, mapo.y, mapo.z);
 		
-		if(p!=null) {
-		  if(p.probability <= PROBABILITY_THRESHOLD)
-		    map.set(mapo.x, mapo.y, mapo.z, p.probability+PROBABILITY_INCREMENT, tms);
-		  else
-		    map.set(mapo.x, mapo.y, mapo.z, 1.0, tms); 
+		if(pt!=null) {
+		  if(pt.probability <= PROBABILITY_THRESHOLD)
+		    map.set(mapo.x, mapo.y, mapo.z, pt.probability+PROBABILITY_STEP, tms);
+//		  else 
+//			  if((tms - pt.tms)> 1000)
+//		    map.set(mapo.x, mapo.y, mapo.z, 1.0, tms); 
 		}
 		else
-		  map.set(mapo.x, mapo.y, mapo.z, map.getDefaultValue()+PROBABILITY_INCREMENT, tms);
+		  map.set(mapo.x, mapo.y, mapo.z, map.getDefaultValue()+PROBABILITY_STEP, tms);
 	}
 
 	public void setMapPoint(int h, double probability) {
@@ -245,12 +252,7 @@ public class LocalMap3D {
 			map.set(p.x, p.y, p.z, probability,tms);
 	}
 
-	/**
-	 * @return	Iterator of all known positions
-	 */
-	public Iterator<CellProbability_F64> getMapItems() {
-		return map.iterator();
-	}
+	
 
 	/**
 	 * Find closest occupied cell in the map
@@ -292,6 +294,13 @@ public class LocalMap3D {
 	public void setIndicator(float x, float y, float z) {
 		indicator.setTo(x,y,z);
 	}
+	
+	/**
+	 * @return	Iterator of all known positions
+	 */
+	public Iterator<CellProbability_F64> getMapItems() {
+		return map.iterator();
+	}
 
 	/**
 	 * Returns an Interator over known cells that were changed shortly
@@ -300,7 +309,7 @@ public class LocalMap3D {
 	 */
 
 	public Iterator<CellProbability_F64> getLatestMapItems(long since) {
-		return map.iterator(since, PROBABILITY_THRESHOLD);
+		return map.iterator(since,map.getDefaultValue());
 	}
 	
 	public Iterator<CellProbability_F64> getLatestMapItems(long since, double threshold) {
@@ -394,15 +403,15 @@ public class LocalMap3D {
 //						delete.forEach((p) -> map.remove(p));
 //					}
 //				}
-
+        long tms =  System.currentTimeMillis();
 		for (int i = 0; i < nodes.size(); i++) {
 			Octree_I32 n = nodes.get(i);
 			if(n.userData != null && n.isLeaf()) {
 				MapLeaf leaf = n.getUserData();
-				if(leaf != null && leaf.tms <= older_than && leaf.tms > 0) {
-					if(leaf.probability != map.getDefaultValue()) {
+				if(leaf != null && leaf.tms <= older_than ) {
+					if(Math.abs(leaf.probability-map.getDefaultValue()) > 0.01) {
 						leaf.probability = map.getDefaultValue();
-						leaf.tms = System.currentTimeMillis();
+						leaf.tms =  tms;
 					}
 				}
 			}

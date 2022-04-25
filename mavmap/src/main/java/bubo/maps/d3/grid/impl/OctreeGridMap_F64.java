@@ -294,7 +294,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 	 * Iterator which will go through all the map cells.  This is defined as nodes in the graph which are
 	 * the smallest size possible and have been assigned a probability
 	 */
-	private class MapIterator  implements Iterator<CellProbability_F64> {
+	private class MapIterator implements Iterator<CellProbability_F64> {
 
 		DogArray<Octree_I32> nodes = construct.getAllNodes();
 		long tms = 0;
@@ -339,7 +339,7 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 			searchNext();
 			MapLeaf info = prev.getUserData();
 			//System.out.println("T: "+info.probability+"/"+info.tms+"->"+prev.space.p0);
-			storage.setTo( prev.space.p0 );
+			storage.setTo( prev.getLocation() );
 			storage.probability = info.probability;
 			storage.tms         = info.tms;
 			return storage;
@@ -353,7 +353,8 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 				if( o.isSmallest()) {
 					MapLeaf info = o.getUserData();
 					if(zfilter==null) {
-						if (info != null && info.tms >= tms && (info.probability > threshold || info.probability <= defaultValue)) {
+						if (info != null && info.tms >= tms && 
+							  (info.probability > threshold || info.probability < (1-threshold) || Math.abs(info.probability-defaultValue) < 0.01)) {
 							next = o;
 							break;
 						}
