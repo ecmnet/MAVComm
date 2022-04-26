@@ -260,22 +260,21 @@ public class OctreeGridMap_F64 implements OccupancyGrid3D_F64 {
 
 		Octree_I32 p = o.parent;
 	
-
-//		int count_children=0; 
+		int count_children=0; 
 		int index=0;
 		for(int i=0;i<p.children.length;i++) {
 			if(p.children[i]==o && p.parent != null)
 				index = i;
-//			if(p.children[i]!=null)
-//				count_children++;
+			if(p.children[i]!=null)
+				count_children++;
 		}
 
 		p.children[index] = null;
-//		if(count_children > 1) {
-//			return;
-//		}
-//		if(p.getUserData() == null)
-//			remove(p);	
+		if(count_children > 1) {
+			return;
+		}
+		if(p.getUserData() == null)
+			remove(p);	
 	}
 
 	public List<Octree_I32> getAllNodes() {

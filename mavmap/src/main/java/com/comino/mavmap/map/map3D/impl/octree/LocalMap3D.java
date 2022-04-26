@@ -79,6 +79,7 @@ public class LocalMap3D {
 	private Point3D_I32                  mapo   = new Point3D_I32();
 
 	private Point3D_F64              indicator  = new Point3D_F64();
+	private Point3D_F64              origin     = new Point3D_F64(0,0,0);
 
 	private boolean                      forget = false;       
 	private final List<Octree_I32>       delete = new ArrayList<Octree_I32>(10);
@@ -119,7 +120,7 @@ public class LocalMap3D {
 	}
 
 	public double check(GeoTuple3D_F64<?> p) {
-		info.globalToMap(p, mapo);
+		info.globalToMap(p, origin, mapo);
 		return map.get(mapo.x,mapo.y,mapo.z);
 	}
 
@@ -135,7 +136,7 @@ public class LocalMap3D {
 		if(map.size()>MAX_SIZE)
 			return;
 
-		info.globalToMap(observation_ned.T, mapo);
+		info.globalToMap(observation_ned.T, origin, mapo);
 		if(!map.isInBounds(mapo.x, mapo.y, mapo.z))  {
 			return;
 		}
@@ -155,7 +156,7 @@ public class LocalMap3D {
 
 		for(int i=1; i <= steps; i++ ) {
 			interp.interpolate(i / steps , tmp);
-			info.globalToMap(tmp.T, mapp);
+			info.globalToMap(tmp.T, origin, mapp);
 			p = map.getUserData(mapp.x, mapp.y, mapp.z);
 			if(p!=null && p.probability > map.getDefaultValue() && !mapo.equals(mapp)) {
 				map.set(mapp.x, mapp.y, mapp.z, 0, tms);
@@ -172,7 +173,7 @@ public class LocalMap3D {
 		if(map.size()>MAX_SIZE)
 			return;
 
-		info.globalToMap(observation_ned.T, mapo);
+		info.globalToMap(observation_ned.T, origin, mapo);
 		if(!map.isInBounds(mapo.x, mapo.y, mapo.z))  {
 			return;
 		}
@@ -198,7 +199,7 @@ public class LocalMap3D {
 
 		for(int i=1; i <= steps; i++ ) {
 			interp.interpolate(i / steps , tmp);
-			info.globalToMap(tmp.T, mapp);
+			info.globalToMap(tmp.T, origin, mapp);
 			p = map.getUserData(mapp.x, mapp.y, mapp.z);
 			if(p!=null && p.probability > PROBABILITY_STEP && !mapo.equals(mapp)) {				
 				map.set(mapp.x, mapp.y, mapp.z, p.probability-PROBABILITY_STEP, tms);
@@ -285,6 +286,14 @@ public class LocalMap3D {
 
 	public Point3D_F64 getIndicator() {
 		return indicator;
+	}
+	
+	/**
+	 * Returns the map origin in global coordinates
+	 * @return
+	 */
+	public Point3D_F64 getOrigin() {
+		return origin;
 	}
 
 	/**
@@ -392,8 +401,8 @@ public class LocalMap3D {
 //					for(int k=0;k< nodes.size();k++) {
 //						Octree_I32 n = nodes.get(k);
 //						if(n!=null && n.isLeaf() && n.isSmallest() && n.getUserData() != null &&
-//								((MapLeaf)n.getUserData()).probability == map.getDefaultValue() &&
-//								((MapLeaf)n.getUserData()).tms < (System.currentTimeMillis() - 10000)) {
+//								Math.abs(((MapLeaf)n.getUserData()).probability - map.getDefaultValue()) < 0.01 &&
+//								((MapLeaf)n.getUserData()).tms < (older_than - 2000)) {
 //							delete.add(n);
 //							if(--max < 0)
 //								break;
@@ -437,7 +446,7 @@ public class LocalMap3D {
 		System.out.print(p);
 
 		info.globalToMap(p,mp);
-		info.mapToGlobal(mp, pt);
+		info.mapToGlobal(mp,pt);
 		System.out.println(" --> "+pt);
 		System.out.println(mp);
 
