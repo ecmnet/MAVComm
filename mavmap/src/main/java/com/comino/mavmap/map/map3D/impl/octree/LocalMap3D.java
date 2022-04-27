@@ -350,6 +350,10 @@ public class LocalMap3D {
 		this.map.clear();
 		setIndicator(Float.NaN, Float.NaN, Float.NaN);
 	}
+	
+	public void setOrigin(float ox, float oy, float oz) {
+		this.origin.setTo(ox,oy,oz);
+	}
 
 	/**
 	 * 
@@ -412,11 +416,13 @@ public class LocalMap3D {
 //						delete.forEach((p) -> map.remove(p));
 //					}
 //				}
+		MapLeaf leaf=null; Octree_I32 n = null;
+		
         long tms =  System.currentTimeMillis();
 		for (int i = 0; i < nodes.size(); i++) {
-			Octree_I32 n = nodes.get(i);
+			n = nodes.get(i);
 			if(n.userData != null && n.isLeaf()) {
-				MapLeaf leaf = n.getUserData();
+				leaf = n.getUserData();
 				if(leaf != null && leaf.tms <= older_than ) {
 					if(Math.abs(leaf.probability-map.getDefaultValue()) > 0.01) {
 						leaf.probability = map.getDefaultValue();
@@ -425,7 +431,6 @@ public class LocalMap3D {
 				}
 			}
 		}
-
 	}
 
 	static long tms;
