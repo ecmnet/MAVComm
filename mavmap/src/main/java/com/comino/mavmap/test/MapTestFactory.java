@@ -38,25 +38,10 @@ public class MapTestFactory {
 			int level = (int)((model.hud.ar + rel_altitude) * map.getMapInfo().getBlocksPerM() + 0.5f) * 2;
 			for(int i=0;i<level;i++) {
 				wall.setZ(- i * map.getMapInfo().getCellSize()/2 );
-				map.update(veh,wall);
+				map.update(veh,wall,1);
 			}
 		}
 
 	}
-
-	private static void buildTree(LocalMap3D map, Point3D_F64 pos, float height, float volume) {
-		
-		Point3D_I32 p = new Point3D_I32();
-		
-		
-		int level = (int)((height) * map.getMapInfo().getBlocksPerM());
-		for(int i=0;i<level;i++) {
-			pos.setZ(- i * map.getMapInfo().getCellSize());
-			map.getMapInfo().globalToMap(pos, p);
-			map.setMapPoint(p, 1);
-		}
-	}
-
-
 
 }
