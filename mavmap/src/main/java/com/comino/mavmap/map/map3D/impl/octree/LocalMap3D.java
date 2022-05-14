@@ -81,17 +81,19 @@ public class LocalMap3D {
 	private Point3D_F64              indicator  = new Point3D_F64();
 	private Point3D_F64              origin     = new Point3D_F64(0,0,0);
 
-	private boolean                      forget = false;       
-	private final List<Octree_I32>       delete = new ArrayList<Octree_I32>(10);
+	private boolean                      forget = false;    
+	private boolean                      enabled = true;
+//	private final List<Octree_I32>       delete = new ArrayList<Octree_I32>(10);
 
 	public LocalMap3D() {
-		this(new Map3DSpacialInfo(0.10f,20.0f,20.0f,5.0f),true);
+		this(new Map3DSpacialInfo(0.10f,20.0f,20.0f,5.0f),true, true);
 	}
 
-	public LocalMap3D(Map3DSpacialInfo info,boolean forget) {
+	public LocalMap3D(Map3DSpacialInfo info,boolean forget, boolean enable) {
 		this.info = info;
 		this.map  = new OctreeGridMap_F64(info.getDimension().x,info.getDimension().y,info.getDimension().z); 
-		this.forget = forget;
+		this.forget  = forget;
+		this.enabled = enable;
 	}
 
 
@@ -131,9 +133,9 @@ public class LocalMap3D {
 	 */
 	public void update(Se3_F64 pos_ned, Se3_F64 observation_ned, double probability) {
 
-		MapLeaf p;;
+		MapLeaf p;
 
-		if(map.size()>MAX_SIZE)
+		if(map.size()>MAX_SIZE || !enabled)
 			return;
 
 		info.globalToMap(observation_ned.T, origin, mapo);
@@ -170,7 +172,7 @@ public class LocalMap3D {
 
 		MapLeaf p; MapLeaf pt;
 
-		if(map.size()>MAX_SIZE)
+		if(map.size()>MAX_SIZE || !enabled)
 			return;
 
 		info.globalToMap(observation_ned.T, origin, mapo);
@@ -224,6 +226,7 @@ public class LocalMap3D {
 	}
 
 	public void setMapPoint(int h, double probability, long tms) {
+		
 		info.decodeMapPoint(h, mapo);
 		setMapPoint(mapo,probability,tms);
 	}
